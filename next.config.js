@@ -1,4 +1,20 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
+require("./src/env.js");
 
-module.exports = nextConfig
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "development"
+        ? undefined
+        : {
+            exclude: ["error"],
+          },
+  },
+  experimental: {
+    serverActions: true,
+    logging: "verbose",
+    typedRoutes: true,
+  },
+};
+
+module.exports = nextConfig;

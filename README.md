@@ -4,7 +4,7 @@
 # Stack
 
 - [Next App Router](https://nextjs.org/docs/app)
-- [drizzle](https://orm.drizzle.team/) + Sqlite (locally) & cloudfare D1 in production 
+- [drizzle](https://orm.drizzle.team/) + Sqlite (locally) & [cloudfare D1](https://developers.cloudflare.com/d1) in production 
 - [cloudfare](https://cloudfare.com) for the hosting
 - [tailwindCSS](tailwindcss.com/) for the styling
 
