@@ -1,8 +1,8 @@
 // @ts-check
-const { createEnv } = require("@t3-oss/env-nextjs");
-const { z } = require("zod");
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
-const env = createEnv({
+export const env = createEnv({
   server: {
     TURSO_DB_TOKEN: z.string(),
     TURSO_DB_URL: z.string().url(),
@@ -15,7 +15,3 @@ const env = createEnv({
     TURSO_DB_URL: process.env.TURSO_DB_URL,
   },
 });
-
-module.exports = {
-  env,
-};

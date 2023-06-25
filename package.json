@@ -11,8 +11,10 @@
     "pages:build-deploy": "pnpm run pages:build && pnpm run pages:deploy",
     "pages:deploy": "wrangler pages deploy .vercel/output/static",
     "pages:watch": "npx @cloudflare/next-on-pages --watch",
-    "pages:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat"
+    "pages:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",
+    "db:push": "set -a; source .env.local; set +a && drizzle-kit push:sqlite"
   },
+  "type": "module",
   "dependencies": {
     "@libsql/client": "^0.2.2",
     "@t3-oss/env-nextjs": "^0.4.1",
@@ -32,9 +34,12 @@
     "@cloudflare/next-on-pages": "^1.1.0",
     "@types/better-sqlite3": "^7.6.4",
     "autoprefixer": "10.4.14",
+    "dotenv": "^16.3.1",
     "drizzle-kit": "^0.19.2",
     "postcss": "8.4.24",
     "tailwindcss": "3.3.2",
+    "ts-node": "^10.9.1",
+    "tsx": "^3.12.7",
     "vercel": "^30.2.3",
     "wrangler": "^3.1.1"
   }

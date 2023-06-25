@@ -1,8 +1,7 @@
-// drizzle.config.ts
 import type { Config } from "drizzle-kit";
 
 export default {
-  schema: "./src/lib/db/schema.ts",
+  schema: "./src/app/(models)/*.ts",
   out: "./drizzle",
   driver: "turso",
   dbCredentials: {
