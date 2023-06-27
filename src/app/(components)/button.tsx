@@ -7,7 +7,7 @@ export type ButtonProps = {
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   disabled?: boolean;
   children?: React.ReactNode;
-  variant?: "primary" | "outline" | "danger" | "invisible";
+  variant?: "primary" | "secondary" | "danger" | "invisible";
   loadingMessage?: string;
   isSquared?: boolean;
   className?: string;
@@ -60,7 +60,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             "bg-transparent text-accent border-transparent hover:bg-subtle":
               variant === "invisible",
             "bg-subtle text-accent hover:bg-accent hover:text-white":
-              variant === "outline",
+              variant === "secondary",
           }
         )}
         {...buttonProps}

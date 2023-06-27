@@ -17,6 +17,7 @@
   "type": "module",
   "dependencies": {
     "@libsql/client": "^0.2.2",
+    "@primer/octicons-react": "^19.4.0",
     "@t3-oss/env-nextjs": "^0.4.1",
     "@types/node": "20.3.1",
     "@types/react": "18.2.14",

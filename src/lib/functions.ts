@@ -16,7 +16,7 @@
  * @param args
  */
 export function clsx(
-  ...args: (string | undefined | Record<string, boolean>)[]
+  ...args: (string | undefined | Record<string, boolean | undefined>)[]
 ): string {
   const classes: string[] = [];
   for (const arg of args) {
