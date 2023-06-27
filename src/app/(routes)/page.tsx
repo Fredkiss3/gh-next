@@ -1,5 +1,5 @@
 import { db } from "~/lib/db";
-import { Button } from "../(components)/button";
+import { Button } from "~/app/(components)/button";
 
 export const revalidate = 0;
 
@@ -16,8 +16,12 @@ export default async function Home() {
         ))}
       </div>
 
-      <Button variant="invisible">button</Button>
-      <Button variant="outline">button</Button>
+      <div className="flex gap-2">
+        <Button variant="primary">button</Button>
+        <Button variant="danger">button</Button>
+        <Button variant="invisible">button</Button>
+        <Button variant="outline">button</Button>
+      </div>
     </main>
   );
 }

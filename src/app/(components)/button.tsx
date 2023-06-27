@@ -7,7 +7,7 @@ export type ButtonProps = {
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   disabled?: boolean;
   children?: React.ReactNode;
-  variant?: "primary" | "secondary" | "outline" | "danger" | "invisible";
+  variant?: "primary" | "outline" | "danger" | "invisible";
   loadingMessage?: string;
   isSquared?: boolean;
   className?: string;
