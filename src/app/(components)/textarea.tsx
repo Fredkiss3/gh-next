@@ -14,7 +14,6 @@ export type InputProps = Omit<
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   size?: "small" | "medium" | "large";
-  isLoading?: boolean;
   validationText?: string;
   validationStatus?: "error" | "success";
   hideLabel?: boolean;
@@ -38,7 +37,6 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
       autoComplete = "off",
       type = "text",
       size = "medium",
-      isLoading,
       id: defaultId,
       disabled = false,
       ...otherProps
@@ -102,11 +100,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
             )}
           />
 
-          {isLoading ? (
-            <LoadingIndicator className="h-5 w-5 text-gray-500 flex-shrink-0 pointer-events-none" />
-          ) : (
-            renderTrailingIcon?.("h-5 w-5 text-gray-500 flex-shrink-0")
-          )}
+          {renderTrailingIcon?.("h-5 w-5 text-gray-500 flex-shrink-0")}
         </div>
 
         {validationStatus && (
@@ -130,7 +124,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
         )}
 
         {helpText && (
-          <small id={helpId} className={`text-gray-400`}>
+          <small id={helpId} className="text-gray-400">
             {helpText}
           </small>
         )}

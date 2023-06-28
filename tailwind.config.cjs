@@ -11,10 +11,15 @@ function withOpactity(variableName) {
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
+  darkMode: ['[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
+        disabled: `rgba(var(--disabled-color))`,
+        grey: withOpactity(`--grey-color`),
         accent: withOpactity(`--accent-color`),
+        background: withOpactity(`--bg-color`),
+        foreground: withOpactity(`--fg-color`),
         success: withOpactity(`--success-color`),
         attention: withOpactity(`--attention-color`),
         danger: withOpactity(`--danger-color`),

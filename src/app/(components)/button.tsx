@@ -22,7 +22,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       renderTrailingIcon,
       renderLeadingIcon,
       className,
-      loadingMessage = `Chargement, veuillez patientez...`,
+      loadingMessage = "Chargement, veuillez patientez...",
       isLoading = false,
       disabled = false,
       isSquared = false,
@@ -68,12 +68,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <span className="sr-only" aria-live="assertive">
           {isLoading ? loadingMessage : ""}
         </span>
-        {isLoading && <LoadingIndicator className={`h-5 w-5 flex-shrink-0`} />}
+        {isLoading && <LoadingIndicator className="h-5 w-5 flex-shrink-0" />}
         {!isLoading &&
           renderLeadingIcon &&
-          renderLeadingIcon(`h-5 w-5 flex-shrink-0`)}
+          renderLeadingIcon("h-5 w-5 flex-shrink-0")}
         {children}
-        {renderTrailingIcon && renderTrailingIcon(`h-5 w-5 flex-shrink-0`)}
+        {renderTrailingIcon && renderTrailingIcon("h-5 w-5 flex-shrink-0")}
       </button>
     );
   }

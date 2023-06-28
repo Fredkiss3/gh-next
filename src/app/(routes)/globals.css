@@ -11,8 +11,9 @@
     --severe-color: 188, 76, 0;
     --closed-color: 207, 33, 46;
     --done-color: 130, 80, 223;
-    --neutral-color: 110, 119, 129;
-    
+    --neutral-color: 208, 215, 222;
+
+    --grey-color: 110, 118, 129;
     --subtle-color: 246, 248, 250;
 
     --accent-color-light: 221, 244, 255;
@@ -24,5 +25,27 @@
     --closed-color-light: 255, 235, 232;
     --done-color-light: 251, 239, 255;
     font-size: 16px;
+
+    --fg-color: 0, 0, 0;
+    --bg-color: 255, 255, 255;
+
+    --disabled-color: 239, 241, 243, 1;
+  }
+
+  [data-theme="dark"] {
+    --danger-color: 248, 81, 73;
+    --success-color: 63, 185, 80;
+    --fg-color: 255, 255, 255;
+    --bg-color: 1, 4, 9;
+    --accent-color: 47, 129, 247;
+
+    --neutral-color: 48, 54, 60;
+    --subtle-color: 22, 28, 34;
+    --disabled-color: 0, 0, 0, 0;
+  }
+
+  body {
+    color: rgb(var(--fg-color));
+    background: rgb(var(--bg-color));
   }
 }

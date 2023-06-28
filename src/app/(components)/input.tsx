@@ -69,16 +69,16 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className={clsx(
             className,
             "flex w-full items-center gap-2 rounded-md border px-3",
-            "bg-white shadow-sm focus-within:border",
+            "bg-background shadow-sm focus-within:border",
             "ring-accent focus-within:border-accent focus-within:ring-1",
             {
-              "border-gray-300": !validationStatus,
+              "border-neutral": !validationStatus,
               "border-danger": validationStatus === "error",
               "border-success": validationStatus === "success",
               "py-1": size === "medium",
               "py-0": size === "small",
               "py-2": size === "large",
-              "cursor-not-allowed bg-gray-200": disabled,
+              "cursor-not-allowed bg-disabled": disabled,
             }
           )}
         >
@@ -95,7 +95,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             disabled={disabled}
             required={required}
             className={clsx(
-              "w-full focus:outline-none bg-transparent",
+              "w-full focus:outline-none bg-transparent disabled:text-foreground/30",
               inputClassName
             )}
           />
@@ -110,8 +110,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {validationStatus && (
           <small
             id={validationId}
-            aria-live={"assertive"}
-            role={"alert"}
+            aria-live="assertive"
+            role="alert"
             className={clsx("flex gap-1", {
               "text-danger": validationStatus === "error",
               "text-success": validationStatus === "success",
@@ -128,7 +128,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
 
         {helpText && (
-          <small id={helpId} className={`text-gray-400`}>
+          <small id={helpId} className="text-gray-400">
             {helpText}
           </small>
         )}
