@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "types": ["@cloudflare/workers-types"],
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",

@@ -16,6 +16,7 @@ export const users = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     username: text("username").notNull(),
     github_id: text("github_id").notNull(),
+    avatar_url: text("avatar_url"),
   },
   (users) => ({
     usernameIdx: uniqueIndex("usernameIdx").on(users.username),
