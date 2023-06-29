@@ -16,7 +16,7 @@ export type ButtonProps = {
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
+  function Button(
     {
       children,
       renderTrailingIcon,
@@ -31,7 +31,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ...buttonProps
     },
     ref
-  ) => {
+  ) {
     return (
       <button
         ref={ref}

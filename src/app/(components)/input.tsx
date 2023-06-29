@@ -21,7 +21,7 @@ export type InputProps = Omit<
 };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  (
+  function Input(
     {
       onChange,
       name,
@@ -44,7 +44,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       ...otherProps
     },
     ref
-  ) => {
+  ) {
     const id = React.useId();
     const validationId = React.useId();
     const helpId = React.useId();

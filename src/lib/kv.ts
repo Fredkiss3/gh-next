@@ -8,6 +8,7 @@ class KV {
     if (env.KV) {
       this.#client = env.KV as KVNamespace;
     } else {
+      // @ts-expect-error this env variable is set on local
       this.#client = Redis.fromEnv(env);
     }
   }

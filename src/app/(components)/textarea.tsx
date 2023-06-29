@@ -1,6 +1,5 @@
 import * as React from "react";
 import { clsx } from "~/lib/functions";
-import { LoadingIndicator } from "./loading-indicator";
 import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<
@@ -20,7 +19,7 @@ export type InputProps = Omit<
 };
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
-  (
+  function Textarea(
     {
       onChange,
       name,
@@ -42,7 +41,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
       ...otherProps
     },
     ref
-  ) => {
+  ) {
     const id = React.useId();
     const validationId = React.useId();
     const helpId = React.useId();
