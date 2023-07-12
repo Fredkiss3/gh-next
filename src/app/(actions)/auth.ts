@@ -1,29 +1,21 @@
 "use server";
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { env } from "~/env.mjs";
-import { setFlash } from "./flash";
-import { SESSION_COOKIE_KEY, SESSION_TTL } from "~/lib/constants";
-import { kv } from "~/lib/kv";
-import short from "short-uuid";
+import { SESSION_COOKIE_KEY } from "~/lib/constants";
 import { db } from "~/lib/db";
-import { User, users } from "~/app/(models)/user";
-import { cache } from "react";
+import { users } from "~/lib/db/schema/user";
 import { isSSR } from "~/lib/server-utils";
-
-import type { NextResponse } from "next/server";
-import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { Session } from "~/lib/session";
+import { revalidatePath } from "next/cache";
 
 const ghUserSchema = z.object({
   login: z.string(),
   id: z.number(),
-  avatar_url: z.string(),
-});
-
-const userTokenSchema = z.object({
-  user_id: z.number(),
+  avatar_url: z.string().nullish(),
 });
 
 export async function authenticateWithGithub() {
@@ -32,52 +24,51 @@ export async function authenticateWithGithub() {
   );
 }
 
-export const getUser = cache(async function getUser(): Promise<User | null> {
-  const oatToken = cookies().get(SESSION_COOKIE_KEY)?.value;
+export async function getAuthenticatedUser() {
+  const session = await getSession();
 
-  if (!oatToken) {
-    return null;
+  if (!session.user) {
+    await session.addFlash({
+      type: "error",
+      message: "You must be authenticated to do this action.",
+    });
+    revalidatePath("/");
+
+    redirect("/login");
   }
 
-  try {
-    const tokenValue = userTokenSchema.parse(await kv.get(`token:${oatToken}`));
-    return (
-      (await db.query.users.findFirst({
-        where: (fields, { eq }) => eq(fields.id, tokenValue.user_id),
-      })) ?? null
-    );
-  } catch (error) {
-    console.error(
-      "There was an error decoding the session Token :",
-      (error as Error).message
-    );
-    return null;
-  }
-});
+  return session.user;
+}
 
-export async function destroySession() {
-  const oatToken = cookies().get(SESSION_COOKIE_KEY)?.value;
+export async function logoutUser() {
+  const session = await getSession();
 
-  if (oatToken) {
-    // delete the token from our KV store
-    await kv.delete(`token:${oatToken}`);
-    cookies().delete(SESSION_COOKIE_KEY);
-  }
+  const newSession = await session.invalidate();
+  cookies().set(newSession.getCookie());
+
+  await session.addFlash({
+    type: "info",
+    message: "Logged out successfully.",
+  });
 
   // FIXME: this condition is a workaround until this PR is merged : https://github.com/vercel/next.js/pull/49439
   if (isSSR()) {
-    redirect("/");
+    redirect("/login");
   }
 }
 
-export async function createSession(user: any, response?: NextResponse) {
+export async function loginUser(user: any) {
   const sessionResult = ghUserSchema.safeParse(user);
   if (!sessionResult.success) {
     console.error(sessionResult.error);
-    setFlash({
+    const session = await getSession();
+
+    await session.addFlash({
       type: "error",
       message: "An unexpected error happenned on authentication, please retry",
     });
+
+    revalidatePath("/");
     return;
   }
 
@@ -107,22 +98,28 @@ export async function createSession(user: any, response?: NextResponse) {
     .returning()
     .get();
 
-  const token = short.generate();
+  const session = await getSession();
+  await session.regenerateForUser(userFromDB);
 
-  // store the token our KV store
-  await kv.set(`token:${token}`, { user_id: userFromDB.id }, SESSION_TTL);
-
-  const options: ResponseCookie = {
-    name: SESSION_COOKIE_KEY,
-    value: token,
-    httpOnly: true,
-    expires: expirationDate,
-    secure: process.env.NODE_ENV === "production" ? true : undefined,
-  };
-
-  if (response) {
-    response.cookies.set(options);
-  } else {
-    cookies().set(options);
-  }
+  await session.addFlash({
+    type: "success",
+    message: "Logged in successfully.",
+  });
+  cookies().set(session.getCookie());
 }
+
+export const getSession = cache(async function getSession(): Promise<Session> {
+  const sessionId = cookies().get(SESSION_COOKIE_KEY)?.value;
+
+  if (!sessionId) throw new Error("Session ID must be set in middleware");
+
+  const session = await Session.get(sessionId);
+
+  if (!session) {
+    throw new Error(
+      "Session must have been created in middleware to be accessed"
+    );
+  }
+
+  return session;
+});

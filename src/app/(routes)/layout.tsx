@@ -5,10 +5,11 @@ import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
 
 // utils
 import { Inter } from "next/font/google";
+import { THEME_COOKIE_KEY } from "~/lib/constants";
 
 // types
 import type { Metadata } from "next";
-import { THEME_COOKIE_KEY } from "~/lib/constants";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 
 export const runtime = "edge";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -1,15 +1,17 @@
 import { Redis } from "@upstash/redis/cloudflare";
-import { env } from "~/env.mjs";
+import { env, kvSchema } from "~/env.mjs";
+import type { ZodType } from "zod";
 
-class KV {
-  #client: KVNamespace | Redis | null = null;
+export class KV {
+  #client: KVNamespace | Redis;
 
   constructor() {
-    if (env.KV) {
-      this.#client = env.KV as KVNamespace;
+    const result = kvSchema.parse(env);
+
+    if (result.KV) {
+      this.#client = result.KV as KVNamespace;
     } else {
-      // @ts-expect-error this env variable is set on local
-      this.#client = Redis.fromEnv(env);
+      this.#client = Redis.fromEnv(result);
     }
   }
 
@@ -20,18 +22,8 @@ class KV {
   ) {
     const fullKey = `${env.KV_PREFIX}${key}`;
 
-    if (env.KV) {
-      return (this.#client as KVNamespace).put(
-        fullKey,
-        JSON.stringify(value),
-        ttl_in_seconds
-          ? {
-              expirationTtl: ttl_in_seconds,
-            }
-          : undefined
-      );
-    } else {
-      return (this.#client as Redis).set(
+    if (this.#client instanceof Redis) {
+      return this.#client.set(
         fullKey,
         value,
         ttl_in_seconds
@@ -40,28 +32,38 @@ class KV {
             }
           : undefined
       );
+    } else {
+      return this.#client.put(
+        fullKey,
+        JSON.stringify(value),
+        ttl_in_seconds
+          ? {
+              expirationTtl: ttl_in_seconds,
+            }
+          : undefined
+      );
     }
   }
 
-  public async get<T extends any = {}>(key: string) {
+  public async get<T extends unknown>(key: string) {
     const fullKey = `${env.KV_PREFIX}${key}`;
 
-    if (env.KV) {
-      return (this.#client as KVNamespace).get(fullKey).then((str) => {
+    if (this.#client instanceof Redis) {
+      return this.#client.get<T>(fullKey);
+    } else {
+      return this.#client.get(fullKey).then((str) => {
         if (str === null) return null;
         return JSON.parse(str) as T;
       });
-    } else {
-      return (this.#client as Redis).get<T>(fullKey);
     }
   }
 
   public async delete(key: string) {
     const fullKey = `${env.KV_PREFIX}${key}`;
-    if (env.KV) {
-      (this.#client as KVNamespace).delete(fullKey);
+    if (this.#client instanceof Redis) {
+      await this.#client.del(fullKey);
     } else {
-      (this.#client as Redis).del(fullKey);
+      await this.#client.delete(fullKey);
     }
   }
 }

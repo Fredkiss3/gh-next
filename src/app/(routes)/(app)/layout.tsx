@@ -1,4 +1,5 @@
-import { getUser } from "~/app/(actions)/auth";
+import { getSession } from "~/app/(actions)/auth";
+import { Toaster } from "~/app/(components)/toast/toaster";
 
 export default async function AppLayout({
   children,
@@ -9,6 +10,12 @@ export default async function AppLayout({
   logged_in: React.ReactNode;
   logged_out: React.ReactNode;
 }) {
-  const user = await getUser();
-  return <>{user ? logged_in : logged_out}</>;
+  const session = await getSession();
+  return (
+    <>
+      <>{session?.user ? logged_in : logged_out}</>
+
+      <Toaster />
+    </>
+  );
 }

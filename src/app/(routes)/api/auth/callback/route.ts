@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
-import { createSession } from "~/app/(actions)/auth";
+import { loginUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
 
 export const fetchCache = "force-no-store";
@@ -44,7 +44,6 @@ export async function GET(req: Request) {
     },
   }).then((r) => r.json());
 
-  const res = NextResponse.redirect(new URL("/", req.url));
-  await createSession(ghUser, res);
-  return res;
+  await loginUser(ghUser);
+  return redirect("/");
 }
