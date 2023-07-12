@@ -44,6 +44,20 @@
     --disabled-color: 0, 0, 0, 0;
   }
 
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] {
+      --success-color: 63, 185, 80;
+      --fg-color: 255, 255, 255;
+      --bg-color: 1, 4, 9;
+      --danger-color: 248, 81, 73;
+      --accent-color: 47, 129, 247;
+
+      --neutral-color: 48, 54, 60;
+      --subtle-color: 22, 28, 34;
+      --disabled-color: 0, 0, 0, 0;
+    }
+  }
+
   body {
     color: rgb(var(--fg-color));
     background: rgb(var(--bg-color));
