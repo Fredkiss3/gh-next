@@ -11,6 +11,8 @@ export const kvSchema = z.union([
   z.object({
     KV: z.object({
       get: z.function(),
+      put: z.function(),
+      delete: z.function(),
     }),
   }),
 ]);
@@ -26,7 +28,7 @@ export const env = createEnv({
     GITHUB_REDIRECT_URI: z.string().url(),
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
-    KV: z.any().optional(),
+    KV: z.any(),
   },
   client: {},
   runtimeEnv: {

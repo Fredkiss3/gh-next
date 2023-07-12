@@ -1,7 +1,8 @@
-import { logoutUser, getSession } from "~/app/(actions)/auth";
-import { Button } from "~/app/(components)/button";
+import * as React from "react";
+import { getSession } from "~/app/(actions)/auth";
+import { LogoutForm } from "./logout-form";
 
-export default async function Default() {
+export default async function Page() {
   const session = await getSession();
 
   return (
@@ -18,9 +19,7 @@ export default async function Default() {
         )}
       </pre>
 
-      <form action={logoutUser}>
-        <Button variant="danger">Logout</Button>
-      </form>
+      <LogoutForm />
     </>
   );
 }

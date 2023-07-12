@@ -8,9 +8,8 @@ import { env } from "~/env.mjs";
 import { SESSION_COOKIE_KEY } from "~/lib/constants";
 import { db } from "~/lib/db";
 import { users } from "~/lib/db/schema/user";
-import { isSSR } from "~/lib/server-utils";
+import { isSSR, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
-import { revalidatePath } from "next/cache";
 
 const ghUserSchema = z.object({
   login: z.string(),
@@ -24,38 +23,22 @@ export async function authenticateWithGithub() {
   );
 }
 
-export async function getAuthenticatedUser() {
-  const session = await getSession();
-
-  if (!session.user) {
-    await session.addFlash({
-      type: "error",
-      message: "You must be authenticated to do this action.",
-    });
-    revalidatePath("/");
-
-    redirect("/login");
-  }
-
-  return session.user;
-}
-
-export async function logoutUser() {
+export const logoutUser = withAuth(async function logoutUser() {
   const session = await getSession();
 
   const newSession = await session.invalidate();
-  cookies().set(newSession.getCookie());
-
-  await session.addFlash({
+  await newSession.addFlash({
     type: "info",
     message: "Logged out successfully.",
   });
 
-  // FIXME: this condition is a workaround until this PR is merged : https://github.com/vercel/next.js/pull/49439
+  cookies().set(newSession.getCookie());
+
+  // FIXME: this condition is a workaround until this PR is merged : https://github.com/vercel/next.js/issues/49424
   if (isSSR()) {
     redirect("/login");
   }
-}
+});
 
 export async function loginUser(user: any) {
   const sessionResult = ghUserSchema.safeParse(user);
@@ -68,7 +51,8 @@ export async function loginUser(user: any) {
       message: "An unexpected error happenned on authentication, please retry",
     });
 
-    revalidatePath("/");
+    // force revalidate
+    cookies().delete("dummy");
     return;
   }
 

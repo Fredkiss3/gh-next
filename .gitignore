@@ -34,3 +34,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 drizzle/
+
+# cloudfare pages
+wrangler.toml

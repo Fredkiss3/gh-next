@@ -1,6 +1,5 @@
 import { Redis } from "@upstash/redis/cloudflare";
 import { env, kvSchema } from "~/env.mjs";
-import type { ZodType } from "zod";
 
 export class KV {
   #client: KVNamespace | Redis;
@@ -9,7 +8,7 @@ export class KV {
     const result = kvSchema.parse(env);
 
     if (result.KV) {
-      this.#client = result.KV as KVNamespace;
+      this.#client = env.KV as KVNamespace;
     } else {
       this.#client = Redis.fromEnv(result);
     }
