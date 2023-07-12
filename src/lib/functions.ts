@@ -77,3 +77,18 @@ export function wait(ms: number): Promise<void> {
   // Wait for the specified amount of time
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * Check if a URL is a valid pathname
+ * @param url
+ * @param base
+ * @returns
+ */
+export function isValidURLPathname(url: any): url is string {
+  try {
+    const _ = new URL(url, "http://localhost");
+    return url.startsWith("/") && true;
+  } catch (_) {
+    return false;
+  }
+}

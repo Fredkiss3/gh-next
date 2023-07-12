@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 import { loginUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
+import { isValidURLPathname } from "~/lib/functions";
 
 export const fetchCache = "force-no-store";
 
@@ -44,6 +44,11 @@ export async function GET(req: Request) {
     },
   }).then((r) => r.json());
 
-  await loginUser(ghUser);
+  const nextURL = await loginUser(ghUser);
+
+  if (isValidURLPathname(nextURL)) {
+    return redirect(nextURL);
+  }
+
   return redirect("/");
 }

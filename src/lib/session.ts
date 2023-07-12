@@ -18,6 +18,7 @@ const sessionSchema = z.object({
     .optional(),
   formErrors: z.record(z.string(), z.array(z.string())).optional(),
   signature: z.string(),
+  additionnalData: z.record(z.string(), z.any()).nullish(),
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;
@@ -53,9 +54,12 @@ interface SessionStorage {
    * @param user
    * @param session
    */
-  create(init?: {
-    flashMessages: SerializedSession["flashMessages"];
-  }): Promise<SerializedSession>;
+  create(
+    init?: Pick<
+      SerializedSession,
+      "flashMessages" | "formErrors" | "additionnalData"
+    >
+  ): Promise<SerializedSession>;
   get(id: string): Promise<SerializedSession | null>;
   set(session: SerializedSession): Promise<void>;
   delete(id: string): Promise<void>;
@@ -118,15 +122,20 @@ export class KVSessionStorage implements SessionStorage {
     }
   }
 
-  public async create(init?: {
-    flashMessages: SerializedSession["flashMessages"];
-  }): Promise<SerializedSession> {
+  public async create(
+    init?: Pick<
+      SerializedSession,
+      "flashMessages" | "formErrors" | "additionnalData"
+    >
+  ): Promise<SerializedSession> {
     const { sessionId, signature } = await this.#generateSessionId();
     const sessionObject = {
       id: sessionId,
       expiry: new Date(Date.now() + SESSION_TTL),
       signature,
       flashMessages: init?.flashMessages,
+      formErrors: init?.formErrors,
+      additionnalData: init?.additionnalData,
     } satisfies SerializedSession;
 
     await this.set(sessionObject);
@@ -213,6 +222,8 @@ export class KVSessionStorage implements SessionStorage {
       signature,
       user,
       flashMessages: session.flashMessages,
+      formErrors: session.formErrors,
+      additionnalData: session.additionnalData,
     } satisfies SerializedSession;
 
     await this.set(sessionObject);
@@ -225,6 +236,8 @@ export class KVSessionStorage implements SessionStorage {
     return await this.delete(`${session.id}.${session.signature}`).then(() =>
       this.create({
         flashMessages: session.flashMessages,
+        formErrors: session.formErrors,
+        additionnalData: session.additionnalData,
       })
     );
   }
@@ -303,6 +316,32 @@ export class Session {
     );
 
     return flash;
+  }
+
+  async addData(data: Record<string, any>): Promise<this> {
+    for (const key in data) {
+      if (!this.#internal.additionnalData) {
+        this.#internal.additionnalData = {};
+      }
+      this.#internal.additionnalData[key] = data[key];
+    }
+
+    await Session.#storage.set(this.#internal);
+    return this;
+  }
+
+  async getData() {
+    return this.#internal.additionnalData;
+  }
+
+  async popData() {
+    const data = this.#internal.additionnalData;
+
+    // remove data
+    this.#internal.additionnalData = null;
+    await Session.#storage.set(this.#internal);
+
+    return data;
   }
 
   get user() {

@@ -17,9 +17,22 @@ const ghUserSchema = z.object({
   avatar_url: z.string().nullish(),
 });
 
-export async function authenticateWithGithub() {
+export async function authenticateWithGithub(formData: FormData) {
+  const searchParams = new URLSearchParams();
+
+  searchParams.append("client_id", env.GITHUB_CLIENT_ID);
+  searchParams.append("redirect_uri", env.GITHUB_REDIRECT_URI);
+
+  const nextUrl = formData.get("_nextUrl")?.toString();
+  if (nextUrl) {
+    const session = await getSession();
+    await session.addData({
+      nextUrl,
+    });
+  }
+
   redirect(
-    `https://github.com/login/oauth/authorize?client_id=${env.GITHUB_CLIENT_ID}&redirect_uri=${env.GITHUB_REDIRECT_URI}`
+    `https://github.com/login/oauth/authorize?${searchParams.toString()}`
   );
 }
 
@@ -90,6 +103,9 @@ export async function loginUser(user: any) {
     message: "Logged in successfully.",
   });
   cookies().set(session.getCookie());
+
+  const data = await session.popData();
+  return data?.nextUrl;
 }
 
 export const getSession = cache(async function getSession(): Promise<Session> {
