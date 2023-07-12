@@ -3,19 +3,11 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 import { env } from "~/env.mjs";
 import { SESSION_COOKIE_KEY } from "~/lib/constants";
-import { db } from "~/lib/db";
-import { users } from "~/lib/db/schema/user";
 import { isSSR, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
-
-const ghUserSchema = z.object({
-  login: z.string(),
-  id: z.number(),
-  avatar_url: z.string().nullish(),
-});
+import { getUserFromGithubProfile, ghUserSchema } from "~/app/(models)/user";
 
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();
@@ -76,24 +68,7 @@ export async function loginUser(user: any) {
 
   // Find or create the corresponding user in DB
   const ghUser = sessionResult.data;
-  const userFromDB = await db
-    .insert(users)
-    .values({
-      id: ghUser.id,
-      github_id: ghUser.id.toString(),
-      username: ghUser.login,
-      avatar_url: ghUser.avatar_url,
-    })
-    .onConflictDoUpdate({
-      target: users.github_id,
-      set: {
-        github_id: ghUser.id.toString(),
-        username: ghUser.login,
-        avatar_url: ghUser.avatar_url,
-      },
-    })
-    .returning()
-    .get();
+  const userFromDB = await getUserFromGithubProfile(ghUser);
 
   const session = await getSession();
   await session.regenerateForUser(userFromDB);
