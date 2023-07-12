@@ -36,9 +36,7 @@ export const issues = sqliteTable("issues", {
       onDelete: "cascade",
     })
     .notNull(),
-  assignee_id: integer("assignee_id").references(() => users.id, {
-    onDelete: "cascade",
-  }),
+  assignee_id: integer("assignee_id").references(() => users.id),
 });
 
 export const issuesRelations = relations(issues, ({ one, many }) => ({

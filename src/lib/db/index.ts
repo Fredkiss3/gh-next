@@ -3,7 +3,7 @@ import {
   labelToIssues,
   labelRelations,
   labelToIssuesRelations,
-} from "~/app/(models)/label";
+} from "~/lib/db/schema/label";
 import {
   issues,
   issuesRelations,
@@ -11,14 +11,14 @@ import {
   issueRevisionsRelations,
   issueUserSubscriptionRelations,
   issueUserSubscriptions,
-} from "~/app/(models)/issue";
-import { users, usersRelations } from "~/app/(models)/user";
+} from "~/lib/db/schema/issue";
+import { users, usersRelations } from "~/lib/db/schema/user";
 import {
   comments,
   commentsRelations,
   commentRevisions,
   commentRevisionsRelations,
-} from "~/app/(models)/comment";
+} from "~/lib/db/schema/comment";
 import {
   assignActivities,
   changeTitleActivities,
@@ -32,8 +32,8 @@ import {
   editLabelsActivitiesRelations,
   issueMentionActivitiesRelations,
   issueToggleActivitiesRelations,
-} from "~/app/(models)/activity";
-import { reactions, reactionsRelations } from "~/app/(models)/reaction";
+} from "~/lib/db/schema/activity";
+import { reactions, reactionsRelations } from "~/lib/db/schema/reaction";
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client/http";
 import { env } from "~/env.mjs";
