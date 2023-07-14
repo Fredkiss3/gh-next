@@ -7,12 +7,14 @@
 - [cloudfare](https://cloudfare.com) for the hosting
 - [tailwindCSS](https://tailwindcss.com/) for the styling
 
-- [upstash](https://upstash.com/) for replacing a local instance of cloudfare KV, used for sessions and caching
+- [upstash](https://upstash.com/) for replacing a local instance of [cloudfare KV](https://developers.cloudflare.com/workers/runtime-apis/kv), used for sessions and caching of data
 
 # Requirements
 
 - Node >= v16.6.2
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
+- A [turso](https://turso.tech/) database
+- A [upstash](https://upstash.com/) redis cluster
 
 ## 🚀 How to work on the project ?
 
