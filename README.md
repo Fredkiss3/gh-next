@@ -14,7 +14,7 @@
 - Node >= v16.6.2
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
 - A [turso](https://turso.tech/) database
-- A [upstash](https://upstash.com/) redis cluster
+- A [upstash](https://upstash.com/) redis cluster (when developping locally)
 
 ## 🚀 How to work on the project ?
 
