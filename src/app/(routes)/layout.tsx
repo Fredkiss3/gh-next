@@ -2,6 +2,7 @@ import "./globals.css";
 
 // components
 import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
+import { Toaster } from "~/app/(components)/toast/toaster";
 
 // utils
 import { Inter } from "next/font/google";
@@ -29,6 +30,7 @@ export default async function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
+        <Toaster />
       </body>
     </html>
   );
