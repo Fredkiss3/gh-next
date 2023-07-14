@@ -31,7 +31,7 @@ export async function Header({}: HeaderProps) {
 
         <Link
           href="/"
-          className="hover:bg-subtle p-2 rounded-md transition duration-150"
+          className="hover:bg-neutral py-1 px-2 rounded-md transition duration-150"
         >
           <span>Fredkiss3</span>&nbsp;
           <span>/</span>&nbsp;
