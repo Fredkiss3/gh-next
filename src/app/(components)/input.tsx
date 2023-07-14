@@ -75,14 +75,19 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "border-neutral": !validationStatus,
               "border-danger": validationStatus === "error",
               "border-success": validationStatus === "success",
-              "py-1": size === "medium",
-              "py-0": size === "small",
-              "py-2": size === "large",
+              "py-2": size === "medium",
+              "py-1 text-sm": size === "small",
+              "py-3": size === "large",
               "cursor-not-allowed bg-disabled": disabled,
             }
           )}
         >
-          {renderLeadingIcon?.("h-5 w-5 text-gray-500 flex-shrink-0")}
+          {renderLeadingIcon?.(
+            clsx("text-gray-500 flex-shrink-0", {
+              "h-4 w-4": size === "small",
+              "h-5 w-5": size === "medium",
+            })
+          )}
 
           <input
             {...otherProps}
@@ -101,9 +106,19 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           />
 
           {isLoading ? (
-            <LoadingIndicator className="h-5 w-5 text-gray-500 flex-shrink-0 pointer-events-none" />
+            <LoadingIndicator
+              className={clsx("text-grey flex-shrink-0 pointer-events-none", {
+                "h-4 w-4": size === "small",
+                "h-5 w-5": size === "medium",
+              })}
+            />
           ) : (
-            renderTrailingIcon?.("h-5 w-5 text-gray-500 flex-shrink-0")
+            renderTrailingIcon?.(
+              clsx("text-grey flex-shrink-0", {
+                "h-4 w-4": size === "small",
+                "h-5 w-5": size === "medium",
+              })
+            )
           )}
         </div>
 

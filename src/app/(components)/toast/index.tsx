@@ -91,6 +91,7 @@ export function Toast({
             variant="invisible"
             isSquared
             onClick={() => setRemoved(true)}
+            className="!border-0"
           >
             <XIcon className="h-4 w-4" />
           </Button>

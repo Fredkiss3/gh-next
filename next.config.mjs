@@ -1,3 +1,4 @@
+// @ts-check
 import "./src/env.mjs";
 
 /** @type {import('next').NextConfig} */
@@ -6,6 +7,14 @@ const nextConfig = {
     serverActions: true,
     logging: "verbose",
     typedRoutes: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+    ],
   },
 };
 

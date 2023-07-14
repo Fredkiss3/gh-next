@@ -30,6 +30,9 @@
     --bg-color: 255, 255, 255;
 
     --disabled-color: 239, 241, 243, 1;
+
+    --backdrop-color: 255, 255, 255;
+    --header-color: 246, 248, 250;
   }
 
   [data-theme="dark"] {
@@ -42,6 +45,9 @@
     --neutral-color: 48, 54, 60;
     --subtle-color: 22, 28, 34;
     --disabled-color: 0, 0, 0, 0;
+
+    --header-color: 1, 4, 9;
+    --backdrop-color: 13, 17, 22;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -55,6 +61,8 @@
       --neutral-color: 48, 54, 60;
       --subtle-color: 22, 28, 34;
       --disabled-color: 0, 0, 0, 0;
+      --header-color: 1, 4, 9;
+      --backdrop-color: 13, 17, 22;
     }
   }
 

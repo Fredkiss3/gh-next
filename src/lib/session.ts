@@ -2,7 +2,11 @@ import { users } from "~/lib/db/schema/user";
 import { kv } from "./kv";
 import { preprocess, z } from "zod";
 import { createSelectSchema } from "drizzle-zod";
-import { SESSION_COOKIE_KEY, SESSION_TTL } from "./constants";
+import {
+  LOGGED_IN_SESSION_TTL,
+  SESSION_COOKIE_KEY,
+  LOGGED_OUT_SESSION_TTL,
+} from "./constants";
 import { env } from "~/env.mjs";
 import { nanoid } from "nanoid";
 
@@ -131,7 +135,7 @@ export class KVSessionStorage implements SessionStorage {
     const { sessionId, signature } = await this.#generateSessionId();
     const sessionObject = {
       id: sessionId,
-      expiry: new Date(Date.now() + SESSION_TTL),
+      expiry: new Date(Date.now() + LOGGED_OUT_SESSION_TTL),
       signature,
       flashMessages: init?.flashMessages,
       formErrors: init?.formErrors,
@@ -161,7 +165,7 @@ export class KVSessionStorage implements SessionStorage {
     await kv.set(
       `session:${session.id}`,
       { ...session, expiry },
-      SESSION_TTL / 1000
+      (session.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) / 1000
     );
   }
 
@@ -218,7 +222,7 @@ export class KVSessionStorage implements SessionStorage {
     // recreate a new session while conserving flash messages & adding user to it
     const sessionObject = {
       id: sessionId,
-      expiry: new Date(Date.now() + SESSION_TTL),
+      expiry: new Date(Date.now() + LOGGED_IN_SESSION_TTL),
       signature,
       user,
       flashMessages: session.flashMessages,
@@ -233,13 +237,15 @@ export class KVSessionStorage implements SessionStorage {
   public async invalidate(
     session: SerializedSession
   ): Promise<SerializedSession> {
-    return await this.delete(`${session.id}.${session.signature}`).then(() =>
-      this.create({
-        flashMessages: session.flashMessages,
-        formErrors: session.formErrors,
-        additionnalData: session.additionnalData,
-      })
-    );
+    // delete the old session
+    await this.delete(`${session.id}.${session.signature}`);
+
+    // create a new one
+    return await this.create({
+      flashMessages: session.flashMessages,
+      formErrors: session.formErrors,
+      additionnalData: session.additionnalData,
+    });
   }
 }
 

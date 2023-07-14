@@ -16,8 +16,6 @@ export async function getUserFromGithubProfile(
     .onConflictDoUpdate({
       target: users.github_id,
       set: {
-        github_id: ghUser.id.toString(),
-        username: ghUser.login,
         avatar_url: ghUser.avatar_url,
       },
     })
@@ -28,5 +26,5 @@ export async function getUserFromGithubProfile(
 export const ghUserSchema = z.object({
   login: z.string(),
   id: z.number(),
-  avatar_url: z.string().nullish(),
+  avatar_url: z.string(),
 });

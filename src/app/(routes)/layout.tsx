@@ -10,6 +10,7 @@ import { getTheme } from "~/app/(actions)/theme";
 
 // types
 import type { Metadata } from "next";
+import { clsx } from "~/lib/functions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
 };
 
 export const runtime = "edge";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export default async function RootLayout({
   children,
@@ -27,7 +30,10 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning data-theme={await getTheme()}>
-      <body className={inter.className} suppressHydrationWarning>
+      <body
+        className={clsx(inter.className, "bg-backdrop")}
+        suppressHydrationWarning
+      >
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
         <Toaster />

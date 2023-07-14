@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env.mjs";
 import { SESSION_COOKIE_KEY } from "~/lib/constants";
-import { isSSR, withAuth } from "~/lib/server-utils";
+import { forceRevalidate, ssrRedirect, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
 import { getUserFromGithubProfile, ghUserSchema } from "~/app/(models)/user";
 
@@ -39,10 +39,7 @@ export const logoutUser = withAuth(async function logoutUser() {
 
   cookies().set(newSession.getCookie());
 
-  // FIXME: this condition is a workaround until this PR is merged : https://github.com/vercel/next.js/issues/49424
-  if (isSSR()) {
-    redirect("/login");
-  }
+  ssrRedirect("/");
 });
 
 export async function loginUser(user: any) {
@@ -56,9 +53,7 @@ export async function loginUser(user: any) {
       message: "An unexpected error happenned on authentication, please retry",
     });
 
-    // force revalidate
-    cookies().delete("dummy");
-    return;
+    return await forceRevalidate();
   }
 
   // Set cookie to authenticate user
@@ -98,3 +93,17 @@ export const getSession = cache(async function getSession(): Promise<Session> {
 
   return session;
 });
+
+export async function getAuthenticatedUser(redirectToPath?: string) {
+  const session = await getSession();
+
+  if (!session.user) {
+    const searchParams = new URLSearchParams();
+    if (redirectToPath) {
+      searchParams.set("nextUrl", redirectToPath);
+    }
+    redirect("/login?" + searchParams.toString());
+  }
+
+  return session.user;
+}

@@ -29,6 +29,8 @@ module.exports = {
         done: withOpactity(`--done-color`),
         neutral: withOpactity(`--neutral-color`),
         subtle: withOpactity(`--subtle-color`),
+        header: withOpactity(`--header-color`),
+        backdrop: withOpactity(`--backdrop-color`),
         "accent-light": withOpactity(`--accent-color-light`),
         "success-light": withOpactity(`--success-color-light`),
         "attention-light": withOpactity(`--attention-color-light`),

@@ -1,8 +1,14 @@
 import * as React from "react";
-import { LoadingIndicator } from "./loading-indicator";
+// components
+import Link from "next/link";
+
+// utils
 import { clsx } from "~/lib/functions";
 
-export type ButtonProps = {
+// types
+import type { Route } from "next";
+
+export type LinkButtonProps = {
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   disabled?: boolean;
@@ -13,9 +19,10 @@ export type ButtonProps = {
   className?: string;
   isLoading?: boolean;
   isBlock?: boolean;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+  href: Route;
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
   function Button(
     {
       children,
@@ -28,17 +35,18 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       isSquared = false,
       isBlock = false,
       variant = `primary`,
+      href,
       ...buttonProps
     },
     ref
   ) {
     return (
-      <button
+      <Link
+        href={href}
         ref={ref}
-        disabled={disabled || isLoading}
         className={clsx(
           className,
-          "items-center justify-center gap-2",
+          "items-center justify-center gap-2 ",
           "rounded-md border-2 font-medium outline-accent border-gray-900/10",
           "transition duration-150",
           {
@@ -52,7 +60,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             "focus-visible:shadow-inset focus:shadow-inset [&[aria-pressed=true]]:shadow-inset":
               !isLoading && !disabled && variant === "primary",
             "p-1.5": isSquared,
-            "py-2 px-3": !isSquared,
+            "py-1 px-3": !isSquared,
             "cursor-default": isLoading || disabled,
             "bg-success text-white shadow-subtle": variant === "primary",
             "bg-subtle text-danger hover:bg-danger hover:text-white":
@@ -65,16 +73,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...buttonProps}
       >
-        <span className="sr-only" aria-live="assertive">
-          {isLoading ? loadingMessage : ""}
-        </span>
-        {isLoading && <LoadingIndicator className="h-4 w-4 flex-shrink-0" />}
-        {!isLoading &&
-          renderLeadingIcon &&
-          renderLeadingIcon("h-4 w-4 flex-shrink-0")}
+        {renderLeadingIcon && renderLeadingIcon("h-4 w-4 flex-shrink-0")}
         {children}
         {renderTrailingIcon && renderTrailingIcon("h-4 w-4 flex-shrink-0")}
-      </button>
+      </Link>
     );
   }
 );

@@ -17,6 +17,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@headlessui/react": "^1.7.15",
     "@libsql/client": "^0.2.2",
     "@primer/octicons-react": "^19.4.0",
     "@t3-oss/env-nextjs": "^0.4.1",
@@ -29,7 +30,7 @@
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.7",
     "nanoid": "^4.0.2",
-    "next": "13.4.10-canary.4",
+    "next": "13.4.10-canary.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "server-only": "^0.0.1",

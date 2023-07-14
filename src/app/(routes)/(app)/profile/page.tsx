@@ -1,23 +1,18 @@
 import * as React from "react";
-import { getSession } from "~/app/(actions)/auth";
+import { getAuthenticatedUser } from "~/app/(actions)/auth";
 import { LogoutForm } from "./logout-form";
-import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const session = await getSession();
-
-  if (!session.user) {
-    redirect("/login?nextUrl=/profile");
-  }
+  const user = await getAuthenticatedUser(`/profile`);
 
   return (
     <>
-      <h1 className="text-4xl">LOGGED IN</h1>
+      <h1 className="text-4xl">PROFILE</h1>
 
       <pre>
         {JSON.stringify(
           {
-            user: session.user,
+            user,
           },
           null,
           2
