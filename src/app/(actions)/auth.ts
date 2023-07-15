@@ -7,7 +7,10 @@ import { env } from "~/env.mjs";
 import { SESSION_COOKIE_KEY } from "~/lib/constants";
 import { forceRevalidate, ssrRedirect, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
-import { getUserFromGithubProfile, ghUserSchema } from "~/app/(models)/user";
+import {
+  getUserFromGithubProfile,
+  githubUserSchema,
+} from "~/app/(models)/user";
 
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();
@@ -15,6 +18,7 @@ export async function authenticateWithGithub(formData: FormData) {
   searchParams.append("client_id", env.GITHUB_CLIENT_ID);
   searchParams.append("redirect_uri", env.GITHUB_REDIRECT_URI);
 
+  // save the url to redirect after login in session
   const nextUrl = formData.get("_nextUrl")?.toString();
   if (nextUrl) {
     const session = await getSession();
@@ -43,7 +47,7 @@ export const logoutUser = withAuth(async function logoutUser() {
 });
 
 export async function loginUser(user: any) {
-  const sessionResult = ghUserSchema.safeParse(user);
+  const sessionResult = githubUserSchema.safeParse(user);
   if (!sessionResult.success) {
     console.error(sessionResult.error);
     const session = await getSession();
@@ -74,7 +78,7 @@ export async function loginUser(user: any) {
   });
   cookies().set(session.getCookie());
 
-  const data = await session.popData();
+  const data = (await session.popData()) as { nextUrl?: string } | undefined;
   return data?.nextUrl;
 }
 
@@ -94,7 +98,7 @@ export const getSession = cache(async function getSession(): Promise<Session> {
   return session;
 });
 
-export async function getAuthenticatedUser(redirectToPath?: string) {
+export async function getUserOrRedirect(redirectToPath?: string) {
   const session = await getSession();
 
   if (!session.user) {

@@ -12,6 +12,9 @@ export default async function middleware(request: NextRequest) {
 
     const cookie = session.getCookie();
 
+    // we set the cookies on request + response so that
+    // it is immediatly accessible when calling `cookies()`
+    // and the cookie is set for subsequent requests
     request.cookies.set({
       name: cookie.name,
       value: cookie.value,

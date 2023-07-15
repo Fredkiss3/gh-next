@@ -3,7 +3,7 @@ import { db } from "~/lib/db";
 import { users } from "~/lib/db/schema/user";
 
 export async function getUserFromGithubProfile(
-  ghUser: z.TypeOf<typeof ghUserSchema>
+  ghUser: z.TypeOf<typeof githubUserSchema>
 ) {
   return await db
     .insert(users)
@@ -23,7 +23,7 @@ export async function getUserFromGithubProfile(
     .get();
 }
 
-export const ghUserSchema = z.object({
+export const githubUserSchema = z.object({
   login: z.string(),
   id: z.number(),
   avatar_url: z.string(),

@@ -2,11 +2,12 @@ import { redirect } from "next/navigation";
 import { loginUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
 import { isValidURLPathname } from "~/lib/functions";
+import type { NextRequest } from "next/server";
 
 export const fetchCache = "force-no-store";
 
-export async function GET(req: Request) {
-  const code = new URL(req.url).searchParams.get("code");
+export async function GET(req: NextRequest) {
+  const code = req.nextUrl.searchParams.get("code");
 
   if (!code) {
     redirect("/");
@@ -36,7 +37,7 @@ export async function GET(req: Request) {
     return redirect("/");
   }
 
-  const ghUser = await fetch("https://api.github.com/user", {
+  const githubUser = await fetch("https://api.github.com/user", {
     headers: {
       "User-Agent": `Github-OAuth-${env.GITHUB_CLIENT_ID}`,
       Authorization: `token ${response.access_token}`,
@@ -44,7 +45,7 @@ export async function GET(req: Request) {
     },
   }).then((r) => r.json());
 
-  const nextURL = await loginUser(ghUser);
+  const nextURL = await loginUser(githubUser);
 
   if (isValidURLPathname(nextURL)) {
     return redirect(nextURL);

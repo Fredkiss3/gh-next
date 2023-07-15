@@ -38,12 +38,11 @@ function InternalForm<T>({
 
         // FIXME: until this issue is fixed : https://github.com/vercel/next.js/issues/52075
         // once this is fixed, we would have not need to update the page
-        startTransition(
-          () =>
-            void action().then((returnedValue) => {
-              router.refresh();
-              onSettled?.(returnedValue);
-            })
+        startTransition(() =>
+          action().then((returnedValue) => {
+            router.refresh();
+            onSettled?.(returnedValue);
+          })
         );
       }}
       {...restProps}

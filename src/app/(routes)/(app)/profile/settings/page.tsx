@@ -1,8 +1,8 @@
 import * as React from "react";
-import { getAuthenticatedUser } from "~/app/(actions)/auth";
+import { getUserOrRedirect } from "~/app/(actions)/auth";
 
 export default async function Page() {
-  await getAuthenticatedUser(`/profile/settings`);
+  await getUserOrRedirect("/profile/settings");
 
   return (
     <>

@@ -1,9 +1,9 @@
 import * as React from "react";
-import { getAuthenticatedUser } from "~/app/(actions)/auth";
+import { getUserOrRedirect } from "~/app/(actions)/auth";
 import { LogoutForm } from "./logout-form";
 
 export default async function Page() {
-  const user = await getAuthenticatedUser(`/profile`);
+  const user = await getUserOrRedirect("/profile");
 
   return (
     <>

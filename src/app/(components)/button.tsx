@@ -5,12 +5,9 @@ import { clsx } from "~/lib/functions";
 export type ButtonProps = {
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
-  disabled?: boolean;
-  children?: React.ReactNode;
   variant?: "primary" | "secondary" | "danger" | "invisible";
   loadingMessage?: string;
   isSquared?: boolean;
-  className?: string;
   isLoading?: boolean;
   isBlock?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
