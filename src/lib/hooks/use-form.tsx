@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import type { Route } from "next";
 
 export type FormProps = Omit<
   React.FormHTMLAttributes<HTMLFormElement>,
@@ -13,8 +14,11 @@ type SubmissionCallbacks<T> = {
 };
 
 type InternalFormProps<T> = {
-  action: (formData?: FormData) => Promise<T>;
+  action?: (formData?: FormData) => Promise<T>;
   startTransition: React.TransitionStartFunction;
+  ref: React.Ref<{
+    requestSubmit: () => void;
+  }>;
 } & SubmissionCallbacks<T> &
   FormProps;
 
@@ -24,26 +28,50 @@ function InternalForm<T>({
   startTransition,
   onSettled,
   onSubmit,
+  ref,
   ...restProps
 }: InternalFormProps<T>) {
+  const formRef = React.useRef<HTMLFormElement>(null);
   const router = useRouter();
+  const path = usePathname();
+
+  React.useImperativeHandle(
+    ref,
+    () => {
+      return {
+        requestSubmit() {
+          formRef.current?.requestSubmit();
+        },
+      };
+    },
+    []
+  );
 
   return (
     <form
       action={action}
+      ref={formRef}
       onSubmit={(e) => {
-        onSubmit?.(new FormData(e.currentTarget));
+        const formData = new FormData(e.currentTarget);
+        onSubmit?.(formData);
 
         e.preventDefault();
 
-        // FIXME: until this issue is fixed : https://github.com/vercel/next.js/issues/52075
-        // once this is fixed, we would have not need to update the page
-        startTransition(() =>
-          action().then((returnedValue) => {
-            router.refresh();
-            onSettled?.(returnedValue);
-          })
-        );
+        startTransition(async () => {
+          if (action) {
+            // FIXME: until this issue is fixed : https://github.com/vercel/next.js/issues/52075
+            // once this is fixed, we would have not need to call `router.refresh()` manually
+            // or to call the action manually
+            await action(formData).then((returnedValue) => {
+              router.refresh();
+              onSettled?.(returnedValue);
+            });
+          } else {
+            // @ts-expect-error the URLSearchParams constructor supports formData
+            const searchParams = new URLSearchParams(formData);
+            return router.push((path + "?" + searchParams.toString()) as Route);
+          }
+        });
       }}
       {...restProps}
     >
@@ -53,11 +81,11 @@ function InternalForm<T>({
 }
 
 /**
- * hook to have a progressively enhanced but client form
+ * hook to have a progressively enhanced client side form
  * @example
- *
- * const Comp = () => {
- *  const [Form, isPending] = useForm(action, {
+ * // simple form
+ * function MyForm() {
+ *  const { Form, isPending } = useForm(action, {
  *    onSettled(returnedValue) {
  *      // do something when the action has finished running
  *    },
@@ -69,7 +97,18 @@ function InternalForm<T>({
  *  return (
  *    <Form>
  *      <input type="text" name="name" />
- *      <button type="submit">Submit</button>
+ *      <button type="submit" disabled={isPending}>{isPending ? "Submitting..." : "Submit"}</button>
+ *    </Form>
+ *  );
+ * }
+ *
+ * // search form
+ * function SearchForm() {
+ *  const { Form, requestSubmit } = useForm();
+ *
+ *  return (
+ *    <Form method="get">
+ *      <input type="text" name="search" onChange={() => requestSubmit()} />
  *    </Form>
  *  );
  *};
@@ -82,22 +121,30 @@ export function useForm<T extends unknown>(
   callbacks?: SubmissionCallbacks<T>
 ) {
   const [isPending, startTransition] = React.useTransition();
+  const ref = React.useRef<{
+    requestSubmit: () => void;
+  }>(null);
 
   const Form = React.useMemo(
     () =>
       function Form(props: FormProps) {
         return (
           <InternalForm
+            ref={ref}
             action={action}
-            {...props}
             startTransition={startTransition}
             onSettled={callbacks?.onSettled}
             onSubmit={callbacks?.onSubmit}
+            {...props}
           />
         );
       },
     [action, callbacks?.onSettled, callbacks?.onSubmit]
   );
 
-  return [Form, isPending] as const;
+  return {
+    Form,
+    isPending,
+    requestSubmit: ref.current!.requestSubmit,
+  } as const;
 }

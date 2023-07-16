@@ -5,7 +5,7 @@ import { Button } from "~/app/(components)/button";
 import { useForm } from "~/lib/hooks/use-form";
 
 export function LogoutForm() {
-  const [Form, isPending] = useForm(logoutUser);
+  const { Form, isPending } = useForm(logoutUser);
 
   return (
     <Form>
