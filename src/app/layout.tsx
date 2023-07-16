@@ -7,10 +7,10 @@ import { Toaster } from "~/app/(components)/toast/toaster";
 // utils
 import { Inter } from "next/font/google";
 import { getTheme } from "~/app/(actions)/theme";
+import { clsx } from "~/lib/functions";
 
 // types
 import type { Metadata } from "next";
-import { clsx } from "~/lib/functions";
 
 const inter = Inter({ subsets: ["latin"] });
 

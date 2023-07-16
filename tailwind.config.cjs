@@ -16,29 +16,67 @@ module.exports = {
     extend: {
       colors: {
         disabled: `rgba(var(--disabled-color))`,
-        grey: withOpactity(`--grey-color`),
-        accent: withOpactity(`--accent-color`),
-        background: withOpactity(`--bg-color`),
-        foreground: withOpactity(`--fg-color`),
-        success: withOpactity(`--success-color`),
-        attention: withOpactity(`--attention-color`),
-        danger: withOpactity(`--danger-color`),
-        severe: withOpactity(`--severe-color`),
-        open: withOpactity(`--open-color`),
-        closed: withOpactity(`--closed-color`),
-        done: withOpactity(`--done-color`),
-        neutral: withOpactity(`--neutral-color`),
-        subtle: withOpactity(`--subtle-color`),
-        header: withOpactity(`--header-color`),
-        backdrop: withOpactity(`--backdrop-color`),
-        "accent-light": withOpactity(`--accent-color-light`),
-        "success-light": withOpactity(`--success-color-light`),
-        "attention-light": withOpactity(`--attention-color-light`),
-        "danger-light": withOpactity(`--danger-color-light`),
-        "severe-light": withOpactity(`--severe-color-light`),
-        "open-light": withOpactity(`--open-color-light`),
-        "closed-light": withOpactity(`--closed-color-light`),
-        "done-light": withOpactity(`--done-color-light`),
+        grey: {
+          DEFAULT: withOpactity(`--grey-color`),
+        },
+        accent: {
+          DEFAULT: withOpactity(`--accent-color`),
+          bg: withOpactity(`--accent-color-bg`),
+          border: withOpactity(`--accent-color-border`),
+        },
+        background: {
+          DEFAULT: withOpactity(`--bg-color`),
+        },
+        foreground: {
+          DEFAULT: withOpactity(`--fg-color`),
+        },
+        success: {
+          DEFAULT: withOpactity(`--success-color`),
+          bg: withOpactity(`--success-color-bg`),
+          border: withOpactity(`--success-color-border`),
+        },
+        attention: {
+          DEFAULT: withOpactity(`--attention-color`),
+          bg: withOpactity(`--attention-color-bg`),
+          border: withOpactity(`--attention-color-border`),
+        },
+        danger: {
+          DEFAULT: withOpactity(`--danger-color`),
+          bg: withOpactity(`--danger-color-bg`),
+          border: withOpactity(`--danger-color-border`),
+        },
+        severe: {
+          DEFAULT: withOpactity(`--severe-color`),
+          bg: withOpactity(`--severe-color-bg`),
+          border: withOpactity(`--severe-color-border`),
+        },
+        open: {
+          DEFAULT: withOpactity(`--open-color`),
+          bg: withOpactity(`--open-color-bg`),
+          border: withOpactity(`--open-color-border`),
+        },
+        closed: {
+          DEFAULT: withOpactity(`--closed-color`),
+          bg: withOpactity(`--closed-color-bg`),
+          border: withOpactity(`--closed-color-border`),
+        },
+        done: {
+          DEFAULT: withOpactity(`--done-color`),
+          bg: withOpactity(`--done-color-bg`),
+          border: withOpactity(`--done-color-border`),
+        },
+        neutral: {
+          DEFAULT: withOpactity(`--neutral-color`),
+        },
+        subtle: {
+          DEFAULT: withOpactity(`--subtle-color`),
+        },
+        header: {
+          DEFAULT: withOpactity(`--header-color`),
+        },
+        backdrop: {
+          DEFAULT: withOpactity(`--backdrop-color`),
+        },
       },
       boxShadow: {
         inset: "0px 0px 0px 3px inset",

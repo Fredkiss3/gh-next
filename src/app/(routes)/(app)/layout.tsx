@@ -10,7 +10,7 @@ export default async function AppLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main className="p-4">{children}</main>
       <Footer />
     </>
   );

@@ -3,17 +3,11 @@ import * as React from "react";
 // components
 import { DropdownMenu } from "./dropdown-menu";
 import { Avatar } from "./avatar";
-import {
-  GearIcon,
-  PersonIcon,
-  SignOutIcon,
-  TriangleDownIcon,
-} from "@primer/octicons-react";
+import { GearIcon, PersonIcon, SignOutIcon } from "@primer/octicons-react";
 
 // utils
 import { useRouter } from "next/navigation";
 import { logoutUser } from "~/app/(actions)/auth";
-import { Button } from "./button";
 
 // types
 export type UserDropdownProps = {
@@ -25,7 +19,7 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
   const router = useRouter();
   return (
     <DropdownMenu
-      className="min-w-fit"
+      className="min-w-fit flex items-center"
       items={[
         {
           href: "/profile",
@@ -51,14 +45,9 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
         },
       ]}
     >
-      <Button
-        type="button"
-        variant="invisible"
-        isSquared
-        renderTrailingIcon={(cls) => <TriangleDownIcon className={cls} />}
-      >
+      <button type="button">
         <Avatar username={username} src={avatar_url} />
-      </Button>
+      </button>
     </DropdownMenu>
   );
 }

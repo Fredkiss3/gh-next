@@ -16,14 +16,23 @@
     --grey-color: 110, 118, 129;
     --subtle-color: 246, 248, 250;
 
-    --accent-color-light: 221, 244, 255;
-    --success-color-light: 218, 251, 225;
-    --attention-color-light: 255, 248, 197;
-    --danger-color-light: 255, 235, 232;
-    --severe-color-light: 255, 242, 229;
-    --open-color-light: 218, 251, 225;
-    --closed-color-light: 255, 235, 232;
-    --done-color-light: 251, 239, 255;
+    --accent-color-bg: 221, 244, 255;
+    --success-color-bg: 218, 251, 225;
+    --attention-color-bg: 255, 248, 197;
+    --danger-color-bg: 255, 235, 232;
+    --severe-color-bg: 255, 242, 229;
+    --open-color-bg: 218, 251, 225;
+    --closed-color-bg: 255, 235, 232;
+    --done-color-bg: 251, 239, 255;
+
+    --accent-color-border: 187, 223, 255;
+    --success-color-border: 183, 231, 196;
+    --attention-color-border: 238, 220, 171;
+    --danger-color-border: 255, 205, 205;
+    --severe-color-border: 247, 129, 102;
+    --open-color-border: 183, 231, 196;
+    --closed-color-border: 255, 205, 205;
+    --done-color-border: 231, 213, 255;
     font-size: 16px;
 
     --fg-color: 0, 0, 0;

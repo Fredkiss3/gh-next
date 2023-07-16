@@ -92,3 +92,15 @@ export function isValidURLPathname(url: any): url is string {
     return false;
   }
 }
+
+/**
+ * Adds a `/` at the end of a path if it does not already contains it
+ * @param href
+ * @returns
+ */
+export function linkWithSlash(href: string) {
+  if (href.endsWith("/")) {
+    return href;
+  }
+  return href + "/";
+}
