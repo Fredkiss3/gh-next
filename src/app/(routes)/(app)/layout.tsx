@@ -10,7 +10,7 @@ export default async function AppLayout({
   return (
     <>
       <Header />
-      <main className="p-4">{children}</main>
+      <main className="px-8 my-6 max-w-[1200px] mx-auto">{children}</main>
       <Footer />
     </>
   );

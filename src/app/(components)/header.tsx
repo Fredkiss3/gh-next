@@ -100,7 +100,7 @@ export async function Header({}: HeaderProps) {
             />
           ) : (
             <LinkButton
-              className="flex-shrink-0"
+              className="flex-shrink-0 !text-foreground !border-foreground"
               href="/login"
               variant="invisible"
             >

@@ -36,7 +36,7 @@ export function NavLink({
     >
       <div
         className={clsx(
-          "inline-flex gap-2 items-center rounded-md py-1 px-1.5",
+          "inline-flex gap-3 items-center rounded-md py-1 px-1.5",
           "group-hover:bg-neutral/50 transition duration-150"
         )}
       >
