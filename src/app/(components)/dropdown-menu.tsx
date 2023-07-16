@@ -46,13 +46,13 @@ export function DropdownMenu({
   children,
 }: DropdownMenuProps) {
   return (
-    <Menu as="div" className={clsx(`relative`, className)}>
+    <Menu as="div" className={clsx("relative z-40", className)}>
       <Menu.Button as={React.Fragment}>{children}</Menu.Button>
 
       <Menu.Items
         as="ul"
         className={clsx(
-          "absolute z-10 rounded-md p-2 top-[calc(100%+5px)]",
+          "absolute z-40 rounded-md p-2 top-[calc(100%+5px)]",
           "bg-subtle text-foreground shadow-md border border-neutral",
           "flex flex-col",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
