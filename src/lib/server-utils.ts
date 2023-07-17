@@ -58,6 +58,8 @@ const githubGraphQLAPIResponseSchema = z.union([
 /**
  * @param graphqlQuery
  * @param variables
+ *
+ * To explore and see the available graphQL queries, see : https://docs.github.com/fr/graphql/overview/explorer
  * @returns
  */
 export async function fetchFromGithubAPI<T extends unknown>(
