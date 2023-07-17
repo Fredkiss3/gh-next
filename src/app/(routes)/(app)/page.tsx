@@ -3,6 +3,7 @@ import {
   ListUnorderedIcon,
   PinIcon,
   RepoForkedIcon,
+  StarFillIcon,
   StarIcon,
   TriangleDownIcon,
 } from "@primer/octicons-react";
@@ -17,11 +18,8 @@ import { clsx } from "~/lib/functions";
 
 export default async function Page() {
   const { user } = await getSession();
-  // TODO :
-  // - check if user as already starred the repo
-  // - Also see if it is possible to call github api to manually watch/unwatch & star/unstar
-  // docs : https://docs.github.com/fr/graphql/overview/explorer
-  // const repositoryStats = await getGithubRepoStats();
+  const repositoryStats = await getGithubRepoStats();
+  const hasStarred = user && repositoryStats.stargazers.includes(user.username);
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,7 +63,7 @@ export default async function Page() {
             )}
           >
             Watch
-            <CounterBadge count={1} />
+            <CounterBadge count={repositoryStats.watcherCount} />
           </LinkButton>
           <LinkButton
             href="https://github.com/Fredkiss3/gh-next"
@@ -80,22 +78,26 @@ export default async function Page() {
             )}
           >
             Fork
-            <CounterBadge count={1} />
+            <CounterBadge count={repositoryStats.forkCount} />
           </LinkButton>
           <LinkButton
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
             className="!px-4"
             isSquared
-            renderLeadingIcon={(cls) => (
-              <StarIcon className={clsx(cls, "text-grey")} />
-            )}
+            renderLeadingIcon={(cls) =>
+              hasStarred ? (
+                <StarFillIcon className={clsx(cls, "text-yellow-500")} />
+              ) : (
+                <StarIcon className={clsx(cls, "text-grey")} />
+              )
+            }
             renderTrailingIcon={(cls) => (
               <TriangleDownIcon className={clsx(cls, "text-grey")} />
             )}
           >
-            <span>Star</span>
-            <CounterBadge count={12} />
+            <span>{hasStarred ? "Starred" : "Star"}</span>
+            <CounterBadge count={repositoryStats.stargazerCount} />
           </LinkButton>
         </div>
       </section>
