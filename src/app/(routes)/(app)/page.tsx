@@ -20,6 +20,7 @@ export default async function Page() {
   // TODO :
   // - check if user as already starred the repo
   // - Also see if it is possible to call github api to manually watch/unwatch & star/unstar
+  // docs : https://docs.github.com/fr/graphql/overview/explorer
   const repositoryStats = await getGithubRepoStats();
 
   return (
