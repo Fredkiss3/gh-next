@@ -74,6 +74,9 @@ module.exports = {
         header: {
           DEFAULT: withOpactity(`--header-color`),
         },
+        ghost: {
+          DEFAULT: withOpactity(`--ghost-color`),
+        },
         backdrop: {
           DEFAULT: withOpactity(`--backdrop-color`),
         },

@@ -13,7 +13,7 @@ export type LinkButtonProps = {
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   disabled?: boolean;
   children?: React.ReactNode;
-  variant?: "primary" | "secondary" | "danger" | "invisible";
+  variant?: "primary" | "secondary" | "danger" | "invisible" | "ghost";
   loadingMessage?: string;
   isSquared?: boolean;
   className?: string;
@@ -67,6 +67,8 @@ export const LinkButton = React.forwardRef<HTMLAnchorElement, LinkButtonProps>(
               variant === "danger",
             "bg-transparent text-grey border-neutral hover:bg-subtle !border":
               variant === "invisible",
+            "bg-ghost text-foreground/70 hover:border-grey border-neutral !border shadow-sm":
+              variant === "ghost",
             "bg-subtle text-accent hover:bg-accent hover:text-white":
               variant === "secondary",
           }

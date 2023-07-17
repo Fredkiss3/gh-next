@@ -1,10 +1,13 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 import { getSession } from "~/app/(actions)/auth";
+import { env } from "~/env.mjs";
 
 export function isSSR() {
   return headers().get("accept")?.includes("text/html");
 }
+
 export function ssrRedirect(path: string) {
   // FIXME: this condition is a workaround until this PR is merged : https://github.com/vercel/next.js/issues/49424
   if (isSSR()) {
@@ -38,4 +41,51 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
 export async function forceRevalidate() {
   "use server";
   cookies().delete("dummy");
+}
+
+const githubGraphQLAPIResponseSchema = z.union([
+  z.object({
+    message: z.string(),
+    documentation_url: z.string().url(),
+  }),
+  z.object({
+    message: z.undefined(),
+    data: z.any(),
+  }),
+]);
+
+/**
+ * @param graphqlQuery
+ * @param variables
+ * @returns
+ */
+export async function fetchFromGithubAPI<T extends unknown>(
+  graphqlQuery: string,
+  variables: Record<string, any> = {}
+) {
+  return fetch(`https://api.github.com/graphql`, {
+    method: "POST",
+    body: JSON.stringify({
+      query: graphqlQuery,
+      variables,
+    }),
+    headers: {
+      Authorization: `Bearer ${env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
+    },
+  })
+    .then((r) => r.json())
+    .then((json) => {
+      const parsed = githubGraphQLAPIResponseSchema.parse(json);
+      if (parsed.message !== undefined) {
+        if (parsed.message.toLowerCase() === "bad credentials") {
+          throw new Error(
+            "Invalid credentials, please update the credentials in the app settings"
+          );
+        } else {
+          throw new Error(`Unknown error ${parsed.message}`);
+        }
+      } else {
+        return parsed.data as T;
+      }
+    });
 }

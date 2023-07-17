@@ -1,5 +1,6 @@
 import { Redis } from "@upstash/redis/cloudflare";
 import { env, kvSchema } from "~/env.mjs";
+import { DEFAULT_CACHE_TTL } from "./constants";
 
 export class KV {
   #client: KVNamespace | Redis;
@@ -17,7 +18,7 @@ export class KV {
   public async set<T extends any = {}>(
     key: string,
     value: T,
-    ttl_in_seconds?: number
+    ttl_in_seconds: number = DEFAULT_CACHE_TTL
   ) {
     const fullKey = `${env.KV_PREFIX}${key}`;
 

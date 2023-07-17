@@ -28,6 +28,7 @@ export const env = createEnv({
     GITHUB_REDIRECT_URI: z.string().url(),
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+    GITHUB_PERSONAL_ACCESS_TOKEN: z.string(),
     KV: z.any(),
   },
   client: {},
@@ -42,5 +43,6 @@ export const env = createEnv({
     GITHUB_SECRET: process.env.GITHUB_SECRET,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI,
+    GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
   },
 });
