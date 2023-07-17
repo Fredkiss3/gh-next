@@ -16,7 +16,7 @@ type SubmissionCallbacks<T> = {
 type InternalFormProps<T> = {
   action?: (formData?: FormData) => Promise<T>;
   startTransition: React.TransitionStartFunction;
-  ref: React.Ref<{
+  formCallbacksRef: React.Ref<{
     requestSubmit: () => void;
   }>;
 } & SubmissionCallbacks<T> &
@@ -28,7 +28,7 @@ function InternalForm<T>({
   startTransition,
   onSettled,
   onSubmit,
-  ref,
+  formCallbacksRef,
   ...restProps
 }: InternalFormProps<T>) {
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -36,7 +36,7 @@ function InternalForm<T>({
   const path = usePathname();
 
   React.useImperativeHandle(
-    ref,
+    formCallbacksRef,
     () => {
       return {
         requestSubmit() {
@@ -104,11 +104,11 @@ function InternalForm<T>({
  *
  * // search form
  * function SearchForm() {
- *  const { Form, requestSubmit } = useForm();
+ *  const { Form, formRef } = useForm();
  *
  *  return (
  *    <Form method="get">
- *      <input type="text" name="search" onChange={() => requestSubmit()} />
+ *      <input type="text" name="search" onChange={() => formRef.current?.requestSubmit()} />
  *    </Form>
  *  );
  *};
@@ -130,7 +130,7 @@ export function useForm<T extends unknown>(
       function Form(props: FormProps) {
         return (
           <InternalForm
-            ref={ref}
+            formCallbacksRef={ref}
             action={action}
             startTransition={startTransition}
             onSettled={callbacks?.onSettled}
@@ -145,6 +145,6 @@ export function useForm<T extends unknown>(
   return {
     Form,
     isPending,
-    requestSubmit: ref.current!.requestSubmit,
+    formRef: ref,
   } as const;
 }
