@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSession } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
+import { AUTHOR_USERNAME } from "./constants";
 
 export function isSSR() {
   return headers().get("accept")?.includes("text/html");
@@ -71,9 +72,11 @@ export async function fetchFromGithubAPI<T extends unknown>(
     }),
     headers: {
       Authorization: `Bearer ${env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
+      // this header is required per the documentation : https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#user-agent-required
+      "User-Agent": AUTHOR_USERNAME,
     },
   })
-    .then((r) => r.json())
+    .then(async (r) => r.json())
     .then((json) => {
       const parsed = githubGraphQLAPIResponseSchema.parse(json);
       if (parsed.message !== undefined) {
