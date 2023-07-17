@@ -21,7 +21,7 @@ export default async function Page() {
   // - check if user as already starred the repo
   // - Also see if it is possible to call github api to manually watch/unwatch & star/unstar
   // docs : https://docs.github.com/fr/graphql/overview/explorer
-  const repositoryStats = await getGithubRepoStats();
+  // const repositoryStats = await getGithubRepoStats();
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,7 +65,7 @@ export default async function Page() {
             )}
           >
             Watch
-            <CounterBadge count={repositoryStats.watcherCount} />
+            <CounterBadge count={1} />
           </LinkButton>
           <LinkButton
             href="https://github.com/Fredkiss3/gh-next"
@@ -80,7 +80,7 @@ export default async function Page() {
             )}
           >
             Fork
-            <CounterBadge count={repositoryStats.forkCount} />
+            <CounterBadge count={1} />
           </LinkButton>
           <LinkButton
             href="https://github.com/Fredkiss3/gh-next"
@@ -95,7 +95,7 @@ export default async function Page() {
             )}
           >
             <span>Star</span>
-            <CounterBadge count={repositoryStats.stargazerCount} />
+            <CounterBadge count={12} />
           </LinkButton>
         </div>
       </section>
@@ -118,7 +118,13 @@ function ReadmeContent() {
         <h3 className="text-2xl font-bold">Let me cook...</h3>
         <p className="my-6 text-lg">
           The labels on the buttons aboves (watch, fork, star) are refetched
-          every 30 mins
+          every 30 mins, why not give a star&nbsp;
+          <a
+            href="https://github.com/Fredkiss3/gh-next"
+            className="text-accent"
+          >
+            to the original repo ?
+          </a>
         </p>
       </article>
     </div>
