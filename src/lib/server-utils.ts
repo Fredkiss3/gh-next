@@ -78,7 +78,7 @@ export async function fetchFromGithubAPI<T extends unknown>(
       "User-Agent": AUTHOR_USERNAME,
     },
   })
-    .then(async (r) => r.json())
+    .then((r) => r.json())
     .then((json) => {
       const parsed = githubGraphQLAPIResponseSchema.parse(json);
       if (parsed.message !== undefined) {
