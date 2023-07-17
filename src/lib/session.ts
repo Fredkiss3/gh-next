@@ -270,6 +270,14 @@ export class Session {
     return payload ? Session.fromPayload(payload) : null;
   }
 
+  public async extendValidity() {
+    this.#internal.expiry = new Date(
+      Date.now() + (this.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL)
+    );
+    // setting the session in the storage will reset the TTL
+    await Session.#storage.set(this.#internal);
+  }
+
   public getCookie(): ResponseCookie {
     return {
       name: SESSION_COOKIE_KEY,
