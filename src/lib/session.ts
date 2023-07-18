@@ -135,7 +135,7 @@ export class KVSessionStorage implements SessionStorage {
     const { sessionId, signature } = await this.#generateSessionId();
     const sessionObject = {
       id: sessionId,
-      expiry: new Date(Date.now() + LOGGED_OUT_SESSION_TTL),
+      expiry: new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
       signature,
       flashMessages: init?.flashMessages,
       formErrors: init?.formErrors,
@@ -165,7 +165,7 @@ export class KVSessionStorage implements SessionStorage {
     await kv.set(
       `session:${session.id}`,
       { ...session, expiry },
-      (session.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) / 1000
+      session.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL
     );
   }
 
@@ -222,7 +222,7 @@ export class KVSessionStorage implements SessionStorage {
     // recreate a new session while conserving flash messages & adding user to it
     const sessionObject = {
       id: sessionId,
-      expiry: new Date(Date.now() + LOGGED_IN_SESSION_TTL),
+      expiry: new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000),
       signature,
       user,
       flashMessages: session.flashMessages,
@@ -272,7 +272,8 @@ export class Session {
 
   public async extendValidity() {
     this.#internal.expiry = new Date(
-      Date.now() + (this.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL)
+      Date.now() +
+        (this.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) * 1000
     );
     // setting the session in the storage will reset the TTL
     await Session.#storage.set(this.#internal);

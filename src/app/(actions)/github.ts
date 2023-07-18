@@ -117,7 +117,7 @@ export async function getGithubRepoStats() {
       stargazers: allStargazers,
     };
 
-    const THIRTY_MINUTES_IN_SECONDS = 30 * 60 * 60;
+    const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
     await kv.set<GithubRepositoryStats>(
       GITHUB_REPOSITORY_CACHE_KEY,
       data,
