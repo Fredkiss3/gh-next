@@ -1,6 +1,6 @@
 import { HomeIcon } from "@primer/octicons-react";
 import { notFound } from "next/navigation";
-import { LinkButton } from "~/app/(components)/linkbutton";
+import { Button } from "~/app/(components)/button";
 
 import type { Metadata } from "next";
 
@@ -33,14 +33,14 @@ export default function Page({
         For the sake of this demo, we have not implemented this feature.
       </h2>
 
-      <LinkButton
+      <Button
         href="/"
         className="inline-flex gap-2 items-center !text-foreground !border-foreground"
         variant="invisible"
       >
         <HomeIcon className="h-4 w-4" />
         Go home
-      </LinkButton>
+      </Button>
     </section>
   );
 }

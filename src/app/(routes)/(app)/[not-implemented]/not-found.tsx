@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { HomeIcon } from "@primer/octicons-react";
-import { LinkButton } from "~/app/(components)/linkbutton";
+import { Button } from "~/app/(components)/button";
 
 // this is for the next version of next.js
 import type { Metadata } from "next";
@@ -58,14 +58,14 @@ export default function Page() {
           </div>
         </div>
 
-        <LinkButton
+        <Button
           href="/"
           className="inline-flex gap-2 items-center !text-foreground !border-foreground"
           variant="invisible"
         >
           <HomeIcon className="h-4 w-4" />
           Go home
-        </LinkButton>
+        </Button>
       </section>
     </>
   );

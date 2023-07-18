@@ -1,3 +1,4 @@
+// components
 import {
   EyeIcon,
   ListUnorderedIcon,
@@ -7,12 +8,14 @@ import {
   StarIcon,
   TriangleDownIcon,
 } from "@primer/octicons-react";
-import { getSession } from "~/app/(actions)/auth";
-import { getGithubRepoStats } from "~/app/(actions)/github";
 import { Avatar } from "~/app/(components)/avatar";
 import { Badge } from "~/app/(components)/badge";
 import { CounterBadge } from "~/app/(components)/counter-badge";
-import { LinkButton } from "~/app/(components)/linkbutton";
+import { Button } from "~/app/(components)/button";
+
+// utils
+import { getSession } from "~/app/(actions)/auth";
+import { getGithubRepoStats } from "~/app/(actions)/github";
 import { AUTHOR_AVATAR_URL, AUTHOR_USERNAME } from "~/lib/constants";
 import { clsx } from "~/lib/functions";
 
@@ -39,7 +42,7 @@ export default async function Page() {
         </h1>
 
         <div className="flex items-center gap-3">
-          <LinkButton
+          <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
             className="!px-4"
@@ -49,8 +52,8 @@ export default async function Page() {
             )}
           >
             Pin
-          </LinkButton>
-          <LinkButton
+          </Button>
+          <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
             className="!px-4"
@@ -64,8 +67,8 @@ export default async function Page() {
           >
             Watch
             <CounterBadge count={repositoryStats.watcherCount} />
-          </LinkButton>
-          <LinkButton
+          </Button>
+          <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
             className="!px-4"
@@ -79,8 +82,8 @@ export default async function Page() {
           >
             Fork
             <CounterBadge count={repositoryStats.forkCount} />
-          </LinkButton>
-          <LinkButton
+          </Button>
+          <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
             className="!px-4"
@@ -98,7 +101,7 @@ export default async function Page() {
           >
             <span>{hasStarred ? "Starred" : "Star"}</span>
             <CounterBadge count={repositoryStats.stargazerCount} />
-          </LinkButton>
+          </Button>
         </div>
       </section>
 

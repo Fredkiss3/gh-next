@@ -70,7 +70,7 @@ export function DropdownMenu({
                 return (
                   <button
                     className={clsx(
-                      "flex items-center gap-2 min-w-max p-1 w-full text-sm",
+                      "flex items-center gap-2 min-w-max p-1 w-full",
                       {
                         "bg-neutral rounded-md": active,
                       }
@@ -88,7 +88,7 @@ export function DropdownMenu({
                   <Link
                     href={item.href}
                     className={clsx(
-                      "flex items-center gap-2 min-w-max p-1 w-full text-sm",
+                      "flex items-center gap-2 min-w-max p-1 w-full",
                       {
                         "bg-neutral  rounded-md": active,
                       }

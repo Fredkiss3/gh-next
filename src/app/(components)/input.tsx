@@ -75,7 +75,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "border-neutral": !validationStatus,
               "border-danger": validationStatus === "error",
               "border-success": validationStatus === "success",
-              "py-2": size === "medium",
+              "py-1.5": size === "medium",
               "py-1 text-sm": size === "small",
               "py-3": size === "large",
               "cursor-not-allowed bg-disabled": disabled,

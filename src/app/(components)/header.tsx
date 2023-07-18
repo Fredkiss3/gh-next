@@ -3,6 +3,7 @@ import * as React from "react";
 // components
 import {
   CommandPaletteIcon,
+  GitPullRequestIcon,
   InboxIcon,
   IssueOpenedIcon,
   MarkGithubIcon,
@@ -11,7 +12,7 @@ import {
 } from "@primer/octicons-react";
 import Link from "next/link";
 import { Input } from "./input";
-import { LinkButton } from "./linkbutton";
+import { Button } from "./button";
 import { UserDropdown } from "./user-dropdown";
 import { UnderlineNavbar } from "./underline-navbar";
 
@@ -26,18 +27,18 @@ export async function Header({}: HeaderProps) {
 
   return (
     <header>
-      <div className="flex p-4 items-center justify-between h-14 bg-header relative z-5">
+      <div className="flex p-4 items-center justify-between h-16 bg-header relative z-5">
         <div className="flex items-center gap-2 text-sm text-foreground">
           <Link href="/">
-            <MarkGithubIcon className="h-8 w-8" />
+            <MarkGithubIcon className="h-10 w-10" />
           </Link>
 
           <Link
             href="/"
-            className="hover:bg-neutral/50 py-1 px-2 rounded-md transition duration-150"
+            className="hover:bg-neutral/50 py-1 px-2 rounded-md transition duration-150 text-lg"
           >
-            <span>Fredkiss3</span>&nbsp;
-            <span>/</span>&nbsp;
+            <span>Fredkiss3</span>&nbsp;&nbsp;
+            <span>/</span>&nbsp;&nbsp;
             <span className="font-bold">gh-next</span>
           </Link>
         </div>
@@ -47,7 +48,7 @@ export async function Header({}: HeaderProps) {
             name="search"
             label="search input"
             hideLabel
-            size="small"
+            size="medium"
             placeholder="type / to search"
             renderLeadingIcon={(cls) => <SearchIcon className={cls} />}
             renderTrailingIcon={(cls) => <CommandPaletteIcon className={cls} />}
@@ -60,36 +61,49 @@ export async function Header({}: HeaderProps) {
 
           <ul className="flex items-center gap-2 h-full">
             <li>
-              <LinkButton
+              <Button
                 isSquared
                 href="/issues/new"
                 variant="invisible"
                 renderLeadingIcon={(cls) => <PlusIcon className={cls} />}
               >
                 <span className="sr-only">New issue</span>
-              </LinkButton>
+              </Button>
             </li>
 
             <li>
-              <LinkButton
+              <Button
                 isSquared
                 href="/issues"
                 variant="invisible"
                 renderLeadingIcon={(cls) => <IssueOpenedIcon className={cls} />}
               >
                 <span className="sr-only">Issues</span>
-              </LinkButton>
+              </Button>
             </li>
 
             <li>
-              <LinkButton
+              <Button
+                isSquared
+                // @ts-expect-error route not implemented
+                href="/pulls"
+                variant="invisible"
+                renderLeadingIcon={(cls) => (
+                  <GitPullRequestIcon className={cls} />
+                )}
+              >
+                <span className="sr-only">Notifications</span>
+              </Button>
+            </li>
+            <li>
+              <Button
                 isSquared
                 href="/notifications"
                 variant="invisible"
                 renderLeadingIcon={(cls) => <InboxIcon className={cls} />}
               >
                 <span className="sr-only">Notifications</span>
-              </LinkButton>
+              </Button>
             </li>
           </ul>
 
@@ -99,13 +113,13 @@ export async function Header({}: HeaderProps) {
               username={user.username}
             />
           ) : (
-            <LinkButton
+            <Button
               className="flex-shrink-0 !text-foreground !border-foreground"
               href="/login"
               variant="invisible"
             >
               Sign in
-            </LinkButton>
+            </Button>
           )}
         </nav>
       </div>
