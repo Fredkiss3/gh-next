@@ -27,7 +27,7 @@ export async function Header({}: HeaderProps) {
 
   return (
     <header>
-      <div className="flex p-4 items-center justify-between h-16 bg-header relative z-5">
+      <div className="flex py-4 px-8 items-center justify-between h-16 bg-header relative z-5">
         <div className="flex items-center gap-2 text-sm text-foreground">
           <Link href="/">
             <MarkGithubIcon className="h-10 w-10" />

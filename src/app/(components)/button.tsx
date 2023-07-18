@@ -60,9 +60,9 @@ export const Button = React.forwardRef<
       "inline-flex": !isBlock,
       flex: isBlock,
       "p-2": isSquared,
-      "py-2 px-3": !isSquared,
+      "py-1.5 px-3": !isSquared,
       "bg-success text-white shadow-subtle": variant === "primary",
-      "bg-subtle text-danger hover:bg-danger hover:text-white":
+      "bg-subtle text-danger hover:bg-danger hover:text-white border-neutral":
         variant === "danger",
       "bg-transparent text-grey border-neutral hover:bg-subtle !border hover:border-grey":
         variant === "invisible",

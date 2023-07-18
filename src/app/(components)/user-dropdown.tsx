@@ -46,7 +46,7 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
       ]}
     >
       <button type="button">
-        <Avatar username={username} src={avatar_url} />
+        <Avatar username={username} src={avatar_url}  />
       </button>
     </DropdownMenu>
   );

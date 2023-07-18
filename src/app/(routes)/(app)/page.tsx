@@ -45,8 +45,6 @@ export default async function Page() {
           <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
-            className="!px-4"
-            isSquared
             renderLeadingIcon={(cls) => (
               <PinIcon className={clsx(cls, "text-grey -scale-x-100")} />
             )}
@@ -56,8 +54,6 @@ export default async function Page() {
           <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
-            className="!px-4"
-            isSquared
             renderLeadingIcon={(cls) => (
               <EyeIcon className={clsx(cls, "text-grey")} />
             )}
@@ -71,8 +67,6 @@ export default async function Page() {
           <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
-            className="!px-4"
-            isSquared
             renderLeadingIcon={(cls) => (
               <RepoForkedIcon className={clsx(cls, "text-grey")} />
             )}
@@ -86,8 +80,6 @@ export default async function Page() {
           <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
-            className="!px-4"
-            isSquared
             renderLeadingIcon={(cls) =>
               hasStarred ? (
                 <StarFillIcon className={clsx(cls, "text-yellow-500")} />
