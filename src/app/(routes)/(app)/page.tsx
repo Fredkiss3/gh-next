@@ -65,7 +65,7 @@ export default async function Page() {
             <CounterBadge count={repositoryStats.watcherCount} />
           </Button>
           <Button
-            href="https://github.com/Fredkiss3/gh-next"
+            href="https://github.com/Fredkiss3/gh-next/fork"
             variant="ghost"
             renderLeadingIcon={(cls) => (
               <RepoForkedIcon className={clsx(cls, "text-grey")} />
