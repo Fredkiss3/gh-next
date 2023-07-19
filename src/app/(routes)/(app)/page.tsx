@@ -2,7 +2,6 @@
 import {
   EyeIcon,
   ListUnorderedIcon,
-  PinIcon,
   RepoForkedIcon,
   StarFillIcon,
   StarIcon,
@@ -42,15 +41,6 @@ export default async function Page() {
         </h1>
 
         <div className="flex items-center gap-3">
-          <Button
-            href="https://github.com/Fredkiss3/gh-next"
-            variant="ghost"
-            renderLeadingIcon={(cls) => (
-              <PinIcon className={clsx(cls, "text-grey -scale-x-100")} />
-            )}
-          >
-            Pin
-          </Button>
           <Button
             href="https://github.com/Fredkiss3/gh-next"
             variant="ghost"
