@@ -14,6 +14,8 @@ type GithubRepositoryData = {
   watcherCount: number;
   stargazers: string[]; // array of logins
   readmeContent: string;
+  description: string;
+  url: string;
 };
 
 /**
@@ -22,13 +24,16 @@ type GithubRepositoryData = {
  * @returns
  */
 export async function getGithubRepoData() {
+  await kv.delete(GITHUB_REPOSITORY_CACHE_KEY);
   let data = await kv.get<GithubRepositoryData>(GITHUB_REPOSITORY_CACHE_KEY);
 
   if (!data) {
     const repostatsQuery = /* GraphQL */ `
       query ($repoName: String!, $repoOwner: String!) {
         repository(name: $repoName, owner: $repoOwner) {
+          description
           forkCount
+          url
           stargazerCount
           watchers(first: 1) {
             totalCount
@@ -56,7 +61,9 @@ export async function getGithubRepoData() {
 
     const { repository } = await fetchFromGithubAPI<{
       repository: {
+        url: string;
         forkCount: number;
+        description: string;
         stargazerCount: number;
         watchers: { totalCount: number };
       };
@@ -123,6 +130,8 @@ export async function getGithubRepoData() {
 
     data = {
       forkCount: repository.forkCount,
+      url: repository.url,
+      description: repository.description,
       stargazerCount: repository.stargazerCount,
       watcherCount: repository.watchers.totalCount,
       stargazers: allStargazers,
