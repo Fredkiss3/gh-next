@@ -21,7 +21,7 @@
    - [ ] Assign & self assign issues
 - [ ] Labels CRUD (can only add or update labels, no deleting)
 - [ ] Notifications page
-   - [ ] Notifications badge
+   - [ ] Notifications badge (Inspiration: https://gist.github.com/Fredkiss3/ab918aee3977d681f0508537a44838c0, https://github.com/Fredkiss3/bunrest)
    - [ ] Notifications for issues subscriptions 
    - [ ] Notifications for mentions
    - [ ] Notifications for issue statuses
