@@ -15,14 +15,14 @@ import { Button } from "~/app/(components)/button";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
-import { getGithubRepoStats } from "~/app/(actions)/github";
-import { AUTHOR_AVATAR_URL, AUTHOR_USERNAME } from "~/lib/constants";
+import { getGithubRepoData } from "~/app/(actions)/github";
+import { AUTHOR_AVATAR_URL, GITHUB_AUTHOR_USERNAME } from "~/lib/constants";
 import { clsx } from "~/lib/functions";
 
 export default async function Page() {
   const { user } = await getSession();
-  const repositoryStats = await getGithubRepoStats();
-  const hasStarred = user && repositoryStats.stargazers.includes(user.username);
+  const repositoryData = await getGithubRepoData();
+  const hasStarred = user && repositoryData.stargazers.includes(user.username);
 
   return (
     <div className="flex flex-col gap-4">
@@ -32,7 +32,7 @@ export default async function Page() {
       >
         <h1 className="text-2xl font-semibold flex items-center gap-3">
           <Avatar
-            username={AUTHOR_USERNAME}
+            username={GITHUB_AUTHOR_USERNAME}
             src={AUTHOR_AVATAR_URL}
             size="small"
           />
@@ -62,7 +62,7 @@ export default async function Page() {
             )}
           >
             Watch
-            <CounterBadge count={repositoryStats.watcherCount} />
+            <CounterBadge count={repositoryData.watcherCount} />
           </Button>
           <Button
             href="https://github.com/Fredkiss3/gh-next/fork"
@@ -75,7 +75,7 @@ export default async function Page() {
             )}
           >
             Fork
-            <CounterBadge count={repositoryStats.forkCount} />
+            <CounterBadge count={repositoryData.forkCount} />
           </Button>
           <Button
             href="https://github.com/Fredkiss3/gh-next"
@@ -92,7 +92,7 @@ export default async function Page() {
             )}
           >
             <span>{hasStarred ? "Starred" : "Star"}</span>
-            <CounterBadge count={repositoryStats.stargazerCount} />
+            <CounterBadge count={repositoryData.stargazerCount} />
           </Button>
         </div>
       </section>

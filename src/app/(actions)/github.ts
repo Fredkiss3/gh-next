@@ -2,13 +2,18 @@
 
 import { kv } from "~/lib/kv";
 import { fetchFromGithubAPI } from "~/lib/server-utils";
-import { GITHUB_REPOSITORY_CACHE_KEY } from "~/lib/constants";
+import {
+  GITHUB_AUTHOR_USERNAME,
+  GITHUB_REPOSITORY_CACHE_KEY,
+  GITHUB_REPOSITORY_NAME,
+} from "~/lib/constants";
 
-type GithubRepositoryStats = {
+type GithubRepositoryData = {
   forkCount: number;
   stargazerCount: number;
   watcherCount: number;
   stargazers: string[]; // array of logins
+  readmeContent: string;
 };
 
 /**
@@ -16,13 +21,13 @@ type GithubRepositoryStats = {
  * this data is refetched at most every 30 minutes
  * @returns
  */
-export async function getGithubRepoStats() {
-  let data = await kv.get<GithubRepositoryStats>(GITHUB_REPOSITORY_CACHE_KEY);
+export async function getGithubRepoData() {
+  let data = await kv.get<GithubRepositoryData>(GITHUB_REPOSITORY_CACHE_KEY);
 
   if (!data) {
     const repostatsQuery = /* GraphQL */ `
-      query {
-        repository(name: "gh-next", owner: "Fredkiss3") {
+      query ($repoName: String!, $repoOwner: String!) {
+        repository(name: $repoName, owner: $repoOwner) {
           forkCount
           stargazerCount
           watchers(first: 1) {
@@ -32,8 +37,8 @@ export async function getGithubRepoStats() {
       }
     `;
     const stargazersQuery = /* GraphQL */ `
-      query ($cursor: String) {
-        repository(name: "gh-next", owner: "Fredkiss3") {
+      query ($cursor: String, $repoName: String!, $repoOwner: String!) {
+        repository(name: $repoName, owner: $repoOwner) {
           stargazers(after: $cursor, first: 100) {
             pageInfo {
               hasNextPage
@@ -55,7 +60,10 @@ export async function getGithubRepoStats() {
         stargazerCount: number;
         watchers: { totalCount: number };
       };
-    }>(repostatsQuery);
+    }>(repostatsQuery, {
+      repoName: GITHUB_REPOSITORY_NAME,
+      repoOwner: GITHUB_AUTHOR_USERNAME,
+    });
 
     const {
       repository: { stargazers: allStargazersData },
@@ -74,10 +82,11 @@ export async function getGithubRepoStats() {
         };
       };
     }>(stargazersQuery, {
-      first: 100,
+      repoName: GITHUB_REPOSITORY_NAME,
+      repoOwner: GITHUB_AUTHOR_USERNAME,
     });
 
-    let allStargazers: GithubRepositoryStats["stargazers"] =
+    let allStargazers: GithubRepositoryData["stargazers"] =
       allStargazersData.edges.map(({ node }) => node.login);
     let nextCursor = allStargazersData.pageInfo.endCursor;
     let hasNextPage = allStargazersData.pageInfo.hasNextPage;
@@ -103,6 +112,8 @@ export async function getGithubRepoStats() {
         };
       }>(stargazersQuery, {
         cursor: nextCursor,
+        repoName: GITHUB_REPOSITORY_NAME,
+        repoOwner: GITHUB_AUTHOR_USERNAME,
       });
 
       nextCursor = pageInfo.endCursor;
@@ -115,10 +126,13 @@ export async function getGithubRepoStats() {
       stargazerCount: repository.stargazerCount,
       watcherCount: repository.watchers.totalCount,
       stargazers: allStargazers,
+      readmeContent: await fetch(
+        `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/README.md`
+      ).then((r) => r.text()),
     };
 
     const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
-    await kv.set<GithubRepositoryStats>(
+    await kv.set<GithubRepositoryData>(
       GITHUB_REPOSITORY_CACHE_KEY,
       data,
       THIRTY_MINUTES_IN_SECONDS
