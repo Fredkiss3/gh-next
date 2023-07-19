@@ -8,6 +8,8 @@
 - [ ] HomePage (README content)
 - [ ] Responsive Layout 
 - [ ] See Profile informations
+   - [ ] Delete account and all the issues openned
+- [ ] Settings page for toggling theme
 - [ ] Issues List page
    - [ ] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
 - [ ] New issue page
