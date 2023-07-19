@@ -11,5 +11,5 @@ export function useActiveLink(href: string) {
     return false;
   }
 
-  return linkWithSlash(path).includes(linkWithSlash(href));
+  return linkWithSlash(path).startsWith(linkWithSlash(href));
 }
