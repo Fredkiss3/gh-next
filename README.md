@@ -1,5 +1,33 @@
 # A clone of github issues management app in Next.JS
 
+## ⚠️ THIS PROJECT IS IN ACTIVE DEVELOPMENT !!
+
+## Roadmap
+
+- [x] Login/Logout 
+- [ ] HomePage (README content)
+- [ ] Responsive Layout 
+- [ ] See Profile informations
+- [ ] Issues List page
+   - [ ] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
+- [ ] New issue page
+   - [ ] Issue CRUD (by the author only)
+   - [ ] Comments CRUD
+   - [ ] Mentions 
+   - [ ] Issue Popovers (for previewing issues)
+   - [ ] Linking between issues
+   - [ ] Assign & self assign issues
+- [ ] Labels CRUD (can only add or update labels, no deleting)
+- [ ] Notifications page
+   - [ ] Notifications badge
+   - [ ] Notifications for issues subscriptions 
+   - [ ] Notifications for mentions
+   - [ ] Notifications for issue statuses
+   - [ ] Filter notifications by status, title, closed, etc.
+   - [ ] Mark as done, unsubscribe
+
+
+
 # Stack
 
 - [Next App Router](https://nextjs.org/docs/app)
