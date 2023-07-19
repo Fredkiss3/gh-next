@@ -18,6 +18,7 @@ import { UnderlineNavbar } from "./underline-navbar";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
+import { clsx } from "~/lib/functions";
 
 // types
 export type HeaderProps = {};
@@ -27,7 +28,12 @@ export async function Header({}: HeaderProps) {
 
   return (
     <header>
-      <div className="flex py-4 px-8 items-center justify-between h-16 bg-header relative z-5">
+      <div
+        className={clsx(
+          "flex py-4 px-5 items-center justify-between h-16 bg-header relative z-5",
+          "md:px-8"
+        )}
+      >
         <div className="flex items-center gap-2 text-sm text-foreground">
           <Link href="/">
             <MarkGithubIcon className="h-10 w-10" />
@@ -35,11 +41,23 @@ export async function Header({}: HeaderProps) {
 
           <Link
             href="/"
-            className="hover:bg-neutral/50 py-1 px-2 rounded-md transition duration-150 text-lg"
+            className={clsx(
+              "py-1 px-2 rounded-md transition duration-150",
+              "md:text-lg",
+              "hover:bg-neutral/50",
+              "flex flex-wrap gap-2"
+            )}
           >
-            <span>Fredkiss3</span>&nbsp;&nbsp;
-            <span>/</span>&nbsp;&nbsp;
-            <span className="font-bold">gh-next</span>
+            <span
+              className={clsx(
+                "font-medium text-grey",
+                "md:text-foreground md:font-normal"
+              )}
+            >
+              Fredkiss3&nbsp;&nbsp;/
+            </span>
+
+            <strong className="font-bold whitespace-nowrap">gh-next</strong>
           </Link>
         </div>
 
@@ -49,18 +67,19 @@ export async function Header({}: HeaderProps) {
             label="search input"
             hideLabel
             size="medium"
+            className="hidden md:flex"
             placeholder="type / to search"
             renderLeadingIcon={(cls) => <SearchIcon className={cls} />}
             renderTrailingIcon={(cls) => <CommandPaletteIcon className={cls} />}
           />
 
           <div
-            className="h-full w-[1px] bg-neutral self-stretch"
+            className="hidden md:block h-full w-[1px] bg-neutral self-stretch"
             aria-hidden="true"
           />
 
           <ul className="flex items-center gap-2 h-full">
-            <li>
+            <li className="hidden md:block">
               <Button
                 isSquared
                 href="/issues/new"
@@ -82,7 +101,7 @@ export async function Header({}: HeaderProps) {
               </Button>
             </li>
 
-            <li>
+            <li className="hidden md:block">
               <Button
                 isSquared
                 // @ts-expect-error route not implemented

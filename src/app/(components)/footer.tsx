@@ -12,7 +12,10 @@ export type FooterProps = {};
 export async function Footer({}: FooterProps) {
   return (
     <footer
-      className={clsx("max-w-[1200px] mx-auto border-t border-neutral py-6")}
+      className={clsx(
+        "max-w-[1400px] mx-auto border-t border-neutral py-6 px-5",
+        "md:px-8"
+      )}
     >
       <h2 className="sr-only">Footer</h2>
       <div className="flex items-center text-grey gap-4">

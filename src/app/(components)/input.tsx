@@ -101,7 +101,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             required={required}
             className={clsx(
               "w-full focus:outline-none bg-transparent disabled:text-foreground/30",
-              inputClassName
+              inputClassName,
+              {
+                "cursor-not-allowed": disabled,
+              }
             )}
           />
 

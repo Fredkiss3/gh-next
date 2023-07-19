@@ -1,12 +1,18 @@
+// components
 import { HomeIcon } from "@primer/octicons-react";
-import { notFound } from "next/navigation";
 import { Button } from "~/app/(components)/button";
 
+// utils
+import { notFound } from "next/navigation";
+import { clsx } from "~/lib/functions";
+
+// types
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Not implemented",
 };
+
 export default function Page({
   params: { "not-implemented": path },
 }: {
@@ -26,7 +32,13 @@ export default function Page({
   }
 
   return (
-    <section className="h-[80vh] flex flex-col gap-4 items-center justify-center text-foreground">
+    <section
+      className={clsx(
+        "flex flex-col gap-4 items-center justify-center",
+        "px-5 h-[80vh] text-foreground text-center",
+        "md:px-8"
+      )}
+    >
       <h1 className="text-4xl font-bold">This page has not been implemented</h1>
 
       <h2 className="text-2xl">

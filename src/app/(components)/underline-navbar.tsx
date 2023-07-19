@@ -32,9 +32,18 @@ export function UnderlineNavbar({
 }: UnderlineNavbarProps) {
   return (
     <nav
-      className={clsx("px-4 border-b border-neutral relative z-20", className)}
+      className={clsx(
+        "px-5 border-b border-neutral relative z-20 overflow-x-auto overflow-y-clip",
+        "md:px-8",
+        className
+      )}
     >
-      <ul className="flex items-end gap-4 justify-start">
+      <ul
+        className={clsx(
+          "flex items-end gap-4 justify-start min-w-max pr-5",
+          "md:pr-0"
+        )}
+      >
         <li className="inline-flex">
           <NavLink href="/" icon={CodeIcon}>
             Code

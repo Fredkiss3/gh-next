@@ -1,6 +1,7 @@
 // components
 import { Footer } from "~/app/(components)/footer";
 import { Header } from "~/app/(components)/header";
+import { clsx } from "~/lib/functions";
 
 export default async function AppLayout({
   children,
@@ -10,7 +11,9 @@ export default async function AppLayout({
   return (
     <>
       <Header />
-      <main className="px-8 my-6 max-w-[1270px] mx-auto">{children}</main>
+      <main className={clsx("my-5 max-w-[1270px] mx-auto", "md:my-6")}>
+        {children}
+      </main>
       <Footer />
     </>
   );
