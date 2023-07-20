@@ -7,7 +7,6 @@ const nextConfig = {
     serverActions: true,
     logging: "verbose",
     typedRoutes: true,
-    serverComponentsExternalPackages: ["@octokit/graphql"],
   },
   images: {
     remotePatterns: [

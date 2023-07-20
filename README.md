@@ -4,31 +4,29 @@
 
 ## Roadmap
 
-- [x] Login/Logout 
+- [x] Login/Logout
 - [ ] HomePage (README content)
-- [ ] Responsive Layout 
+- [ ] Responsive Layout
 - [ ] See Profile informations
-   - [ ] Delete account and all the issues openned
+  - [ ] Delete account and all the issues openned
 - [ ] Settings page for toggling theme
 - [ ] Issues List page
-   - [ ] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
+  - [ ] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
 - [ ] New issue page
-   - [ ] Issue CRUD (by the author only)
-   - [ ] Comments CRUD
-   - [ ] Mentions 
-   - [ ] Issue Popovers (for previewing issues)
-   - [ ] Linking between issues
-   - [ ] Assign & self assign issues
+  - [ ] Issue CRUD (by the author only)
+  - [ ] Comments CRUD
+  - [ ] Mentions
+  - [ ] Issue Popovers (for previewing issues)
+  - [ ] Linking between issues
+  - [ ] Assign & self assign issues
 - [ ] Labels CRUD (can only add or update labels, no deleting)
 - [ ] Notifications page
-   - [ ] Notifications badge (Inspiration: https://gist.github.com/Fredkiss3/ab918aee3977d681f0508537a44838c0, https://github.com/Fredkiss3/bunrest)
-   - [ ] Notifications for issues subscriptions 
-   - [ ] Notifications for mentions
-   - [ ] Notifications for issue statuses
-   - [ ] Filter notifications by status, title, closed, etc.
-   - [ ] Mark as done, unsubscribe
-
-
+  - [ ] Notifications badge (Inspiration: https://gist.github.com/Fredkiss3/ab918aee3977d681f0508537a44838c0, https://github.com/Fredkiss3/bunrest)
+  - [ ] Notifications for issues subscriptions
+  - [ ] Notifications for mentions
+  - [ ] Notifications for issue statuses
+  - [ ] Filter notifications by status, title, closed, etc.
+  - [ ] Mark as done, unsubscribe
 
 # Stack
 
@@ -90,7 +88,7 @@ A quick look at the top-level files and directories you will see in this project
     ├── pnpm-lock.yaml
     └── tsconfig.json
 
-2. **`src/app/`**: this folder contains the source code to our app :
+1. **`src/app/`**: this folder contains the source code to our app :
 
    1. **`(actions)`** : this folder contains all the logic of our app.
 
@@ -100,14 +98,14 @@ A quick look at the top-level files and directories you will see in this project
 
    4. **`(routes)`** : this folder contains all the routes & pages of our app.
 
-3. **`src/lib/`**: this folder contains utils & helpers used throughout our app :
+2. **`src/lib/`**: this folder contains utils & helpers used throughout our app :
 
    1. **`db/schema`** : this folder contains all the drizzle sqlite schema for our DB.
 
    2. **`hooks`** : this folder contains all the react custom hooks used in the app.
 
-4. **`.prettierrc`**: this file contains the configuration for prettier to enable autoformatting.
+3. **`.prettierrc`**: this file contains the configuration for prettier to enable autoformatting.
 
-5. **`pnpm-lock.yaml`**: this file contains the dependencies lock for the repo.
+4. **`pnpm-lock.yaml`**: this file contains the dependencies lock for the repo.
 
-6. **`tsconfig.json`**: this file contains the configuration for typescript, that are used by the all the underlying packages
+5. **`tsconfig.json`**: this file contains the configuration for typescript, that are used by the all the underlying packages

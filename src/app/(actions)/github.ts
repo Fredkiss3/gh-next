@@ -7,6 +7,7 @@ import {
   GITHUB_REPOSITORY_CACHE_KEY,
   GITHUB_REPOSITORY_NAME,
 } from "~/lib/constants";
+import { cache } from "react";
 
 type GithubRepositoryData = {
   forkCount: number;
@@ -23,8 +24,7 @@ type GithubRepositoryData = {
  * this data is refetched at most every 30 minutes
  * @returns
  */
-export async function getGithubRepoData() {
-  await kv.delete(GITHUB_REPOSITORY_CACHE_KEY);
+export const getGithubRepoData = cache(async function getGithubRepoData() {
   let data = await kv.get<GithubRepositoryData>(GITHUB_REPOSITORY_CACHE_KEY);
 
   if (!data) {
@@ -149,4 +149,4 @@ export async function getGithubRepoData() {
   }
 
   return data;
-}
+});

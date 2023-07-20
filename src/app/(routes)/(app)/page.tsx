@@ -14,6 +14,7 @@ import { Avatar } from "~/app/(components)/avatar";
 import { Badge } from "~/app/(components)/badge";
 import { CounterBadge } from "~/app/(components)/counter-badge";
 import { Button } from "~/app/(components)/button";
+import { MarkdownContent } from "~/app/(components)/markdown-content";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
@@ -198,12 +199,23 @@ export default async function Page() {
   );
 }
 
-function ReadmeContent() {
+async function ReadmeContent() {
+  const { readmeContent } = await getGithubRepoData();
+
+  // TODO
+  const tableExample = `
+| Alpha | Bravo   |
+| ----- | ------- |
+| 中文  | Charlie |
+| 👩‍❤️‍👩    | Delta   |
+            `;
+
   return (
     <section className={clsx("sm:px-5", "md:px-8")}>
       <div
         className={clsx(
           "border border-neutral flex items-center gap-2 p-4",
+          "sticky top-0 bg-backdrop z-10",
           "sm:rounded-t-md"
         )}
       >
@@ -212,24 +224,19 @@ function ReadmeContent() {
         </button>
         <h2 className="font-semibold text-base">README.md</h2>
       </div>
-      <article
+
+      <div
         className={clsx(
           "p-4 border-l border-r border-b border-neutral",
           "sm:rounded-b-md"
         )}
       >
-        <h3 className="text-2xl font-bold">Let me cook...</h3>
-        <p className="my-6 text-lg">
-          The labels on the buttons aboves (watch, fork, star) are refetched
-          every 30 mins, why not give a star&nbsp;
-          <a
-            href="https://github.com/Fredkiss3/gh-next"
-            className="text-accent"
-          >
-            to the original repo ?
-          </a>
-        </p>
-      </article>
+        <MarkdownContent
+          linkHeaders
+          content={readmeContent}
+          className="px-8 pb-8 pt-4"
+        />
+      </div>
     </section>
   );
 }

@@ -45,6 +45,22 @@
     --ghost-color: 246, 248, 250;
   }
 
+  [data-bright-theme="github-light"] {
+    display: block !important;
+  }
+
+  [data-bright-theme="github-dark"] {
+    display: none !important;
+  }
+
+  [data-theme="dark"] [data-bright-theme="github-dark"] {
+    display: block !important;
+  }
+
+  [data-theme="dark"] [data-bright-theme="github-light"] {
+    display: none !important;
+  }
+
   [data-theme="dark"] {
     --success-color: 63, 185, 80;
     --fg-color: 255, 255, 255;
@@ -62,6 +78,14 @@
   }
 
   @media (prefers-color-scheme: dark) {
+    [data-theme="system"] [data-bright-theme="github-dark"] {
+      display: block !important;
+    }
+
+    [data-theme="system"] [data-bright-theme="github-light"] {
+      display: none !important;
+    }
+
     [data-theme="system"] {
       --success-color: 63, 185, 80;
       --fg-color: 255, 255, 255;
