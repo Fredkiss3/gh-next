@@ -6,7 +6,7 @@
 
 - [x] Login/Logout
 - [ ] HomePage (README content)
-- [ ] Responsive Layout
+- [x] Responsive Layout
 - [ ] See Profile informations
   - [ ] Delete account and all the issues openned
 - [ ] Settings page for toggling theme

@@ -20,6 +20,23 @@ type GithubRepositoryData = {
 };
 
 /**
+ * TODO : GET LANGUAGE INFOS : 
+ * 
+ *  -  languages(first: 100) {
+      totalSize # (totalSize for all languages)
+      totalCount
+      edges {
+        size # Size for one language, divide by the total to get the percent
+        node {
+          name
+          color # In Hexa
+        }
+      }
+    }
+ * 
+ */
+
+/**
  * get the statistics of the repo,
  * this data is refetched at most every 30 minutes
  * @returns
