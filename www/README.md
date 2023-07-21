@@ -1,8 +1,4 @@
-# A clone of github\* in Next.JS
-
-<small>
-*  only some features are implemented : issues CRUD & notifications 
-</small>
+# A clone of github issues management app in Next.JS
 
 ## ⚠️ THIS PROJECT IS IN ACTIVE DEVELOPMENT !!
 
