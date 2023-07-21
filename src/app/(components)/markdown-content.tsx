@@ -1,3 +1,4 @@
+import "server-only";
 import * as React from "react";
 import { Code } from "bright";
 import { unified } from "unified";
@@ -9,6 +10,8 @@ import rehypeSlug from "rehype-slug";
 import { CopyCodeButton } from "./copy-code-button";
 import { clsx } from "~/lib/functions";
 import { LinkIcon } from "@primer/octicons-react";
+import githubDark from "~/lib/themes/github-dark.json";
+import githubLight from "~/lib/themes/github-light.json";
 
 // TODO : INTEGRATE GITHUB REMARK LINKING : https://github.com/remarkjs/remark-github
 import remarkGithub from "remark-github";
@@ -30,8 +33,8 @@ export async function MarkdownContent({
   className,
 }: MarkdownContentProps) {
   Code.theme = {
-    dark: "github-dark",
-    light: "github-light",
+    dark: githubDark,
+    light: githubLight,
   };
   console.time("markdown parsing");
   const html = await unified()
