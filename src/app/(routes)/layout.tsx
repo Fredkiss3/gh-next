@@ -36,7 +36,7 @@ export default async function RootLayout({
       >
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
-        <Toaster />
+        <Toaster key={Math.random()} />
       </body>
     </html>
   );

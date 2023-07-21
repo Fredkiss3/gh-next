@@ -7,7 +7,6 @@ import { NavLink } from "./nav-link";
 import {
   CodeIcon,
   CommentDiscussionIcon,
-  GearIcon,
   GitPullRequestIcon,
   GraphIcon,
   IssueOpenedIcon,
@@ -33,7 +32,7 @@ export function UnderlineNavbar({
   return (
     <nav
       className={clsx(
-        "px-5 border-b border-neutral relative z-20 overflow-x-auto overflow-y-clip",
+        "px-5 relative z-20 overflow-x-auto overflow-y-clip",
         "md:px-8",
         className
       )}
@@ -85,12 +84,6 @@ export function UnderlineNavbar({
           {/* @ts-expect-error this is for unmatched paths */}
           <NavLink href="/pulse" icon={GraphIcon}>
             Insights
-          </NavLink>
-        </li>
-        <li className="inline-flex">
-          {/* @ts-expect-error this is for unmatched paths */}
-          <NavLink href="/settings" icon={GearIcon}>
-            Settings
           </NavLink>
         </li>
       </ul>

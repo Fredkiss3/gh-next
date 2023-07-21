@@ -18,14 +18,7 @@ export default function Page({
 }: {
   params: { "not-implemented": string };
 }) {
-  const validPaths = [
-    "pulls",
-    "security",
-    "pulse",
-    "discussions",
-    "actions",
-    "settings",
-  ];
+  const validPaths = ["pulls", "security", "pulse", "discussions", "actions"];
 
   if (!validPaths.includes(path)) {
     notFound();

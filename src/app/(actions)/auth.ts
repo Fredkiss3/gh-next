@@ -12,6 +12,8 @@ import {
   githubUserSchema,
 } from "~/app/(models)/user";
 
+import type { Route } from "next";
+
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();
 
@@ -98,7 +100,7 @@ export const getSession = cache(async function getSession(): Promise<Session> {
   return session;
 });
 
-export async function getUserOrRedirect(redirectToPath?: string) {
+export async function getUserOrRedirect(redirectToPath?: Route) {
   const session = await getSession();
 
   if (!session.user) {

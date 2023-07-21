@@ -3,7 +3,11 @@ import * as React from "react";
 // components
 import { DropdownMenu } from "./dropdown-menu";
 import { Avatar } from "./avatar";
-import { GearIcon, PersonIcon, SignOutIcon } from "@primer/octicons-react";
+import {
+  PaintbrushIcon,
+  PersonIcon,
+  SignOutIcon,
+} from "@primer/octicons-react";
 
 // utils
 import { useRouter } from "next/navigation";
@@ -22,14 +26,14 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
       className="min-w-fit flex items-center"
       items={[
         {
-          href: "/profile",
-          text: "Your profile",
+          href: "/settings/account",
+          text: "Your account",
           icon: PersonIcon,
         },
         {
-          href: "/profile/settings",
-          text: "Settings",
-          icon: GearIcon,
+          href: "/settings/appearance",
+          text: "Change Theme",
+          icon: PaintbrushIcon,
         },
         {
           text: "Sign out",
@@ -46,7 +50,7 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
       ]}
     >
       <button type="button">
-        <Avatar username={username} src={avatar_url}  />
+        <Avatar username={username} src={avatar_url} />
       </button>
     </DropdownMenu>
   );

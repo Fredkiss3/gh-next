@@ -19,18 +19,28 @@ import { UnderlineNavbar } from "./underline-navbar";
 // utils
 import { getSession } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/functions";
+import { Route } from "next";
 
 // types
-export type HeaderProps = {};
+export type HeaderProps = {
+  pageTitle: React.ReactNode;
+  path: Route;
+  hideRepoNavbar?: boolean;
+};
 
-export async function Header({}: HeaderProps) {
+export async function Header({
+  pageTitle,
+  path = "/",
+  hideRepoNavbar = false,
+}: HeaderProps) {
   const user = await getSession().then((session) => session.user);
 
   return (
-    <header>
+    <header className="border-b border-neutral">
       <div
         className={clsx(
           "flex py-4 px-5 items-center justify-between h-16 bg-header relative z-5",
+
           "md:px-8"
         )}
       >
@@ -40,7 +50,7 @@ export async function Header({}: HeaderProps) {
           </Link>
 
           <Link
-            href="/"
+            href={path}
             className={clsx(
               "py-1 px-2 rounded-md transition duration-150",
               "md:text-lg",
@@ -48,16 +58,7 @@ export async function Header({}: HeaderProps) {
               "flex flex-wrap gap-2"
             )}
           >
-            <span
-              className={clsx(
-                "font-medium text-grey",
-                "md:text-foreground md:font-normal"
-              )}
-            >
-              Fredkiss3&nbsp;&nbsp;/
-            </span>
-
-            <strong className="font-bold whitespace-nowrap">gh-next</strong>
+            {pageTitle}
           </Link>
         </div>
 
@@ -143,7 +144,7 @@ export async function Header({}: HeaderProps) {
         </nav>
       </div>
 
-      <UnderlineNavbar className="bg-header" />
+      {!hideRepoNavbar && <UnderlineNavbar className="bg-header" />}
     </header>
   );
 }

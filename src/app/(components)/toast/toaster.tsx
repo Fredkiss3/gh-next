@@ -6,6 +6,9 @@ import { Toast } from ".";
 
 export async function Toaster() {
   const flashes = await getSession().then((session) => session.getFlash());
+  console.log({
+    flashes,
+  });
 
   return (
     <>
