@@ -5,11 +5,11 @@
 ## Roadmap
 
 - [x] Login/Logout
-- [ ] HomePage (README content)
+- [x] HomePage (README content)
 - [x] Responsive Layout
+- [ ] Settings page for toggling theme
 - [ ] See Profile informations
   - [ ] Delete account and all the issues openned
-- [ ] Settings page for toggling theme
 - [ ] Issues List page
   - [ ] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
 - [ ] New issue page
@@ -43,6 +43,7 @@
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
 - A [turso](https://turso.tech/) database
 - A [upstash](https://upstash.com/) redis cluster (when developping locally)
+- A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
 ## 🚀 How to work on the project ?
 
@@ -109,3 +110,17 @@ A quick look at the top-level files and directories you will see in this project
 4. **`pnpm-lock.yaml`**: this file contains the dependencies lock for the repo.
 
 5. **`tsconfig.json`**: this file contains the configuration for typescript, that are used by the all the underlying packages
+
+## 🍳 ENV VARIABLES USED
+
+| Nom                        | role                                                                               |
+| :------------------------- | :--------------------------------------------------------------------------------- |
+| `SESSION_SECRET`           | random 32 chars length string used to encode the session id                        |
+| `TURSO_DB_TOKEN`           | DB token used to authenticate to turso                                             |
+| `TURSO_DB_URL`             | DB url of the turso DB                                                             |
+| `KV_PREFIX`                | prefix for the key/value store, i use this bcos i only have one free DB in upstash |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash REDIS token                                                                |
+| `UPSTASH_REDIS_REST_URL`   | Upstash REDIS url                                                                  |
+| `GITHUB_CLIENT_ID`         | github client id stored for our app used for authenticating users with github      |
+| `GITHUB_REDIRECT_URI`      | URL to redirect when a user has been authenticated                                 |
+| `GITHUB_SECRET`            | github secret stored for our app                                                   |
