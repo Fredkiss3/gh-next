@@ -17,12 +17,17 @@ type GithubRepositoryData = {
   readmeContent: string;
   description: string;
   url: string;
+  languages: Array<{
+    name: string;
+    color: string;
+    percent: number;
+  }>;
 };
 
 /**
  * TODO : GET LANGUAGE INFOS : 
  * 
- *  -  languages(first: 100) {
+ *  languages(first: 100) {
       totalSize # (totalSize for all languages)
       totalCount
       edges {
@@ -56,6 +61,17 @@ export const getGithubRepoData = cache(async function getGithubRepoData() {
           watchers(first: 1) {
             totalCount
           }
+          languages(first: 100, orderBy: { field: SIZE, direction: DESC }) {
+            totalSize
+            totalCount
+            edges {
+              size
+              node {
+                name
+                color
+              }
+            }
+          }
         }
       }
     `;
@@ -84,6 +100,17 @@ export const getGithubRepoData = cache(async function getGithubRepoData() {
         description: string;
         stargazerCount: number;
         watchers: { totalCount: number };
+        languages: {
+          totalSize: number;
+          totalCount: number;
+          edges: Array<{
+            size: number;
+            node: {
+              name: string;
+              color: string;
+            };
+          }>;
+        };
       };
     }>(repostatsQuery, {
       repoName: GITHUB_REPOSITORY_NAME,
@@ -146,7 +173,26 @@ export const getGithubRepoData = cache(async function getGithubRepoData() {
       allStargazers = allStargazers.concat(edges.map(({ node }) => node.login));
     }
 
+    let totalPercent = 0;
+    const languages = repository.languages.edges.map((edge) => {
+      let percent = Number(
+        ((edge.size / repository.languages.totalSize) * 100).toFixed(2)
+      );
+
+      totalPercent += percent;
+
+      if (totalPercent > 100) {
+        percent -= totalPercent - 100; // remove the rest so that the sum of all percents is 100%
+      }
+
+      return {
+        ...edge.node,
+        percent,
+      };
+    });
+
     data = {
+      languages,
       forkCount: repository.forkCount,
       url: repository.url,
       description: repository.description,

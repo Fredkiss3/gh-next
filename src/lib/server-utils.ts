@@ -53,6 +53,11 @@ const githubGraphQLAPIResponseSchema = z.union([
     message: z.undefined(),
     data: z.record(z.string(), z.any()),
   }),
+  z.object({
+    data: z.undefined(),
+    message: z.undefined(),
+    errors: z.array(z.record(z.string(), z.any())),
+  }),
 ]);
 
 /**
@@ -90,8 +95,13 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
         } else {
           throw new Error(`Unknown error ${parsed.message}`);
         }
-      } else {
+      } else if (parsed.data) {
         return parsed.data as T;
+      } else {
+        console.error({
+          errors: parsed.errors,
+        });
+        throw new Error(`GraphQL error : check the terminal for errors.`);
       }
     });
 }
