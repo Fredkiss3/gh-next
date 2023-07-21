@@ -42,6 +42,7 @@ type GithubRepositoryData = {
  * @returns
  */
 export const getGithubRepoData = cache(async function getGithubRepoData() {
+  // await kv.delete(GITHUB_REPOSITORY_CACHE_KEY);
   let data = await kv.get<GithubRepositoryData>(GITHUB_REPOSITORY_CACHE_KEY);
 
   if (!data) {

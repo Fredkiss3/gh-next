@@ -202,20 +202,12 @@ export default async function Page() {
 async function ReadmeContent() {
   const { readmeContent } = await getGithubRepoData();
 
-  // TODO
-  const tableExample = `
-| Alpha | Bravo   |
-| ----- | ------- |
-| 中文  | Charlie |
-| 👩‍❤️‍👩    | Delta   |
-            `;
-
   return (
     <section className={clsx("sm:px-5", "md:px-8")}>
       <div
         className={clsx(
           "border border-neutral flex items-center gap-2 p-4",
-          "sticky top-0 bg-backdrop z-10",
+          "sticky -top-1 bg-backdrop z-10",
           "sm:rounded-t-md"
         )}
       >
