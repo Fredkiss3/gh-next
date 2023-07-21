@@ -12,6 +12,7 @@ import { LinkIcon } from "@primer/octicons-react";
 
 // TODO : INTEGRATE GITHUB REMARK LINKING : https://github.com/remarkjs/remark-github
 import remarkGithub from "remark-github";
+
 export type MarkdownContentProps = {
   content: string;
   linkHeaders?: boolean;
@@ -76,20 +77,22 @@ export async function MarkdownContent({
           />
         ),
         p: (props: any) => <p {...props} className={"my-4"} />,
-        // FIXME: MAKE IT WORK WITH TABLES : https://github.com/remarkjs/remark-gfm/blob/main/readme.md#example-singletilde
         table: (props: any) => (
           <table
             {...props}
-            className={
-              "table-auto border border-neutral mb-8 text-center w-[max-content] max-w-full border-collapse"
-            }
+            className="border-collapse table-auto w-full border border-neutral"
           />
         ),
-        td: (props: any) => (
-          <table {...props} className={"border border-neutral x-6 py-3"} />
+        th: (props: any) => (
+          <th
+            {...props}
+            className="font-semibold text-left text-lg border border-neutral px-5 py-2"
+          />
         ),
-        th: (props: any) => <table {...props} className={"px-6 py-3"} />,
-
+        tr: (props: any) => <tr {...props} className="even:bg-subtle" />,
+        td: (props: any) => (
+          <td {...props} className="border border-neutral px-5 py-2" />
+        ),
         li: (props: any) => (
           <li
             {...props}
@@ -148,7 +151,7 @@ export async function MarkdownContent({
                 <CopyCodeButton
                   className={clsx(
                     "transition duration-150 opacity-0 group-hover:opacity-100",
-                    "absolute right-2 top-6"
+                    "absolute right-2 top-7"
                   )}
                   code={children.trim()}
                 />
