@@ -227,7 +227,12 @@ export default async function Page() {
       >
         <ReadmeContent className="col-span-7 lg:col-span-9 xl:col-span-11" />
 
-        <aside className={clsx("hidden col-span-4 flex-col gap-6", "md:flex")}>
+        <aside
+          className={clsx(
+            "hidden col-span-4 flex-col gap-6 sticky top-4",
+            "md:flex"
+          )}
+        >
           <div className="flex flex-col items-start gap-5 border-neutral pb-6 border-b">
             <h2 className="text-lg font-semibold">About</h2>
             <p className="text-lg">{repositoryData.description}</p>
