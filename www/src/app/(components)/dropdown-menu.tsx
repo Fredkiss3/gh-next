@@ -54,7 +54,7 @@ export function DropdownMenu({
         className={clsx(
           "absolute z-40 rounded-md p-2 top-[calc(100%+5px)]",
           "bg-subtle text-foreground shadow-md border border-neutral",
-          "flex flex-col",
+          "flex flex-col min-w-max",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
           {
             "right-0": align === "right",
