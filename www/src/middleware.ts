@@ -34,14 +34,17 @@ export default async function middleware(request: NextRequest) {
   const sessionId = request.cookies.get(SESSION_COOKIE_KEY)?.value;
   let session = sessionId ? await Session.get(sessionId) : null;
 
+  const isBot = isbot(request.headers.get("User-Agent"));
+
   // Ensure a session is attached to each user
   if (!session) {
-    session = await Session.create(isbot(request.headers.get("User-Agent")));
+    session = await Session.create(isBot);
     return setRequestAndResponseCookies(request, session.getCookie());
   }
 
   // Extends expiration time on first load and not on link navigation
-  if (request.headers.get("accept")?.includes("text/html")) {
+  // only if the request doesn't come from a bot
+  if (request.headers.get("accept")?.includes("text/html") && !isBot) {
     await session.extendValidity();
     return setRequestAndResponseCookies(request, session.getCookie());
   }
