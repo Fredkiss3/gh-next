@@ -37,3 +37,4 @@ drizzle/
 
 # cloudfare pages
 wrangler.toml
+.wrangler/
