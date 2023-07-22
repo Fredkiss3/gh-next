@@ -200,7 +200,7 @@ export const getGithubRepoData = cache(async function getGithubRepoData() {
       watcherCount: repository.watchers.totalCount,
       stargazers: allStargazers,
       readmeContent: await fetch(
-        `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/www/README.md`
+        `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/README.md`
       ).then((r) => r.text()),
     };
 
