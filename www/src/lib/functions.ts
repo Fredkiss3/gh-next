@@ -104,3 +104,34 @@ export function linkWithSlash(href: string) {
   }
   return href + "/";
 }
+
+export async function jsonFetch<T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<T> {
+  // Set the default headers correctly
+  const headers: HeadersInit = new Headers(options.headers);
+  headers.set("Accept", "application/json");
+  headers.set("Content-Type", "application/json");
+
+  return fetch(url, {
+    ...options,
+    headers,
+    credentials: "include",
+  })
+    .then(async (response) => {
+      // check if data is JSON
+      const isJson =
+        response.headers.get("content-type")?.includes("application/json") ??
+        false;
+
+      return (await response.json()) as T;
+    })
+    .catch((error) => {
+      console.error(
+        `[jsonFetch ${options.method ?? "GET"} ${url}] There was an error :`,
+        error
+      );
+      throw error;
+    });
+}
