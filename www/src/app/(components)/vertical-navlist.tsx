@@ -4,11 +4,13 @@ import * as React from "react";
 import { VerticalNavLink } from "./vertical-nav-link";
 import { GearIcon, PaintbrushIcon } from "@primer/octicons-react";
 
-export type VerticalNavlistProps = {};
+export type VerticalNavlistProps = {
+  className?: string;
+};
 
-export function VerticalNavlist({}: VerticalNavlistProps) {
+export function VerticalNavlist({ className }: VerticalNavlistProps) {
   return (
-    <aside>
+    <aside className={className}>
       <nav>
         <ul className="flex flex-col gap-1 w-full">
           <li>

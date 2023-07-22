@@ -40,9 +40,9 @@ export default async function AppLayout({
           </div>
         </section>
 
-        <div className="grid gap-4">
-          <VerticalNavlist />
-          <div>{children}</div>
+        <div className="grid gap-4 md:grid-cols-9">
+          <VerticalNavlist className="md:col-span-3 lg:col-span-2" />
+          <div className="md:col-span-6 lg:col-span-7">{children}</div>
         </div>
       </main>
       <Footer />

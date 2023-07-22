@@ -13,7 +13,7 @@ export default async function Page() {
   const theme = await getTheme();
   return (
     <div>
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-4 md:gap-8">
         <h2 className="text-3xl font-medium border-b border-neutral py-2.5">
           Theme preferences
         </h2>
@@ -23,7 +23,10 @@ export default async function Page() {
           your system and automatically switch between day and night themes.
         </p>
 
-        <form action={updateTheme} className="flex flex-col gap-4 items-center">
+        <form
+          action={updateTheme}
+          className="flex flex-col gap-4 items-center md:gap-8 md:items-start"
+        >
           <div className="flex items-start gap-4 flex-wrap">
             <ThemeCard value="light" defaultSelected={theme === "light"} />
             <ThemeCard value="dark" defaultSelected={theme === "dark"} />
