@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { SESSION_COOKIE_KEY } from "./lib/constants";
 import { Session } from "./lib/session";
+import isbot from "isbot";
 
 import type { NextRequest } from "next/server";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
@@ -35,7 +36,7 @@ export default async function middleware(request: NextRequest) {
 
   // Ensure a session is attached to each user
   if (!session) {
-    session = await Session.create();
+    session = await Session.create(isbot(request.headers.get("User-Agent")));
     return setRequestAndResponseCookies(request, session.getCookie());
   }
 

@@ -23,6 +23,7 @@ const sessionSchema = z.object({
   formErrors: z.record(z.string(), z.array(z.string())).optional(),
   signature: z.string(),
   additionnalData: z.record(z.string(), z.any()).nullish(),
+  bot: z.boolean().optional().default(false),
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;
@@ -58,12 +59,13 @@ interface SessionStorage {
    * @param user
    * @param session
    */
-  create(
+  create(options?: {
     init?: Pick<
       SerializedSession,
       "flashMessages" | "formErrors" | "additionnalData"
-    >
-  ): Promise<SerializedSession>;
+    >;
+    temporary?: boolean;
+  }): Promise<SerializedSession>;
   get(id: string): Promise<SerializedSession | null>;
   set(session: SerializedSession): Promise<void>;
   delete(id: string): Promise<void>;
@@ -126,20 +128,27 @@ export class KVSessionStorage implements SessionStorage {
     }
   }
 
-  public async create(
+  public async create({
+    init,
+    temporary,
+  }: {
     init?: Pick<
       SerializedSession,
       "flashMessages" | "formErrors" | "additionnalData"
-    >
-  ): Promise<SerializedSession> {
+    >;
+    temporary?: boolean;
+  }): Promise<SerializedSession> {
     const { sessionId, signature } = await this.#generateSessionId();
     const sessionObject = {
       id: sessionId,
-      expiry: new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
+      expiry: temporary
+        ? new Date(Date.now() + 5 * 1000) // only five seconds for temporary session
+        : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
       signature,
       flashMessages: init?.flashMessages,
       formErrors: init?.formErrors,
       additionnalData: init?.additionnalData,
+      bot: Boolean(temporary),
     } satisfies SerializedSession;
 
     await this.set(sessionObject);
@@ -228,6 +237,7 @@ export class KVSessionStorage implements SessionStorage {
       flashMessages: session.flashMessages,
       formErrors: session.formErrors,
       additionnalData: session.additionnalData,
+      bot: false,
     } satisfies SerializedSession;
 
     await this.set(sessionObject);
@@ -242,9 +252,11 @@ export class KVSessionStorage implements SessionStorage {
 
     // create a new one
     return await this.create({
-      flashMessages: session.flashMessages,
-      formErrors: session.formErrors,
-      additionnalData: session.additionnalData,
+      init: {
+        flashMessages: session.flashMessages,
+        formErrors: session.formErrors,
+        additionnalData: session.additionnalData,
+      },
     });
   }
 }
@@ -261,8 +273,12 @@ export class Session {
     return new Session(serializedPayload);
   }
 
-  public static async create() {
-    return Session.fromPayload(await this.#storage.create());
+  public static async create(temporary: boolean = false) {
+    return Session.fromPayload(
+      await this.#storage.create({
+        temporary,
+      })
+    );
   }
 
   public static async get(id: string) {

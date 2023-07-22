@@ -18,9 +18,7 @@ export type ThemeFormProps = {
 
 export function ThemeForm({ theme }: ThemeFormProps) {
   const { Form, isPending } = useForm(updateTheme);
-  console.log({
-    theme,
-  });
+
   return (
     <Form className="flex flex-col gap-4 items-center md:gap-8 md:items-start">
       <div className="flex items-start gap-4 flex-wrap">
