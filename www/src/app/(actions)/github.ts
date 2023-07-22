@@ -1,12 +1,12 @@
 "use server";
 
-import { kv } from "../../lib/kv";
-import { fetchFromGithubAPI } from "../../lib/server-utils";
+import { kv } from "~/lib/kv";
+import { fetchFromGithubAPI } from "~/lib/server-utils";
 import {
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_CACHE_KEY,
   GITHUB_REPOSITORY_NAME,
-} from "../../lib/constants";
+} from "~/lib/constants";
 import { cache } from "react";
 
 type GithubRepositoryData = {

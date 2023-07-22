@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import * as React from "react";
 // components
-import { ThemeCard } from "../../../../(components)/theme-card";
-import { ThemeSaveButton } from "../../../../(components)/theme-save-button";
+import { ThemeCard } from "~/app/(components)/theme-card";
+import { ThemeSaveButton } from "~/app/(components)/theme-save-button";
 
 // utils
-import { getUserOrRedirect } from "../../../../(actions)/auth";
-import { getTheme, updateTheme } from "../../../../(actions)/theme";
+import { getUserOrRedirect } from "~/app/(actions)/auth";
+import { getTheme, updateTheme } from "~/app/(actions)/theme";
 
 export default async function Page() {
   await getUserOrRedirect("/settings/appearance");

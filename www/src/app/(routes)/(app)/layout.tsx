@@ -1,7 +1,7 @@
 // components
-import { Footer } from "../../(components)/footer";
-import { Header } from "../../(components)/header";
-import { clsx } from "../../../lib/functions";
+import { Footer } from "~/app/(components)/footer";
+import { Header } from "~/app/(components)/header";
+import { clsx } from "~/lib/functions";
 
 export default async function AppLayout({
   children,

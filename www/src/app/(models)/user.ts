@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { db } from "../../lib/db";
-import { users } from "../../lib/db/schema/user";
+import { db } from "~/lib/db";
+import { users } from "~/lib/db/schema/user";
 
 export async function getUserFromGithubProfile(
   ghUser: z.TypeOf<typeof githubUserSchema>

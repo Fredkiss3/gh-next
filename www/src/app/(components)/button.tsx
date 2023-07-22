@@ -1,6 +1,6 @@
 import * as React from "react";
 import { LoadingIndicator } from "./loading-indicator";
-import { clsx } from "../../lib/functions";
+import { clsx } from "~/lib/functions";
 import Link from "next/link";
 
 import type { Route } from "next";

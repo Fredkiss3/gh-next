@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getUserOrRedirect } from "../../../../(actions)/auth";
+import { getUserOrRedirect } from "~/app/(actions)/auth";
 
 export default async function Page() {
   const user = await getUserOrRedirect("/settings/account");

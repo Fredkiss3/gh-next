@@ -1,5 +1,5 @@
 import * as React from "react";
-import { clsx } from "../../lib/functions";
+import { clsx } from "~/lib/functions";
 import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<

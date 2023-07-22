@@ -1,14 +1,14 @@
 // components
 import { MarkGithubIcon } from "@primer/octicons-react";
-import { Button } from "../../(components)/button";
-import { Card } from "../../(components)/card";
+import { Button } from "~/app/(components)/button";
+import { Card } from "~/app/(components)/card";
 import Link from "next/link";
 
 // utils
-import { authenticateWithGithub } from "../../(actions)/auth";
+import { authenticateWithGithub } from "~/app/(actions)/auth";
 
 // types
-import type { PageProps } from "../../../lib/types";
+import type { PageProps } from "~/lib/types";
 
 export default function LoginPage({ searchParams }: PageProps) {
   const nextUrl = searchParams?.nextUrl;

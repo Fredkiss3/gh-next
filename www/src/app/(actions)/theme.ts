@@ -2,8 +2,8 @@
 
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { THEME_COOKIE_KEY } from "../../lib/constants";
-import { forceRevalidate } from "../../lib/server-utils";
+import { THEME_COOKIE_KEY } from "~/lib/constants";
+import { forceRevalidate } from "~/lib/server-utils";
 import { getSession } from "./auth";
 import { cache } from "react";
 

@@ -1,7 +1,7 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { getSession } from "../app/(actions)/auth";
+import { getSession } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
 import { GITHUB_AUTHOR_USERNAME } from "./constants";
 

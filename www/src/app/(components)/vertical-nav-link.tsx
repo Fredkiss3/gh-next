@@ -5,8 +5,8 @@ import * as React from "react";
 import Link from "next/link";
 
 // utils
-import { useActiveLink } from "../../lib/hooks/use-active-link";
-import { clsx } from "../../lib/functions";
+import { useActiveLink } from "~/lib/hooks/use-active-link";
+import { clsx } from "~/lib/functions";
 
 // types
 import type { LinkProps } from "next/link";

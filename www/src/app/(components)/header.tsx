@@ -17,8 +17,8 @@ import { UserDropdown } from "./user-dropdown";
 import { UnderlineNavbar } from "./underline-navbar";
 
 // utils
-import { getSession } from "../(actions)/auth";
-import { clsx } from "../../lib/functions";
+import { getSession } from "~/app/(actions)/auth";
+import { clsx } from "~/lib/functions";
 import { Route } from "next";
 
 // types

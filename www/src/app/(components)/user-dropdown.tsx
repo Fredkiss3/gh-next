@@ -11,7 +11,7 @@ import {
 
 // utils
 import { useRouter } from "next/navigation";
-import { logoutUser } from "../(actions)/auth";
+import { logoutUser } from "~/app/(actions)/auth";
 
 // types
 export type UserDropdownProps = {

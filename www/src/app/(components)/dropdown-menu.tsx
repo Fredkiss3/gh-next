@@ -6,7 +6,7 @@ import { Menu } from "@headlessui/react";
 import Link from "next/link";
 
 // utils
-import { clsx } from "../../lib/functions";
+import { clsx } from "~/lib/functions";
 
 // types
 import type { Route } from "next";

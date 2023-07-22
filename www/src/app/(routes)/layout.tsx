@@ -1,13 +1,13 @@
 import "./globals.css";
 
 // components
-import { TailwindIndicator } from "../(components)/tailwind-indicator";
-import { Toaster } from "../(components)/toast/toaster";
+import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
+import { Toaster } from "~/app/(components)/toast/toaster";
 
 // utils
 import { Inter } from "next/font/google";
-import { getTheme } from "../(actions)/theme";
-import { clsx } from "../../lib/functions";
+import { getTheme } from "~/app/(actions)/theme";
+import { clsx } from "~/lib/functions";
 
 // types
 import type { Metadata } from "next";

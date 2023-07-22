@@ -1,10 +1,10 @@
 // components
 import { HomeIcon } from "@primer/octicons-react";
-import { Button } from "../../../(components)/button";
+import { Button } from "~/app/(components)/button";
 
 // utils
 import { notFound } from "next/navigation";
-import { clsx } from "../../../../lib/functions";
+import { clsx } from "~/lib/functions";
 
 // types
 import type { Metadata } from "next";

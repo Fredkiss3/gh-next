@@ -2,7 +2,7 @@
 import * as React from "react";
 
 // Components
-import { Button } from "../button";
+import { Button } from "~/app/(components)/button";
 import {
   AlertFillIcon,
   CheckIcon,
@@ -11,10 +11,11 @@ import {
 } from "@primer/octicons-react";
 
 // utils
-import { clsx } from "../../../lib/functions";
+import { clsx } from "~/lib/functions";
+import { PauseableTimeout } from "~/lib/pauseable-timeout";
 
 // types
-import type { SessionFlash } from "../../../lib/session";
+import type { SessionFlash } from "~/lib/session";
 
 type ToastProps = {
   type?: SessionFlash["type"];
@@ -37,16 +38,19 @@ export function Toast({
 }: ToastProps) {
   const [removed, setRemoved] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
+  const timer = React.useRef<PauseableTimeout | null>(null);
 
   React.useEffect(() => {
-    const timer = keep
-      ? undefined
-      : window.setTimeout(() => setRemoved(true), duration + delay);
+    timer.current = keep
+      ? null
+      : new PauseableTimeout(() => setRemoved(true), duration + delay);
+
+    timer.current?.start();
 
     return () => {
-      clearTimeout(timer);
+      timer.current?.stop();
     };
-  }, [duration, keep, delay]);
+  }, [keep, duration, delay]);
 
   function removeToast() {
     if (removed) {
@@ -67,6 +71,16 @@ export function Toast({
       )}
       // Remove toast after animation ends
       onTransitionEnd={removeToast}
+      onMouseEnter={() => {
+        if (!removed) {
+          timer.current?.pause();
+        }
+      }}
+      onMouseLeave={() => {
+        if (!removed) {
+          timer.current?.resume();
+        }
+      }}
     >
       <div
         className={clsx(

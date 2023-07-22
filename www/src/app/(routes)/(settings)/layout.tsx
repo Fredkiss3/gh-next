@@ -1,12 +1,12 @@
 // components
-import { Avatar } from "../../(components)/avatar";
-import { Footer } from "../../(components)/footer";
-import { Header } from "../../(components)/header";
-import { VerticalNavlist } from "../../(components)/vertical-navlist";
+import { Avatar } from "~/app/(components)/avatar";
+import { Footer } from "~/app/(components)/footer";
+import { Header } from "~/app/(components)/header";
+import { VerticalNavlist } from "~/app/(components)/vertical-navlist";
 
 // utils
-import { getUserOrRedirect } from "../../(actions)/auth";
-import { clsx } from "../../../lib/functions";
+import { getUserOrRedirect } from "~/app/(actions)/auth";
+import { clsx } from "~/lib/functions";
 
 export default async function AppLayout({
   children,

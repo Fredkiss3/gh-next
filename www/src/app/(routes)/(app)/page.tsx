@@ -12,21 +12,21 @@ import {
   StarIcon,
   TriangleDownIcon,
 } from "@primer/octicons-react";
-import { Avatar } from "../../(components)/avatar";
-import { Badge } from "../../(components)/badge";
-import { CounterBadge } from "../../(components)/counter-badge";
-import { Button } from "../../(components)/button";
-import { MarkdownContent } from "../../(components)/markdown-content";
+import { Avatar } from "~/app/(components)/avatar";
+import { Badge } from "~/app/(components)/badge";
+import { CounterBadge } from "~/app/(components)/counter-badge";
+import { Button } from "~/app/(components)/button";
+import { MarkdownContent } from "~/app/(components)/markdown-content";
 
 // utils
-import { getSession } from "../../(actions)/auth";
-import { getGithubRepoData } from "../../(actions)/github";
+import { getSession } from "~/app/(actions)/auth";
+import { getGithubRepoData } from "~/app/(actions)/github";
 import {
   AUTHOR_AVATAR_URL,
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_NAME,
-} from "../../../lib/constants";
-import { clsx } from "../../../lib/functions";
+} from "~/lib/constants";
+import { clsx } from "~/lib/functions";
 
 export default async function Page() {
   const { user } = await getSession();

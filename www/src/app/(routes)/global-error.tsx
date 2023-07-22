@@ -3,11 +3,11 @@ import * as React from "react";
 
 // components
 import { HomeIcon } from "@primer/octicons-react";
-import { Button } from "../(components)/button";
+import { Button } from "~/app/(components)/button";
 
 // utils
 import { Inter } from "next/font/google";
-import { clsx } from "../../lib/functions";
+import { clsx } from "~/lib/functions";
 
 const inter = Inter({ subsets: ["latin"] });
 

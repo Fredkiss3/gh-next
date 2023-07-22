@@ -1,8 +1,8 @@
 "use client";
 import * as React from "react";
-import { logoutUser } from "../../../../(actions)/auth";
-import { Button } from "../../../../(components)/button";
-import { useForm } from "../../../../../lib/hooks/use-form";
+import { logoutUser } from "~/app/(actions)/auth";
+import { Button } from "~/app/(components)/button";
+import { useForm } from "~/lib/hooks/use-form";
 
 export function LogoutForm() {
   const { Form, isPending } = useForm(logoutUser);
