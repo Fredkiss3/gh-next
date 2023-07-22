@@ -7,7 +7,10 @@ import { env } from "~/env.mjs";
 import { SESSION_COOKIE_KEY } from "~/lib/constants";
 import { forceRevalidate, ssrRedirect, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
-import { getUserFromGithubProfile, githubUserSchema } from "~/app/(models)/user";
+import {
+  getUserFromGithubProfile,
+  githubUserSchema,
+} from "~/app/(models)/user";
 
 import type { Route } from "next";
 
