@@ -13,7 +13,7 @@ export async function Footer({}: FooterProps) {
   return (
     <footer
       className={clsx(
-        "max-w-[1400px] mx-auto border-t border-neutral py-6 px-5",
+        "max-w-[1270px] mx-auto border-t border-neutral py-6 px-5",
         "md:px-8"
       )}
     >

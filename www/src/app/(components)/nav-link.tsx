@@ -31,7 +31,8 @@ export function NavLink({
       className={clsx("py-3 group relative", {
         "font-medium after:absolute after:left-0 after:right-0 after:-bottom-0.5":
           isActive,
-        "after:bg-severe-border after:rounded-md after:h-1": isActive,
+        "after:bg-severe-border after:rounded-md after:h-1 after:z-20":
+          isActive,
       })}
       href={href}
     >

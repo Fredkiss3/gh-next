@@ -32,8 +32,10 @@ export function UnderlineNavbar({
   return (
     <nav
       className={clsx(
+        "border-b border-neutral",
         "px-5 relative z-20 overflow-x-auto overflow-y-clip",
         "md:px-8",
+        "h-[52px]",
         className
       )}
     >

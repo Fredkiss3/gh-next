@@ -36,11 +36,14 @@ export async function Header({
   const user = await getSession().then((session) => session.user);
 
   return (
-    <header className="border-b border-neutral">
+    <header
+      className={clsx({
+        "border-b border-neutral": hideRepoNavbar,
+      })}
+    >
       <div
         className={clsx(
           "flex py-4 px-5 items-center justify-between h-16 bg-header relative z-5",
-
           "md:px-8"
         )}
       >
