@@ -218,14 +218,14 @@ export default async function Page() {
       <section
         id="body"
         className={clsx(
-          "grid items-start gap-4",
+          "md:grid items-start gap-4",
           "sm:px-5",
           "md:grid-cols-11 md:px-8",
           "lg:grid-cols-[repeat(13,_minmax(0,_1fr))]",
           "xl:grid-cols-[repeat(15,_minmax(0,_1fr))]"
         )}
       >
-        <ReadmeContent className="col-span-7 lg:col-span-9 xl:col-span-11" />
+        <ReadmeContent className="md:col-span-7 lg:col-span-9 xl:col-span-11 w-full" />
 
         <aside
           className={clsx(
@@ -377,7 +377,7 @@ async function ReadmeContent({ className }: { className?: string }) {
         <MarkdownContent
           linkHeaders
           content={readmeContent}
-          className="px-8 pb-8 pt-4"
+          className="px-8 pb-8 pt-4 w-full max-w-full"
         />
       </div>
     </div>

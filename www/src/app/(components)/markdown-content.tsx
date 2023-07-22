@@ -195,9 +195,7 @@ function Header({ as, showLink, ...props }: HeaderProps) {
           "font-semibold": as !== "h1",
           "text-3xl": as === "h2",
           "text-2xl": as === "h3",
-          "text-xl": as === "h4",
-          "text-xl ": as === "h5",
-          "text-xl  ": as === "h6",
+          "text-xl": as === "h4" || as === "h5" || as === "h6",
         }
       )}
       {...props}
