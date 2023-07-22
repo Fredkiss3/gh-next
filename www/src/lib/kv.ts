@@ -1,4 +1,3 @@
-import { Redis } from "@upstash/redis/cloudflare";
 import { env } from "~/env.mjs";
 import { DEFAULT_CACHE_TTL } from "./constants";
 import { z } from "zod";
@@ -39,51 +38,26 @@ export class CloudfareKV implements KVStore {
     value: T,
     ttl_in_seconds: number = DEFAULT_CACHE_TTL
   ) {
-    const fullKey = `${env.KV_PREFIX}${key}`;
-
-    if (this.#client instanceof Redis) {
-      this.#client.set(
-        fullKey,
-        value,
-        ttl_in_seconds
-          ? {
-              ex: ttl_in_seconds,
-            }
-          : undefined
-      );
-    } else {
-      this.#client.put(
-        fullKey,
-        JSON.stringify(value),
-        ttl_in_seconds
-          ? {
-              expirationTtl: ttl_in_seconds,
-            }
-          : undefined
-      );
-    }
+    this.#client.put(
+      key,
+      JSON.stringify(value),
+      ttl_in_seconds
+        ? {
+            expirationTtl: ttl_in_seconds,
+          }
+        : undefined
+    );
   }
 
   public async get<T extends unknown>(key: string) {
-    const fullKey = `${env.KV_PREFIX}${key}`;
-
-    if (this.#client instanceof Redis) {
-      return this.#client.get<T>(fullKey);
-    } else {
-      return this.#client.get(fullKey).then((str) => {
-        if (str === null) return null;
-        return JSON.parse(str) as T;
-      });
-    }
+    return this.#client.get(key).then((str) => {
+      if (str === null) return null;
+      return JSON.parse(str) as T;
+    });
   }
 
   public async delete(key: string) {
-    const fullKey = `${env.KV_PREFIX}${key}`;
-    if (this.#client instanceof Redis) {
-      await this.#client.del(fullKey);
-    } else {
-      await this.#client.delete(fullKey);
-    }
+    await this.#client.delete(key);
   }
 }
 

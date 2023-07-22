@@ -24,7 +24,6 @@
     "@types/node": "20.3.1",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
-    "@upstash/redis": "^1.22.0",
     "bright": "^0.8.3",
     "drizzle-orm": "^0.27.0",
     "drizzle-zod": "^0.4.4",

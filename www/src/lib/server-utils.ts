@@ -78,6 +78,7 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
       variables,
     }),
     headers: {
+      "content-type": "application/json",
       Authorization: `Bearer ${env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
       // this header is required per the documentation : https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#user-agent-required
       "User-Agent": GITHUB_AUTHOR_USERNAME,
