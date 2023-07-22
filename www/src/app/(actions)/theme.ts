@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { THEME_COOKIE_KEY } from "~/lib/constants";
-import { forceRevalidate } from "~/lib/server-utils";
+import { forceRevalidate, ssrRedirect } from "~/lib/server-utils";
 import { getSession } from "./auth";
 import { cache } from "react";
 
@@ -43,4 +43,6 @@ export async function updateTheme(formData: FormData) {
     name: THEME_COOKIE_KEY,
     value: theme,
   });
+
+  ssrRedirect("/settings/appearance");
 }

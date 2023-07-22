@@ -1,12 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 import * as React from "react";
-// components
-import { ThemeCard } from "~/app/(components)/theme-card";
-import { ThemeSaveButton } from "~/app/(components)/theme-save-button";
 
 // utils
 import { getUserOrRedirect } from "~/app/(actions)/auth";
-import { getTheme, updateTheme } from "~/app/(actions)/theme";
+import { getTheme } from "~/app/(actions)/theme";
+import { ThemeForm } from "~/app/(components)/theme-form";
 
 export default async function Page() {
   await getUserOrRedirect("/settings/appearance");
@@ -23,18 +21,7 @@ export default async function Page() {
           your system and automatically switch between day and night themes.
         </p>
 
-        <form
-          action={updateTheme}
-          className="flex flex-col gap-4 items-center md:gap-8 md:items-start"
-        >
-          <div className="flex items-start gap-4 flex-wrap">
-            <ThemeCard value="light" defaultSelected={theme === "light"} />
-            <ThemeCard value="dark" defaultSelected={theme === "dark"} />
-            <ThemeCard value="system" defaultSelected={theme === "system"} />
-          </div>
-
-          <ThemeSaveButton />
-        </form>
+        <ThemeForm theme={theme} />
       </section>
     </div>
   );

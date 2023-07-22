@@ -40,7 +40,7 @@ app
       path,
       JSON.stringify({
         value: data.value,
-        expirationDate: new Date(Date.now() + data.TTL * 1000),
+        expirationDate: new Date(Date.now() + (data.TTL * 1000)),
       })
     );
 
@@ -60,7 +60,7 @@ app
       try {
         const storeData = kvStoreSchema.parse(await store.json());
 
-        if (storeData.expirationDate > new Date()) {
+        if (new Date().getTime() <= storeData.expirationDate.getTime()) {
           return c.json({
             data: storeData.value,
           });

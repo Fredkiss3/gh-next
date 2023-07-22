@@ -47,7 +47,7 @@ export function ThemeCard({ value, defaultSelected }: ThemeCardProps) {
           type="radio"
           name="theme"
           className="peer"
-          value={value}
+          defaultValue={value}
           defaultChecked={defaultSelected}
           onChange={(e) => e.currentTarget.form?.requestSubmit()}
         />

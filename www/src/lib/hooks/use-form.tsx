@@ -14,7 +14,7 @@ type SubmissionCallbacks<T> = {
 };
 
 type InternalFormProps<T> = {
-  action?: (formData?: FormData) => Promise<T>;
+  action?: (() => Promise<T>) | ((formData: FormData) => Promise<T>);
   startTransition: React.TransitionStartFunction;
   formCallbacksRef: React.Ref<{
     requestSubmit: () => void;
@@ -117,7 +117,7 @@ function InternalForm<T>({
  * @param callbacks callbacks to run after the execution of the action
  */
 export function useForm<T extends unknown>(
-  action: (formData?: FormData) => Promise<T>,
+  action: (() => Promise<T>) | ((formData: FormData) => Promise<T>),
   callbacks?: SubmissionCallbacks<T>
 ) {
   const [isPending, startTransition] = React.useTransition();
