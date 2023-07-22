@@ -11,7 +11,7 @@
 - [x] Login/Logout
 - [x] HomePage (README content)
 - [x] Responsive Layout
-- [ ] Settings page for toggling theme
+- [x] Settings page for toggling theme
 - [ ] See Profile informations
   - [ ] Delete account and all the issues openned
 - [ ] Issues List page
@@ -132,13 +132,12 @@ A quick look at the top-level files and directories you will see in this project
 
 ## 🍳 ENV VARIABLES USED
 
-| Nom                   | role                                                                               |
-| :-------------------- | :--------------------------------------------------------------------------------- |
-| `SESSION_SECRET`      | random 32 chars length string used to encode the session id                        |
-| `TURSO_DB_TOKEN`      | DB token used to authenticate to turso                                             |
-| `TURSO_DB_URL`        | DB url of the turso DB                                                             |
-| `KV_PREFIX`           | prefix for the key/value store, i use this bcos i only have one free DB in upstash |
-| `KV_REST_URL`         | LOCAL file server URL for storing key values                                       |
-| `GITHUB_CLIENT_ID`    | github client id stored for our app used for authenticating users with github      |
-| `GITHUB_REDIRECT_URI` | URL to redirect when a user has been authenticated                                 |
-| `GITHUB_SECRET`       | github secret stored for our app                                                   |
+| Nom                   | role                                                                          |
+| :-------------------- | :---------------------------------------------------------------------------- |
+| `SESSION_SECRET`      | random 32 chars length string used to encode the session id                   |
+| `TURSO_DB_TOKEN`      | DB token used to authenticate to turso                                        |
+| `TURSO_DB_URL`        | DB url of the turso DB                                                        |
+| `KV_REST_URL`         | LOCAL file server URL for storing key values                                  |
+| `GITHUB_CLIENT_ID`    | github client id stored for our app used for authenticating users with github |
+| `GITHUB_REDIRECT_URI` | URL to redirect when a user has been authenticated                            |
+| `GITHUB_SECRET`       | github secret stored for our app                                              |
