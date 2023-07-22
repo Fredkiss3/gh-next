@@ -38,7 +38,7 @@ export class CloudfareKV implements KVStore {
     value: T,
     ttl_in_seconds: number = DEFAULT_CACHE_TTL
   ) {
-    this.#client.put(
+    await this.#client.put(
       key,
       JSON.stringify(value),
       ttl_in_seconds
@@ -50,7 +50,7 @@ export class CloudfareKV implements KVStore {
   }
 
   public async get<T extends unknown>(key: string) {
-    return this.#client.get(key).then((str) => {
+    return await this.#client.get(key).then((str) => {
       if (str === null) return null;
       return JSON.parse(str) as T;
     });
