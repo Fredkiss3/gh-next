@@ -286,7 +286,10 @@ export class Session {
       expires: this.#internal.expiry,
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production" ? true : undefined,
+      // when testing on local, the cookies should not be set to secure
+      secure: !env.GITHUB_REDIRECT_URI.startsWith("http://localhost")
+        ? true
+        : undefined,
     };
   }
 
