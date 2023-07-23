@@ -17,6 +17,7 @@ import { Badge } from "~/app/(components)/badge";
 import { CounterBadge } from "~/app/(components)/counter-badge";
 import { Button } from "~/app/(components)/button";
 import { MarkdownContent } from "~/app/(components)/markdown-content";
+import Link from "next/link";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
@@ -57,7 +58,7 @@ export default async function Page() {
 
         <div className="flex items-center gap-3">
           <Button
-            href="https://github.com/Fredkiss3/gh-next"
+            href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
             variant="ghost"
             renderLeadingIcon={(cls) => (
               <EyeIcon className={clsx(cls, "text-grey")} />
@@ -70,7 +71,7 @@ export default async function Page() {
             <CounterBadge count={repositoryData.watcherCount} />
           </Button>
           <Button
-            href="https://github.com/Fredkiss3/gh-next/fork"
+            href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/fork`}
             variant="ghost"
             renderLeadingIcon={(cls) => (
               <RepoForkedIcon className={clsx(cls, "text-grey")} />
@@ -83,7 +84,7 @@ export default async function Page() {
             <CounterBadge count={repositoryData.forkCount} />
           </Button>
           <Button
-            href="https://github.com/Fredkiss3/gh-next"
+            href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
             variant="ghost"
             renderLeadingIcon={(cls) =>
               hasStarred ? (
@@ -113,7 +114,7 @@ export default async function Page() {
       >
         <div className="flex items-center gap-2">
           <Button
-            href="https://github.com/Fredkiss3/gh-next"
+            href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
             variant="ghost"
             isSquared
             renderLeadingIcon={(cls) => (
@@ -123,7 +124,7 @@ export default async function Page() {
             <span className="sr-only">Watch</span>
           </Button>
           <Button
-            href="https://github.com/Fredkiss3/gh-next/fork"
+            href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/fork`}
             variant="ghost"
             isSquared
             renderLeadingIcon={(cls) => (
@@ -133,7 +134,7 @@ export default async function Page() {
             <span className="sr-only">Fork</span>
           </Button>
           <Button
-            href="https://github.com/Fredkiss3/gh-next"
+            href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
             variant="ghost"
             isSquared
             renderLeadingIcon={(cls) =>
@@ -241,6 +242,7 @@ export default async function Page() {
               <LinkIcon className="h-4 w-4" />
               <a
                 href={repositoryData.url}
+                target="_blank"
                 className="text-accent font-semibold"
               >
                 {repositoryData.url}
@@ -354,7 +356,7 @@ async function ReadmeContent({ className }: { className?: string }) {
   const { readmeContent } = await getGithubRepoData();
 
   return (
-    <div className={className} id="readme">
+    <div className={className}>
       <div
         className={clsx(
           "border border-neutral flex items-center gap-2 p-4",
@@ -365,7 +367,12 @@ async function ReadmeContent({ className }: { className?: string }) {
         <button className="flex items-center justify-center p-2 rounded-md hover:bg-neutral/50">
           <ListUnorderedIcon className="h-4 w-4 text-grey" />
         </button>
-        <h2 className="font-semibold text-base">README.md</h2>
+        <h2
+          className="font-semibold text-base scroll-mt-10 hover:text-accent hover:underline"
+          id="readme"
+        >
+          <Link href="#readme">README.md</Link>
+        </h2>
       </div>
 
       <div

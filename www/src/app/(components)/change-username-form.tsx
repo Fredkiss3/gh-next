@@ -1,12 +1,16 @@
 "use client";
-
 import * as React from "react";
-import { useForm } from "~/lib/hooks/use-form";
+// components
 import { Button } from "./button";
 import { Input } from "./input";
+
+// utils
 import { updateUserName } from "~/app/(actions)/auth";
-import type { FormErrors } from "~/lib/types";
 import { useRouter } from "next/navigation";
+import { useForm } from "~/lib/hooks/use-form";
+
+// types
+import type { FormErrors } from "~/lib/types";
 
 export type ChangeUsernameFormProps = {
   defaultValue: string;

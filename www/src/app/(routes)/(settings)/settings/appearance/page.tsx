@@ -1,10 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import * as React from "react";
 
+// components
+import { ThemeForm } from "~/app/(components)/theme-form";
+
 // utils
 import { getUserOrRedirect } from "~/app/(actions)/auth";
 import { getTheme } from "~/app/(actions)/theme";
-import { ThemeForm } from "~/app/(components)/theme-form";
 
 // types
 import type { Metadata } from "next";
