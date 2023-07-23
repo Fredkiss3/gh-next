@@ -176,7 +176,7 @@ export const getGithubRepoData = cache(async function getGithubRepoData() {
     let totalPercent = 0;
     const languages = repository.languages.edges.map((edge) => {
       let percent = Number(
-        ((edge.size / repository.languages.totalSize) * 100).toFixed(2)
+        ((edge.size / repository.languages.totalSize) * 100).toFixed(1)
       );
 
       totalPercent += percent;
