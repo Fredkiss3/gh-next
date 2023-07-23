@@ -6,6 +6,12 @@ import { getUserOrRedirect } from "~/app/(actions)/auth";
 import { getTheme } from "~/app/(actions)/theme";
 import { ThemeForm } from "~/app/(components)/theme-form";
 
+// types
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Appearance",
+};
+
 export default async function Page() {
   await getUserOrRedirect("/settings/appearance");
   const theme = await getTheme();

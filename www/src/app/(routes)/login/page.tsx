@@ -9,6 +9,11 @@ import { authenticateWithGithub } from "~/app/(actions)/auth";
 
 // types
 import type { PageProps } from "~/lib/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login",
+};
 
 export default function LoginPage({ searchParams }: PageProps) {
   const nextUrl = searchParams?.nextUrl;
