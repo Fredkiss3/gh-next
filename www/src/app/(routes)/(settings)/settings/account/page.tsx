@@ -2,7 +2,6 @@ import * as React from "react";
 
 // components
 import { ChangeUsernameForm } from "~/app/(components)/change-username-form";
-import { DeleteAccountForm } from "~/app/(components)/delete-account-form";
 
 // utils
 import { getSession, getUserOrRedirect } from "~/app/(actions)/auth";
@@ -35,20 +34,6 @@ export default async function Page() {
           defaultValue={formData?.data?.username?.toString() ?? user.username}
         />
       </section>
-
-      {/* <section className="flex flex-col gap-4 md:gap-8">
-        <h2 className="text-3xl text-danger font-semibold border-b border-neutral py-2.5">
-          Delete account
-        </h2>
-
-        <p>
-          This will delete your account and all of the issues and comments
-          associated with it, is you are assigned to an issue, it will loose its
-          assignment.
-        </p>
-
-        <DeleteAccountForm />
-      </section> */}
     </div>
   );
 }
