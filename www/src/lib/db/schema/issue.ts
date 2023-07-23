@@ -17,6 +17,7 @@ import {
 export const IssueStatuses = {
   OPEN: "OPEN",
   CLOSED: "CLOSED",
+  LOCKED: "LOCKED",
   NOT_PLANNED: "NOT_PLANNED",
 } as const;
 
