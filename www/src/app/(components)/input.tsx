@@ -15,7 +15,7 @@ export type InputProps = Omit<
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   size?: "small" | "medium" | "large";
   isLoading?: boolean;
-  validationText?: string;
+  validationText?: React.ReactNode;
   validationStatus?: "error" | "success";
   hideLabel?: boolean;
 };
@@ -97,6 +97,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             autoComplete={autoComplete}
             aria-invalid={validationStatus === "error"}
             type={type}
+            name={name}
             disabled={disabled}
             required={required}
             className={clsx(
@@ -146,7 +147,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
 
         {helpText && (
-          <small id={helpId} className="text-gray-400">
+          <small id={helpId} className="text-grey">
             {helpText}
           </small>
         )}

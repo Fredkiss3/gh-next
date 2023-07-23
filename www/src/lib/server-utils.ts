@@ -9,8 +9,8 @@ export function isSSR() {
   return headers().get("accept")?.includes("text/html");
 }
 
-export function ssrRedirect(path: string) {
-  // FIXME: this condition is a workaround until this PR is merged : https://github.com/vercel/next.js/issues/49424
+export function ssrRedirect(path: string): void {
+  // FIXME: this condition is a workaround until this issue is fixed ? : https://github.com/vercel/next.js/issues/49424
   if (isSSR()) {
     return redirect(path);
   }

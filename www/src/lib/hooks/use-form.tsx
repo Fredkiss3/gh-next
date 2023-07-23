@@ -10,7 +10,7 @@ export type FormProps = Omit<
 
 type SubmissionCallbacks<T> = {
   onSettled?: (arg: T) => Promise<void> | void;
-  onSubmit?: (formData?: FormData) => Promise<void> | void;
+  onSubmit?: (formData?: FormData) => Promise<boolean> | boolean;
 };
 
 type InternalFormProps<T> = {
@@ -51,27 +51,30 @@ function InternalForm<T>({
     <form
       action={action}
       ref={formRef}
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         const formData = new FormData(e.currentTarget);
-        onSubmit?.(formData);
-
         e.preventDefault();
+        const shouldSubmit = onSubmit ? await onSubmit(formData) : true;
 
-        startTransition(async () => {
-          if (action) {
-            // FIXME: until this issue is fixed : https://github.com/vercel/next.js/issues/52075
-            // once this is fixed, we would have not need to call `router.refresh()` manually
-            // or to call the action manually
-            await action(formData).then((returnedValue) => {
-              router.refresh();
-              onSettled?.(returnedValue);
-            });
-          } else {
-            // @ts-expect-error the URLSearchParams constructor supports formData
-            const searchParams = new URLSearchParams(formData);
-            return router.push((path + "?" + searchParams.toString()) as Route);
-          }
-        });
+        if (shouldSubmit) {
+          startTransition(async () => {
+            if (action) {
+              // FIXME: until this issue is fixed : https://github.com/vercel/next.js/issues/52075
+              // once this is fixed, we would have not need to call `router.refresh()` manually
+              // or to call the action manually
+              await action(formData).then((returnedValue) => {
+                router.refresh();
+                onSettled?.(returnedValue);
+              });
+            } else {
+              // @ts-expect-error the URLSearchParams constructor supports formData
+              const searchParams = new URLSearchParams(formData);
+              return router.push(
+                (path + "?" + searchParams.toString()) as Route
+              );
+            }
+          });
+        }
       }}
       {...restProps}
     >
@@ -117,10 +120,22 @@ function InternalForm<T>({
  * @param callbacks callbacks to run after the execution of the action
  */
 export function useForm<T extends unknown>(
-  action: (() => Promise<T>) | ((formData: FormData) => Promise<T>),
+  action?: (() => Promise<T>) | ((formData: FormData) => Promise<T>),
   callbacks?: SubmissionCallbacks<T>
 ) {
   const [isPending, startTransition] = React.useTransition();
+
+  const onSubmitCallback = React.useCallback(
+    (args: any) => callbacks?.onSubmit?.(args) ?? true,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  const onSettledCallback = React.useCallback(
+    (args: any) => callbacks?.onSettled?.(args),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   const ref = React.useRef<{
     requestSubmit: () => void;
   }>(null);
@@ -133,13 +148,13 @@ export function useForm<T extends unknown>(
             formCallbacksRef={ref}
             action={action}
             startTransition={startTransition}
-            onSettled={callbacks?.onSettled}
-            onSubmit={callbacks?.onSubmit}
+            onSettled={onSettledCallback}
+            onSubmit={onSubmitCallback}
             {...props}
           />
         );
       },
-    [action, callbacks?.onSettled, callbacks?.onSubmit]
+    [action, onSettledCallback, onSubmitCallback]
   );
 
   return {

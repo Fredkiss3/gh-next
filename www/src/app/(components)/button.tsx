@@ -56,19 +56,20 @@ export const Button = React.forwardRef<
     "items-center justify-center gap-2 ",
     "rounded-md border-2 font-medium outline-accent border-gray-900/10",
     "transition duration-150",
+    "disabled:opacity-50",
     {
       "inline-flex": !isBlock,
       flex: isBlock,
       "p-2": isSquared,
       "py-1.5 px-3": !isSquared,
       "bg-success text-white shadow-subtle": variant === "primary",
-      "bg-subtle text-danger hover:bg-danger hover:text-white border-neutral":
+      "bg-subtle text-danger enabled:hover:bg-danger enabled:hover:text-white border-neutral enabled:hover:border-danger":
         variant === "danger",
-      "bg-transparent text-grey border-neutral hover:bg-subtle !border hover:border-grey":
+      "bg-transparent text-grey border-neutral enabled:hover:bg-subtle !border enabled:hover:border-grey":
         variant === "invisible",
-      "bg-ghost text-foreground/70 hover:border-grey border-neutral !border shadow-sm":
+      "bg-ghost text-foreground/70 enabled:hover:border-grey border-neutral !border shadow-sm":
         variant === "ghost",
-      "bg-subtle text-accent hover:bg-accent hover:text-white":
+      "bg-subtle text-accent enabled:hover:bg-accent enabled:hover:text-white border-neutral enabled:hover:border-accent":
         variant === "secondary",
     }
   );
@@ -109,7 +110,8 @@ export const Button = React.forwardRef<
             !isLoading && !disabled,
           "focus-visible:shadow-inset focus:shadow-inset [&[aria-pressed=true]]:shadow-inset":
             !isLoading && !disabled && variant === "primary",
-          "cursor-default": isLoading || disabled,
+          "cursor-default": isLoading,
+          "cursor-not-allowed": disabled,
         })}
         {...buttonProps}
       >

@@ -1,21 +1,54 @@
 import * as React from "react";
-import { getUserOrRedirect } from "~/app/(actions)/auth";
+
+// components
+import { ChangeUsernameForm } from "~/app/(components)/change-username-form";
+import { DeleteAccountForm } from "~/app/(components)/delete-account-form";
+
+// utils
+import { getSession, getUserOrRedirect } from "~/app/(actions)/auth";
+
+// types
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Account settings",
+};
 
 export default async function Page() {
   const user = await getUserOrRedirect("/settings/account");
+  const formData = await getSession().then((s) => s.getFormData());
 
   return (
     <div className="flex flex-col gap-4">
-      <section className="flex flex-col">
+      <section className="flex flex-col gap-4 md:gap-8">
         <h2 className="text-3xl font-medium border-b border-neutral py-2.5">
           Change username
         </h2>
+
+        <p>
+          Changing your username means that all the mentions (
+          <strong>@{user.username}</strong>) would be lost
+        </p>
+
+        <ChangeUsernameForm
+          errors={formData?.errors}
+          defaultValue={formData?.data?.username?.toString() ?? user.username}
+        />
       </section>
-      <section className="flex flex-col">
+
+      {/* <section className="flex flex-col gap-4 md:gap-8">
         <h2 className="text-3xl text-danger font-semibold border-b border-neutral py-2.5">
           Delete account
         </h2>
-      </section>
+
+        <p>
+          This will delete your account and all of the issues and comments
+          associated with it, is you are assigned to an issue, it will loose its
+          assignment.
+        </p>
+
+        <DeleteAccountForm />
+      </section> */}
     </div>
   );
 }

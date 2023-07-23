@@ -1,5 +1,4 @@
 "use server";
-
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -8,11 +7,16 @@ import { SESSION_COOKIE_KEY } from "~/lib/constants";
 import { forceRevalidate, ssrRedirect, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
 import {
+  getUserByUsername,
   getUserFromGithubProfile,
   githubUserSchema,
+  updateUserUsername,
 } from "~/app/(models)/user";
 
 import type { Route } from "next";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
+import { wait } from "~/lib/functions";
 
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();
@@ -69,10 +73,10 @@ export async function loginUser(user: any) {
 
   // Find or create the corresponding user in DB
   const ghUser = sessionResult.data;
-  const userFromDB = await getUserFromGithubProfile(ghUser);
+  const dbUser = await getUserFromGithubProfile(ghUser);
 
   const session = await getSession();
-  await session.regenerateForUser(userFromDB);
+  await session.generateForUser(dbUser);
 
   await session.addFlash({
     type: "success",
@@ -113,3 +117,70 @@ export async function getUserOrRedirect(redirectToPath?: Route) {
 
   return session.user;
 }
+
+const updateUserNameSchema = zfd.formData({
+  username: zfd.text(
+    z
+      .string()
+      .trim()
+      .min(1, "please enter a username")
+      .regex(/^[a-zA-Z_][a-zA-Z0-9_]+$/, "Invalid username")
+  ),
+});
+
+export const updateUserName = withAuth(async function (formData: FormData) {
+  const session = await getSession();
+  const result = updateUserNameSchema.safeParse(formData);
+
+  await forceRevalidate();
+  if (!result.success) {
+    await session.addFormData({
+      data: {
+        username: formData.get("username")?.toString() ?? null,
+      },
+      errors: result.error.flatten().fieldErrors,
+    });
+    // await session.add
+    return;
+  }
+
+  if (
+    result.data.username.toLowerCase() === session.user!.username.toLowerCase()
+  ) {
+    await session.addFlash({
+      type: "info",
+      message: "username not changed",
+    });
+    return ssrRedirect("/settings/account");
+  }
+
+  const users = await getUserByUsername(result.data.username);
+
+  if (users.length > 0) {
+    await session.addFormData({
+      data: result.data,
+      errors: {
+        username: ["A user with this username already exists"],
+      },
+    });
+
+    return;
+  }
+
+  const { user } = await updateUserUsername(
+    result.data.username,
+    session.user!.id
+  );
+
+  await session.setUser(user);
+  await session.addFlash({
+    type: "success",
+    message: "username changed with success",
+  });
+
+  return ssrRedirect("/settings/account");
+});
+
+export const deleteAccount = withAuth(async function (formData: FormData) {
+  const session = await getSession();
+});
