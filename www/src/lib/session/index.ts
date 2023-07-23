@@ -249,11 +249,15 @@ export class Session {
 
     // don't store expiry as a date, but a timestamp instead
     const expiry = session.expiry.getTime();
-    await kv.set(
-      `session:${session.id}`,
-      { ...session, expiry },
-      session.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL
-    );
+
+    let sessionTTL = session.user
+      ? LOGGED_IN_SESSION_TTL
+      : LOGGED_OUT_SESSION_TTL;
+    if (session.bot) {
+      sessionTTL = 5; // only 5 seconds for bot sessions
+    }
+
+    await kv.set(`session:${session.id}`, { ...session, expiry }, sessionTTL);
   }
 
   static async #delete(session: SerializedSession) {
