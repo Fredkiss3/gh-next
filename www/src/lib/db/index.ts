@@ -1,9 +1,4 @@
-import {
-  labels,
-  labelToIssues,
-  labelRelations,
-  labelToIssuesRelations,
-} from "./schema/label";
+import { users, usersRelations } from "./schema/user";
 import {
   issues,
   issuesRelations,
@@ -12,7 +7,12 @@ import {
   issueUserSubscriptionRelations,
   issueUserSubscriptions,
 } from "./schema/issue";
-import { users, usersRelations } from "./schema/user";
+import {
+  labels,
+  labelToIssues,
+  labelRelations,
+  labelToIssuesRelations,
+} from "./schema/label";
 import {
   comments,
   commentsRelations,
@@ -34,14 +34,14 @@ import {
   issueToggleActivitiesRelations,
 } from "./schema/activity";
 import { reactions, reactionsRelations } from "./schema/reaction";
-import { drizzle } from "drizzle-orm/libsql";
-import { createClient } from "@libsql/client/http";
+import { neonConfig, Client } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
 import { env } from "~/env.mjs";
 
+neonConfig.fetchConnectionCache = true;
 export const db = drizzle(
-  createClient({
-    url: env.TURSO_DB_URL,
-    authToken: env.TURSO_DB_TOKEN,
+  new Client({
+    connectionString: env.NEON_DB_URL,
   }),
   {
     logger: true,

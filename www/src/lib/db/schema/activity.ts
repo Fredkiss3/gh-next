@@ -1,38 +1,35 @@
 import {
-  sqliteTable,
-  text,
+  pgTable,
+  serial,
+  varchar,
   integer,
+  timestamp,
+  pgEnum,
   primaryKey,
-} from "drizzle-orm/sqlite-core";
-import { relations, sql } from "drizzle-orm";
+} from "drizzle-orm/pg-core";
+
+import { relations } from "drizzle-orm";
 import { users } from "./user";
-import { issues } from "./issue";
 import { labels } from "./label";
+import { issueStatusEnum, issues } from "./issue";
 
 import type { InferModel } from "drizzle-orm";
-import type { IssueStatus } from "./issue";
 
 const baseActivityFields = {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  created_at: integer("created_at", { mode: "timestamp" })
-    .default(sql`(strftime('%s', 'now'))`)
-    .notNull(),
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
   initiator_id: integer("initiator_id")
-    .references(() => users.id, {
-      onDelete: "cascade",
-    })
+    .references(() => users.id)
     .notNull(),
   issue_id: integer("issue_id")
-    .references(() => issues.id, {
-      onDelete: "cascade",
-    })
+    .references(() => issues.id)
     .notNull(),
 };
 
-export const changeTitleActivities = sqliteTable("change_title_activities", {
+export const changeTitleActivities = pgTable("change_title_activities", {
   ...baseActivityFields,
-  old_title: text("old_title").notNull(),
-  new_title: text("new_title").notNull(),
+  old_title: varchar("old_title", { length: 255 }).notNull(),
+  new_title: varchar("new_title", { length: 255 }).notNull(),
 });
 
 export const changeTitleActivitiesRelations = relations(
@@ -51,9 +48,9 @@ export const changeTitleActivitiesRelations = relations(
   })
 );
 
-export const toggleActivities = sqliteTable("issue_toggle_activities", {
+export const toggleActivities = pgTable("issue_toggle_activities", {
   ...baseActivityFields,
-  status: text("status").$type<IssueStatus>().notNull(),
+  status: issueStatusEnum("status").notNull(),
 });
 
 export const issueToggleActivitiesRelations = relations(
@@ -72,7 +69,7 @@ export const issueToggleActivitiesRelations = relations(
   })
 );
 
-export const mentionActivities = sqliteTable("issue_mention_activities", {
+export const mentionActivities = pgTable("issue_mention_activities", {
   ...baseActivityFields,
   mentionned_issue_id: integer("mentionned_issue_id")
     .references(() => issues.id, {
@@ -92,7 +89,7 @@ export const issueMentionActivitiesRelations = relations(
     issue: one(issues, {
       fields: [mentionActivities.issue_id],
       references: [issues.id],
-      relationName: "issue",
+      relationName: "parentIssue",
     }),
     mentionnedIssue: one(issues, {
       fields: [mentionActivities.issue_id],
@@ -102,12 +99,10 @@ export const issueMentionActivitiesRelations = relations(
   })
 );
 
-export const assignActivities = sqliteTable("assign_activities", {
+export const assignActivities = pgTable("assign_activities", {
   ...baseActivityFields,
   assignee_id: integer("assignee_id")
-    .references(() => users.id, {
-      onDelete: "cascade",
-    })
+    .references(() => users.id)
     .notNull(),
 });
 
@@ -132,7 +127,7 @@ export const assignActivitiesRelations = relations(
   })
 );
 
-export const editLabelsActivities = sqliteTable("edit_labels_activities", {
+export const editLabelsActivities = pgTable("edit_labels_activities", {
   ...baseActivityFields,
 });
 
@@ -155,7 +150,12 @@ export const editLabelsActivitiesRelations = relations(
   })
 );
 
-export const editActiviyToLabels = sqliteTable(
+export const editActivityActionEnum = pgEnum("edit_activity_action", [
+  "REMOVED",
+  "ADDED",
+]);
+
+export const editActiviyToLabels = pgTable(
   "edit_activity_to_labels",
   {
     activity_id: integer("activity_id")
@@ -168,7 +168,7 @@ export const editActiviyToLabels = sqliteTable(
       .references(() => labels.id, {
         onDelete: "restrict",
       }),
-    action: text("action").$type<"REMOVED" | "ADDED">().notNull(),
+    action: editActivityActionEnum("action").notNull(),
   },
   (table) => ({
     pk: primaryKey(table.activity_id, table.label_id),

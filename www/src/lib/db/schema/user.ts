@@ -1,22 +1,17 @@
-import {
-  sqliteTable,
-  text,
-  integer,
-  uniqueIndex,
-} from "drizzle-orm/sqlite-core";
+import { pgTable, serial, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 
 import { relations, type InferModel } from "drizzle-orm";
 import { issueUserSubscriptions, issues } from "./issue";
 import { reactions } from "./reaction";
 import { comments } from "./comment";
 
-export const users = sqliteTable(
+export const users = pgTable(
   "users",
   {
-    id: integer("id").primaryKey({ autoIncrement: true }),
-    username: text("username").notNull(),
-    github_id: text("github_id").notNull(),
-    avatar_url: text("avatar_url").notNull(),
+    id: serial("id").primaryKey(),
+    username: varchar("username", { length: 255 }).notNull(),
+    github_id: varchar("github_id", { length: 255 }).notNull(),
+    avatar_url: varchar("avatar_url", { length: 255 }).notNull(),
   },
   (users) => ({
     usernameIdx: uniqueIndex("usernameIdx").on(users.username),

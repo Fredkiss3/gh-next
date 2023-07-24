@@ -1,33 +1,30 @@
 import {
-  sqliteTable,
-  text,
+  pgTable,
+  serial,
+  varchar,
   integer,
   primaryKey,
-} from "drizzle-orm/sqlite-core";
+} from "drizzle-orm/pg-core";
 
 import { relations, type InferModel } from "drizzle-orm";
 import { issues } from "./issue";
 
-export const labels = sqliteTable("labels", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  description: text("description").default("").notNull(),
-  color: text("color").notNull(),
+export const labels = pgTable("labels", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 255 }).default("").notNull(),
+  color: varchar("color", { length: 10 }).notNull(), // 10 chars for a generous length
 });
 
-export const labelToIssues = sqliteTable(
+export const labelToIssues = pgTable(
   "labels_to_issues",
   {
     issue_id: integer("issue_id")
       .notNull()
-      .references(() => issues.id, {
-        onDelete: "restrict",
-      }),
+      .references(() => issues.id),
     label_id: integer("label_id")
       .notNull()
-      .references(() => labels.id, {
-        onDelete: "restrict",
-      }),
+      .references(() => labels.id),
   },
   (table) => ({
     pk: primaryKey(table.issue_id, table.label_id),
