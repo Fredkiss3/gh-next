@@ -11,7 +11,7 @@ import {
 import { relations } from "drizzle-orm";
 import { users } from "./user";
 import { labels } from "./label";
-import { issueStatusEnum, issues } from "./issue";
+import { issues } from "./issue";
 
 import type { InferModel } from "drizzle-orm";
 
@@ -47,6 +47,14 @@ export const changeTitleActivitiesRelations = relations(
     }),
   })
 );
+
+// this is repeated but not included in the database migration because it is not exported,
+// the original enum is defined in `issue.ts` file
+const issueStatusEnum = pgEnum("issue_status", [
+  "OPEN",
+  "CLOSED",
+  "NOT_PLANNED",
+]);
 
 export const toggleActivities = pgTable("issue_toggle_activities", {
   ...baseActivityFields,
