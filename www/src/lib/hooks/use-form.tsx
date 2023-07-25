@@ -2,11 +2,14 @@
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Route } from "next";
+import type { UpperLowerCase } from "~/lib/types";
 
 export type FormProps = Omit<
   React.FormHTMLAttributes<HTMLFormElement>,
-  "action" | "onSubmit"
->;
+  "action" | "onSubmit" | "method"
+> & {
+  method?: UpperLowerCase<"get" | "post">;
+};
 
 type SubmissionCallbacks<T> = {
   onSettled?: (arg: T) => Promise<void> | void;

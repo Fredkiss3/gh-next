@@ -2,7 +2,7 @@
 import * as React from "react";
 
 // components
-import { Menu } from "@headlessui/react";
+import { Menu, Transition } from "@headlessui/react";
 import Link from "next/link";
 
 // utils
@@ -49,62 +49,73 @@ export function DropdownMenu({
     <Menu as="div" className={clsx("relative z-40", className)}>
       <Menu.Button as={React.Fragment}>{children}</Menu.Button>
 
-      <Menu.Items
-        as="ul"
-        className={clsx(
-          "absolute z-40 rounded-md p-2 top-[calc(100%+5px)]",
-          "bg-subtle text-foreground shadow-md border border-neutral",
-          "flex flex-col min-w-max",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-          {
-            "right-0": align === "right",
-            "left-0": align === "left",
-          }
-        )}
+      <Transition
+        as={React.Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
       >
-        {items.map((item, index) => (
-          <Menu.Item key={index} as="li">
-            {({ active }) => {
-              const Icon = item.icon;
-              if (isDropdownMenuButton(item)) {
-                return (
-                  <button
-                    className={clsx(
-                      "flex items-center gap-2 min-w-max p-1 w-full",
-                      {
-                        "bg-neutral rounded-md": active,
-                      }
-                    )}
-                    onClick={item.onClick}
-                  >
-                    {Icon && (
-                      <Icon className="h-4 w-4 flex-shrink-0 text-grey" />
-                    )}
-                    <span>{item.text}</span>
-                  </button>
-                );
-              } else {
-                return (
-                  <Link
-                    href={item.href}
-                    className={clsx(
-                      "flex items-center gap-2 min-w-max p-1 w-full",
-                      {
-                        "bg-neutral  rounded-md": active,
-                      }
-                    )}
-                  >
-                    {Icon && (
-                      <Icon className="h-4 w-4 flex-shrink-0 text-grey" />
-                    )}
-                    <span className="flex-shrink-0">{item.text}</span>
-                  </Link>
-                );
-              }
-            }}
-          </Menu.Item>
-        ))}
-      </Menu.Items>
+        <Menu.Items
+          as="ul"
+          className={clsx(
+            "absolute z-40 rounded-lg p-2 top-[calc(100%+5px)]",
+            "bg-subtle text-foreground shadow-md border border-neutral",
+            "flex flex-col min-w-max",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+            {
+              "right-0": align === "right",
+              "left-0": align === "left",
+            }
+          )}
+        >
+          {items.map((item, index) => (
+            <Menu.Item key={index} as="li">
+              {({ active, close }) => {
+                const Icon = item.icon;
+                if (isDropdownMenuButton(item)) {
+                  return (
+                    <button
+                      className={clsx(
+                        "flex items-center gap-2 min-w-max p-2  w-full",
+                        {
+                          "bg-neutral rounded-md": active,
+                        }
+                      )}
+                      onClick={item.onClick}
+                    >
+                      {Icon && (
+                        <Icon className="h-5 w-5 flex-shrink-0 text-grey" />
+                      )}
+                      <span>{item.text}</span>
+                    </button>
+                  );
+                } else {
+                  return (
+                    <Link
+                      href={item.href}
+                      onClick={close}
+                      className={clsx(
+                        "flex items-center gap-2 min-w-max p-2  w-full",
+                        {
+                          "bg-neutral  rounded-md": active,
+                        }
+                      )}
+                    >
+                      {Icon && (
+                        <Icon className="h-5 w-5 flex-shrink-0 text-grey" />
+                      )}
+                      <span className="flex-shrink-0">{item.text}</span>
+                    </Link>
+                  );
+                }
+              }}
+            </Menu.Item>
+          ))}
+        </Menu.Items>
+      </Transition>
     </Menu>
   );
 }

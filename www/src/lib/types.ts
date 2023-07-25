@@ -12,3 +12,8 @@ export type FormDefaultValues =
     >
   | null
   | undefined;
+
+export type UpperLowerCase<T extends string> =
+  | T
+  | `${Lowercase<T>}`
+  | `${Uppercase<T>}`;
