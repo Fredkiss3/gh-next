@@ -115,7 +115,7 @@ export async function Header({
                   <GitPullRequestIcon className={cls} />
                 )}
               >
-                <span className="sr-only">Notifications</span>
+                <span className="sr-only">Pull Requests</span>
               </Button>
             </li>
             <li>

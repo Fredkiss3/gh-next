@@ -46,14 +46,18 @@ async function IssuesListBody(props: { params: PageProps["searchParams"] }) {
             )}
           >
             <IssueOpenedIcon className="h-5 w-5" />
-            <span>0 Open</span>
+            <p>
+              0 <span className="sr-only">issues</span>&nbsp;Open
+            </p>
           </Link>
           <Link
             href="/issues?q=is:closed"
             className={clsx("text-grey flex items-center gap-2")}
           >
             <CheckIcon className="h-5 w-5" />
-            <span>0 Closed</span>
+            <span>
+              0 <span className="sr-only">issues</span>&nbsp;Closed
+            </span>
           </Link>
         </div>
       </div>
