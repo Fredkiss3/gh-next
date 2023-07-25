@@ -14,7 +14,6 @@ export async function getUserFromGithubProfile(
   return await db
     .insert(users)
     .values({
-      id: ghUser.id,
       github_id: ghUser.id.toString(),
       username: ghUser.login,
       avatar_url: ghUser.avatar_url,
@@ -26,7 +25,7 @@ export async function getUserFromGithubProfile(
       },
     })
     .returning()
-    .get();
+    .execute();
 }
 
 /**
@@ -42,7 +41,7 @@ export async function getUserByUsername(username: string) {
     })
     .from(users)
     .where(sql`lower(${users.username}) = ${lowered}`)
-    .all();
+    .execute();
 }
 
 export async function updateUserUsername(username: string, id: number) {
@@ -52,8 +51,8 @@ export async function updateUserUsername(username: string, id: number) {
       username,
     })
     .where(eq(users.id, id))
-    .returning({ user: users })
-    .get();
+    .returning()
+    .execute();
 }
 
 export const githubUserSchema = z.object({

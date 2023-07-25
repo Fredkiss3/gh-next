@@ -16,7 +16,6 @@ import {
 import type { Route } from "next";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { wait } from "~/lib/functions";
 
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();
@@ -73,7 +72,8 @@ export async function loginUser(user: any) {
 
   // Find or create the corresponding user in DB
   const ghUser = sessionResult.data;
-  const dbUser = await getUserFromGithubProfile(ghUser);
+
+  const [dbUser] = await getUserFromGithubProfile(ghUser);
 
   const session = await getSession();
   await session.generateForUser(dbUser);
@@ -167,7 +167,7 @@ export const updateUserName = withAuth(async function (formData: FormData) {
     return;
   }
 
-  const { user } = await updateUserUsername(
+  const [user] = await updateUserUsername(
     result.data.username,
     session.user!.id
   );
@@ -179,8 +179,4 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   });
 
   return ssrRedirect("/settings/account");
-});
-
-export const deleteAccount = withAuth(async function (formData: FormData) {
-  const session = await getSession();
 });
