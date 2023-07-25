@@ -34,49 +34,49 @@ import {
   issueToggleActivitiesRelations,
 } from "./schema/activity";
 import { reactions, reactionsRelations } from "./schema/reaction";
-import { neonConfig, Client } from "@neondatabase/serverless";
+import { neonConfig, Client, neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { env } from "~/env.mjs";
 
 neonConfig.fetchConnectionCache = true;
-export const db = drizzle(
-  new Client({
-    connectionString: env.NEON_DB_URL,
-  }),
-  {
-    logger: true,
-    schema: {
-      users,
-      issues,
-      labels,
-      labelToIssues,
-      comments,
-      reactions,
-      issueRevisions,
-      commentRevisions,
-      assignActivities,
-      changeTitleActivities,
-      editLabelsActivities,
-      mentionActivities,
-      toggleActivities,
-      editActiviyToLabels,
-      issueUserSubscriptions,
-      // relations
-      issueUserSubscriptionRelations,
-      editActiviyToLabelsRelations,
-      assignActivitiesRelations,
-      changeTitleActivitiesRelations,
-      editLabelsActivitiesRelations,
-      issueMentionActivitiesRelations,
-      issueToggleActivitiesRelations,
-      issueRevisionsRelations,
-      commentRevisionsRelations,
-      usersRelations,
-      issuesRelations,
-      labelRelations,
-      labelToIssuesRelations,
-      commentsRelations,
-      reactionsRelations,
-    },
-  }
-);
+const client = new Client({
+  connectionString: env.NEON_DB_URL,
+});
+client.connect();
+
+export const db = drizzle(client, {
+  logger: true,
+  schema: {
+    users,
+    issues,
+    labels,
+    labelToIssues,
+    comments,
+    reactions,
+    issueRevisions,
+    commentRevisions,
+    assignActivities,
+    changeTitleActivities,
+    editLabelsActivities,
+    mentionActivities,
+    toggleActivities,
+    editActiviyToLabels,
+    issueUserSubscriptions,
+    // relations
+    issueUserSubscriptionRelations,
+    editActiviyToLabelsRelations,
+    assignActivitiesRelations,
+    changeTitleActivitiesRelations,
+    editLabelsActivitiesRelations,
+    issueMentionActivitiesRelations,
+    issueToggleActivitiesRelations,
+    issueRevisionsRelations,
+    commentRevisionsRelations,
+    usersRelations,
+    issuesRelations,
+    labelRelations,
+    labelToIssuesRelations,
+    commentsRelations,
+    reactionsRelations,
+  },
+});
