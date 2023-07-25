@@ -43,7 +43,7 @@
 
 - Node >= v16.6.2
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
-- A [turso](https://turso.tech/) database
+- A [neon](https://neon.tech/) database
 - A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
 ## 🚀 How to work on the project ?
@@ -133,8 +133,7 @@ A quick look at the top-level files and directories you will see in this project
 | Nom                   | role                                                                          |
 | :-------------------- | :---------------------------------------------------------------------------- |
 | `SESSION_SECRET`      | random 32 chars length string used to encode the session id                   |
-| `TURSO_DB_TOKEN`      | DB token used to authenticate to turso                                        |
-| `TURSO_DB_URL`        | DB url of the turso DB                                                        |
+| `NEON_DB_URL`         | url of the neon database, as shown in neon dashboard                          |
 | `KV_REST_URL`         | LOCAL file server URL for storing key values                                  |
 | `GITHUB_CLIENT_ID`    | github client id stored for our app used for authenticating users with github |
 | `GITHUB_REDIRECT_URI` | URL to redirect when a user has been authenticated                            |
