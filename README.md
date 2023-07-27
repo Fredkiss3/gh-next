@@ -130,11 +130,12 @@ A quick look at the top-level files and directories you will see in this project
 
 ## 🍳 ENV VARIABLES USED
 
-| Nom                   | role                                                                          |
-| :-------------------- | :---------------------------------------------------------------------------- |
-| `SESSION_SECRET`      | random 32 chars length string used to encode the session id                   |
-| `NEON_DB_URL`         | url of the neon database, as shown in neon dashboard                          |
-| `KV_REST_URL`         | LOCAL file server URL for storing key values                                  |
-| `GITHUB_CLIENT_ID`    | github client id stored for our app used for authenticating users with github |
-| `GITHUB_REDIRECT_URI` | URL to redirect when a user has been authenticated                            |
-| `GITHUB_SECRET`       | github secret stored for our app                                              |
+| Nom                            | role                                                                             |
+| :----------------------------- | :------------------------------------------------------------------------------- |
+| `SESSION_SECRET`               | random 32 chars length string used to encode the session id                      |
+| `NEON_DB_URL`                  | url of the neon database, as shown in neon dashboard                             |
+| `KV_REST_URL`                  | LOCAL file server URL for storing key values                                     |
+| `GITHUB_CLIENT_ID`             | github client id stored for our app used for authenticating users with github    |
+| `GITHUB_PERSONAL_ACCESS_TOKEN` | github client token stored for our app used for authenticating users with github |
+| `GITHUB_REDIRECT_URI`          | URL to redirect when a user has been authenticated                               |
+| `GITHUB_SECRET`                | github secret stored for our app                                                 |
