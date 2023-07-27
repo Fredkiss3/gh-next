@@ -5,13 +5,13 @@ import { Button } from "~/app/(components)/button";
 // this is for the next version of next.js
 import type { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Not found",
+  title: "Root Not found",
 };
 
 export default function Page() {
   return (
     <>
-      <title>Page not found</title>
+      {/* <title>Page not found</title> */}
       <section className="h-[80vh] flex flex-col gap-6 items-center justify-center text-foreground">
         <div className="flex items-end gap-4 relative justify-center w-full">
           <img
@@ -64,7 +64,7 @@ export default function Page() {
           variant="invisible"
         >
           <HomeIcon className="h-4 w-4" />
-          Go home
+          Go home (root)
         </Button>
       </section>
     </>

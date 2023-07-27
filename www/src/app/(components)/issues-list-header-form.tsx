@@ -4,13 +4,12 @@ import * as React from "react";
 // components
 import { ActionList } from "./action-list";
 import { Button } from "./button";
-import { Input } from "./input";
 import { LinkExternalIcon, TriangleDownIcon } from "@primer/octicons-react";
 
 // utils
 import { useForm } from "~/lib/hooks/use-form";
-import { useSearchParams } from "next/navigation";
 import { clsx } from "~/lib/functions";
+import { IssueListSearchInput } from "./issue-list-search-input";
 
 // types
 export type IssuesListHeaderFormProps = {
@@ -18,7 +17,6 @@ export type IssuesListHeaderFormProps = {
 };
 
 export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
-  const params = useSearchParams();
   const { Form } = useForm();
   return (
     <Form method="get" className={clsx(className, "w-full flex items-center")}>
@@ -66,16 +64,7 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
         </Button>
       </ActionList>
 
-      <Input
-        name="q"
-        autoFocus
-        type="text"
-        // defaultValue={}
-        className="rounded-l-none flex-grow"
-        placeholder="Search all issues"
-        label="input your search"
-        hideLabel
-      />
+      <IssueListSearchInput />
     </Form>
   );
 }

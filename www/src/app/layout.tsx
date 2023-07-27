@@ -15,7 +15,10 @@ import type { Metadata } from "next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Github Issue Management App",
+  title: {
+    template: "%s - Fredkiss3/gh-next",
+    default: "Fredkiss3/gh-next - Github Issue Management App",
+  },
   description: "This is an issue management app",
 };
 

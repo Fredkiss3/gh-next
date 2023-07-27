@@ -1,3 +1,4 @@
+// components
 import {
   CheckIcon,
   IssueOpenedIcon,
@@ -11,9 +12,17 @@ import { Button } from "~/app/(components)/button";
 import { CounterBadge } from "~/app/(components)/counter-badge";
 import { IssuesListHeaderForm } from "~/app/(components)/issues-list-header-form";
 import { SegmentedLayout } from "~/app/(components)/segmented-layout";
+
+// utils
 import { clsx } from "~/lib/functions";
 
+// types
+import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
+
+export const metadata: Metadata = {
+  title: "Issues",
+};
 
 export default function IssuesListPage({ searchParams }: PageProps) {
   return (
