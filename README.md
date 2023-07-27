@@ -4,6 +4,8 @@
 
 ## ⚠️ THIS PROJECT IS IN ACTIVE DEVELOPMENT !!
 
+Expect stuff to break.
+
 ## Roadmap
 
 - [x] Login/Logout
