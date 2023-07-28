@@ -183,6 +183,7 @@ export const getGithubRepoData = cache(async function getGithubRepoData() {
 
       if (totalPercent > 100) {
         percent -= totalPercent - 100; // remove the rest so that the sum of all percents is 100%
+        percent = Number(percent.toFixed(2));
       }
 
       return {
