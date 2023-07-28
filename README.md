@@ -23,6 +23,9 @@ Expect stuff to break.
   - [ ] Issue Popovers (for previewing issues)
   - [ ] Linking between issues
   - [ ] Assign & self assign issues
+- [ ] OpenGraph
+  - [ ] landing (inspiration: https://github.com/trpc/trpc/blob/main/www/og-image/pages/api/landing.tsx)
+  - [ ] Per Issue (inspiration: https://opengraph.githubassets.com/101e5bdeef8e959c800fab2aef88eef0b01b15d883e3e17c990bde8dfd67d6b3/trpc/trpc/issues/4306)
 - [ ] Labels CRUD (can only add or update labels, no deleting)
 - [ ] Notifications page
   - [ ] Notifications badge (Inspiration: https://gist.github.com/Fredkiss3/ab918aee3977d681f0508537a44838c0, https://github.com/Fredkiss3/bunrest)
