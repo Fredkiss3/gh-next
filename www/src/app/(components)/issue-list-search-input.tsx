@@ -15,6 +15,7 @@ export function IssueListSearchInput({}: IssueListSearchInputProps) {
         name="q"
         autoFocus
         type="text"
+        key={search.get("q")}
         defaultValue={search.get("q") ?? "is:open"}
         className="rounded-l-none flex-grow"
         placeholder="Search all issues"
