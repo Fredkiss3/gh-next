@@ -58,6 +58,7 @@ export function IssueLabelFilterActionList({
         onCloseList,
       }) => (
         <Link
+          // @ts-expect-error I know more than you typescript
           href={
             `/issues?q=is:open+` + (color ? `label:"${title}"` : "no:label")
           }
