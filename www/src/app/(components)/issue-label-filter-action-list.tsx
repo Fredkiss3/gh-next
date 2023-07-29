@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { Input } from "./input";
 import { ActionList } from "./action-list";
-import { Avatar } from "./avatar";
 import { CheckIcon } from "@primer/octicons-react";
 
 // utils
@@ -59,7 +58,9 @@ export function IssueLabelFilterActionList({
         onCloseList,
       }) => (
         <Link
-          href={`/issues?q=is:open+label:"${title}"`}
+          href={
+            `/issues?q=is:open+` + (color ? `label:"${title}"` : "no:label")
+          }
           className={clsx(
             className,
             "flex items-center gap-4 hover:bg-neutral/50"

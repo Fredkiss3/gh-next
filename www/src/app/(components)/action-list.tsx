@@ -18,6 +18,7 @@ export type ActionListGroup<T> = {
     title: string;
     filled?: boolean;
   };
+  horizontal?: boolean;
   items: ActionListItem<T>[];
 };
 
@@ -27,6 +28,7 @@ export type ActionListProps<TItem> = {
   footer?: React.ReactNode;
   header?: React.ReactNode;
   className?: string;
+  itemsClassName?: string;
   align?: "left" | "right";
   title?: string;
   noItemBorders?: boolean;
@@ -43,6 +45,7 @@ export function ActionList<TItem>({
   items: groups,
   align = "right",
   className,
+  itemsClassName,
   children,
   title,
   header,
@@ -67,6 +70,7 @@ export function ActionList<TItem>({
           >
             <div
               className={clsx(
+                itemsClassName,
                 "fixed inset-0 overflow-y-auto flex min-h-full items-center justify-center p-5",
                 "sm:absolute sm:top-[calc(100%+5px)] sm:bottom-[auto] sm:p-0",
                 "z-50",
@@ -120,30 +124,36 @@ export function ActionList<TItem>({
                       {group.header && (
                         <div
                           className={clsx(
-                            "font-medium text-grey px-4 py-4 sm:py-2 w-full",
+                            "font-medium text-grey px-4 py-2 sm:py-2 w-full border-t border-b border-neutral/70",
                             {
-                              "border-t border-b border-neutral/70 bg-neutral/50":
-                                group.header.filled,
+                              "bg-neutral/50": group.header.filled,
                             }
                           )}
                         >
                           {group.header.title}
                         </div>
                       )}
-                      <ul className="flex flex-col min-w-max max-h-[400px] overflow-auto">
+                      <ul
+                        className={clsx("flex max-h-[400px] overflow-auto", {
+                          "flex-col min-w-max": !group.horizontal,
+                          "flex-row px-4 py-4 flex-wrap gap-2 max-w-[300px]":
+                            group.horizontal,
+                        })}
+                      >
                         {group.items.map((item, itemIndex) => (
                           <React.Fragment
                             key={item.id ?? `group-${groupIndex}-${itemIndex}`}
                           >
                             {renderItem({
                               className: clsx(
-                                "min-w-[250px] w-full",
                                 "border-neutral/70 px-4 py-4",
                                 "sm:py-2",
                                 {
+                                  "min-w-[250px] w-full": !group.horizontal,
                                   "border-b":
                                     itemIndex < group.items.length - 1 &&
-                                    !noItemBorders,
+                                    !noItemBorders &&
+                                    !group.horizontal,
                                 }
                               ),
                               onCloseList: close,

@@ -30,19 +30,19 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
           {
             items: [
               {
-                href: "/issues?q=is:open",
+                href: "/issues?q=is:open" as const,
                 text: "Open issues",
               },
               {
-                href: "/issues?q=is:open+author:@me",
+                href: "/issues?q=is:open+author:@me" as const,
                 text: "Your issues",
               },
               {
-                href: "/issues?q=is:open+assignee:@me",
+                href: "/issues?q=is:open+assignee:@me" as const,
                 text: "Everything assigned to you",
               },
               {
-                href: "/issues?q=is:open+mention:@me",
+                href: "/issues?q=is:open+mention:@me" as const,
                 text: "Everything mentionning you",
               },
             ],

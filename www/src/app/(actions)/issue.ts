@@ -2,6 +2,9 @@
 
 const authorList = [
   {
+    name: "nobody",
+  },
+  {
     username: "balazsorban45",
     name: "Balázs Orbán",
     avatar: "https://avatars.githubusercontent.com/u/18369201?v=4",
@@ -37,7 +40,18 @@ const authorList = [
 export async function filterIssueAuthors(name: string) {
   return authorList.filter(
     (item) =>
-      item.username.toLowerCase().startsWith(name.toLowerCase()) ||
-      item.name.toLowerCase().includes(name.toLowerCase())
+      item.username &&
+      item.name &&
+      (item.username.toLowerCase().startsWith(name.toLowerCase()) ||
+        item.name.toLowerCase().includes(name.toLowerCase()))
+  ) as Array<Required<(typeof authorList)[number]>>;
+}
+
+// FIXME: Change this to actually query the DB in production
+export async function filterIssueAssignees(name: string) {
+  return authorList.filter(
+    (item) =>
+      item.username?.toLowerCase().startsWith(name.toLowerCase()) ||
+      item.name?.toLowerCase().includes(name.toLowerCase())
   );
 }

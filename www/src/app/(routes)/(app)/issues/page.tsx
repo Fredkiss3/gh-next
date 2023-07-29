@@ -22,6 +22,8 @@ import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
 import { IssueAuthorFilterActionList } from "~/app/(components)/issue-author-filter-action-list";
 import { IssueLabelFilterActionList } from "~/app/(components)/issue-label-filter-action-list";
+import { IssueAssigneeFilterActionList } from "~/app/(components)/issue-assignee-filter-action-list";
+import { IssueSortActionList } from "~/app/(components)/issue-sort-action-list";
 
 export const metadata: Metadata = {
   title: "Issues",
@@ -172,14 +174,18 @@ async function IssuesListBody(props: { params: PageProps["searchParams"] }) {
               </IssueLabelFilterActionList>
             </li>
             <li>
-              <button className="flex items-center gap-2">
-                <span>Assignee</span> <TriangleDownIcon className="h-5 w-5" />
-              </button>
+              <IssueAssigneeFilterActionList>
+                <button className="flex items-center gap-2">
+                  <span>Assignee</span> <TriangleDownIcon className="h-5 w-5" />
+                </button>
+              </IssueAssigneeFilterActionList>
             </li>
             <li>
-              <button className="flex items-center gap-2">
-                <span>Sort</span> <TriangleDownIcon className="h-5 w-5" />
-              </button>
+              <IssueSortActionList>
+                <button className="flex items-center gap-2">
+                  <span>Sort</span> <TriangleDownIcon className="h-5 w-5" />
+                </button>
+              </IssueSortActionList>
             </li>
           </ul>
         </div>
