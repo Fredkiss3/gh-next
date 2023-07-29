@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDBClient } from "~/lib/db";
-import { users } from "~/lib/db/schema/user";
+import { Theme, users } from "~/lib/db/schema/user";
 
 /**
  * Find or create the corresponding user in DB from their github profile
@@ -56,6 +56,20 @@ export async function updateUserUsername(username: string, id: number) {
     .where(eq(users.id, id))
     .returning()
     .execute();
+}
+
+export async function updateUserTheme(newTheme: Theme, id: number) {
+  const db = await getDBClient();
+  return (
+    await db
+      .update(users)
+      .set({
+        preferred_theme: newTheme,
+      })
+      .where(eq(users.id, id))
+      .returning()
+      .execute()
+  )[0];
 }
 
 export const githubUserSchema = z.object({

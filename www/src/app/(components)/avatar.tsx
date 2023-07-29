@@ -20,7 +20,7 @@ export function Avatar({
       src={src}
       alt={`@${username}`}
       className={clsx(className, "rounded-full flex-shrink-0", {
-        "h-8 w-8": size === "small",
+        "h-6 w-6": size === "small",
         "h-16 w-16": size === "large",
         "h-10 w-10": size === "medium",
       })}

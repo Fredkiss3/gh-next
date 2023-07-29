@@ -83,7 +83,7 @@ export async function MarkdownContent({
         table: (props: any) => (
           <table
             {...props}
-            className="border-collapse table-auto w-full border border-neutral"
+            className="border-collapse table-auto border border-neutral w-max max-w-full overflow-auto block"
           />
         ),
         th: (props: any) => (

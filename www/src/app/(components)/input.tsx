@@ -8,7 +8,6 @@ export type InputProps = Omit<
   "size"
 > & {
   label: React.ReactNode;
-  name: string;
   inputClassName?: string;
   helpText?: string;
   renderLeadingIcon?: (classNames: string) => JSX.Element;
@@ -23,7 +22,6 @@ export type InputProps = Omit<
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   function Input(
     {
-      onChange,
       name,
       label,
       className,

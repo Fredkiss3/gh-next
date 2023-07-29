@@ -2,85 +2,56 @@
 import * as React from "react";
 // components
 import { Popover, Transition } from "@headlessui/react";
-import Link from "next/link";
-import { CheckIcon, XIcon } from "@primer/octicons-react";
+import { XIcon } from "@primer/octicons-react";
 
 // utils
 import { clsx } from "~/lib/functions";
 
 // types
-import type { Route } from "next";
-export type ActionListLink = {
+export type ActionListItem<T> = T & {
+  selected?: boolean;
   id?: string;
-  text: string;
-  href: Route;
 };
 
-export type ActionListButton = {
-  id?: string;
-  text: string;
-  onClick: () => void | Promise<void>;
+export type ActionListGroup<T> = {
+  header?: {
+    title: string;
+    filled?: boolean;
+  };
+  items: ActionListItem<T>[];
 };
 
-export type ActionListDivider = {
-  style?: "filled" | "subtle";
-  type: "divider";
-};
-
-export type ActionListItem =
-  | ((ActionListLink | ActionListButton) & {
-      icon?: React.ComponentType<{ className?: string }>;
-      selected?: boolean;
-    })
-  | ActionListDivider;
-
-export type ActionListGroup = {
-  header?:
-    | string
-    | {
-        title: string;
-        style?: "filled" | "subtle";
-      };
-  items: ActionListItem[];
-};
-
-function isActionListLink(item: ActionListItem): item is ActionListLink {
-  return "href" in item && item.href !== undefined;
-}
-
-function isActionListDivider(item: ActionListItem): item is ActionListDivider {
-  return "type" in item;
-}
-
-function isActionListGroup(
-  itemOrGroup: ActionListItem | ActionListGroup
-): itemOrGroup is ActionListGroup {
-  return "items" in itemOrGroup;
-}
-
-export type ActionListProps = {
-  items: ActionListItem[] | ActionListGroup[];
+export type ActionListProps<TItem> = {
+  items: ActionListGroup<TItem>[];
   children: React.ReactNode;
   footer?: React.ReactNode;
   header?: React.ReactNode;
   className?: string;
   align?: "left" | "right";
   title?: string;
-  selectableItems?: boolean;
+  noItemBorders?: boolean;
+
+  renderItem: (
+    args: ActionListItem<TItem> & {
+      className: string;
+      onCloseList: () => void;
+    }
+  ) => React.ReactNode;
 };
 
-export function ActionList({
-  items,
+export function ActionList<TItem>({
+  items: groups,
   align = "right",
   className,
   children,
   title,
   header,
   footer,
-  selectableItems = false,
-}: ActionListProps) {
+  noItemBorders = false,
+  renderItem,
+}: ActionListProps<TItem>) {
   return (
-    <Popover as="div" className={clsx("relative z-40", className)}>
+    <Popover as="div" className={clsx("relative", className)}>
       {({ close }) => (
         <>
           <Popover.Button as={React.Fragment}>{children}</Popover.Button>
@@ -94,54 +65,109 @@ export function ActionList({
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Popover.Panel
-              as="ul"
+            <div
               className={clsx(
-                "absolute z-40 rounded-md top-[calc(100%+5px)] text-sm",
-                "bg-subtle text-foreground shadow-md border border-neutral",
-                "flex flex-col min-w-max",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                "fixed inset-0 overflow-y-auto flex min-h-full items-center justify-center p-5",
+                "sm:absolute sm:top-[calc(100%+5px)] sm:bottom-[auto] sm:p-0",
+                "z-50",
                 {
-                  "right-0": align === "right",
-                  "left-0": align === "left",
+                  "sm:right-0 sm:left-[auto]": align === "right",
+                  "sm:left-0 sm:right-[auto]": align === "left",
                 }
               )}
             >
-              {title && (
-                <li className="flex justify-between gap-4 border-b border-neutral px-4 py-2">
-                  <span>{title}</span>
-                  <button onClick={close} type="button">
-                    <XIcon className="h-5 w-5 text-grey" />
-                  </button>
-                </li>
-              )}
+              <div className="fixed inset-0 bg-backdrop bg-opacity-80 sm:hidden" />
 
-              {header && (
-                <li className="border-b border-neutral px-4 py-2">{header}</li>
-              )}
-
-              {items.map((item, index) => {
-                return (
-                  <li
-                    key={index}
-                    className={clsx("border-neutral px-4 py-2", {
-                      "border-b": index < items.length - 1,
-                      "hover:bg-neutral/50": !isActionListGroup(item),
-                    })}
-                  >
-                    {!isActionListGroup(item) ? (
-                      <ActionListItem item={item} closeActionList={close} />
-                    ) : (
-                      <></>
+              <Popover.Panel
+                as="div"
+                className={clsx(
+                  "rounded-md w-full text-base",
+                  "bg-subtle text-foreground shadow-lg border-2 border-neutral",
+                  "flex flex-col min-w-max",
+                  "relative z-50",
+                  "sm:text-sm sm:border",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                )}
+              >
+                {title && (
+                  <header
+                    className={clsx(
+                      "flex font-medium justify-between gap-4 border-b border-neutral/70 px-4 py-4",
+                      "sm:py-2"
                     )}
-                  </li>
-                );
-              })}
+                  >
+                    <span>{title}</span>
+                    <button onClick={close} type="button">
+                      <XIcon className="h-5 w-5 text-grey" />
+                    </button>
+                  </header>
+                )}
 
-              {footer && (
-                <li className="px-4 py-2 border-t border-neutral">{footer}</li>
-              )}
-            </Popover.Panel>
+                {header && (
+                  <div className="border-b border-neutral/70 px-4 py-4 md:py-2">
+                    {header}
+                  </div>
+                )}
+
+                {groups.map((group, groupIndex) => {
+                  return (
+                    <div
+                      key={`group-${groupIndex}`}
+                      className={clsx("border-neutral/70", {
+                        "border-b": groupIndex < groups.length - 1,
+                      })}
+                    >
+                      {group.header && (
+                        <div
+                          className={clsx(
+                            "font-medium text-grey px-4 py-4 sm:py-2 w-full",
+                            {
+                              "border-t border-b border-neutral/70 bg-neutral/50":
+                                group.header.filled,
+                            }
+                          )}
+                        >
+                          {group.header.title}
+                        </div>
+                      )}
+                      <ul className="flex flex-col min-w-max max-h-[400px] overflow-auto">
+                        {group.items.map((item, itemIndex) => (
+                          <React.Fragment
+                            key={item.id ?? `group-${groupIndex}-${itemIndex}`}
+                          >
+                            {renderItem({
+                              className: clsx(
+                                "min-w-[250px] w-full",
+                                "border-neutral/70 px-4 py-4",
+                                "sm:py-2",
+                                {
+                                  "border-b":
+                                    itemIndex < group.items.length - 1 &&
+                                    !noItemBorders,
+                                }
+                              ),
+                              onCloseList: close,
+                              ...item,
+                            })}
+                          </React.Fragment>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+
+                {footer && (
+                  <footer
+                    className={clsx(
+                      "px-4 py-4 border-t border-neutral/70 font-medium",
+                      "sm:py-2"
+                    )}
+                  >
+                    {footer}
+                  </footer>
+                )}
+              </Popover.Panel>
+            </div>
           </Transition>
         </>
       )}
@@ -149,55 +175,50 @@ export function ActionList({
   );
 }
 
-type ActionListItemProps = {
-  item: ActionListItem;
-  closeActionList: () => void;
-};
+// type ActionListItemProps = {
+//   item: ({ className }) => React.ReactNode;
+//   selected?: boolean;
+//   closeActionList: () => void;
+// };
 
-function ActionListItem({ item, closeActionList }: ActionListItemProps) {
-  if (isActionListDivider(item)) {
-    return (
-      <div
-        className={clsx("border border-neutral w-full", {
-          "h-[1px]": item.style !== "filled",
-          "h-1 bg-neutral": item.style === "filled",
-        })}
-      />
-    );
-  }
+// function ActionListItem({
+//   item,
+//   selected,
+//   closeActionList,
+// }: ActionListItemProps) {
+//   return (
+//     <div className="flex items-center gap-2 min-w-[250px]">
+//       <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
+//         {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
+//       </div>
 
-  const Icon = item.icon;
+//       {isActionListLink(item) ? (
+//         <Link
+//           href={item.href}
+//           onClick={closeActionList}
+//           className={clsx("flex items-center gap-2 min-w-max w-full")}
+//         >
+//           {Icon && <Icon className="h-4 w-4 flex-shrink-0 text-grey" />}
+//           <span className="flex-shrink-0">{item.text}</span>
+//         </Link>
+//       ) : (
+//         <button
+//           className={clsx("flex items-center gap-2 min-w-max w-full")}
+//           onClick={item.onClick}
+//         >
+//           {Icon && <Icon className="h-4 w-4 flex-shrink-0 text-grey" />}
+//           <span>{item.text}</span>
+//         </button>
+//       )}
+//     </div>
+//   );
+// }
 
-  return (
-    <div className="flex items-center gap-2 min-w-[250px]">
-      <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
-        {item.selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
-      </div>
-      {isActionListLink(item) ? (
-        <Link
-          href={item.href}
-          onClick={closeActionList}
-          className={clsx("flex items-center gap-2 min-w-max w-full text-sm")}
-        >
-          {Icon && <Icon className="h-4 w-4 flex-shrink-0 text-grey" />}
-          <span className="flex-shrink-0">{item.text}</span>
-        </Link>
-      ) : (
-        <button
-          className={clsx("flex items-center gap-2 min-w-max w-full text-sm")}
-          onClick={item.onClick}
-        >
-          {Icon && <Icon className="h-4 w-4 flex-shrink-0 text-grey" />}
-          <span>{item.text}</span>
-        </button>
-      )}
-    </div>
-  );
-}
+// type ActionListGroupProps = {
+//   item: ActionListGroup;
+//   closeActionList: () => void;
+// };
 
-type ActionListGroupProps = {
-  item: ActionListGroup;
-  closeActionList: () => void;
-};
-
-function ActionListGroup() {}
+// function ActionListGroup(props: ActionListGroupProps) {
+//   return <></>;
+// }
