@@ -19,7 +19,9 @@ const primitiveSchema = z.union([z.string(), z.number(), z.boolean()]);
 const sessionSchema = z.object({
   id: z.string(),
   expiry: preprocess((arg) => new Date(arg as any), z.date()),
-  user: createSelectSchema(users).optional(),
+  user: createSelectSchema(users, {
+    preferred_theme: (arg) => arg.preferred_theme.nullish(),
+  }).optional(),
   flashMessages: z
     .record(z.enum(["success", "error", "info", "warning"]), z.string())
     .optional(),

@@ -1,4 +1,3 @@
-export const THEME_COOKIE_KEY = "__theme";
 export const FLASH_COOKIE_KEY = "__flash";
 export const SESSION_COOKIE_KEY = "__id";
 export const LOGGED_OUT_SESSION_TTL = 1 * 24 * 60 * 60; // 1 day in seconds

@@ -15,6 +15,13 @@
       "when": 1690241759687,
       "tag": "0001_loose_baron_zemo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1690590081464,
+      "tag": "0002_quiet_stardust",
+      "breakpoints": true
     }
   ]
 }
