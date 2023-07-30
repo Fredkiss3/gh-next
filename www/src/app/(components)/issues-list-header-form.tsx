@@ -43,7 +43,7 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
               },
               {
                 href: "/issues?q=is:open+mention:@me" as const,
-                text: "Everything mentionning you",
+                text: "Everything mentioning you",
               },
             ],
           },
