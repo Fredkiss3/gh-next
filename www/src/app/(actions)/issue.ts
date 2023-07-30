@@ -1,7 +1,6 @@
 "use server";
 
 import { IssueStatuses } from "~/lib/db/schema/issue";
-import { IssueRowTitlePopover } from "~/app/(components)/issue-row-title-popover";
 
 const authorList = [
   {
@@ -171,16 +170,4 @@ const issues = [
 
 export async function getIssueList() {
   return issues;
-}
-
-export async function getIssuePopover(issueId: number) {
-  return <IssueRowPopover issueId={issueId} />;
-}
-
-async function IssueRowPopover({ issueId }: { issueId: number }) {
-  const issue = issues.find((issue) => issue.id === issueId);
-
-  if (!issue) return null;
-
-  return <IssueRowTitlePopover {...issue} />;
 }

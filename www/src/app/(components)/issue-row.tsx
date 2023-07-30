@@ -9,7 +9,6 @@ import {
 import Link from "next/link";
 import { AvatarStack } from "./avatar-stack";
 import { LabelBadge } from "./label-badge";
-import { IssueRowTitle } from "./issue-row-title";
 
 // utils
 import { clsx, formatDate } from "~/lib/shared-utils";
@@ -18,13 +17,16 @@ import { clsx, formatDate } from "~/lib/shared-utils";
 import type { IssueStatus } from "~/lib/db/schema/issue";
 import type { Label } from "~/lib/db/schema/label";
 import type { User } from "~/lib/db/schema/user";
+import { IssueRowTitlePopover } from "./issue-row-title-popover";
 
 export type IssueRowProps = {
   id: number;
   status: IssueStatus;
   title: string;
   author: string;
+  description?: string;
   status_updated_at: Date;
+  created_at: Date;
   noOfComments: number;
   labels: Array<Pick<Label, "name" | "id" | "color">>;
   assigned_to: Array<Pick<User, "username" | "avatar_url">>;
@@ -39,6 +41,8 @@ export function IssueRow({
   noOfComments,
   labels,
   assigned_to,
+  created_at,
+  description,
 }: IssueRowProps) {
   return (
     <div className="flex relative w-full gap-4 items-start p-5 border-b border-neutral/70 hover:bg-subtle">
@@ -65,14 +69,23 @@ export function IssueRow({
         )}
       >
         <div className="flex-auto gap-2 flex-wrap">
-          <IssueRowTitle id={id}>
+          <span className="relative group">
             <Link
               href={`/issues/${id}`}
               className="inline text-foreground hover:text-accent break-words font-semibold text-lg"
             >
               {title}
             </Link>
-          </IssueRowTitle>
+
+            <IssueRowTitlePopover
+              id={id}
+              status={status}
+              title={title}
+              description={description}
+              created_at={created_at}
+              labels={labels}
+            />
+          </span>
           &nbsp;&nbsp;
           <span className="inline-flex flex-wrap gap-2">
             {labels.map(({ id, name, color }) => (
