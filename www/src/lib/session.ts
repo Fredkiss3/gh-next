@@ -21,6 +21,9 @@ const sessionSchema = z.object({
   expiry: preprocess((arg) => new Date(arg as any), z.date()),
   user: createSelectSchema(users, {
     preferred_theme: (arg) => arg.preferred_theme.nullish(),
+    bio: (arg) => arg.bio.nullish(),
+    location: (arg) => arg.location.nullish(),
+    name: (arg) => arg.name.nullish(),
   }).optional(),
   flashMessages: z
     .record(z.enum(["success", "error", "info", "warning"]), z.string())

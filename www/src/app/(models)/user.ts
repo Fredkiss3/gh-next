@@ -18,6 +18,9 @@ export async function getUserFromGithubProfile(
       github_id: ghUser.id.toString(),
       username: ghUser.login,
       avatar_url: ghUser.avatar_url,
+      name: ghUser.name,
+      location: ghUser.location,
+      bio: ghUser.bio,
     })
     .onConflictDoUpdate({
       target: users.github_id,
@@ -75,5 +78,8 @@ export async function updateUserTheme(newTheme: Theme, id: number) {
 export const githubUserSchema = z.object({
   login: z.string(),
   id: z.number(),
+  name: z.string(),
   avatar_url: z.string(),
+  location: z.string().nullish(),
+  bio: z.string().nullish(),
 });

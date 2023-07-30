@@ -7,7 +7,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { relations, type InferModel } from "drizzle-orm";
-import { issueUserSubscriptions, issues } from "./issue";
+import { issueToAssignees, issueUserSubscriptions, issues } from "./issue";
 import { reactions } from "./reaction";
 import { comments } from "./comment";
 
@@ -19,6 +19,9 @@ export const users = pgTable(
   {
     id: serial("id").primaryKey(),
     username: varchar("username", { length: 255 }).notNull(),
+    name: varchar("name", { length: 255 }),
+    bio: varchar("bio", { length: 255 }),
+    location: varchar("location", { length: 255 }),
     github_id: varchar("github_id", { length: 255 }).notNull(),
     avatar_url: varchar("avatar_url", { length: 255 }).notNull(),
     preferred_theme: userThemeEnum("preferred_theme").default("system"),
@@ -33,7 +36,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   createdIssues: many(issues, {
     relationName: "author",
   }),
-  assignedIssues: many(issues, {
+  assignedIssues: many(issueToAssignees, {
     relationName: "assignee",
   }),
   reactions: many(reactions, {
