@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Button } from "./button";
 import { CheckIcon, CopyIcon } from "@primer/octicons-react";
-import { clsx, wait } from "~/lib/functions";
+import { clsx, wait } from "~/lib/shared-utils";
 
 export type CopyCodeButtonProps = {
   code: string;

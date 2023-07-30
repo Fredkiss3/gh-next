@@ -3,7 +3,7 @@ import * as React from "react";
 import { useMediaQuery } from "~/lib/hooks/use-media-query";
 import { ActionList } from "./action-list";
 import { CheckIcon } from "@primer/octicons-react";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import Link from "next/link";
 
 export type IssueSortActionListProps = {

@@ -41,6 +41,7 @@ export const issues = pgTable("issues", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").default("").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
+  status_updated_at: timestamp("status_updated_at").defaultNow().notNull(),
   status: issueStatusEnum("status").default(IssueStatuses.OPEN).notNull(),
   author_id: integer("author_id")
     .references(() => users.id)

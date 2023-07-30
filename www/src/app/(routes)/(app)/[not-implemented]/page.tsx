@@ -4,7 +4,7 @@ import { Button } from "~/app/(components)/button";
 
 // utils
 import { notFound } from "next/navigation";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 // types
 import type { Metadata } from "next";

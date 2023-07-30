@@ -1,7 +1,7 @@
 import { env } from "~/env.mjs";
 import { DEFAULT_CACHE_TTL } from "./constants";
 import { z } from "zod";
-import { jsonFetch } from "./functions";
+import { jsonFetch } from "./shared-utils";
 
 const kvNamespaceSchema = z.object({
   KV: z.object({

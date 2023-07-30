@@ -6,7 +6,7 @@ import Link from "next/link";
 
 // utils
 import { useActiveLink } from "~/lib/hooks/use-active-link";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 // types
 import type { LinkProps } from "next/link";

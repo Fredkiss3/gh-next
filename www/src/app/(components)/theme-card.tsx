@@ -3,7 +3,7 @@
 import * as React from "react";
 
 // utils
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 export type ThemeCardProps = {
   value: "light" | "dark" | "system";

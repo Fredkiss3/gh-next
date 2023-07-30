@@ -8,7 +8,7 @@ import remarkRehype from "remark-rehype";
 import rehypeReact from "rehype-react";
 import rehypeSlug from "rehype-slug";
 import { CopyCodeButton } from "./copy-code-button";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import { LinkIcon } from "@primer/octicons-react";
 import githubDark from "~/lib/themes/github-dark.json";
 import githubLight from "~/lib/themes/github-light.json";

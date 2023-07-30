@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { loginUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
-import { isValidURLPathname } from "~/lib/functions";
+import { isValidURLPathname } from "~/lib/shared-utils";
 import type { NextRequest } from "next/server";
 
 export const fetchCache = "force-no-store";

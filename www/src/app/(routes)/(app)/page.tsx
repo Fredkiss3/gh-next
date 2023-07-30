@@ -27,7 +27,7 @@ import {
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_NAME,
 } from "~/lib/constants";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 export default async function Page() {
   const { user } = await getSession();

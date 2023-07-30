@@ -1,6 +1,6 @@
 import * as React from "react";
 import Image from "next/image";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 export type AvatarProps = {
   username: string;

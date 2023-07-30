@@ -1,6 +1,6 @@
 import { IssueOpenedIcon } from "@primer/octicons-react";
 import * as React from "react";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 export type IssueRowSkeletonProps = {};
 

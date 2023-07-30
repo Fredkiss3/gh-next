@@ -18,7 +18,7 @@ import { UnderlineNavbar } from "./underline-navbar";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import { Route } from "next";
 
 // types

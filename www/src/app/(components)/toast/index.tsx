@@ -11,7 +11,7 @@ import {
 } from "@primer/octicons-react";
 
 // utils
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import { PauseableTimeout } from "~/lib/pauseable-timeout";
 
 // types

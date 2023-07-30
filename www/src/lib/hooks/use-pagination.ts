@@ -1,5 +1,5 @@
 import * as React from "react";
-import { range } from "~/lib/functions";
+import { range } from "~/lib/shared-utils";
 
 export const PAGINATION_DOTS = "...";
 

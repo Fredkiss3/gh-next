@@ -12,7 +12,7 @@ import {
 
 // utils
 import { useForm } from "~/lib/hooks/use-form";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import { IssueListSearchInput } from "./issue-list-search-input";
 import Link from "next/link";
 

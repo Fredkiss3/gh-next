@@ -1,5 +1,5 @@
 import { usePathname } from "next/navigation";
-import { linkWithSlash } from "~/lib/functions";
+import { linkWithSlash } from "~/lib/shared-utils";
 
 export function useActiveLink(href: string) {
   const path = usePathname();

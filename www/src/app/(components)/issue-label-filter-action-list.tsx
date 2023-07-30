@@ -7,7 +7,7 @@ import { ActionList } from "./action-list";
 import { CheckIcon } from "@primer/octicons-react";
 
 // utils
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import { useMediaQuery } from "~/lib/hooks/use-media-query";
 
 // types

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { LoadingIndicator } from "./loading-indicator";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import Link from "next/link";
 
 import type { Route } from "next";
@@ -89,9 +89,9 @@ export const Button = React.forwardRef<
       "bg-subtle text-accent border-neutral": variant === "secondary",
       "hover:bg-accent hover:text-white hover:border-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
         variant === "secondary" && !isDisabled,
-      "text-accent": variant === "accent-ghost",
+      "text-accent border-transparent !border": variant === "accent-ghost",
       "text-grey": variant === "accent-ghost" && isDisabled,
-      "hover:border-grey focus:border-accent focus-visible:border-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
+      " hover:border-grey focus:border-transparent focus-visible:border-transparent focus:!ring-2 focus:ring-accent focus-visible:ring-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
         variant === "accent-ghost" && !isDisabled,
       "!border text-foreground": variant === "ghost",
       "hover:border-neutral focus:border-neutral focus-visible:border-accent focus-visible:!border-2 focus-visible:outline-none":

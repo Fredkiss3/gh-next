@@ -6,7 +6,7 @@ import { VerticalNavlist } from "~/app/(components)/vertical-navlist";
 
 // utils
 import { getUserOrRedirect } from "~/app/(actions)/auth";
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 export default async function AppLayout({
   children,

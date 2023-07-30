@@ -5,7 +5,7 @@ import { Popover, Transition } from "@headlessui/react";
 import { XIcon } from "@primer/octicons-react";
 
 // utils
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 // types
 export type ActionListItem<T> = T & {

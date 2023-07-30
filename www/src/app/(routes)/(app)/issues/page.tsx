@@ -22,11 +22,12 @@ import { IssueRowSkeleton } from "~/app/(components)/issue-row-skeleton";
 import { Pagination } from "~/app/(components)/pagination";
 
 // utils
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
+import { IssueRow, IssueRowProps } from "~/app/(components)/issue-row";
 
 export const metadata: Metadata = {
   title: "Issues",
@@ -254,6 +255,83 @@ type IssueContentTableProps = {
 
 async function IssueContentTable({ currentPage }: IssueContentTableProps) {
   // await wait(2000);
+
+  const issues: IssueRowProps[] = [
+    {
+      id: "1",
+      title:
+        "[NEXT-1160] Clicking Links in intercepted routes does not unmount the interceptor route",
+      author: "Fredkiss3",
+      assigned_to: [
+        {
+          username: "balazsorban45",
+          avatar_url: "https://avatars.githubusercontent.com/u/18369201?v=4",
+        },
+      ],
+      labels: [],
+      noOfComments: 0,
+      status: "OPEN",
+      status_updated_at: new Date(),
+    },
+    {
+      id: "2",
+      title:
+        "[NEXT-1160] Clicking Links in intercepted routes does not unmount the interceptor route",
+      author: "Fredkiss3",
+      assigned_to: [],
+      labels: [
+        {
+          id: 3,
+          color: "#fddf99",
+          name: "template: bug",
+        },
+        {
+          id: 4,
+          color: "#bfdec3",
+          name: "template: documentation",
+        },
+      ],
+      noOfComments: 3,
+      status: "CLOSED",
+      status_updated_at: new Date(),
+    },
+    {
+      id: "3",
+      title:
+        "[NEXT-1160] Clicking Links in intercepted routes does not unmount the interceptor route",
+      author: "Fredkiss3",
+      assigned_to: [
+        {
+          username: "shadcn",
+          avatar_url: "https://avatars.githubusercontent.com/u/124599?v=4",
+        },
+        {
+          username: "QuiiBz",
+          avatar_url: "https://avatars.githubusercontent.com/u/43268759?v=4",
+        },
+      ],
+      labels: [
+        {
+          id: 1,
+          color: "#d5a7fa",
+          name: "linear: next",
+        },
+        {
+          id: 2,
+          color: "#c38eb0",
+          name: "area: app",
+        },
+        {
+          id: 3,
+          color: "#fddf99",
+          name: "template: bug",
+        },
+      ],
+      noOfComments: 1,
+      status: "NOT_PLANNED",
+      status_updated_at: new Date(),
+    },
+  ];
   return (
     <>
       {/* Header */}
@@ -367,7 +445,15 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
         {/* END Issue content table - header */}
 
         {/* Issue content table - list */}
-        <EmptyState />
+        {/* <EmptyState /> */}
+
+        <ul>
+          {issues.map((issue) => (
+            <li key={issue.id}>
+              <IssueRow {...issue} />
+            </li>
+          ))}
+        </ul>
 
         {/* END Issue content table - list */}
       </div>

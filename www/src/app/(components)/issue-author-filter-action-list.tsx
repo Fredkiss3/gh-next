@@ -8,7 +8,7 @@ import { Avatar } from "./avatar";
 import { CheckIcon } from "@primer/octicons-react";
 
 // utils
-import { clsx } from "~/lib/functions";
+import { clsx } from "~/lib/shared-utils";
 import { filterIssueAuthors } from "~/app/(actions)/issue";
 import { useMediaQuery } from "~/lib/hooks/use-media-query";
 

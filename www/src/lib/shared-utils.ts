@@ -116,3 +116,94 @@ export async function jsonFetch<T>(
       throw error;
     });
 }
+
+export type RGBHSLColor = {
+  r: number;
+  g: number;
+  b: number;
+  h: number;
+  s: number;
+  l: number;
+};
+
+/**
+ * Converts a hex color to an object with RGB and HSL values.
+ *
+ * @param {string} hex The hexadecimal color to convert.
+ * @returns {RGBHSLColor | null} An object with the r, g, b, h, s, l values or null if the input is invalid.
+ *
+ * @example
+ * console.log(hexToRGB('#0033ff')); // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
+ * console.log(hexToRGB('03f'));     // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
+ */
+export function hexToRGBHSL(hex: string): RGBHSLColor | null {
+  let sanitizedHex = hex.startsWith("#") ? hex.slice(1) : hex;
+
+  if (sanitizedHex.length === 3) {
+    sanitizedHex = sanitizedHex
+      .split("")
+      .map((char) => char + char)
+      .join("");
+  }
+
+  if (sanitizedHex.length !== 6) {
+    console.error("Invalid HEX color.");
+    return null;
+  }
+
+  const r = parseInt(sanitizedHex.slice(0, 2), 16);
+  const g = parseInt(sanitizedHex.slice(2, 4), 16);
+  const b = parseInt(sanitizedHex.slice(4, 6), 16);
+
+  const rPerc = r / 255;
+  const gPerc = g / 255;
+  const bPerc = b / 255;
+
+  const max = Math.max(rPerc, gPerc, bPerc);
+  const min = Math.min(rPerc, gPerc, bPerc);
+
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max === min) {
+    h = s = 0;
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+    switch (max) {
+      case rPerc:
+        h = (gPerc - bPerc) / d + (gPerc < bPerc ? 6 : 0);
+        break;
+      case gPerc:
+        h = (bPerc - rPerc) / d + 2;
+        break;
+      case bPerc:
+        h = (rPerc - gPerc) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+
+  return {
+    r,
+    g,
+    b,
+    h: Math.round(h * 360),
+    s: Math.round(s * 100),
+    l: Math.round(l * 100),
+  };
+}
+
+/**
+ * Generates a random hexadecimal color.
+ *
+ * @returns {string} A string representing a hexadecimal color.
+ * @example
+ *  console.log(getRandomHexColor());  // Example output: "#3e4f5c"
+ */
+export function getRandomHexColor(): string {
+  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+  return `#${randomColor.padStart(6, "0")}`;
+}
