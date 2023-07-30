@@ -7,6 +7,7 @@ import {
   pgEnum,
   integer,
   boolean,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 import { relations } from "drizzle-orm";
@@ -46,7 +47,6 @@ export const issues = pgTable("issues", {
   author_id: integer("author_id")
     .references(() => users.id)
     .notNull(),
-  assignee_id: integer("assignee_id").references(() => users.id),
   is_locked: boolean("is_locked").default(false).notNull(),
 });
 
@@ -56,10 +56,8 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
     references: [users.id],
     relationName: "author",
   }),
-  assignee: one(users, {
-    fields: [issues.assignee_id],
-    references: [users.id],
-    relationName: "assignee",
+  assignees: many(issueToAssignees, {
+    relationName: "assignees",
   }),
   labelToIssues: many(labelToIssues),
   comments: many(comments),
@@ -79,6 +77,37 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
   assignActivities: many(assignActivities),
   editLabelsActivities: many(editLabelsActivities),
 }));
+
+export const issueToAssignees = pgTable(
+  "issues_to_assignees",
+  {
+    assignee_id: integer("assignee_id")
+      .references(() => users.id)
+      .notNull(),
+    issue_id: integer("issue_id")
+      .references(() => issues.id)
+      .notNull(),
+  },
+  (table) => ({
+    pk: primaryKey(table.issue_id, table.assignee_id),
+  })
+);
+
+export const issueToAssigneesRelation = relations(
+  issueToAssignees,
+  ({ one }) => ({
+    issue: one(issues, {
+      fields: [issueToAssignees.issue_id],
+      references: [issues.id],
+      relationName: "assignees",
+    }),
+    assignee: one(users, {
+      fields: [issueToAssignees.assignee_id],
+      references: [users.id],
+      relationName: "assignee",
+    }),
+  })
+);
 
 export const issueRevisions = pgTable("issue_revisions", {
   id: serial("id").primaryKey(),
