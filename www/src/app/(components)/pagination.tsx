@@ -40,6 +40,7 @@ export function Pagination({
       <ul className={clsx(className, "flex items-center gap-2")}>
         <li>
           <Button
+            // @ts-expect-error
             href={currentPage === 1 ? "#" : baseURL + (currentPage - 1)}
             variant="accent-ghost"
             aria-disabled={currentPage === 1 ? true : undefined}
@@ -68,6 +69,7 @@ export function Pagination({
           return (
             <li key={pageNumber}>
               <Button
+                // @ts-expect-error
                 href={baseURL + pageNumber}
                 variant="ghost"
                 aria-label={pageLabel}
@@ -87,6 +89,7 @@ export function Pagination({
 
         <li>
           <Button
+            // @ts-expect-error
             href={currentPage === lastPage ? "#" : baseURL + (currentPage + 1)}
             variant="accent-ghost"
             aria-disabled={currentPage === lastPage ? true : undefined}
