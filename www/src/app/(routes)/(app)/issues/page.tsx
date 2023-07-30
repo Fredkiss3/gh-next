@@ -19,9 +19,10 @@ import { IssueLabelFilterActionList } from "~/app/(components)/issue-label-filte
 import { IssueAssigneeFilterActionList } from "~/app/(components)/issue-assignee-filter-action-list";
 import { IssueSortActionList } from "~/app/(components)/issue-sort-action-list";
 import { IssueRowSkeleton } from "~/app/(components)/issue-row-skeleton";
+import { Pagination } from "~/app/(components)/pagination";
 
 // utils
-import { clsx, wait } from "~/lib/functions";
+import { clsx } from "~/lib/functions";
 
 // types
 import type { Metadata } from "next";
@@ -81,10 +82,17 @@ function IssuesListHeader() {
 }
 
 async function IssuesListBody(props: { params: PageProps["searchParams"] }) {
+  let currentPage = Number(props.params?.page);
+  if (isNaN(currentPage)) {
+    currentPage = 1;
+  }
   return (
     <section className="flex flex-col gap-4" id="issue-list">
-      <React.Suspense fallback={<IssueContentTableSkeleton />}>
-        <IssueContentTable />
+      <React.Suspense
+        // key={Math.random()}
+        fallback={<IssueContentTableSkeleton />}
+      >
+        <IssueContentTable currentPage={currentPage} />
       </React.Suspense>
 
       <div className="px-5 md:px-0 justify-center text-grey flex items-start gap-2 py-12">
@@ -239,8 +247,13 @@ function IssueContentTableSkeleton() {
     </>
   );
 }
-async function IssueContentTable() {
-  await wait(2000);
+
+type IssueContentTableProps = {
+  currentPage: number;
+};
+
+async function IssueContentTable({ currentPage }: IssueContentTableProps) {
+  // await wait(2000);
   return (
     <>
       {/* Header */}
@@ -358,6 +371,13 @@ async function IssueContentTable() {
 
         {/* END Issue content table - list */}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        perPage={5}
+        totalCount={50}
+        baseURL="/issues?q=is:open&page="
+      />
     </>
   );
 }

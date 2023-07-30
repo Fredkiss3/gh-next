@@ -59,7 +59,7 @@ export default async function Page() {
         <div className="flex items-center gap-3">
           <Button
             href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
-            variant="ghost"
+            variant="subtle"
             renderLeadingIcon={(cls) => (
               <EyeIcon className={clsx(cls, "text-grey")} />
             )}
@@ -72,7 +72,7 @@ export default async function Page() {
           </Button>
           <Button
             href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/fork`}
-            variant="ghost"
+            variant="subtle"
             renderLeadingIcon={(cls) => (
               <RepoForkedIcon className={clsx(cls, "text-grey")} />
             )}
@@ -85,7 +85,7 @@ export default async function Page() {
           </Button>
           <Button
             href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
-            variant="ghost"
+            variant="subtle"
             renderLeadingIcon={(cls) =>
               hasStarred ? (
                 <StarFillIcon className={clsx(cls, "text-yellow-500")} />
@@ -115,7 +115,7 @@ export default async function Page() {
         <div className="flex items-center gap-2">
           <Button
             href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
-            variant="ghost"
+            variant="subtle"
             isSquared
             renderLeadingIcon={(cls) => (
               <EyeIcon className={clsx(cls, "text-foreground")} />
@@ -125,7 +125,7 @@ export default async function Page() {
           </Button>
           <Button
             href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/fork`}
-            variant="ghost"
+            variant="subtle"
             isSquared
             renderLeadingIcon={(cls) => (
               <RepoForkedIcon className={clsx(cls, "text-foreground")} />
@@ -135,7 +135,7 @@ export default async function Page() {
           </Button>
           <Button
             href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`}
-            variant="ghost"
+            variant="subtle"
             isSquared
             renderLeadingIcon={(cls) =>
               hasStarred ? (

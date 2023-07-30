@@ -45,13 +45,13 @@ export function clsx(
  *
  * @example
  *      range(1, 5);
- *      // => [1, 2, 3, 4]
+ *      // => [1, 2, 3, 4, 5]
  * @param start
  * @param end
  * @returns
  */
 export function range(start: number, end: number): number[] {
-  return Array.from({ length: end - start }, (_, i) => i + start);
+  return Array.from({ length: end - start + 1 }, (_, i) => i + start);
 }
 
 export function wait(ms: number): Promise<void> {

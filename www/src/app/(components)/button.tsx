@@ -8,7 +8,14 @@ import type { Route } from "next";
 export type CommonButtonProps = {
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
-  variant?: "primary" | "secondary" | "danger" | "invisible" | "ghost";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "accent-ghost"
+    | "ghost"
+    | "danger"
+    | "invisible"
+    | "subtle";
   isSquared?: boolean;
   isBlock?: boolean;
 };
@@ -51,6 +58,11 @@ export const Button = React.forwardRef<
     ...restProps
   } = props;
 
+  // we check disabled here because we want to apply a different styling
+  const isDisabled =
+    ("disabled" in restProps && restProps["disabled"] === true) ||
+    ("aria-disabled" in restProps && restProps["aria-disabled"] === true);
+
   const commonClasses = clsx(
     className,
     "items-center justify-center gap-2 ",
@@ -63,14 +75,29 @@ export const Button = React.forwardRef<
       "p-2": isSquared,
       "py-1.5 px-3": !isSquared,
       "bg-success text-white shadow-subtle": variant === "primary",
-      "bg-subtle text-danger enabled:hover:bg-danger enabled:hover:text-white border-neutral enabled:hover:border-danger":
-        variant === "danger",
-      "bg-transparent text-grey border-neutral enabled:hover:bg-subtle !border enabled:hover:border-grey":
+      "bg-subtle text-danger border-neutral": variant === "danger",
+      "hover:bg-danger hover:text-white hover:border-danger aria-[current]:bg-danger aria-[current]:text-white aria-[current]:border-danger":
+        variant === "danger" && !isDisabled,
+      "bg-transparent text-grey border-neutral !border":
         variant === "invisible",
-      "bg-ghost text-foreground/70 enabled:hover:border-grey border-neutral !border shadow-sm":
-        variant === "ghost",
-      "bg-subtle text-accent enabled:hover:bg-accent enabled:hover:text-white border-neutral enabled:hover:border-accent":
-        variant === "secondary",
+      "hover:bg-subtle hover:border-grey aria-[current]:bg-subtle aria-[current]:border-grey":
+        variant === "invisible" && !isDisabled,
+      "bg-ghost text-foreground/70 border-neutral !border shadow-sm":
+        variant === "subtle",
+      "hover:border-grey aria-[current]:border-grey":
+        variant === "subtle" && !isDisabled,
+      "bg-subtle text-accent border-neutral": variant === "secondary",
+      "hover:bg-accent hover:text-white hover:border-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
+        variant === "secondary" && !isDisabled,
+      "text-accent": variant === "accent-ghost",
+      "text-grey": variant === "accent-ghost" && isDisabled,
+      "hover:border-grey focus:border-accent focus-visible:border-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
+        variant === "accent-ghost" && !isDisabled,
+      "!border text-foreground": variant === "ghost",
+      "hover:border-neutral focus:border-neutral focus-visible:border-accent focus-visible:!border-2 focus-visible:outline-none":
+        variant === "ghost" && !isDisabled,
+      "aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
+        variant === "ghost" && !isDisabled,
     }
   );
 

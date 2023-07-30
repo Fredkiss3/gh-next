@@ -80,7 +80,7 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
       >
         <Button
           type="button"
-          variant="ghost"
+          variant="subtle"
           className="rounded-r-none !border-r-0"
           renderTrailingIcon={(cls) => <TriangleDownIcon className={cls} />}
         >
