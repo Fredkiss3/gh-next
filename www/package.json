@@ -27,6 +27,7 @@
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
     "bright": "^0.8.3",
+    "dayjs": "^1.11.9",
     "drizzle-orm": "^0.27.2",
     "drizzle-zod": "^0.4.4",
     "eslint": "8.43.0",

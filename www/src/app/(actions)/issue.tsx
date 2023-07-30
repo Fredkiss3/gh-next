@@ -1,6 +1,7 @@
 "use server";
 
 import { IssueStatuses } from "~/lib/db/schema/issue";
+import { IssueRowTitlePopover } from "~/app/(components)/issue-row-title-popover";
 
 const authorList = [
   {
@@ -74,6 +75,33 @@ const issues = [
     noOfComments: 0,
     status: IssueStatuses.OPEN,
     status_updated_at: new Date(),
+    created_at: new Date(),
+  },
+  {
+    id: 53360,
+    title: "Docs: fix colour in image about automatic fetch() request deduping",
+    description: `What is the improvement or update you wish to see?
+
+    The colour in the image is incorrect (blue instead of red) for the request C in component B.
+    Is there any context that might help us understand?
+    
+    No.
+    Does the docs page already exist? Please link to it.
+    
+    https://nextjs.org/docs/app/building-your-application/data-fetching#automatic-fetch-request-deduping`,
+    author: "Fredkiss3",
+    labels: [
+      {
+        id: 4,
+        color: "#bfdec3",
+        name: "template: documentation",
+      },
+    ],
+    noOfComments: 0,
+    status: IssueStatuses.OPEN,
+    status_updated_at: new Date(),
+    created_at: new Date(),
+    assigned_to: [],
   },
   {
     id: 2,
@@ -85,18 +113,19 @@ const issues = [
       {
         id: 3,
         color: "#fddf99",
-        title: "template: bug",
+        name: "template: bug",
         description: "A user has filled out the bug report template",
       },
       {
         id: 4,
         color: "#bfdec3",
-        title: "template: documentation",
+        name: "template: documentation",
       },
     ],
     noOfComments: 3,
     status: IssueStatuses.CLOSED,
     status_updated_at: new Date(),
+    created_at: new Date(),
   },
   {
     id: 3,
@@ -117,25 +146,26 @@ const issues = [
       {
         id: 1,
         color: "#d5a7fa",
-        title: "linear: next",
+        name: "linear: next",
         description: "tracked issue",
       },
       {
         id: 2,
         color: "#c38eb0",
-        title: "area: app",
+        name: "area: app",
         description: "app directory (appDir: true)",
       },
       {
         id: 3,
         color: "#fddf99",
-        title: "template: bug",
+        name: "template: bug",
         description: "A user has filled out the bug report template",
       },
     ],
     noOfComments: 1,
     status: IssueStatuses.NOT_PLANNED,
     status_updated_at: new Date(),
+    created_at: new Date(),
   },
 ];
 
@@ -143,4 +173,14 @@ export async function getIssueList() {
   return issues;
 }
 
-export async function getIssueCard(issueId: number) {}
+export async function getIssuePopover(issueId: number) {
+  return <IssueRowPopover issueId={issueId} />;
+}
+
+async function IssueRowPopover({ issueId }: { issueId: number }) {
+  const issue = issues.find((issue) => issue.id === issueId);
+
+  if (!issue) return null;
+
+  return <IssueRowTitlePopover {...issue} />;
+}

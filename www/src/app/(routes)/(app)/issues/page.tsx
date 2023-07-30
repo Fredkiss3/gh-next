@@ -376,15 +376,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
         <ul>
           {issues.map((issue) => (
             <li key={issue.id}>
-              <IssueRow
-                {...{
-                  ...issue,
-                  labels: issue.labels.map((label) => ({
-                    ...label,
-                    name: label.title,
-                  })),
-                }}
-              />
+              <IssueRow {...issue} />
             </li>
           ))}
         </ul>

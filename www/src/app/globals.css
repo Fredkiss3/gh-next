@@ -62,7 +62,7 @@
   }
 
   [data-theme="dark"] {
-    --success-color: 35, 134, 54;
+    --success-color: 63, 185, 80;
     --fg-color: 255, 255, 255;
     --bg-color: 1, 4, 9;
     --danger-color: 248, 81, 73;
@@ -87,7 +87,7 @@
     }
 
     [data-theme="system"] {
-      --success-color: 35, 134, 54;
+      --success-color: 63, 185, 80;
       --fg-color: 255, 255, 255;
       --bg-color: 1, 4, 9;
       --danger-color: 248, 81, 73;

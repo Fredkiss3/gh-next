@@ -12,7 +12,7 @@ import { LabelBadge } from "./label-badge";
 import { IssueRowTitle } from "./issue-row-title";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx, formatDate } from "~/lib/shared-utils";
 
 // types
 import type { IssueStatus } from "~/lib/db/schema/issue";
@@ -84,7 +84,7 @@ export function IssueRow({
         </div>
 
         <small className="text-grey">
-          #{id} opened on {status_updated_at.toLocaleString("FR")} by&nbsp;
+          #{id} opened {formatDate(status_updated_at)} by&nbsp;
           <Link
             href={`/issues?q=is:open+author:${author}`}
             className="hover:text-accent"
