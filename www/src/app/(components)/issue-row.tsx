@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import { AvatarStack } from "./avatar-stack";
 import { LabelBadge } from "./label-badge";
+import { IssueRowTitle } from "./issue-row-title";
 
 // utils
 import { clsx } from "~/lib/shared-utils";
@@ -19,9 +20,9 @@ import type { Label } from "~/lib/db/schema/label";
 import type { User } from "~/lib/db/schema/user";
 
 export type IssueRowProps = {
+  id: number;
   status: IssueStatus;
   title: string;
-  id: string;
   author: string;
   status_updated_at: Date;
   noOfComments: number;
@@ -64,12 +65,14 @@ export function IssueRow({
         )}
       >
         <div className="flex-auto gap-2 flex-wrap">
-          <Link
-            href={`/issues/${id}`}
-            className="inline text-foreground hover:text-accent break-words font-semibold text-lg"
-          >
-            {title}
-          </Link>
+          <IssueRowTitle id={id}>
+            <Link
+              href={`/issues/${id}`}
+              className="inline text-foreground hover:text-accent break-words font-semibold text-lg"
+            >
+              {title}
+            </Link>
+          </IssueRowTitle>
           &nbsp;&nbsp;
           <span className="inline-flex flex-wrap gap-2">
             {labels.map(({ id, name, color }) => (
