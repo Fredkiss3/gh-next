@@ -14,6 +14,7 @@ export type TooltipProps = {
   content: React.ReactNode;
   delayInMs?: number;
   closeDelayInMs?: number;
+  disabled?: boolean;
 } & Pick<ReactAriaTooltipProps, "placement" | "isOpen">;
 
 export function Tooltip({
@@ -23,12 +24,14 @@ export function Tooltip({
   closeDelayInMs = 150,
   placement,
   isOpen,
+  disabled,
 }: TooltipProps) {
   return (
     <TooltipTrigger
       delay={delayInMs}
       closeDelay={closeDelayInMs}
       isOpen={isOpen}
+      isDisabled={disabled}
     >
       {children}
       <ReactAriaTooltip

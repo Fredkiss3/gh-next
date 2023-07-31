@@ -131,7 +131,8 @@ const issues = [
         id: 3,
         color: "#fddf99",
         name: "template: bug",
-        description: "A user has filled out the bug report template",
+        description:
+          "A user has filled out the bug report template. Issue needs triaging",
       },
       {
         id: 4,
@@ -182,7 +183,8 @@ const issues = [
         id: 3,
         color: "#fddf99",
         name: "template: bug",
-        description: "A user has filled out the bug report template",
+        description:
+          "A user has filled out the bug report template. Issue needs triaging",
       },
     ],
     noOfComments: 1,

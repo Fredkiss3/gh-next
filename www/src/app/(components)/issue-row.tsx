@@ -13,6 +13,7 @@ import { HoverCard } from "./hovercard";
 import { ReactAriaLink } from "./react-aria-button";
 import { IssueHoverCardContents } from "./issue-hovercard-contents";
 import { UserHoverCardContents } from "./user-hovercard-contents";
+import { Tooltip } from "./tooltip";
 
 // utils
 import { clsx, formatDate } from "~/lib/shared-utils";
@@ -31,7 +32,7 @@ export type IssueRowProps = {
   status_updated_at: Date;
   created_at: Date;
   noOfComments: number;
-  labels: Array<Pick<Label, "name" | "id" | "color">>;
+  labels: Array<Pick<Label, "name" | "id" | "color" | "description">>;
   assigned_to: Array<Pick<User, "username" | "avatar_url">>;
 };
 
@@ -103,10 +104,25 @@ export function IssueRow({
             <>
               &nbsp;&nbsp;
               <span className="inline-flex flex-wrap gap-2">
-                {labels.map(({ id, name, color }) => (
-                  <Link key={id} href={`/issues?q=is:open+label:"${name}"`}>
-                    <LabelBadge color={color} title={name} />
-                  </Link>
+                {labels.map(({ id, name, color, description }) => (
+                  <Tooltip
+                    key={id}
+                    disabled={!description}
+                    content={
+                      <p className="text-sm max-w-[250px] text-center">
+                        {description}
+                      </p>
+                    }
+                    delayInMs={500}
+                    closeDelayInMs={500}
+                    placement="bottom end"
+                  >
+                    <ReactAriaLink>
+                      <Link href={`/issues?q=is:open+label:"${name}"`}>
+                        <LabelBadge color={color} title={name} />
+                      </Link>
+                    </ReactAriaLink>
+                  </Tooltip>
                 ))}
               </span>
             </>

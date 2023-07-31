@@ -2,10 +2,12 @@ import * as React from "react";
 
 // components
 import { Avatar } from "./avatar";
+import Link from "next/link";
+import { Tooltip } from "./tooltip";
+import { ReactAriaLink } from "./react-aria-button";
 
 // utils
 import { clsx } from "~/lib/shared-utils";
-import Link from "next/link";
 
 // types
 export type AvatarStackProps = {
@@ -16,6 +18,7 @@ export type AvatarStackProps = {
   className?: string;
   size?: "small" | "medium" | "large";
   getUserUrl?: (username: string) => string;
+  tooltipLabel: string;
 };
 
 export function AvatarStack({
@@ -23,36 +26,46 @@ export function AvatarStack({
   className,
   size = "small",
   getUserUrl,
+  tooltipLabel,
 }: AvatarStackProps) {
   return (
-    <ul className={clsx(className, "flex group gap-1")}>
-      {users.map((u, index) => (
-        <li
-          key={u.username}
-          className={clsx("transition-all duration-150", {
-            "-mr-4 group-hover:mr-0": index !== users.length - 1,
-          })}
-        >
-          {getUserUrl ? (
-            // @ts-expect-error
-            <Link href={getUserUrl(u.username)}>
+    <Tooltip
+      content={<span className="text-sm">{tooltipLabel}</span>}
+      delayInMs={500}
+      closeDelayInMs={500}
+      placement="bottom end"
+    >
+      <ul className={clsx(className, "flex group gap-1")}>
+        {users.map((u, index) => (
+          <li
+            key={u.username}
+            className={clsx("transition-all duration-150", {
+              "-mr-4 group-hover:mr-0": index !== users.length - 1,
+            })}
+          >
+            {getUserUrl ? (
+              <ReactAriaLink>
+                {/* @ts-expect-error */}
+                <Link href={getUserUrl(u.username)}>
+                  <Avatar
+                    src={u.avatar_url}
+                    username={u.username}
+                    size={size}
+                    className="border border-background"
+                  />
+                </Link>
+              </ReactAriaLink>
+            ) : (
               <Avatar
                 src={u.avatar_url}
                 username={u.username}
                 size={size}
                 className="border border-background"
               />
-            </Link>
-          ) : (
-            <Avatar
-              src={u.avatar_url}
-              username={u.username}
-              size={size}
-              className="border border-background"
-            />
-          )}
-        </li>
-      ))}
-    </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </Tooltip>
   );
 }
