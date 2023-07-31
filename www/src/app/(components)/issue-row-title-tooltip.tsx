@@ -16,11 +16,11 @@ import {
 
 // utils
 import { clsx, excerpt, formatDate } from "~/lib/shared-utils";
+import { useMediaQuery } from "~/lib/hooks/use-media-query";
 
 // types
 import type { IssueStatus } from "~/lib/db/schema/issue";
 import type { Label } from "~/lib/db/schema/label";
-import { useMediaQuery } from "~/lib/hooks/use-media-query";
 
 export type IssueRowTitleTooltipProps = {
   id: number;
@@ -61,7 +61,7 @@ export function IssueRowTitleTooltip({
         className={clsx(
           "p-5 hidden md:block relative",
           "max-w-[350px] w-max z-20",
-          "border border-neutral bg-subtle rounded-md shadow-lg",
+          "border border-neutral bg-tooltip-light rounded-md shadow-lg",
           "group/row-title-tooltip"
 
           // these horribles styles are for the little arrow

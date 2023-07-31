@@ -34,13 +34,15 @@ export function Tooltip({
       <ReactAriaTooltip
         offset={5}
         placement={placement}
-        className={clsx("bg-grey px-2 py-1 rounded-md group/tooltip", {})}
+        className={clsx(
+          "bg-tooltip-dark text-white px-2 py-1 rounded-md group/tooltip"
+        )}
       >
         <OverlayArrow>
           <svg
             width={8}
             height={8}
-            className="fill-grey group-data-[placement=left]/tooltip:-rotate-90"
+            className="fill-tooltip-dark group-data-[placement=left]/tooltip:-rotate-90"
           >
             <path d="M0 0,L4 4,L8 0" />
           </svg>

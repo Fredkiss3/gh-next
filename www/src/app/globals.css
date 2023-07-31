@@ -35,6 +35,9 @@
     --done-color-border: 231, 213, 255;
     font-size: 14px;
 
+    --tooltip-light-color: 255, 255, 255;
+    --tooltip-dark-color: 0, 0, 0;
+
     --fg-color: 0, 0, 0;
     --bg-color: 255, 255, 255;
 
@@ -62,6 +65,9 @@
   }
 
   [data-theme="dark"] {
+    --tooltip-light-color: 22, 28, 34;
+    --tooltip-dark-color: 110, 118, 129;
+
     --success-color: 63, 185, 80;
     --fg-color: 255, 255, 255;
     --bg-color: 1, 4, 9;
@@ -87,6 +93,9 @@
     }
 
     [data-theme="system"] {
+      --tooltip-light-color: 22, 28, 34;
+      --tooltip-dark-color: 110, 118, 129;
+
       --success-color: 63, 185, 80;
       --fg-color: 255, 255, 255;
       --bg-color: 1, 4, 9;

@@ -19,6 +19,12 @@ module.exports = {
         grey: {
           DEFAULT: withOpactity(`--grey-color`),
         },
+        "tooltip-light": {
+          DEFAULT: withOpactity(`--tooltip-light-color`),
+        },
+        "tooltip-dark": {
+          DEFAULT: withOpactity(`--tooltip-dark-color`),
+        },
         accent: {
           DEFAULT: withOpactity(`--accent-color`),
           bg: withOpactity(`--accent-color-bg`),
