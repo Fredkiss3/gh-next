@@ -26,6 +26,9 @@ export async function getUserFromGithubProfile(
       target: users.github_id,
       set: {
         avatar_url: ghUser.avatar_url,
+        name: ghUser.name,
+        location: ghUser.location,
+        bio: ghUser.bio,
       },
     })
     .returning()

@@ -2,6 +2,7 @@ import {
   pgEnum,
   pgTable,
   serial,
+  text,
   uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -20,7 +21,7 @@ export const users = pgTable(
     id: serial("id").primaryKey(),
     username: varchar("username", { length: 255 }).notNull(),
     name: varchar("name", { length: 255 }),
-    bio: varchar("bio", { length: 255 }),
+    bio: text("bio"),
     location: varchar("location", { length: 255 }),
     github_id: varchar("github_id", { length: 255 }).notNull(),
     avatar_url: varchar("avatar_url", { length: 255 }).notNull(),

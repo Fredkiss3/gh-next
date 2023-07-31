@@ -1,0 +1,1 @@
+ALTER TABLE "users" ALTER COLUMN "bio" SET DATA TYPE text;
