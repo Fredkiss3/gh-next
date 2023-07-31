@@ -9,8 +9,11 @@ import {
 import Link from "next/link";
 import { AvatarStack } from "./avatar-stack";
 import { LabelBadge } from "./label-badge";
-import { IssueRowTitleTooltip } from "./issue-row-title-tooltip";
+import { HoverCard } from "./hovercard";
 import { ReactAriaLink } from "./react-aria-button";
+import { IssueHoverCardContents } from "./issue-hovercard-contents";
+import { UserHoverCardContents } from "./user-hovercard-contents";
+import { Tooltip } from "./tooltip";
 
 // utils
 import { clsx, formatDate } from "~/lib/shared-utils";
@@ -24,12 +27,12 @@ export type IssueRowProps = {
   id: number;
   status: IssueStatus;
   title: string;
-  author: string;
+  author: Omit<User, "preferred_theme" | "id" | "github_id">;
   description?: string;
   status_updated_at: Date;
   created_at: Date;
   noOfComments: number;
-  labels: Array<Pick<Label, "name" | "id" | "color">>;
+  labels: Array<Pick<Label, "name" | "id" | "color" | "description">>;
   assigned_to: Array<Pick<User, "username" | "avatar_url">>;
 };
 
@@ -45,6 +48,7 @@ export function IssueRow({
   created_at,
   description,
 }: IssueRowProps) {
+  const assignTooltipLabel = assigned_to.map((u) => u.username).join(" and ");
   return (
     <div className="flex relative w-full gap-4 items-start p-5 border-b border-neutral/70 hover:bg-subtle">
       {status === "OPEN" && (
@@ -71,32 +75,54 @@ export function IssueRow({
       >
         <div className="flex-auto gap-2 flex-wrap">
           <span className="relative group/issue-row-title">
-            <IssueRowTitleTooltip
-              id={id}
-              status={status}
-              title={title}
-              description={description}
-              created_at={created_at}
-              labels={labels}
+            <HoverCard
+              content={
+                <IssueHoverCardContents
+                  id={id}
+                  status={status}
+                  title={title}
+                  description={description}
+                  created_at={created_at}
+                  labels={labels}
+                />
+              }
             >
               <ReactAriaLink>
                 <Link
                   href={`/issues/${id}`}
-                  className="inline text-foreground hover:text-accent break-words font-semibold text-lg"
+                  className={clsx(
+                    "inline text-foreground break-words font-semibold text-lg",
+                    "hover:text-accent"
+                  )}
                 >
                   {title}
                 </Link>
               </ReactAriaLink>
-            </IssueRowTitleTooltip>
+            </HoverCard>
           </span>
           {labels.length > 0 && (
             <>
               &nbsp;&nbsp;
               <span className="inline-flex flex-wrap gap-2">
-                {labels.map(({ id, name, color }) => (
-                  <Link key={id} href={`/issues?q=is:open+label:"${name}"`}>
-                    <LabelBadge color={color} title={name} />
-                  </Link>
+                {labels.map(({ id, name, color, description }) => (
+                  <Tooltip
+                    key={id}
+                    disabled={!description}
+                    content={
+                      <p className="text-sm max-w-[250px] text-center">
+                        {description}
+                      </p>
+                    }
+                    delayInMs={500}
+                    closeDelayInMs={500}
+                    placement="bottom end"
+                  >
+                    <ReactAriaLink>
+                      <Link href={`/issues?q=is:open+label:"${name}"`}>
+                        <LabelBadge color={color} title={name} />
+                      </Link>
+                    </ReactAriaLink>
+                  </Tooltip>
                 ))}
               </span>
             </>
@@ -105,17 +131,34 @@ export function IssueRow({
 
         <small className="text-grey">
           #{id} opened {formatDate(status_updated_at)} by&nbsp;
-          <Link
-            href={`/issues?q=is:open+author:${author}`}
-            className="hover:text-accent"
+          <HoverCard
+            placement="top start"
+            delayInMs={700}
+            content={
+              <UserHoverCardContents
+                avatar_url={author.avatar_url}
+                bio={author.bio}
+                location={author.location}
+                name={author.name}
+                username={author.username}
+              />
+            }
           >
-            {author}
-          </Link>
+            <ReactAriaLink>
+              <Link
+                href={`/issues?q=is:open+author:${author.username}`}
+                className="hover:text-accent"
+              >
+                {author.username}
+              </Link>
+            </ReactAriaLink>
+          </HoverCard>
         </small>
       </div>
 
       <div className="hidden sm:flex items-center gap-4 w-[30%] justify-end">
         <AvatarStack
+          tooltipLabel={`assigned to ${assignTooltipLabel}`}
           users={assigned_to}
           getUserUrl={(username) => `/issues?q=is:open+author:${username}`}
         />

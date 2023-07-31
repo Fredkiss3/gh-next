@@ -11,9 +11,10 @@ import { clsx } from "~/lib/shared-utils";
 
 export type TooltipProps = {
   children?: React.ReactNode;
-  content?: React.ReactNode;
+  content: React.ReactNode;
   delayInMs?: number;
   closeDelayInMs?: number;
+  disabled?: boolean;
 } & Pick<ReactAriaTooltipProps, "placement" | "isOpen">;
 
 export function Tooltip({
@@ -22,13 +23,15 @@ export function Tooltip({
   delayInMs = 150,
   closeDelayInMs = 150,
   placement,
-  isOpen = true,
+  isOpen,
+  disabled,
 }: TooltipProps) {
   return (
     <TooltipTrigger
       delay={delayInMs}
       closeDelay={closeDelayInMs}
       isOpen={isOpen}
+      isDisabled={disabled}
     >
       {children}
       <ReactAriaTooltip
@@ -42,7 +45,12 @@ export function Tooltip({
           <svg
             width={8}
             height={8}
-            className="fill-tooltip-dark group-data-[placement=left]/tooltip:-rotate-90"
+            className={clsx(
+              "fill-tooltip-dark",
+              "group-data-[placement=left]/tooltip:-rotate-90",
+              "group-data-[placement=right]/tooltip:rotate-90",
+              "group-data-[placement=bottom]/tooltip:rotate-180"
+            )}
           >
             <path d="M0 0,L4 4,L8 0" />
           </svg>

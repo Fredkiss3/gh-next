@@ -25,7 +25,7 @@ export default function LoginPage({ searchParams }: PageProps) {
         <Card className="inline-flex">
           <form action={authenticateWithGithub}>
             <input type="hidden" name="_nextUrl" value={nextUrl} />
-            <Button variant="secondary">
+            <Button variant="secondary" type="submit">
               <MarkGithubIcon className="h-4 w-4" />
               <span>Login with GitHub</span>
             </Button>
