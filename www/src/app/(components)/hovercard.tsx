@@ -13,6 +13,7 @@ import { useMediaQuery } from "~/lib/hooks/use-media-query";
 
 // types
 import type { TooltipProps as ReactAriaTooltipProps } from "react-aria-components";
+import { TriangleDownIcon } from "@primer/octicons-react";
 
 export type HoverCardProps = {
   children: React.ReactNode;
@@ -65,15 +66,21 @@ export function HoverCard({
           // "before:[clip-path:polygon(50%_0%,_0%_100%,_100%_100%)]"
         )}
       >
-        <OverlayArrow>
-          <svg
-            width={8}
-            height={8}
-            className="fill-subtle stroke-neutral group-data-[placement=bottom]/row-title-tooltip:rotate-180"
-            strokeWidth={1}
-          >
-            <path d="M0 0,L4 4,L8 0" />
-          </svg>
+        <OverlayArrow className="relative">
+          <TriangleDownIcon
+            className={clsx(
+              "h-6 w-6 absolute -top-2.5 text-neutral",
+              "group-data-[placement=bottom]/row-title-tooltip:rotate-180",
+              "group-data-[placement=bottom]/row-title-tooltip:top-auto group-data-[placement=bottom]/row-title-tooltip:-bottom-2.5"
+            )}
+          />
+          <TriangleDownIcon
+            className={clsx(
+              "h-6 w-6 absolute -top-3 text-subtle",
+              "group-data-[placement=bottom]/row-title-tooltip:rotate-180",
+              "group-data-[placement=bottom]/row-title-tooltip:top-auto group-data-[placement=bottom]/row-title-tooltip:-bottom-3"
+            )}
+          />
         </OverlayArrow>
 
         {content}
