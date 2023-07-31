@@ -1,7 +1,9 @@
-export type PageParams = Record<string, string>;
-export interface PageProps {
-  params?: PageParams;
-  searchParams?: Record<string, string | string[]>;
+export interface PageProps<
+  TParams extends Record<string, string> = {},
+  TSearchParams extends Record<string, string | string[]> = {}
+> {
+  params: TParams;
+  searchParams?: TSearchParams;
 }
 
 export type FormErrors = Record<string, string[]> | null | undefined;

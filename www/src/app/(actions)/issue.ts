@@ -63,7 +63,13 @@ const issues = [
     id: 1,
     title:
       "[NEXT-1160] Clicking Links in intercepted routes does not unmount the interceptor route",
-    author: "Fredkiss3",
+    author: {
+      username: "Fredkiss3",
+      name: "Adrien KISSIE",
+      bio: "I write code",
+      location: "France",
+      avatar_url: "https://avatars.githubusercontent.com/u/38298743?v=4",
+    },
     assigned_to: [
       {
         username: "balazsorban45",
@@ -88,7 +94,13 @@ const issues = [
     Does the docs page already exist? Please link to it.
     
     https://nextjs.org/docs/app/building-your-application/data-fetching#automatic-fetch-request-deduping`,
-    author: "Fredkiss3",
+    author: {
+      username: "Fredkiss3",
+      name: "Adrien KISSIE",
+      bio: "I write code",
+      location: "France",
+      avatar_url: "https://avatars.githubusercontent.com/u/38298743?v=4",
+    },
     labels: [
       {
         id: 4,
@@ -106,7 +118,13 @@ const issues = [
     id: 2,
     title:
       "[NEXT-1160] Clicking Links in intercepted routes does not unmount the interceptor route",
-    author: "Fredkiss3",
+    author: {
+      username: "Fredkiss3",
+      name: "Adrien KISSIE",
+      bio: "I write code",
+      location: "France",
+      avatar_url: "https://avatars.githubusercontent.com/u/38298743?v=4",
+    },
     assigned_to: [],
     labels: [
       {
@@ -130,7 +148,13 @@ const issues = [
     id: 3,
     title:
       "[NEXT-1160] Clicking Links in intercepted routes does not unmount the interceptor route",
-    author: "Fredkiss3",
+    author: {
+      username: "Fredkiss3",
+      name: "Adrien KISSIE",
+      bio: "I write code",
+      location: "France",
+      avatar_url: "https://avatars.githubusercontent.com/u/38298743?v=4",
+    },
     assigned_to: [
       {
         username: "shadcn",
