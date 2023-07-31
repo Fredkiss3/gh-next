@@ -69,7 +69,7 @@ export function IssueRow({
         )}
       >
         <div className="flex-auto gap-2 flex-wrap">
-          <span className="relative group">
+          <span className="relative group/issue-row-title">
             <Link
               href={`/issues/${id}`}
               className="inline text-foreground hover:text-accent break-words font-semibold text-lg"

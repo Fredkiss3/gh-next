@@ -44,10 +44,10 @@ export function IssueRowTitlePopover({
   return (
     <div
       className={clsx(
-        "hidden p-5 group-hover:block",
+        "hidden p-5 group-hover/issue-row-title:md:block",
         "absolute max-w-[350px] z-20 bottom-[calc(100%+10px)] right-0",
         "border border-neutral bg-subtle rounded-md shadow-lg",
-        // these horrible styles below are for adding a custom
+        // these horrible styles below are for adding a custom arrow at the bottom left of the component
         "after:absolute after:-bottom-3 after:left-10 after:rotate-180",
         "after:h-3 after:w-6 after:bg-neutral",
         "after:[clip-path:polygon(50%_0%,_0%_100%,_100%_100%)]",
