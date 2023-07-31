@@ -83,7 +83,9 @@ function IssuesListHeader() {
   );
 }
 
-async function IssuesListBody(props: { params: PageProps["searchParams"] }) {
+async function IssuesListBody(props: {
+  params: PageProps<{}, { page?: string }>["searchParams"];
+}) {
   let currentPage = Number(props.params?.page);
   if (isNaN(currentPage)) {
     currentPage = 1;

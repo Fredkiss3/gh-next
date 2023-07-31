@@ -3,7 +3,7 @@ export interface PageProps<
   TSearchParams extends Record<string, string | string[]> = {}
 > {
   params: TParams;
-  searchParams?: TSearchParams;
+  searchParams?: Partial<TSearchParams>;
 }
 
 export type FormErrors = Record<string, string[]> | null | undefined;

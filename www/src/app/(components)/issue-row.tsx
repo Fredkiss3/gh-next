@@ -32,7 +32,7 @@ export type IssueRowProps = {
   status_updated_at: Date;
   created_at: Date;
   noOfComments: number;
-  labels: Array<Pick<Label, "name" | "id" | "color" | "description">>;
+  labels: Array<Omit<Label, "description"> & { description?: string }>;
   assigned_to: Array<Pick<User, "username" | "avatar_url">>;
 };
 

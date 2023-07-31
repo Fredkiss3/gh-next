@@ -15,7 +15,9 @@ export const metadata: Metadata = {
   title: "Login",
 };
 
-export default function LoginPage({ searchParams }: PageProps) {
+export default function LoginPage({
+  searchParams,
+}: PageProps<{}, { nextUrl: string }>) {
   const nextUrl = searchParams?.nextUrl;
 
   return (
