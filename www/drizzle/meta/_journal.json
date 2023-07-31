@@ -36,6 +36,13 @@
       "when": 1690753557741,
       "tag": "0004_daily_boomerang",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1690831582297,
+      "tag": "0005_vengeful_boomerang",
+      "breakpoints": true
     }
   ]
 }
