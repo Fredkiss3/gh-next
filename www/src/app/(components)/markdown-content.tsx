@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeReact from "rehype-react";
 import rehypeSlug from "rehype-slug";
-import { CopyCodeButton } from "./copy-code-button";
+import { MarkdownCodeBlock } from "./markdown-code-block";
 import { clsx } from "~/lib/shared-utils";
 import { LinkIcon } from "@primer/octicons-react";
 import githubDark from "~/lib/themes/github-dark.json";
@@ -142,7 +142,10 @@ export async function MarkdownContent({
             }
 
             return (
-              <div className="relative group">
+              <MarkdownCodeBlock
+                className={clsx("absolute right-2 top-7")}
+                codeStr={children.trim()}
+              >
                 <Code
                   lang={lang}
                   codeClassName="bg-neutral/50 mb-4 rounded-md py-[16px] px-[2px] overflow-auto w-full"
@@ -150,15 +153,7 @@ export async function MarkdownContent({
                 >
                   {children.trim()}
                 </Code>
-
-                <CopyCodeButton
-                  className={clsx(
-                    "transition duration-150 opacity-0 group-hover:opacity-100",
-                    "absolute right-2 top-7"
-                  )}
-                  code={children.trim()}
-                />
-              </div>
+              </MarkdownCodeBlock>
             );
           } else {
             return <></>;

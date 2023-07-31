@@ -1,9 +1,11 @@
 import * as React from "react";
+
+import { ReactAriaButton, ReactAriaLink } from "./react-aria-button";
+
 import { LoadingIndicator } from "./loading-indicator";
 import { clsx } from "~/lib/shared-utils";
-import Link from "next/link";
-
 import type { Route } from "next";
+import Link from "next/link";
 
 export type CommonButtonProps = {
   renderLeadingIcon?: (classNames: string) => JSX.Element;
@@ -105,16 +107,18 @@ export const Button = React.forwardRef<
     const { href, children, ...linkProps } = restProps;
 
     return (
-      <Link
-        href={href}
-        ref={ref as React.Ref<HTMLAnchorElement>}
-        className={commonClasses}
-        {...linkProps}
-      >
-        {renderLeadingIcon?.("h-5 w-5 flex-shrink-0")}
-        {children}
-        {renderTrailingIcon?.("h-5 w-5 flex-shrink-0")}
-      </Link>
+      <ReactAriaLink>
+        <Link
+          href={href}
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          className={commonClasses}
+          {...linkProps}
+        >
+          {renderLeadingIcon?.("h-5 w-5 flex-shrink-0")}
+          {children}
+          {renderTrailingIcon?.("h-5 w-5 flex-shrink-0")}
+        </Link>
+      </ReactAriaLink>
     );
   } else if (isButton(restProps)) {
     const {
@@ -126,9 +130,10 @@ export const Button = React.forwardRef<
     } = restProps;
 
     return (
-      <button
+      // @ts-expect-error formAction is defined
+      <ReactAriaButton
         ref={ref as React.Ref<HTMLButtonElement>}
-        disabled={disabled || isLoading}
+        isDisabled={disabled || isLoading}
         className={clsx(commonClasses, {
           "focus-visible:outline focus-visible:-outline-offset-2":
             !isLoading && !disabled,
@@ -149,7 +154,7 @@ export const Button = React.forwardRef<
         {!isLoading && renderLeadingIcon?.("h-5 w-5 flex-shrink-0")}
         {children}
         {renderTrailingIcon?.("h-5 w-5 flex-shrink-0")}
-      </button>
+      </ReactAriaButton>
     );
   }
 
