@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 
 export type IssueListSearchInputProps = {};
 
-// TODO
+// TODO : Add autocomplete command scoped by filters
 // Inspiration : https://github.com/openstatusHQ/openstatus/blob/main/apps/web/src/app/_components/input-search.tsx
 export function IssueListSearchInput({}: IssueListSearchInputProps) {
   const search = useSearchParams();

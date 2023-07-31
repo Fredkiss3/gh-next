@@ -9,6 +9,8 @@ import {
 import Link from "next/link";
 import { AvatarStack } from "./avatar-stack";
 import { LabelBadge } from "./label-badge";
+import { IssueRowTitleTooltip } from "./issue-row-title-tooltip";
+import { ReactAriaLink } from "./react-aria-button";
 
 // utils
 import { clsx, formatDate } from "~/lib/shared-utils";
@@ -17,7 +19,6 @@ import { clsx, formatDate } from "~/lib/shared-utils";
 import type { IssueStatus } from "~/lib/db/schema/issue";
 import type { Label } from "~/lib/db/schema/label";
 import type { User } from "~/lib/db/schema/user";
-import { IssueRowTitlePopover } from "./issue-row-title-popover";
 
 export type IssueRowProps = {
   id: number;
@@ -70,30 +71,36 @@ export function IssueRow({
       >
         <div className="flex-auto gap-2 flex-wrap">
           <span className="relative group/issue-row-title">
-            <Link
-              href={`/issues/${id}`}
-              className="inline text-foreground hover:text-accent break-words font-semibold text-lg"
-            >
-              {title}
-            </Link>
-
-            <IssueRowTitlePopover
+            <IssueRowTitleTooltip
               id={id}
               status={status}
               title={title}
               description={description}
               created_at={created_at}
               labels={labels}
-            />
+            >
+              <ReactAriaLink>
+                <Link
+                  href={`/issues/${id}`}
+                  className="inline text-foreground hover:text-accent break-words font-semibold text-lg"
+                >
+                  {title}
+                </Link>
+              </ReactAriaLink>
+            </IssueRowTitleTooltip>
           </span>
-          &nbsp;&nbsp;
-          <span className="inline-flex flex-wrap gap-2">
-            {labels.map(({ id, name, color }) => (
-              <Link key={id} href={`/issues?q=is:open+label:"${name}"`}>
-                <LabelBadge color={color} title={name} />
-              </Link>
-            ))}
-          </span>
+          {labels.length > 0 && (
+            <>
+              &nbsp;&nbsp;
+              <span className="inline-flex flex-wrap gap-2">
+                {labels.map(({ id, name, color }) => (
+                  <Link key={id} href={`/issues?q=is:open+label:"${name}"`}>
+                    <LabelBadge color={color} title={name} />
+                  </Link>
+                ))}
+              </span>
+            </>
+          )}
         </div>
 
         <small className="text-grey">
