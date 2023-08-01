@@ -62,19 +62,13 @@ function InternalForm<T>({
         if (shouldSubmit) {
           startTransition(async () => {
             if (action) {
-              // FIXME: until this issue is fixed : https://github.com/vercel/next.js/issues/52075
-              // once this is fixed, we would have not need to call `router.refresh()` manually
-              // or to call the action manually
               await action(formData).then((returnedValue) => {
-                router.refresh();
                 onSettled?.(returnedValue);
               });
             } else {
               // @ts-expect-error the URLSearchParams constructor supports formData
               const searchParams = new URLSearchParams(formData);
-              return router.push(
-                (path + "?" + searchParams.toString()) as Route
-              );
+              router.push((path + "?" + searchParams.toString()) as Route);
             }
           });
         }

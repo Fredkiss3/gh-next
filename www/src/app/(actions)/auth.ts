@@ -47,8 +47,6 @@ export const logoutUser = withAuth(async function logoutUser() {
   });
 
   cookies().set(newSession.getCookie());
-
-  ssrRedirect("/");
 });
 
 export async function loginUser(user: any) {
@@ -62,7 +60,7 @@ export async function loginUser(user: any) {
       message: "An unexpected error happenned on authentication, please retry",
     });
 
-    return await forceRevalidate();
+    return forceRevalidate();
   }
 
   // Set cookie to authenticate user
@@ -132,7 +130,8 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   const session = await getSession();
   const result = updateUserNameSchema.safeParse(formData);
 
-  await forceRevalidate();
+  forceRevalidate();
+
   if (!result.success) {
     await session.addFormData({
       data: {
@@ -140,7 +139,6 @@ export const updateUserName = withAuth(async function (formData: FormData) {
       },
       errors: result.error.flatten().fieldErrors,
     });
-    // await session.add
     return;
   }
 
@@ -151,7 +149,7 @@ export const updateUserName = withAuth(async function (formData: FormData) {
       type: "info",
       message: "username not changed",
     });
-    return ssrRedirect("/settings/account");
+    return;
   }
 
   const users = await getUserByUsername(result.data.username);
@@ -164,7 +162,8 @@ export const updateUserName = withAuth(async function (formData: FormData) {
       },
     });
 
-    return;
+    // FIXME : Until this issue is fixed, we still have to do this https://github.com/vercel/next.js/issues/52075
+    return ssrRedirect("/settings/account");
   }
 
   const [user] = await updateUserUsername(
@@ -178,5 +177,6 @@ export const updateUserName = withAuth(async function (formData: FormData) {
     message: "username changed with success",
   });
 
+  // FIXME : Until this issue is fixed, we still have to do this https://github.com/vercel/next.js/issues/52075
   return ssrRedirect("/settings/account");
 });
