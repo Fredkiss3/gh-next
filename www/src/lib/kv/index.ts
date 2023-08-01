@@ -12,9 +12,9 @@ export interface KVStore {
 }
 
 function getKV(): KVStore {
-  // if (process.env.NODE_ENV === "development") {
-  //   return new HttpKV();
-  // }
+  if (process.env.NODE_ENV === "development") {
+    return new HttpKV();
+  }
   return new SqliteKV();
 }
 
