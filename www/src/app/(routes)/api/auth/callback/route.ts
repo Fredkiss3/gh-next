@@ -13,6 +13,9 @@ export async function GET(req: NextRequest) {
     redirect("/");
   }
 
+  console.log({
+    ROUTE_GITHUB_REDIRECT_URI: env.GITHUB_REDIRECT_URI,
+  });
   const response: any = await fetch(
     "https://github.com/login/oauth/access_token",
     {
