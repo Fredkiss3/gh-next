@@ -10,6 +10,7 @@ import {
 } from "~/lib/constants";
 import { env } from "~/env.mjs";
 import { nanoid } from "nanoid";
+import { getUserById } from "~/app/(models)/user";
 
 import type { User } from "~/lib/db/schema/user";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
@@ -85,6 +86,13 @@ export class Session {
   }
 
   public async extendValidity() {
+    // if connected get data fresh from the db
+    // dont do this in development mode to not spam the database
+    if (this.user && process.env.NODE_ENV !== "development") {
+      const [user] = await getUserById(this.user.id);
+      this.#_session.user = user;
+    }
+
     this.#_session.expiry = new Date(
       Date.now() +
         (this.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) * 1000
