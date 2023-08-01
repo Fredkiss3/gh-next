@@ -40,10 +40,10 @@ Expect stuff to break.
 
 - [Next App Router](https://nextjs.org/docs/app)
 - [drizzle](https://orm.drizzle.team/) + [turso](https://turso.tech/)
-- [cloudfare](https://cloudfare.com) for the hosting
+- [vercel](https://vercel.com) for the hosting
 - [tailwindCSS](https://tailwindcss.com/) for the styling
 
-- [bun](https://bun.sh/) + [honojs](https://hono.dev/) for replacing a local instance of [cloudfare KV](https://developers.cloudflare.com/workers/runtime-apis/kv), used for sessions and caching of data
+- [bun](https://bun.sh/) + [honojs](https://hono.dev/) for replacing a local instance of [turso](https://turso.tech), used for sessions and caching of data
 
 # Requirements
 
