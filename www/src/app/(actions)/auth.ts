@@ -96,7 +96,7 @@ export const getSession = cache(async function getSession(): Promise<Session> {
 
   if (!session) {
     throw new Error(
-      "Session must have been created in middleware to be accessed"
+      "Session must have been created in middleware to be accessed."
     );
   }
 
