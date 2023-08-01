@@ -39,8 +39,7 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
  * Force revalidate, we use this instead of `revalidatePath`
  * because it does not work within cloudfare workers
  */
-export async function forceRevalidate() {
-  "use server";
+export function forceRevalidate() {
   cookies().delete("dummy");
 }
 

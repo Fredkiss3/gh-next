@@ -10,7 +10,6 @@ import {
 } from "@primer/octicons-react";
 
 // utils
-import { useRouter } from "next/navigation";
 import { logoutUser } from "~/app/(actions)/auth";
 
 // types
@@ -20,7 +19,7 @@ export type UserDropdownProps = {
 };
 
 export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
-  const router = useRouter();
+  const [_, startTransition] = React.useTransition();
   return (
     <DropdownMenu
       className="min-w-fit flex items-center"
@@ -39,12 +38,7 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
           text: "Sign out",
           icon: SignOutIcon,
           onClick: async () => {
-            React.startTransition(
-              () =>
-                void logoutUser().then(() => {
-                  router.refresh();
-                })
-            );
+            startTransition(() => logoutUser());
           },
         },
       ]}

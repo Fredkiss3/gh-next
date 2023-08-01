@@ -50,7 +50,7 @@ export function ChangeUsernameForm({
         validationText={errors?.username}
         helpText="must be an alphanumeric character without any space or special chars, starting with a letter"
       />
-      <Button isLoading={isPending} variant="subtle">
+      <Button isLoading={isPending} variant="subtle" type="submit">
         {isPending ? "Updating your username..." : "Change username"}
       </Button>
     </Form>
