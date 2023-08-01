@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { getDBClient } from "~/lib/db";
+import { db } from "~/lib/db";
 import { Theme, users } from "~/lib/db/schema/user";
 
 /**
@@ -11,7 +11,6 @@ import { Theme, users } from "~/lib/db/schema/user";
 export async function getUserFromGithubProfile(
   ghUser: z.TypeOf<typeof githubUserSchema>
 ) {
-  const db = await getDBClient();
   return await db
     .insert(users)
     .values({
@@ -42,7 +41,6 @@ export async function getUserFromGithubProfile(
  */
 export async function getUserByUsername(username: string) {
   const lowered = username.toLowerCase();
-  const db = await getDBClient();
   return await db
     .select({
       username: users.username,
@@ -53,7 +51,6 @@ export async function getUserByUsername(username: string) {
 }
 
 export async function updateUserUsername(username: string, id: number) {
-  const db = await getDBClient();
   return await db
     .update(users)
     .set({
@@ -65,7 +62,6 @@ export async function updateUserUsername(username: string, id: number) {
 }
 
 export async function updateUserTheme(newTheme: Theme, id: number) {
-  const db = await getDBClient();
   return (
     await db
       .update(users)
