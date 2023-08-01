@@ -50,6 +50,10 @@ export async function getUserByUsername(username: string) {
     .execute();
 }
 
+export async function getUserById(id: number) {
+  return await db.select().from(users).where(eq(users.id, id)).execute();
+}
+
 export async function updateUserUsername(username: string, id: number) {
   return await db
     .update(users)

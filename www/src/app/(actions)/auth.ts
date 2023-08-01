@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env.mjs";
 import { SESSION_COOKIE_KEY } from "~/lib/constants";
-import { forceRevalidate, ssrRedirect, withAuth } from "~/lib/server-utils";
+import { ssrRedirect, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
 import {
   getUserByUsername,
@@ -16,6 +16,7 @@ import {
 import type { Route } from "next";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import { revalidatePath } from "next/cache";
 
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();
@@ -60,7 +61,7 @@ export async function loginUser(user: any) {
       message: "An unexpected error happenned on authentication, please retry",
     });
 
-    return forceRevalidate();
+    return revalidatePath(`/`);
   }
 
   // Set cookie to authenticate user
@@ -130,8 +131,6 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   const session = await getSession();
   const result = updateUserNameSchema.safeParse(formData);
 
-  forceRevalidate();
-
   if (!result.success) {
     await session.addFormData({
       data: {
@@ -139,7 +138,7 @@ export const updateUserName = withAuth(async function (formData: FormData) {
       },
       errors: result.error.flatten().fieldErrors,
     });
-    return;
+    return revalidatePath(`/settings/account`);
   }
 
   if (
@@ -162,6 +161,7 @@ export const updateUserName = withAuth(async function (formData: FormData) {
       },
     });
 
+    revalidatePath(`/settings/account`);
     // FIXME : Until this issue is fixed, we still have to do this https://github.com/vercel/next.js/issues/52075
     return ssrRedirect("/settings/account");
   }
@@ -177,6 +177,7 @@ export const updateUserName = withAuth(async function (formData: FormData) {
     message: "username changed with success",
   });
 
+  revalidatePath(`/`);
   // FIXME : Until this issue is fixed, we still have to do this https://github.com/vercel/next.js/issues/52075
   return ssrRedirect("/settings/account");
 });

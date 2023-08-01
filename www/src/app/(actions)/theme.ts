@@ -1,10 +1,11 @@
 "use server";
 
 import { z } from "zod";
-import { forceRevalidate, ssrRedirect, withAuth } from "~/lib/server-utils";
+import { ssrRedirect, withAuth } from "~/lib/server-utils";
 import { getSession } from "./auth";
 import { cache } from "react";
 import { updateUserTheme } from "~/app/(models)/user";
+import { revalidatePath } from "next/cache";
 
 const themeSchema = z.union([
   z.literal("dark"),
@@ -25,7 +26,7 @@ export const updateTheme = withAuth(async function updateTheme(
   const themeResult = themeSchema.safeParse(formData.get("theme")?.toString());
   const session = await getSession();
 
-  forceRevalidate();
+  revalidatePath(`/`);
 
   if (!themeResult.success) {
     await session.addFlash({

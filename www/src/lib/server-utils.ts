@@ -1,9 +1,10 @@
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSession } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
 import { GITHUB_AUTHOR_USERNAME } from "./constants";
+import { revalidatePath } from "next/cache";
 
 export function isSSR() {
   return headers().get("accept")?.includes("text/html");
@@ -28,19 +29,11 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
         message: "You must be authenticated to do this action.",
       });
 
-      await forceRevalidate();
+      revalidatePath("/");
       return;
     }
     return action(...args);
   }) as T;
-}
-
-/**
- * Force revalidate, we use this instead of `revalidatePath`
- * because it does not work within cloudfare workers
- */
-export function forceRevalidate() {
-  cookies().delete("dummy");
 }
 
 const githubGraphQLAPIResponseSchema = z.union([
