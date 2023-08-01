@@ -18,7 +18,10 @@ export function ToasterClient({ flashes }: ToasterClientProps) {
     // We can safely add the flashes to the state as when
     // flashes will change, it means new flashes are added
     // thoses flashes are guarranted to be new ones
-    setFlashes((oldFlashes) => [...oldFlashes, ...flashes]);
+    setFlashes((oldFlashes) => {
+      if (oldFlashes === flashes) return oldFlashes;
+      return [...oldFlashes, ...flashes];
+    });
   }, [flashes]);
 
   return (
