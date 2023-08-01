@@ -37,7 +37,6 @@ import { reactions, reactionsRelations } from "./schema/reaction";
 import { neonConfig, neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { env } from "~/env.mjs";
-import { cache } from "react";
 
 neonConfig.fetchConnectionCache = true;
 
