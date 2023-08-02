@@ -118,7 +118,10 @@ export function IssueRow({
                     placement="bottom end"
                   >
                     <ReactAriaLink>
-                      <Link href={`/issues?q=is:open+label:"${name}"`}>
+                      <Link
+                        prefetch={false}
+                        href={`/issues?q=is:open+label:"${name}"`}
+                      >
                         <LabelBadge color={color} title={name} />
                       </Link>
                     </ReactAriaLink>
@@ -146,6 +149,7 @@ export function IssueRow({
           >
             <ReactAriaLink>
               <Link
+                prefetch={false}
                 href={`/issues?q=is:open+author:${author.username}`}
                 className="hover:text-accent"
               >
@@ -160,7 +164,7 @@ export function IssueRow({
         <AvatarStack
           tooltipLabel={`assigned to ${assignTooltipLabel}`}
           users={assigned_to}
-          getUserUrl={(username) => `/issues?q=is:open+author:${username}`}
+          getUserUrl={(username) => `/issues?q=is:open+assignee:${username}`}
         />
         {noOfComments > 0 && (
           <Link

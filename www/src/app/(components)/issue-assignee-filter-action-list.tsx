@@ -47,7 +47,8 @@ export function IssueAssigneeFilterActionList({
         onCloseList,
       }) => (
         <Link
-          // @ts-expect-error
+          prefetch={false}
+          // @ts-ignore
           href={
             `/issues?q=is:open+` +
             (username ? `author:${username}` : `no:assignee`)

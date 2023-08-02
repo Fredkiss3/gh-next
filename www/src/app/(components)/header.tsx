@@ -108,7 +108,6 @@ export async function Header({
             <li className="hidden md:block">
               <Button
                 isSquared
-                // @ts-expect-error route not implemented
                 href="/pulls"
                 variant="invisible"
                 renderLeadingIcon={(cls) => (

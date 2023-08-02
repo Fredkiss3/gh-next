@@ -58,6 +58,7 @@ export function IssueLabelFilterActionList({
         onCloseList,
       }) => (
         <Link
+          prefetch={false}
           // @ts-ignore the href is a valid one
           href={
             `/issues?q=is:open+` + (color ? `label:"${title}"` : "no:label")

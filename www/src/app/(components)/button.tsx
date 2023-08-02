@@ -1,12 +1,14 @@
 import * as React from "react";
 
+// components
+import Link from "next/link";
+import { LoadingIndicator } from "./loading-indicator";
 import { ReactAriaButton, ReactAriaLink } from "./react-aria-button";
 
-import { LoadingIndicator } from "./loading-indicator";
+// utils
 import { clsx } from "~/lib/shared-utils";
-import type { Route } from "next";
-import Link from "next/link";
 
+// types
 export type CommonButtonProps = {
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
@@ -28,7 +30,8 @@ export type BaseButtonProps = {
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export type LinkButtonProps = {
-  href: Route;
+  href: string;
+  prefetch?: boolean;
 } & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 
 export type ButtonProps = CommonButtonProps &

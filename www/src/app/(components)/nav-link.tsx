@@ -10,9 +10,8 @@ import { clsx } from "~/lib/shared-utils";
 
 // types
 import type { LinkProps } from "next/link";
-import type { Route } from "next";
 
-type NavLinkProps = LinkProps<Route> & {
+type NavLinkProps = LinkProps & {
   children: React.ReactNode;
   icon: React.ComponentType<{ className?: string }>;
 };

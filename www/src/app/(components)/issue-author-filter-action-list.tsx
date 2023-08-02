@@ -47,6 +47,7 @@ export function IssueAuthorFilterActionList({
         onCloseList,
       }) => (
         <Link
+          prefetch={false}
           href={`/issues?q=is:open+author:${username}`}
           className={clsx(
             className,

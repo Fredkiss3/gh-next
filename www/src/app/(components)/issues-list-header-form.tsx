@@ -50,6 +50,7 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
         ]}
         renderItem={({ text, selected, onCloseList, href, className }) => (
           <Link
+            prefetch={false}
             onClick={onCloseList}
             href={href}
             className={clsx(

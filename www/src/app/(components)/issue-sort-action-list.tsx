@@ -46,6 +46,7 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
       ]}
       renderItem={({ selected, className, title, id, onCloseList, emoji }) => (
         <Link
+          prefetch={false}
           href={`/issues?q=is:open+sort:${id}`}
           className={clsx(className, "flex items-center gap-4", {
             "hover:bg-neutral/50": !emoji,
