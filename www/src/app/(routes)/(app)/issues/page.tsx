@@ -104,7 +104,11 @@ async function IssuesListBody(props: {
         <p>
           <strong className="text-foreground">ProTip!</strong> Ears burning? Get
           mentions with&nbsp;
-          <Link href="/issues?q=is:open+mention:@me" className="text-accent">
+          <Link
+            href="/issues?q=is:open+mention:@me"
+            className="text-accent"
+            prefetch={false}
+          >
             mentions:@me.
           </Link>
         </p>
@@ -120,6 +124,7 @@ function IssueContentTableSkeleton() {
       <div className="flex flex-col gap-4 px-5 md:px-0">
         <div className="flex items-center gap-4 md:hidden">
           <Link
+            prefetch={false}
             href="/issues?q=is:open"
             className={clsx(
               "font-semibold text-foreground flex items-center gap-2"
@@ -131,6 +136,7 @@ function IssueContentTableSkeleton() {
             </p>
           </Link>
           <Link
+            prefetch={false}
             href="/issues?q=is:closed"
             className={clsx("text-grey flex items-center gap-2")}
           >
@@ -153,6 +159,7 @@ function IssueContentTableSkeleton() {
           <ul className="hidden md:flex items-center gap-4">
             <li>
               <Link
+                prefetch={false}
                 href="/issues?q=is:open"
                 className={clsx(
                   "font-semibold text-foreground flex items-center gap-2"
@@ -166,6 +173,7 @@ function IssueContentTableSkeleton() {
             </li>
             <li>
               <Link
+                prefetch={false}
                 href="/issues?q=is:closed"
                 className={clsx("text-grey flex items-center gap-2")}
               >
@@ -265,6 +273,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 px-5 md:px-0">
         <Link
+          prefetch={false}
           href="/issues"
           className="flex gap-2 items-center text-grey font-semibold group hover:text-accent"
         >
@@ -276,6 +285,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
 
         <div className="flex items-center gap-4 md:hidden">
           <Link
+            prefetch={false}
             href="/issues?q=is:open"
             className={clsx(
               "font-semibold text-foreground flex items-center gap-2"
@@ -287,6 +297,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
             </p>
           </Link>
           <Link
+            prefetch={false}
             href="/issues?q=is:closed"
             className={clsx("text-grey flex items-center gap-2")}
           >
@@ -309,6 +320,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
           <ul className="hidden md:flex items-center gap-4">
             <li>
               <Link
+                prefetch={false}
                 href="/issues?q=is:open"
                 className={clsx(
                   "font-semibold text-foreground flex items-center gap-2"
@@ -322,6 +334,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
             </li>
             <li>
               <Link
+                prefetch={false}
                 href="/issues?q=is:closed"
                 className={clsx("text-grey flex items-center gap-2")}
               >

@@ -39,9 +39,10 @@ export function Pagination({
     >
       <div className={clsx(className, "flex items-center gap-2")}>
         <Button
-          // @ts-expect-error
+          // @ts-ignore
           href={currentPage === 1 ? "#" : baseURL + (currentPage - 1)}
           variant="accent-ghost"
+          prefetch={false}
           aria-disabled={currentPage === 1 ? true : undefined}
           className={clsx({
             "pointer-events-none": currentPage === 1,
@@ -68,8 +69,9 @@ export function Pagination({
             return (
               <li key={pageNumber}>
                 <Button
-                  // @ts-expect-error
+                  // @ts-ignore
                   href={baseURL + pageNumber}
+                  prefetch={false}
                   variant="ghost"
                   aria-label={pageLabel}
                   aria-current={pageNumber === currentPage ? "page" : undefined}
@@ -88,9 +90,10 @@ export function Pagination({
         </ul>
 
         <Button
-          // @ts-expect-error
+          // @ts-ignore
           href={currentPage === lastPage ? "#" : baseURL + (currentPage + 1)}
           variant="accent-ghost"
+          prefetch={false}
           aria-disabled={currentPage === lastPage ? true : undefined}
           renderTrailingIcon={(cls) => <ChevronRightIcon className={cls} />}
           className={clsx({

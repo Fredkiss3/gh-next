@@ -29,6 +29,7 @@ export type BaseButtonProps = {
 
 export type LinkButtonProps = {
   href: Route;
+  prefetch?: boolean;
 } & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 
 export type ButtonProps = CommonButtonProps &
