@@ -164,7 +164,7 @@ export function IssueRow({
         <AvatarStack
           tooltipLabel={`assigned to ${assignTooltipLabel}`}
           users={assigned_to}
-          getUserUrl={(username) => `/issues?q=is:open+author:${username}`}
+          getUserUrl={(username) => `/issues?q=is:open+assignee:${username}`}
         />
         {noOfComments > 0 && (
           <Link
