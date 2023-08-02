@@ -32,7 +32,10 @@ import { clsx } from "~/lib/shared-utils";
 export default async function Page() {
   const { user } = await getSession();
   const repositoryData = await getGithubRepoData();
-  const hasStarred = user && repositoryData.stargazers.includes(user.username);
+  const hasStarred = Boolean(
+    user &&
+      repositoryData.stargazers.find((stargazer) => user.id === stargazer.id)
+  );
 
   return (
     <div className={clsx("flex flex-col", "sm:gap-4")}>

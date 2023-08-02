@@ -6,6 +6,47 @@ import {
 import { fetchFromGithubAPI } from "~/lib/server-utils";
 import type { GithubRepositoryData } from "~/lib/types";
 
+type RepositoryStatsResponse = {
+  repository: {
+    url: string;
+    forkCount: number;
+    description: string;
+    stargazerCount: number;
+    watchers: { totalCount: number };
+    languages: {
+      totalSize: number;
+      totalCount: number;
+      edges: Array<{
+        size: number;
+        node: {
+          name: string;
+          color: string;
+        };
+      }>;
+    };
+  };
+};
+
+type StargazersResponse = {
+  repository: {
+    stargazers: {
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string;
+      };
+      edges: Array<{
+        node: {
+          databaseId: number;
+          login: string;
+          avatarUrl: string;
+          location: string | null;
+          company: string | null;
+        };
+      }>;
+    };
+  };
+};
+
 export async function GET() {
   const repostatsQuery = /* GraphQL */ `
     query ($repoName: String!, $repoOwner: String!) {
@@ -41,7 +82,11 @@ export async function GET() {
           }
           edges {
             node {
+              databaseId
               login
+              avatarUrl
+              location
+              company
             }
           }
         }
@@ -49,53 +94,26 @@ export async function GET() {
     }
   `;
 
-  const { repository } = await fetchFromGithubAPI<{
-    repository: {
-      url: string;
-      forkCount: number;
-      description: string;
-      stargazerCount: number;
-      watchers: { totalCount: number };
-      languages: {
-        totalSize: number;
-        totalCount: number;
-        edges: Array<{
-          size: number;
-          node: {
-            name: string;
-            color: string;
-          };
-        }>;
-      };
-    };
-  }>(repostatsQuery, {
-    repoName: GITHUB_REPOSITORY_NAME,
-    repoOwner: GITHUB_AUTHOR_USERNAME,
-  });
+  const { repository } = await fetchFromGithubAPI<RepositoryStatsResponse>(
+    repostatsQuery,
+    {
+      repoName: GITHUB_REPOSITORY_NAME,
+      repoOwner: GITHUB_AUTHOR_USERNAME,
+    }
+  );
 
   const {
     repository: { stargazers: allStargazersData },
-  } = await fetchFromGithubAPI<{
-    repository: {
-      stargazers: {
-        pageInfo: {
-          hasNextPage: boolean;
-          endCursor: string;
-        };
-        edges: Array<{
-          node: {
-            login: string;
-          };
-        }>;
-      };
-    };
-  }>(stargazersQuery, {
+  } = await fetchFromGithubAPI<StargazersResponse>(stargazersQuery, {
     repoName: GITHUB_REPOSITORY_NAME,
     repoOwner: GITHUB_AUTHOR_USERNAME,
   });
 
   let allStargazers: GithubRepositoryData["stargazers"] =
-    allStargazersData.edges.map(({ node }) => node.login);
+    allStargazersData.edges.map(({ node }) => {
+      const { databaseId, ...rest } = node;
+      return { ...rest, id: databaseId };
+    });
   let nextCursor = allStargazersData.pageInfo.endCursor;
   let hasNextPage = allStargazersData.pageInfo.hasNextPage;
 
@@ -104,21 +122,7 @@ export async function GET() {
       repository: {
         stargazers: { pageInfo, edges },
       },
-    } = await fetchFromGithubAPI<{
-      repository: {
-        stargazers: {
-          pageInfo: {
-            hasNextPage: boolean;
-            endCursor: string;
-          };
-          edges: Array<{
-            node: {
-              login: string;
-            };
-          }>;
-        };
-      };
-    }>(stargazersQuery, {
+    } = await fetchFromGithubAPI<StargazersResponse>(stargazersQuery, {
       cursor: nextCursor,
       repoName: GITHUB_REPOSITORY_NAME,
       repoOwner: GITHUB_AUTHOR_USERNAME,
@@ -126,7 +130,12 @@ export async function GET() {
 
     nextCursor = pageInfo.endCursor;
     hasNextPage = pageInfo.hasNextPage;
-    allStargazers = allStargazers.concat(edges.map(({ node }) => node.login));
+    allStargazers = allStargazers.concat(
+      edges.map(({ node }) => {
+        const { databaseId, ...rest } = node;
+        return { ...rest, id: databaseId };
+      })
+    );
   }
 
   let totalPercent = 0;
