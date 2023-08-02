@@ -2,6 +2,11 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+console.log({
+  NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+  VERCEL_URL: process.env.VERCEL_URL,
+});
+
 export const env = createEnv({
   server: {
     NEON_DB_URL: z.string().url(),
