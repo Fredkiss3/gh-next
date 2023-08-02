@@ -45,8 +45,7 @@ export function AvatarStack({
           >
             {getUserUrl ? (
               <ReactAriaLink>
-                {/* @ts-expect-error */}
-                <Link href={getUserUrl(u.username)}>
+                <Link prefetch={false} href={getUserUrl(u.username)}>
                   <Avatar
                     src={u.avatar_url}
                     username={u.username}
