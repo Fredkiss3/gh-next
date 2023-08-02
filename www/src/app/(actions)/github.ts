@@ -11,13 +11,9 @@ import type { GithubRepositoryData } from "~/lib/types";
  * @returns
  */
 export const getGithubRepoData = cache(async function getGithubRepoData() {
-  const protocol = env.NEXT_PUBLIC_VERCEL_URL.startsWith("localhost")
-    ? "http"
-    : "https";
-
   const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
   return await jsonFetch<GithubRepositoryData>(
-    `${protocol}://${env.NEXT_PUBLIC_VERCEL_URL}/api/github/stats`,
+    `${env.NEXT_PUBLIC_VERCEL_URL}/api/github/stats`,
     {
       next: {
         revalidate: THIRTY_MINUTES_IN_SECONDS,
