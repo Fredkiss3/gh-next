@@ -99,19 +99,20 @@ export async function jsonFetch<T>(
   headers.set("Accept", "application/json");
   headers.set("Content-Type", "application/json");
 
+  // do not cache mutative methods (POST, PUT, DELETE) by default, unless if explicitly cached
+  if (
+    !options.cache &&
+    ["POST", "PUT", "DELETE"].includes(options.method ?? "GET")
+  ) {
+    options.cache = "no-store";
+  }
+
   return fetch(url, {
     ...options,
     headers,
     credentials: "include",
   })
-    .then(async (response) => {
-      // check if data is JSON
-      const isJson =
-        response.headers.get("content-type")?.includes("application/json") ??
-        false;
-
-      return (await response.json()) as T;
-    })
+    .then((response) => response.json() as Promise<T>)
     .catch((error) => {
       console.error(
         `[jsonFetch ${options.method ?? "GET"} ${url}] There was an error :`,

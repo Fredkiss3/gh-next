@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/libsql";
-import { createClient } from "@libsql/client";
+import { createClient } from "@libsql/client/http";
 import { env } from "~/env.mjs";
 import { eq, sql } from "drizzle-orm";
 
@@ -14,6 +14,8 @@ export class SqliteKV implements KVStore {
     const client = createClient({
       url: env.TURSO_DB_URL,
       authToken: env.TURSO_DB_TOKEN,
+      fetch: (url: string, options: RequestInit) =>
+        fetch(url, { ...options, cache: "no-store" }),
     });
     this.#db = drizzle(client, {
       logger: true,

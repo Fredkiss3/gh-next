@@ -1,6 +1,6 @@
 // @ts-check
 import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { preprocess, z } from "zod";
 
 export const env = createEnv({
   server: {
@@ -15,10 +15,18 @@ export const env = createEnv({
     KV: z.any(),
     KV_REST_URL: z.string().url().optional(),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_VERCEL_URL: preprocess((arg) => {
+      if (!arg) return arg;
+      // @ts-expect-error
+      const protocol = arg.startsWith("localhost") ? "http" : "https";
+      return `${protocol}://${arg}`;
+    }, z.string().url()),
+  },
   runtimeEnv: {
     SESSION_SECRET: process.env.SESSION_SECRET,
     NEON_DB_URL: process.env.NEON_DB_URL,
+    NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
     TURSO_DB_TOKEN: process.env.TURSO_DB_TOKEN,
     TURSO_DB_URL: process.env.TURSO_DB_URL,
     KV_REST_URL: process.env.KV_REST_URL,
