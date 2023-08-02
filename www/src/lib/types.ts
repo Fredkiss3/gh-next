@@ -24,7 +24,13 @@ export type GithubRepositoryData = {
   forkCount: number;
   stargazerCount: number;
   watcherCount: number;
-  stargazers: string[]; // array of logins
+  stargazers: Array<{
+    id: number;
+    login: string;
+    avatarUrl: string;
+    location: string | null;
+    company: string | null;
+  }>;
   readmeContent: string;
   description: string;
   url: string;
