@@ -19,3 +19,18 @@ export type UpperLowerCase<T extends string> =
   | T
   | `${Lowercase<T>}`
   | `${Uppercase<T>}`;
+
+export type GithubRepositoryData = {
+  forkCount: number;
+  stargazerCount: number;
+  watcherCount: number;
+  stargazers: string[]; // array of logins
+  readmeContent: string;
+  description: string;
+  url: string;
+  languages: Array<{
+    name: string;
+    color: string;
+    percent: number;
+  }>;
+};
