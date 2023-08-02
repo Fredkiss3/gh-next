@@ -22,6 +22,7 @@ export class HttpKV implements KVStore {
   ): Promise<void> {
     await jsonFetch(`${this.#rest_url}/set`, {
       method: "POST",
+      cache: "no-store",
       body: JSON.stringify({
         key,
         value,
@@ -41,6 +42,7 @@ export class HttpKV implements KVStore {
         }
     >(`${this.#rest_url}/get/${key}`, {
       method: "GET",
+      cache: "no-store",
     });
 
     if ("errors" in result) {
@@ -52,6 +54,7 @@ export class HttpKV implements KVStore {
   public async delete(key: string): Promise<void> {
     await jsonFetch(`${this.#rest_url}/delete/${key}`, {
       method: "DELETE",
+      cache: "no-store",
     });
   }
 }

@@ -40,7 +40,11 @@ import { env } from "~/env.mjs";
 
 neonConfig.fetchConnectionCache = true;
 
-const sql = neon(env.NEON_DB_URL);
+const sql = neon(env.NEON_DB_URL, {
+  fetchOptions: {
+    cache: "no-store",
+  },
+});
 export const db = drizzle(sql, {
   logger: true,
   schema: {
