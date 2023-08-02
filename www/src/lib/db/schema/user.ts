@@ -25,7 +25,9 @@ export const users = pgTable(
     location: varchar("location", { length: 255 }),
     github_id: varchar("github_id", { length: 255 }).notNull(),
     avatar_url: varchar("avatar_url", { length: 255 }).notNull(),
-    preferred_theme: userThemeEnum("preferred_theme").default("system"),
+    preferred_theme: userThemeEnum("preferred_theme")
+      .default("system")
+      .notNull(),
   },
   (users) => ({
     usernameIdx: uniqueIndex("usernameIdx").on(users.username),
