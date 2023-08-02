@@ -15,10 +15,13 @@ export const env = createEnv({
     KV: z.any(),
     KV_REST_URL: z.string().url().optional(),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_VERCEL_URL: z.string().url(),
+  },
   runtimeEnv: {
     SESSION_SECRET: process.env.SESSION_SECRET,
     NEON_DB_URL: process.env.NEON_DB_URL,
+    NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
     TURSO_DB_TOKEN: process.env.TURSO_DB_TOKEN,
     TURSO_DB_URL: process.env.TURSO_DB_URL,
     KV_REST_URL: process.env.KV_REST_URL,
