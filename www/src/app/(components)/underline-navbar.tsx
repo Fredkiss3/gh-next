@@ -59,31 +59,26 @@ export function UnderlineNavbar({
           </NavLink>
         </li>
         <li className="inline-flex">
-          {/* @ts-expect-error this is for unmatched paths */}
           <NavLink href="/pulls" icon={GitPullRequestIcon}>
             Pull Requests
           </NavLink>
         </li>
         <li className="inline-flex">
-          {/* @ts-expect-error this is for unmatched paths */}
           <NavLink href="/discussions" icon={CommentDiscussionIcon}>
             Discussions
           </NavLink>
         </li>
         <li className="inline-flex">
-          {/* @ts-expect-error this is for unmatched paths */}
           <NavLink href="/actions" icon={PlayIcon}>
             Actions
           </NavLink>
         </li>
         <li className="inline-flex">
-          {/* @ts-expect-error this is for unmatched paths */}
           <NavLink href="/security" icon={ShieldIcon}>
             Security
           </NavLink>
         </li>
         <li className="inline-flex">
-          {/* @ts-expect-error this is for unmatched paths */}
           <NavLink href="/pulse" icon={GraphIcon}>
             Insights
           </NavLink>
