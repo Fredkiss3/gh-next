@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { getSession } from "~/app/(actions)/auth";
+import { getSession, getAuthedUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
 import { GITHUB_AUTHOR_USERNAME } from "./constants";
 import { revalidatePath } from "next/cache";
@@ -21,9 +21,10 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
   action: T
 ): T {
   return (async (...args: Parameters<T>) => {
-    const session = await getSession();
+    const user = await getAuthedUser();
 
-    if (!session.user) {
+    if (!user) {
+      const session = await getSession();
       await session.addFlash({
         type: "warning",
         message: "You must be authenticated to do this action.",

@@ -7,13 +7,13 @@ import { SESSION_COOKIE_KEY } from "~/lib/constants";
 import { ssrRedirect, withAuth } from "~/lib/server-utils";
 import { Session } from "~/lib/session";
 import {
+  getUserById,
   getUserByUsername,
   getUserFromGithubProfile,
   githubUserSchema,
   updateUserUsername,
 } from "~/app/(models)/user";
 
-import type { Route } from "next";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { revalidatePath } from "next/cache";
@@ -107,7 +107,9 @@ export const getSession = cache(async function getSession(): Promise<Session> {
   return session;
 });
 
-export async function getUserOrRedirect(redirectToPath?: Route) {
+export const redirectIfNotAuthed = cache(async function getUserOrRedirect(
+  redirectToPath?: string
+) {
   const session = await getSession();
 
   if (!session.user) {
@@ -117,9 +119,13 @@ export async function getUserOrRedirect(redirectToPath?: Route) {
     }
     redirect("/login?" + searchParams.toString());
   }
+});
 
-  return session.user;
-}
+export const getAuthedUser = cache(async function getUser() {
+  return await getSession()
+    .then((s) => (!s.user ? null : getUserById(s.user.id)))
+    .then((users) => (users ? users[0] : null));
+});
 
 const updateUserNameSchema = zfd.formData({
   username: zfd.text(
@@ -133,6 +139,7 @@ const updateUserNameSchema = zfd.formData({
 
 export const updateUserName = withAuth(async function (formData: FormData) {
   const session = await getSession();
+  const user = await getAuthedUser();
   const result = updateUserNameSchema.safeParse(formData);
 
   if (!result.success) {
@@ -145,14 +152,13 @@ export const updateUserName = withAuth(async function (formData: FormData) {
     return revalidatePath(`/settings/account`);
   }
 
-  if (
-    result.data.username.toLowerCase() === session.user!.username.toLowerCase()
-  ) {
+  if (result.data.username.toLowerCase() === user!.username.toLowerCase()) {
     await session.addFlash({
       type: "info",
       message: "username not changed",
     });
-    return;
+
+    return revalidatePath(`/settings/account`);
   }
 
   const users = await getUserByUsername(result.data.username);
@@ -164,18 +170,12 @@ export const updateUserName = withAuth(async function (formData: FormData) {
         username: ["A user with this username already exists"],
       },
     });
-
-    revalidatePath(`/settings/account`);
-    // FIXME : Until this issue is fixed, we still have to do this https://github.com/vercel/next.js/issues/52075
-    return ssrRedirect("/settings/account");
+    return revalidatePath(`/settings/account`);
   }
 
-  const [user] = await updateUserUsername(
-    result.data.username,
-    session.user!.id
-  );
+  await updateUserUsername(result.data.username, user!.id);
 
-  await session.setUser(user);
+  // await session.setUser(user);
   await session.addFlash({
     type: "success",
     message: "username changed with success",

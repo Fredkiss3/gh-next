@@ -7,17 +7,20 @@ import { cache } from "react";
 import { updateUserTheme } from "~/app/(models)/user";
 import { revalidatePath } from "next/cache";
 
-const themeSchema = z.union([
-  z.literal("dark"),
-  z.literal("light"),
-  z.literal("system"),
-]);
+import { users } from "~/lib/db/schema/user";
+import { createSelectSchema } from "drizzle-zod";
+
+const userThemeSchema = createSelectSchema(users).pick({
+  preferred_theme: true,
+});
+const themeSchema = userThemeSchema.shape.preferred_theme;
+
 export type Theme = z.TypeOf<typeof themeSchema>;
 
 export const getTheme = cache(async function getTheme() {
-  const user = (await getSession()).user;
+  const session = await getSession();
 
-  return user?.preferred_theme ?? "system";
+  return session.user?.preferred_theme ?? "system";
 });
 
 export const updateTheme = withAuth(async function updateTheme(
@@ -38,8 +41,8 @@ export const updateTheme = withAuth(async function updateTheme(
 
   const theme = themeResult.data;
 
-  const user = await updateUserTheme(theme, session.user!.id);
-  await session.setUser(user);
+  await updateUserTheme(theme, session.user!.id);
+  await session.setUserTheme(theme);
 
   await session.addFlash({
     type: "success",

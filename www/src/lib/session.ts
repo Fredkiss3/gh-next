@@ -1,8 +1,7 @@
 // import "server-only";
-import { users } from "~/lib/db/schema/user";
 import { kv } from "~/lib/kv";
 import { preprocess, z } from "zod";
-import { createSelectSchema } from "drizzle-zod";
+
 import {
   LOGGED_IN_SESSION_TTL,
   SESSION_COOKIE_KEY,
@@ -10,7 +9,9 @@ import {
 } from "~/lib/constants";
 import { env } from "~/env.mjs";
 import { nanoid } from "nanoid";
-import { getUserById } from "~/app/(models)/user";
+
+import { users } from "~/lib/db/schema/user";
+import { createSelectSchema } from "drizzle-zod";
 
 import type { User } from "~/lib/db/schema/user";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
@@ -20,12 +21,13 @@ const primitiveSchema = z.union([z.string(), z.number(), z.boolean()]);
 const sessionSchema = z.object({
   id: z.string(),
   expiry: preprocess((arg) => new Date(arg as any), z.date()),
-  user: createSelectSchema(users, {
-    preferred_theme: (arg) => arg.preferred_theme.nullish(),
-    bio: (arg) => arg.bio.nullish(),
-    location: (arg) => arg.location.nullish(),
-    name: (arg) => arg.name.nullish(),
-  }).optional(),
+  user: createSelectSchema(users)
+    .pick({
+      id: true,
+      preferred_theme: true,
+      github_id: true,
+    })
+    .nullish(),
   flashMessages: z
     .record(z.enum(["success", "error", "info", "warning"]), z.string())
     .optional(),
@@ -86,16 +88,10 @@ export class Session {
   }
 
   public async extendValidity() {
-    // if connected get data fresh from the db
-    // dont do this in development mode to not spam the database
-    if (this.user && process.env.NODE_ENV !== "development") {
-      const [user] = await getUserById(this.user.id);
-      this.#_session.user = user;
-    }
-
     this.#_session.expiry = new Date(
       Date.now() +
-        (this.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) * 1000
+        (this.#_session.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) *
+          1000
     );
     // saving the session in the storage will reset the TTL
     await Session.#save(this.#_session);
@@ -115,8 +111,12 @@ export class Session {
     };
   }
 
-  async setUser(user: User): Promise<this> {
-    this.#_session.user = user;
+  async setUserTheme(theme: User["preferred_theme"]): Promise<this> {
+    if (!this.#_session.user) {
+      throw new Error("cannot set theme if the user is not set");
+    }
+
+    this.#_session.user["preferred_theme"] = theme;
     await Session.#save(this.#_session);
     return this;
   }
@@ -130,7 +130,11 @@ export class Session {
       init: {
         flashMessages: this.#_session.flashMessages,
         additionnalData: this.#_session.additionnalData,
-        user,
+        user: {
+          id: user.id,
+          preferred_theme: user.preferred_theme,
+          github_id: user.github_id,
+        },
       },
     });
 
