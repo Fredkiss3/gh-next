@@ -4,7 +4,11 @@ import * as React from "react";
 import { ChangeUsernameForm } from "~/app/(components)/change-username-form";
 
 // utils
-import { getSession, getUserOrRedirect } from "~/app/(actions)/auth";
+import {
+  getAuthedUser,
+  getSession,
+  redirectIfNotAuthed,
+} from "~/app/(actions)/auth";
 
 // types
 import type { Metadata } from "next";
@@ -14,7 +18,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const user = await getUserOrRedirect("/settings/account");
+  await redirectIfNotAuthed("/settings/account");
+
+  const user = (await getAuthedUser())!;
   const formData = await getSession().then((s) => s.getFormData());
 
   return (

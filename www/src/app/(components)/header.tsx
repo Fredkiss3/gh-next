@@ -13,27 +13,21 @@ import {
 import Link from "next/link";
 import { Input } from "./input";
 import { Button } from "./button";
-import { UserDropdown } from "./user-dropdown";
-import { UnderlineNavbar } from "./underline-navbar";
+import { HeaderUnderlineNavbar } from "./underline-navbar";
+import { UserDropdown, UserDropdownSkeleton } from "./user-dropdown.server";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared-utils";
-import { Route } from "next";
+import { PageTitle } from "./page-title";
 
 // types
 export type HeaderProps = {
-  pageTitle: React.ReactNode;
-  path: Route;
   hideRepoNavbar?: boolean;
 };
 
-export async function Header({
-  pageTitle,
-  path = "/",
-  hideRepoNavbar = false,
-}: HeaderProps) {
-  const user = await getSession().then((session) => session.user);
+export async function Header({ hideRepoNavbar = false }: HeaderProps) {
+  const { user } = await getSession();
 
   return (
     <header
@@ -52,17 +46,7 @@ export async function Header({
             <MarkGithubIcon className="h-10 w-10" />
           </Link>
 
-          <Link
-            href={path}
-            className={clsx(
-              "py-1 px-2 rounded-md transition duration-150",
-              "md:text-lg",
-              "hover:bg-neutral/50",
-              "flex flex-wrap gap-2"
-            )}
-          >
-            {pageTitle}
-          </Link>
+          <PageTitle />
         </div>
 
         <nav className="flex items-center gap-2 h-full">
@@ -130,10 +114,9 @@ export async function Header({
           </ul>
 
           {user ? (
-            <UserDropdown
-              avatar_url={user.avatar_url}
-              username={user.username}
-            />
+            <React.Suspense fallback={<UserDropdownSkeleton />}>
+              <UserDropdown />
+            </React.Suspense>
           ) : (
             <Button
               className="flex-shrink-0 !text-foreground !border-foreground"
@@ -146,7 +129,7 @@ export async function Header({
         </nav>
       </div>
 
-      {!hideRepoNavbar && <UnderlineNavbar className="bg-header" />}
+      <HeaderUnderlineNavbar className="bg-header" />
     </header>
   );
 }
