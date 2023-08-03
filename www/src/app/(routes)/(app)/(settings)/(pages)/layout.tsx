@@ -1,30 +1,21 @@
 // components
 import { Avatar } from "~/app/(components)/avatar";
-import { Footer } from "~/app/(components)/footer";
-import { Header } from "~/app/(components)/header";
+
 import { VerticalNavlist } from "~/app/(components)/vertical-navlist";
 
 // utils
-import { getUserOrRedirect } from "~/app/(actions)/auth";
+import { getAuthedUser, redirectIfNotAuthed } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared-utils";
 
-export default async function AppLayout({
+export default async function SettingsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getUserOrRedirect("/settings/account");
+  await redirectIfNotAuthed("/settings/account");
+  const user = (await getAuthedUser())!;
   return (
     <>
-      <Header
-        path="/settings"
-        hideRepoNavbar
-        pageTitle={
-          <>
-            <strong className="font-bold whitespace-nowrap">Settings</strong>
-          </>
-        }
-      />
       <main
         className={clsx(
           "my-5 max-w-[1270px] mx-auto px-5 flex flex-col gap-6",
@@ -45,7 +36,6 @@ export default async function AppLayout({
           <div className="md:col-span-6 lg:col-span-7">{children}</div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

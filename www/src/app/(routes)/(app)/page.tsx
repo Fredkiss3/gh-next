@@ -34,7 +34,9 @@ export default async function Page() {
   const repositoryData = await getGithubRepoData();
   const hasStarred = Boolean(
     user &&
-      repositoryData.stargazers.find((stargazer) => user.id === stargazer.id)
+      repositoryData.stargazers.find(
+        (stargazer) => user.github_id === stargazer.id.toString()
+      )
   );
 
   return (
