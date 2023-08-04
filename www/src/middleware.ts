@@ -31,6 +31,10 @@ function setRequestAndResponseCookies(
 }
 
 export default async function middleware(request: NextRequest) {
+  const time = new Date();
+  console.log(
+    `\n${time.toISOString()} - \x1b[34m${request.method.toUpperCase()} \x1b[33m${request.nextUrl.toString()}\x1b[37m`
+  );
   const sessionId = request.cookies.get(SESSION_COOKIE_KEY)?.value;
   let session = sessionId ? await Session.get(sessionId) : null;
 
@@ -55,6 +59,6 @@ export default async function middleware(request: NextRequest) {
 export const config = {
   // dont match `_next`, `api` routes or static paths
   matcher: [
-    "/((?!api|_next/:path*|favicon.ico|fonts|opengraph-image*|robots.txt|sitemap.xml).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|fonts|opengraph-image*|robots.txt|sitemap.xml).*)",
   ],
 };
