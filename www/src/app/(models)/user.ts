@@ -1,7 +1,8 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, placeholder, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "~/lib/db";
-import { Theme, users } from "~/lib/db/schema/user";
+import { users } from "~/lib/db/schema/user";
+import type { Theme } from "~/lib/db/schema/user";
 
 /**
  * Find or create the corresponding user in DB from their github profile
@@ -31,8 +32,16 @@ export async function getUserFromGithubProfile(
       },
     })
     .returning()
-    .execute();
+    .get();
 }
+
+const userByUserNamePrepared = db
+  .select({
+    username: users.username,
+  })
+  .from(users)
+  .where(sql`lower(${users.username}) = ${placeholder("username_lowercase")}`)
+  .prepare();
 
 /**
  * get user by username, this function is case insensitive
@@ -40,18 +49,21 @@ export async function getUserFromGithubProfile(
  * @returns
  */
 export async function getUserByUsername(username: string) {
-  const lowered = username.toLowerCase();
-  return await db
-    .select({
-      username: users.username,
-    })
-    .from(users)
-    .where(sql`lower(${users.username}) = ${lowered}`)
-    .execute();
+  return await userByUserNamePrepared.all({
+    username_lowercase: username.toLowerCase(),
+  });
 }
 
+const userByIdPrepared = db
+  .select()
+  .from(users)
+  .where(eq(users.id, placeholder("id")))
+  .prepare();
+
 export async function getUserById(id: number) {
-  return await db.select().from(users).where(eq(users.id, id)).execute();
+  return await userByIdPrepared.all({
+    id,
+  });
 }
 
 export async function updateUserUsername(username: string, id: number) {
@@ -62,20 +74,18 @@ export async function updateUserUsername(username: string, id: number) {
     })
     .where(eq(users.id, id))
     .returning()
-    .execute();
+    .get();
 }
 
 export async function updateUserTheme(newTheme: Theme, id: number) {
-  return (
-    await db
-      .update(users)
-      .set({
-        preferred_theme: newTheme,
-      })
-      .where(eq(users.id, id))
-      .returning()
-      .execute()
-  )[0];
+  return await db
+    .update(users)
+    .set({
+      preferred_theme: newTheme,
+    })
+    .where(eq(users.id, id))
+    .returning()
+    .get();
 }
 
 export const githubUserSchema = z.object({

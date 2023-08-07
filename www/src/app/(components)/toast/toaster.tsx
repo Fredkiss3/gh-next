@@ -5,7 +5,7 @@ import { getSession } from "~/app/(actions)/auth";
 import { ToasterClient } from "./toaster-client";
 
 export async function Toaster() {
-  const flashes = await getSession().then((session) => session.getFlash());
+  const flashes = await getSession().then((session) => session.flash);
 
   return (
     <ToasterClient

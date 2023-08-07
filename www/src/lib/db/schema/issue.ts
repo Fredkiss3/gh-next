@@ -1,16 +1,11 @@
 import {
-  pgTable,
-  serial,
-  varchar,
-  timestamp,
+  sqliteTable,
   text,
-  pgEnum,
   integer,
-  boolean,
   primaryKey,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { users } from "./user";
 import { labelToIssues } from "./label";
 import { comments } from "./comment";
@@ -31,23 +26,23 @@ export const IssueStatuses = {
   NOT_PLANNED: "NOT_PLANNED",
 } as const;
 
-export const issueStatusEnum = pgEnum("issue_status", [
-  "OPEN",
-  "CLOSED",
-  "NOT_PLANNED",
-]);
-
-export const issues = pgTable("issues", {
-  id: serial("id").primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
+export const issues = sqliteTable("issues", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title", { length: 255 }).notNull(),
   description: text("description").default("").notNull(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  status_updated_at: timestamp("status_updated_at").defaultNow().notNull(),
-  status: issueStatusEnum("status").default(IssueStatuses.OPEN).notNull(),
-  author_id: integer("author_id")
-    .references(() => users.id)
+  created_at: integer("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
-  is_locked: boolean("is_locked").default(false).notNull(),
+  status_updated_at: integer("status_updated_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
+    .notNull(),
+  status: text("status", { enum: ["OPEN", "CLOSED", "NOT_PLANNED"] })
+    .default(IssueStatuses.OPEN)
+    .notNull(),
+  author_id: integer("author_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  is_locked: integer("is_locked", { mode: "boolean" }).default(false).notNull(),
 });
 
 export const issuesRelations = relations(issues, ({ one, many }) => ({
@@ -78,7 +73,7 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
   editLabelsActivities: many(editLabelsActivities),
 }));
 
-export const issueToAssignees = pgTable(
+export const issueToAssignees = sqliteTable(
   "issues_to_assignees",
   {
     assignee_id: integer("assignee_id")
@@ -109,15 +104,20 @@ export const issueToAssigneesRelation = relations(
   })
 );
 
-export const issueRevisions = pgTable("issue_revisions", {
-  id: serial("id").primaryKey(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
+export const issueRevisions = sqliteTable("issue_revisions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  created_at: integer("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
+    .notNull(),
   revised_by_id: integer("revised_by_id")
     .references(() => users.id)
     .notNull(),
   issue_id: integer("issue_id")
-    .references(() => issues.id)
+    .references(() => issues.id, {
+      onDelete: "cascade",
+    })
     .notNull(),
+  updated_description: text("updated_description").notNull(),
 });
 
 export const issueRevisionsRelations = relations(issueRevisions, ({ one }) => ({
@@ -133,10 +133,12 @@ export const issueRevisionsRelations = relations(issueRevisions, ({ one }) => ({
   }),
 }));
 
-export const issueUserSubscriptions = pgTable("issue_user_subscriptions", {
-  id: serial("id").primaryKey(),
+export const issueUserSubscriptions = sqliteTable("issue_user_subscriptions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   user_id: integer("user_id")
-    .references(() => users.id)
+    .references(() => users.id, {
+      onDelete: "cascade",
+    })
     .notNull(),
   issue_id: integer("issue_id")
     .references(() => issues.id, {

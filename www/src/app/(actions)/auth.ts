@@ -28,7 +28,7 @@ export async function authenticateWithGithub(formData: FormData) {
   const nextUrl = formData.get("_nextUrl")?.toString();
   if (nextUrl) {
     const session = await getSession();
-    await session.addData({
+    await session.addAdditionnalData({
       nextUrl,
     });
   }
@@ -76,7 +76,7 @@ export async function loginUser(user: any) {
   // Find or create the corresponding user in DB
   const ghUser = sessionResult.data;
 
-  const [dbUser] = await getUserFromGithubProfile(ghUser);
+  const dbUser = await getUserFromGithubProfile(ghUser);
 
   const session = await getSession();
   await session.generateForUser(dbUser);
@@ -87,7 +87,9 @@ export async function loginUser(user: any) {
   });
   cookies().set(session.getCookie());
 
-  const data = (await session.popData()) as { nextUrl?: string } | undefined;
+  const data = (await session.popAdditionnalData()) as
+    | { nextUrl?: string }
+    | undefined;
   return data?.nextUrl;
 }
 

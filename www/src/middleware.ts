@@ -32,8 +32,10 @@ function setRequestAndResponseCookies(
 
 export default async function middleware(request: NextRequest) {
   const time = new Date();
+  const fullPath =
+    request.nextUrl.pathname + request.nextUrl.search + request.nextUrl.hash;
   console.log(
-    `\n${time.toISOString()} - \x1b[34m${request.method.toUpperCase()} \x1b[33m${request.nextUrl.toString()}\x1b[37m`
+    `\n${time.toISOString()} - \x1b[34m${request.method.toUpperCase()} \x1b[33m${fullPath}\x1b[37m`
   );
   const sessionId = request.cookies.get(SESSION_COOKIE_KEY)?.value;
   let session = sessionId ? await Session.get(sessionId) : null;

@@ -1,11 +1,9 @@
 import {
-  pgEnum,
-  pgTable,
-  serial,
+  sqliteTable,
   text,
+  integer,
   uniqueIndex,
-  varchar,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 
 import { relations, type InferModel } from "drizzle-orm";
 import { issueToAssignees, issueUserSubscriptions, issues } from "./issue";
@@ -13,19 +11,18 @@ import { reactions } from "./reaction";
 import { comments } from "./comment";
 
 export const THEMES = ["dark", "light", "system"] as const;
-export const userThemeEnum = pgEnum("user_theme", THEMES);
 
-export const users = pgTable(
+export const users = sqliteTable(
   "users",
   {
-    id: serial("id").primaryKey(),
-    username: varchar("username", { length: 255 }).notNull(),
-    name: varchar("name", { length: 255 }),
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    username: text("username", { length: 255 }).notNull(),
+    github_id: text("github_id", { length: 255 }).notNull(),
+    avatar_url: text("avatar_url", { length: 255 }).notNull(),
+    name: text("name", { length: 255 }),
     bio: text("bio"),
-    location: varchar("location", { length: 255 }),
-    github_id: varchar("github_id", { length: 255 }).notNull(),
-    avatar_url: varchar("avatar_url", { length: 255 }).notNull(),
-    preferred_theme: userThemeEnum("preferred_theme")
+    location: text("location", { length: 255 }),
+    preferred_theme: text("preferred_theme", { enum: THEMES })
       .default("system")
       .notNull(),
   },
