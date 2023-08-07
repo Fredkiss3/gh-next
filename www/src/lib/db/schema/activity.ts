@@ -1,14 +1,11 @@
 import {
-  pgTable,
-  serial,
-  varchar,
+  sqliteTable,
+  text,
   integer,
-  timestamp,
-  pgEnum,
   primaryKey,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { users } from "./user";
 import { labels } from "./label";
 import { issues } from "./issue";
@@ -16,20 +13,24 @@ import { issues } from "./issue";
 import type { InferModel } from "drizzle-orm";
 
 const baseActivityFields = {
-  id: serial("id").primaryKey(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  initiator_id: integer("initiator_id")
-    .references(() => users.id)
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  created_at: integer("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
+  initiator_id: integer("initiator_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
   issue_id: integer("issue_id")
-    .references(() => issues.id)
+    .references(() => issues.id, {
+      onDelete: "cascade",
+    })
     .notNull(),
 };
 
-export const changeTitleActivities = pgTable("change_title_activities", {
+export const changeTitleActivities = sqliteTable("change_title_activities", {
   ...baseActivityFields,
-  old_title: varchar("old_title", { length: 255 }).notNull(),
-  new_title: varchar("new_title", { length: 255 }).notNull(),
+  old_title: text("old_title", { length: 255 }).notNull(),
+  new_title: text("new_title", { length: 255 }).notNull(),
 });
 
 export const changeTitleActivitiesRelations = relations(
@@ -50,15 +51,15 @@ export const changeTitleActivitiesRelations = relations(
 
 // this is repeated but not included in the database migration because it is not exported,
 // the original enum is defined in `issue.ts` file
-const issueStatusEnum = pgEnum("issue_status", [
-  "OPEN",
-  "CLOSED",
-  "NOT_PLANNED",
-]);
+// const issueStatusEnum = pgEnum("issue_status", [
+//   "OPEN",
+//   "CLOSED",
+//   "NOT_PLANNED",
+// ]);
 
-export const toggleActivities = pgTable("issue_toggle_activities", {
+export const toggleActivities = sqliteTable("issue_toggle_activities", {
   ...baseActivityFields,
-  status: issueStatusEnum("status").notNull(),
+  status: text("status", { enum: ["OPEN", "CLOSED", "NOT_PLANNED"] }).notNull(),
 });
 
 export const issueToggleActivitiesRelations = relations(
@@ -77,7 +78,7 @@ export const issueToggleActivitiesRelations = relations(
   })
 );
 
-export const mentionActivities = pgTable("issue_mention_activities", {
+export const mentionActivities = sqliteTable("issue_mention_activities", {
   ...baseActivityFields,
   mentionned_issue_id: integer("mentionned_issue_id")
     .references(() => issues.id, {
@@ -107,10 +108,12 @@ export const issueMentionActivitiesRelations = relations(
   })
 );
 
-export const assignActivities = pgTable("assign_activities", {
+export const assignActivities = sqliteTable("assign_activities", {
   ...baseActivityFields,
   assignee_id: integer("assignee_id")
-    .references(() => users.id)
+    .references(() => users.id, {
+      onDelete: "cascade",
+    })
     .notNull(),
 });
 
@@ -135,7 +138,7 @@ export const assignActivitiesRelations = relations(
   })
 );
 
-export const editLabelsActivities = pgTable("edit_labels_activities", {
+export const editLabelsActivities = sqliteTable("edit_labels_activities", {
   ...baseActivityFields,
 });
 
@@ -158,25 +161,22 @@ export const editLabelsActivitiesRelations = relations(
   })
 );
 
-export const editActivityActionEnum = pgEnum("edit_activity_action", [
-  "REMOVED",
-  "ADDED",
-]);
-
-export const editActiviyToLabels = pgTable(
+export const editActiviyToLabels = sqliteTable(
   "edit_activity_to_labels",
   {
     activity_id: integer("activity_id")
       .notNull()
       .references(() => editLabelsActivities.id, {
-        onDelete: "restrict",
+        onDelete: "cascade",
       }),
     label_id: integer("label_id")
       .notNull()
       .references(() => labels.id, {
-        onDelete: "restrict",
+        onDelete: "cascade",
       }),
-    action: editActivityActionEnum("action").notNull(),
+    action: text("action", {
+      enum: ["REMOVED", "ADDED"],
+    }).notNull(),
   },
   (table) => ({
     pk: primaryKey(table.activity_id, table.label_id),
