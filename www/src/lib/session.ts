@@ -168,24 +168,29 @@ export class Session {
     return this;
   }
 
-  async getFlash(): Promise<Array<SessionFlash>> {
-    const flashes = this.#_session.flashMessages;
+  get flash() {
+    return new Promise<Array<SessionFlash>>(async (resolve, reject) => {
+      const flashes = this.#_session.flashMessages;
 
-    // delete flashes
-    this.#_session.flashMessages = {};
-    await Session.#save(this.#_session);
+      // delete flashes
+      this.#_session.flashMessages = {};
+      await Session.#save(this.#_session);
 
-    if (!flashes) return [];
+      if (!flashes) {
+        resolve([]);
+        return;
+      }
 
-    const flash = Object.entries(flashes).map(
-      ([key, value]) =>
-        ({
-          type: key,
-          message: value,
-        } as SessionFlash)
-    );
+      const flash = Object.entries(flashes).map(
+        ([key, value]) =>
+          ({
+            type: key,
+            message: value,
+          } as SessionFlash)
+      );
 
-    return flash;
+      resolve(flash);
+    });
   }
 
   async addData(data: Record<string, any>): Promise<this> {
