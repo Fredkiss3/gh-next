@@ -157,7 +157,7 @@ export class Session {
     return this;
   }
 
-  async addFlash(flash: SessionFlash): Promise<this> {
+  public async addFlash(flash: SessionFlash): Promise<this> {
     if (this.#_session.flashMessages) {
       this.#_session.flashMessages[flash.type] = flash.message;
     } else {
@@ -168,7 +168,7 @@ export class Session {
     return this;
   }
 
-  get flash() {
+  public get flash() {
     return new Promise<Array<SessionFlash>>(async (resolve, reject) => {
       const flashes = this.#_session.flashMessages;
 
@@ -193,7 +193,7 @@ export class Session {
     });
   }
 
-  async addData(data: Record<string, any>): Promise<this> {
+  public async addAdditionnalData(data: Record<string, any>): Promise<this> {
     for (const key in data) {
       if (!this.#_session.additionnalData) {
         this.#_session.additionnalData = {};
@@ -205,25 +205,23 @@ export class Session {
     return this;
   }
 
-  async addFormData(form: DefinedSession["formData"]): Promise<this> {
+  public async addFormData(form: DefinedSession["formData"]): Promise<this> {
     this.#_session.formData = form;
     await Session.#save(this.#_session);
     return this;
   }
 
-  async getFormData() {
-    const data = this.#_session.formData;
-    // remove errors
-    this.#_session.formData = null;
-    await Session.#save(this.#_session);
-    return data;
+  public get formData() {
+    return new Promise<SerializedSession["formData"]>(async (resolve) => {
+      const data = this.#_session.formData;
+      // remove errors
+      this.#_session.formData = null;
+      await Session.#save(this.#_session);
+      resolve(data);
+    });
   }
 
-  async getData() {
-    return this.#_session.additionnalData;
-  }
-
-  async popData() {
+  public async popAdditionnalData() {
     const data = this.#_session.additionnalData;
 
     // remove data
@@ -233,7 +231,7 @@ export class Session {
     return data;
   }
 
-  get user() {
+  public get user() {
     return this.#_session.user;
   }
 
