@@ -5,7 +5,6 @@ import * as React from "react";
 import {
   OverlayArrow,
   Tooltip as ReactAriaTooltip,
-  TooltipProps as ReactAriaTooltipProps,
   TooltipTrigger,
 } from "react-aria-components";
 
@@ -13,6 +12,7 @@ import {
 import { clsx } from "~/lib/shared-utils";
 
 // types
+import type { TooltipProps as ReactAriaTooltipProps } from "react-aria-components";
 export type TooltipProps = {
   children?: React.ReactNode;
   content: React.ReactNode;

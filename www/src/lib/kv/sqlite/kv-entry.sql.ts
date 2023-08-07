@@ -1,5 +1,6 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
-import { InferModel, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
+import type { InferModel } from "drizzle-orm";
 
 export const kvEntry = sqliteTable("kv_entries", {
   key: text("key").primaryKey(),
