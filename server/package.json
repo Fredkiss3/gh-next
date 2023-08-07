@@ -4,7 +4,6 @@
   },
   "dependencies": {
     "hono": "^3.3.2",
-    "next": "13.4.13-canary.16",
     "zod": "^3.21.4"
   },
   "devDependencies": {
