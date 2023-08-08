@@ -29,6 +29,7 @@ import { getIssueList } from "~/app/(actions)/issue";
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
+import { ReactAriaButton } from "~/app/(components)/react-aria-button";
 
 export const metadata: Metadata = {
   title: "Issues",
@@ -194,9 +195,9 @@ function IssueContentTableSkeleton() {
           >
             <li>
               <IssueAuthorFilterActionList>
-                <button className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <span>Author</span> <TriangleDownIcon className="h-5 w-5" />
-                </button>
+                </div>
               </IssueAuthorFilterActionList>
             </li>
             <li>
@@ -355,9 +356,9 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
           >
             <li>
               <IssueAuthorFilterActionList>
-                <button className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <span>Author</span> <TriangleDownIcon className="h-5 w-5" />
-                </button>
+                </div>
               </IssueAuthorFilterActionList>
             </li>
             <li>
