@@ -25,8 +25,7 @@ export const metadata: Metadata = {
 
 export const runtime = "edge";
 export const revalidate = 0;
-export const fetchCache = "default-cache";
-export const preferredRegion = "fra1";
+export const fetchCache = "force-no-store";
 
 export default async function RootLayout({
   children,

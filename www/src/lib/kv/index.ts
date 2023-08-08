@@ -1,5 +1,7 @@
+import { env } from "~/env.mjs";
 import { HttpKV } from "./http";
 import { SqliteKV } from "./sqlite";
+import { CloudfareKV } from "./cloudfare";
 
 export interface KVStore {
   set<T extends Record<string, any> = {}>(
@@ -14,8 +16,11 @@ export interface KVStore {
 function getKV(): KVStore {
   if (process.env.NODE_ENV === "development") {
     return new HttpKV();
+  } else if (env.KV) {
+    return new CloudfareKV();
+  } else {
+    return new SqliteKV();
   }
-  return new SqliteKV();
 }
 
 export const kv = getKV();

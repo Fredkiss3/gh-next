@@ -42,16 +42,16 @@ export const db = drizzle(
   createClient({
     url: env.TURSO_DB_URL,
     authToken: env.TURSO_DB_TOKEN,
-    fetch: (request: Request) => {
-      return fetch(
-        new Request(request, {
-          cache: "no-store",
-          headers: request.headers,
-          body: request.body,
-          method: request.method,
-        })
-      );
-    },
+    // fetch: (request: Request) => {
+    //   return fetch(
+    //     new Request(request, {
+    //       cache: "no-store",
+    //       headers: request.headers,
+    //       body: request.body,
+    //       method: request.method,
+    //     })
+    //   );
+    // },
   }),
   {
     logger: true,

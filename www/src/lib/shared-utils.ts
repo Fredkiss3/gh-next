@@ -107,10 +107,13 @@ export async function jsonFetch<T>(
     options.cache = "no-store";
   }
 
+  if (!options.credentials && typeof document !== "undefined") {
+    options.credentials = "include";
+  }
+
   return fetch(url, {
     ...options,
     headers,
-    credentials: "include",
   })
     .then((response) => response.json() as Promise<T>)
     .catch((error) => {
