@@ -22,19 +22,21 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
   const [_, startTransition] = React.useTransition();
   return (
     <DropdownMenu
-      className="min-w-fit flex items-center"
       items={[
         {
+          id: "account",
           href: "/settings/account",
           text: "Your account",
           icon: PersonIcon,
         },
         {
+          id: "appearance",
           href: "/settings/appearance",
           text: "Change Theme",
           icon: PaintbrushIcon,
         },
         {
+          id: "sign-out",
           text: "Sign out",
           icon: SignOutIcon,
           onClick: async () => {
@@ -43,9 +45,7 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
         },
       ]}
     >
-      <button type="button">
-        <Avatar username={username} src={avatar_url} />
-      </button>
+      <Avatar username={username} src={avatar_url} />
     </DropdownMenu>
   );
 }
