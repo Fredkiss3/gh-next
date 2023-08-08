@@ -31,6 +31,14 @@ function setRequestAndResponseCookies(
 }
 
 export default async function middleware(request: NextRequest) {
+  // Ignore images in PUBLIC FOLDER
+  if (
+    request.nextUrl.pathname.endsWith("png") ||
+    request.nextUrl.pathname.endsWith("svg")
+  ) {
+    return NextResponse.next();
+  }
+
   const time = new Date();
   const fullPath =
     request.nextUrl.pathname + request.nextUrl.search + request.nextUrl.hash;
