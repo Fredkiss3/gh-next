@@ -22,7 +22,7 @@ export type IssuesListHeaderFormProps = {
 };
 
 export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
-  const { Form } = useForm();
+  const { Form, formRef } = useForm();
   return (
     <Form method="get" className={clsx(className, "w-full flex items-center")}>
       <ActionList
@@ -89,7 +89,7 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
         </Button>
       </ActionList>
 
-      <IssueListSearchInput />
+      <IssueListSearchInput onSearch={() => formRef.current?.requestSubmit()} />
     </Form>
   );
 }

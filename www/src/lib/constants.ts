@@ -10,3 +10,25 @@ export const GITHUB_AUTHOR_USERNAME = "Fredkiss3";
 export const GITHUB_REPOSITORY_NAME = "gh-next";
 export const AUTHOR_AVATAR_URL =
   "https://avatars.githubusercontent.com/u/38298743?v=4";
+
+export const SORT_FILTERS = [
+  "created-desc",
+  "created-asc",
+  "comments-asc",
+  "comments-desc",
+  "updated-asc",
+  "updated-desc",
+  "relevance-desc",
+  "reactions-+1-desc",
+  "reactions--1-desc",
+  "reactions-smile-desc",
+  "reactions-tada-desc",
+  "reactions-thinking_face-desc",
+  "reactions-heart-desc",
+  "reactions-rocket-desc",
+  "reactions-eyes-desc",
+] as const;
+
+export const IN_FILTERS = ["title", "body", "comments"] as const;
+export const STATUS_FILTERS = ["open", "closed"] as const;
+export const NO_METADATA_FILTERS = ["label", "assignee"] as const;

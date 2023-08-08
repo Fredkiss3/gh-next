@@ -51,7 +51,7 @@ export function IssueAssigneeFilterActionList({
           // @ts-ignore
           href={
             `/issues?q=is:open+` +
-            (username ? `author:${username}` : `no:assignee`)
+            (username ? `assignee:${username}` : `no:assignee`)
           }
           className={clsx(
             className,
