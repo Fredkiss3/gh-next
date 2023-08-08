@@ -48,6 +48,8 @@ export const db = drizzle(
         headers: request.headers,
         body: request.body,
         method: request.method,
+        // @ts-expect-error duplex is required in nodejs
+        duplex: "half",
       });
     },
   }),
