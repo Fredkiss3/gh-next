@@ -43,22 +43,12 @@ export const db = drizzle(
     url: env.TURSO_DB_URL,
     authToken: env.TURSO_DB_TOKEN,
     fetch: (request: Request) => {
-      console.log({
-        tursoFetchInit: {
-          cache: "no-store",
-          headers: request.headers,
-          body: request.body,
-          method: request.method,
-        },
+      return fetch(request.url, {
+        cache: "no-store",
+        headers: request.headers,
+        body: request.body,
+        method: request.method,
       });
-      return fetch(
-        new Request(request, {
-          cache: "no-store",
-          headers: request.headers,
-          body: request.body,
-          method: request.method,
-        })
-      );
     },
   }),
   {
