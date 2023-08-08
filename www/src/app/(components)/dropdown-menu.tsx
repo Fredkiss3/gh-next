@@ -2,22 +2,31 @@
 import * as React from "react";
 
 // components
-import { Menu, Transition } from "@headlessui/react";
+
 import Link from "next/link";
+import {
+  Button,
+  Popover,
+  Menu,
+  Item,
+  MenuTrigger,
+} from "react-aria-components";
 
 // utils
 import { clsx } from "~/lib/shared-utils";
 
 // types
-import type { Route } from "next";
+import type { PopoverProps } from "react-aria-components";
+import { useRouter } from "next/navigation";
+
 export type DropdownMenuLink = {
-  id?: string;
+  id: string;
   text: string;
-  href: Route;
+  href: string;
 };
 
 export type DropdownMenuButton = {
-  id?: string;
+  id: string;
   text: string;
   onClick: () => void | Promise<void>;
 };
@@ -36,58 +45,72 @@ export type DropdownMenuProps = {
   items: DropdownMenuItem[];
   children: React.ReactNode;
   className?: string;
-  align?: "left" | "right";
+  placement?: PopoverProps["placement"];
 };
 
 export function DropdownMenu({
   items,
-  align = "right",
+  placement = "bottom right",
   className,
   children,
 }: DropdownMenuProps) {
+  const router = useRouter();
   return (
-    <Menu as="div" className={clsx("relative z-40", className)}>
-      <Menu.Button as={React.Fragment}>{children}</Menu.Button>
-
-      <Transition
-        as={React.Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
+    <MenuTrigger>
+      <Button
+        aria-label="menu"
+        className="flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
       >
-        <Menu.Items
-          as="ul"
+        {children}
+      </Button>
+      <Popover placement={placement}>
+        <Menu
+          onAction={(key) => {
+            const item = items.find((it) => it.id === key);
+
+            if (item) {
+              if (isDropdownMenuButton(item)) {
+                item.onClick();
+              } else {
+                router.push(item.href);
+              }
+            }
+          }}
+          aria-label="Menu"
+          shouldFocusWrap
           className={clsx(
-            "absolute z-40 rounded-lg p-2 top-[calc(100%+5px)]",
+            className,
+            "z-40 rounded-lg p-2",
             "bg-subtle text-foreground shadow-md border border-neutral",
             "flex flex-col min-w-max",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-            {
-              "right-0": align === "right",
-              "left-0": align === "left",
-            }
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           )}
+          items={items}
         >
-          {items.map((item, index) => (
-            <Menu.Item key={index} as="li">
-              {({ active, close }) => {
+          {(item) => (
+            <Item className="focus-visible:outline-none">
+              {({ isHovered, isFocused, isPressed, isFocusVisible }) => {
                 const Icon = item.icon;
                 if (isDropdownMenuButton(item)) {
                   return (
                     <button
                       className={clsx(
-                        "flex items-center gap-2 min-w-max p-2  w-full",
+                        "flex items-center gap-2 min-w-max p-2  w-full focus:outline-none focus-visible:outline-none",
                         {
-                          "bg-neutral rounded-md": active,
+                          "bg-neutral rounded-md":
+                            isFocused ||
+                            isHovered ||
+                            isPressed ||
+                            isFocusVisible,
                         }
                       )}
                       onClick={item.onClick}
                     >
                       {Icon && (
-                        <Icon className="h-5 w-5 flex-shrink-0 text-grey" />
+                        <Icon
+                          className="h-5 w-5 flex-shrink-0 text-grey"
+                          aria-label=""
+                        />
                       )}
                       <span>{item.text}</span>
                     </button>
@@ -98,24 +121,31 @@ export function DropdownMenu({
                       href={item.href}
                       onClick={close}
                       className={clsx(
-                        "flex items-center gap-2 min-w-max p-2  w-full",
+                        "flex items-center gap-2 min-w-max p-2  w-full focus:outline-none focus-visible:outline-none",
                         {
-                          "bg-neutral  rounded-md": active,
+                          "bg-neutral  rounded-md outline-none":
+                            isFocused ||
+                            isHovered ||
+                            isFocusVisible ||
+                            isPressed,
                         }
                       )}
                     >
                       {Icon && (
-                        <Icon className="h-5 w-5 flex-shrink-0 text-grey" />
+                        <Icon
+                          className="h-5 w-5 flex-shrink-0 text-grey"
+                          aria-label=""
+                        />
                       )}
                       <span className="flex-shrink-0">{item.text}</span>
                     </Link>
                   );
                 }
               }}
-            </Menu.Item>
-          ))}
-        </Menu.Items>
-      </Transition>
-    </Menu>
+            </Item>
+          )}
+        </Menu>
+      </Popover>
+    </MenuTrigger>
   );
 }

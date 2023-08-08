@@ -73,7 +73,7 @@ export const Button = React.forwardRef<
     "items-center justify-center gap-2 ",
     "rounded-md border-2 font-medium outline-accent border-gray-900/10",
     "transition duration-150",
-    "disabled:opacity-50",
+    "disabled:opacity-50 focus-visible:outline-none",
     {
       "inline-flex": !isBlock,
       flex: isBlock,
@@ -85,7 +85,7 @@ export const Button = React.forwardRef<
         variant === "danger" && !isDisabled,
       "bg-transparent text-grey border-neutral !border":
         variant === "invisible",
-      "hover:bg-subtle hover:border-grey aria-[current]:bg-subtle aria-[current]:border-grey":
+      "hover:bg-subtle hover:border-grey aria-[current]:bg-subtle aria-[current]:border-grey focus-visible:ring-2 focus-visible:ring-accent focus:ring-2 focus:ring-accent":
         variant === "invisible" && !isDisabled,
       "bg-ghost text-foreground/70 border-neutral !border shadow-sm":
         variant === "subtle",
