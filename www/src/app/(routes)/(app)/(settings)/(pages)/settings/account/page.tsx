@@ -21,8 +21,7 @@ export default async function Page() {
   await redirectIfNotAuthed("/settings/account");
 
   const user = (await getAuthedUser())!;
-  const formData = await getSession().then((s) => s.formData);
-
+  const formData = await getSession().then((s) => s.getFormData());
   return (
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-4 md:gap-8">
