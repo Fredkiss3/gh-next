@@ -40,19 +40,6 @@ export default async function Page() {
       )
   );
 
-  const fetchOne = (await fetch(
-    `${env.NEXT_PUBLIC_VERCEL_URL}/api/today?qs=1`,
-    {
-      cache: "no-store",
-    }
-  ).then((r) => r.json())) as { time: number };
-
-  const fetchTwo = (await fetch(
-    new Request(`${env.NEXT_PUBLIC_VERCEL_URL}/api/today?qs=2`, {
-      cache: "no-store",
-    })
-  ).then((r) => r.json())) as { time: number };
-
   return (
     <div className={clsx("flex flex-col", "sm:gap-4")}>
       <section
@@ -70,9 +57,7 @@ export default async function Page() {
             src={AUTHOR_AVATAR_URL}
             size="small"
           />
-          <span>
-            gh-next - 1: {fetchOne.time} | 2: {fetchTwo.time}
-          </span>
+          <span>gh-next</span>
 
           <Badge label="Public" />
         </h1>
