@@ -3,7 +3,7 @@ import * as React from "react";
 // components
 import Link from "next/link";
 import { Input } from "./input";
-import { ActionList } from "./action-list-ra";
+import { ActionList } from "./action-list";
 import { Avatar } from "./avatar";
 import { CheckIcon } from "@primer/octicons-react";
 
@@ -33,7 +33,6 @@ export function IssueAuthorFilterActionList({
 
   return (
     <ActionList
-      aria-label="author list menu"
       items={[
         {
           items: filteredDataList,

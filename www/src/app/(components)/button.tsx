@@ -129,7 +129,6 @@ export const Button = React.forwardRef<
       isLoading = false,
       disabled = false,
       children,
-      onClick,
       ...buttonProps
     } = restProps;
 
@@ -149,7 +148,7 @@ export const Button = React.forwardRef<
           "cursor-default": isLoading,
           "cursor-not-allowed": disabled,
         })}
-        {...{ ...buttonProps, onPress: onClick }}
+        {...buttonProps}
       >
         <span className="sr-only" aria-live="assertive">
           {isLoading ? loadingMessage : ""}
