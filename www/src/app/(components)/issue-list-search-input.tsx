@@ -122,7 +122,7 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
                         className="group"
                       >
                         {key}
-                        <span className="text-foreground/50 ml-1 hidden truncate group-aria-[selected=true]:block">
+                        <span className="text-white/50 ml-1 hidden truncate group-aria-[selected=true]:block">
                           {search[key as SearchKey]
                             .map((str) => `[${str}]`)
                             .join(" ")}
@@ -225,7 +225,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={clsx(
-      "aria-selected:bg-accent aria-selected:text-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "aria-selected:bg-accent aria-selected:text-white relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-base outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
