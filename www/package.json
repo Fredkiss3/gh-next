@@ -35,7 +35,7 @@
     "eslint-config-next": "13.4.12",
     "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
-    "next": "13.4.13",
+    "next": "13.4.14-canary.1",
     "react": "18.2.0",
     "react-aria-components": "1.0.0-alpha.5",
     "react-dom": "18.2.0",
