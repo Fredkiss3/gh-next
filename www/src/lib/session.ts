@@ -61,12 +61,17 @@ export class Session {
   #_session: SerializedSession;
 
   public static async get(signedSessionId: string) {
-    const verifiedSessionId = await this.#verifySessionId(signedSessionId);
+    try {
+      const verifiedSessionId = await this.#verifySessionId(signedSessionId);
 
-    const sessionObject = await kv.get(`session:${verifiedSessionId}`);
-    if (sessionObject) {
-      return this.fromPayload(sessionSchema.parse(sessionObject));
-    } else {
+      const sessionObject = await kv.get(`session:${verifiedSessionId}`);
+      if (sessionObject) {
+        return this.#fromPayload(sessionSchema.parse(sessionObject));
+      } else {
+        return null;
+      }
+    } catch (error) {
+      // In case of invalid Session ID, instruct the middleware to create a new one
       return null;
     }
   }
@@ -75,14 +80,14 @@ export class Session {
     this.#_session = serializedPayload;
   }
 
-  public static fromPayload(serializedPayload: SerializedSession) {
+  static #fromPayload(serializedPayload: SerializedSession) {
     return new Session(serializedPayload);
   }
 
-  public static async create(temporary: boolean = false) {
-    return Session.fromPayload(
+  public static async create(isBot: boolean = false) {
+    return Session.#fromPayload(
       await Session.#create({
-        temporary,
+        isBot,
       })
     );
   }
@@ -105,7 +110,7 @@ export class Session {
       httpOnly: true,
       sameSite: "lax",
       // when testing on local, the cookies should not be set to secure
-      secure: !env.GITHUB_REDIRECT_URI.startsWith("http://localhost")
+      secure: !env.NEXT_PUBLIC_VERCEL_URL.startsWith("localhost")
         ? true
         : undefined,
     };
@@ -244,19 +249,21 @@ export class Session {
       SerializedSession,
       "flashMessages" | "additionnalData" | "user"
     >;
-    temporary?: boolean;
+    isBot?: boolean;
   }) {
     const { sessionId, signature } = await Session.#generateSessionId();
 
     const sessionObject = {
       id: sessionId,
-      expiry: options?.temporary
+      expiry: options?.isBot
         ? new Date(Date.now() + 5 * 1000) // only five seconds for temporary session
+        : options?.init?.user
+        ? new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000)
         : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
       signature,
       flashMessages: options?.init?.flashMessages,
       additionnalData: options?.init?.additionnalData,
-      bot: Boolean(options?.temporary),
+      bot: Boolean(options?.isBot),
       user: options?.init?.user,
     } satisfies SerializedSession;
 

@@ -96,11 +96,15 @@ export async function loginUser(user: any) {
 export const getSession = cache(async function getSession(): Promise<Session> {
   const sessionId = cookies().get(SESSION_COOKIE_KEY)?.value;
 
-  if (!sessionId) throw new Error("Session ID must be set in middleware");
+  if (!sessionId) {
+    // Normally this code is never reached
+    throw new Error("Session ID must be set in middleware");
+  }
 
   const session = await Session.get(sessionId);
 
   if (!session) {
+    // Neither this
     throw new Error(
       "Session must have been created in middleware to be accessed."
     );
