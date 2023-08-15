@@ -2,7 +2,7 @@ import "./globals.css";
 
 // components
 import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
-import { Toaster } from "~/app/(components)/toast/toaster";
+import { Toaster } from "~/app/(components)/toast/toaster.server";
 
 // utils
 import { Inter } from "next/font/google";
