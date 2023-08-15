@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE_KEY } from "./lib/constants";
 import { Session } from "./lib/session";
 import isbot from "isbot";
 
-import type { NextRequest } from "next/server";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 /**
@@ -39,18 +38,10 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const time = new Date();
-  const fullPath =
-    request.nextUrl.pathname + request.nextUrl.search + request.nextUrl.hash;
-  console.log(
-    `\n${time.toISOString()} - \x1b[34m${request.method.toUpperCase()} \x1b[33m${fullPath}\x1b[37m`
-  );
+  // Ensure a session is attached to each user
   const sessionId = request.cookies.get(SESSION_COOKIE_KEY)?.value;
   let session = sessionId ? await Session.get(sessionId) : null;
-
   const isBot = isbot(request.headers.get("User-Agent"));
-
-  // Ensure a session is attached to each user
   if (!session) {
     session = await Session.create(isBot);
     return setRequestAndResponseCookies(request, session.getCookie());
@@ -63,7 +54,15 @@ export default async function middleware(request: NextRequest) {
     return setRequestAndResponseCookies(request, session.getCookie());
   }
 
-  return NextResponse.next();
+  // Pass method to headers so that it is accessible within components
+  const headers = new Headers(request.headers);
+  headers.set("x-method", request.method.toUpperCase());
+
+  return NextResponse.next({
+    request: {
+      headers,
+    },
+  });
 }
 
 export const config = {

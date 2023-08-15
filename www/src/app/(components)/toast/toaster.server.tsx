@@ -6,10 +6,9 @@ import { ToasterClient } from "./toaster.client";
 import { headers } from "next/headers";
 
 export async function Toaster() {
-  const method = headers().get('x-method');
-  // ignore HEAD requests because 
-  // next use them for redirects
-  if(method === 'HEAD') return null;
+  // ignore HEAD requests because
+  // next use them for redirects and rerender the page twice
+  if (headers().get("x-method") === "HEAD") return null;
 
   const flashes = await getSession().then((session) => session.getFlash());
 
