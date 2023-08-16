@@ -316,6 +316,7 @@ export function parseIssueSearchString(input: string): IssueSearchFilters {
     const value = valueParts.join(":").trim().replace(/"/g, "");
 
     switch (key) {
+      // Multiple filters
       case "in":
       case "label":
       case "-label":
@@ -329,6 +330,8 @@ export function parseIssueSearchString(input: string): IssueSearchFilters {
         }
         break;
       }
+
+      // Single filters
       case "is":
       case "author":
       case "-author":

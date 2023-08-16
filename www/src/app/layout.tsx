@@ -42,8 +42,7 @@ export default async function RootLayout({
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
 
-        {/* Ensure this component is always rerendered on refresh */}
-        <Toaster key={Math.random()} />
+        <Toaster />
       </body>
     </html>
   );

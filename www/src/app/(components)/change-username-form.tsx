@@ -27,16 +27,16 @@ export function ChangeUsernameForm({
     },
   });
 
-  // const router = useRouter();
+  const router = useRouter();
 
-  // React.useEffect(() => {
-  //   return () => {
-  //     if (errors) {
-  //       // Refresh the router because we don't want to keep old values on mount (errors, defaultValue)
-  //       return React.startTransition(() => router.refresh());
-  //     }
-  //   };
-  // }, [router, errors]);
+  React.useEffect(() => {
+    return () => {
+      if (errors) {
+        // Refresh the router because we don't want to keep old values on mount (errors, defaultValue)
+        return React.startTransition(() => router.refresh());
+      }
+    };
+  }, [router, errors]);
 
   return (
     <Form className="flex flex-col gap-4 items-stretch md:items-start">

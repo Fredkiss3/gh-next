@@ -29,10 +29,10 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
   const onSearchDebounced = React.useCallback(debounce(onSearch), []);
 
   const search = {
-    sort: SORT_FILTERS,
-    in: IN_FILTERS,
-    is: STATUS_FILTERS,
-    no: NO_METADATA_FILTERS,
+    sort: { values: SORT_FILTERS, multiple: false },
+    in: { values: IN_FILTERS, multiple: true },
+    is: { values: STATUS_FILTERS, multiple: false },
+    no: { values: NO_METADATA_FILTERS, multiple: true },
   };
   type SearchKey = keyof typeof search;
 
@@ -40,6 +40,11 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
     <>
       <Command
         filter={(value) => {
+          console.log({
+            filterVal: value,
+            currentWord: currentWord.toLowerCase(),
+            filtered: value.includes(currentWord.toLowerCase()) ? 1 : 0,
+          });
           if (value.includes(currentWord.toLowerCase())) return 1;
           return 0;
         }}
@@ -123,12 +128,12 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
                       >
                         {key}
                         <span className="text-white/50 ml-1 hidden truncate group-aria-[selected=true]:block">
-                          {search[key as SearchKey]
+                          {search[key as SearchKey].values
                             .map((str) => `[${str}]`)
                             .join(" ")}
                         </span>
                       </CommandItem>
-                      {search[key as SearchKey].map((option) => {
+                      {search[key as SearchKey].values.map((option) => {
                         return (
                           <SubItem
                             key={option}
@@ -147,7 +152,7 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
 
                               setCurrentWord("");
                             }}
-                            {...{ currentWord }}
+                            currentWord={currentWord}
                           >
                             {option}
                           </SubItem>
@@ -193,11 +198,7 @@ const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
 >((props, ref) => (
-  <CommandPrimitive.Empty
-    ref={ref}
-    className="py-6 text-center text-sm"
-    {...props}
-  />
+  <CommandPrimitive.Empty ref={ref} className="py-6 text-center" {...props} />
 ));
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
