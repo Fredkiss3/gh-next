@@ -6,8 +6,6 @@ import { Input } from "./input";
 
 // utils
 import { updateUserName } from "~/app/(actions)/auth";
-import { useRouter } from "next/navigation";
-import { useForm } from "~/lib/hooks/use-form";
 
 // types
 import type { FormErrors } from "~/lib/types";
@@ -21,25 +19,21 @@ export function ChangeUsernameForm({
   defaultValue,
   errors,
 }: ChangeUsernameFormProps) {
-  const { Form, isPending } = useForm(updateUserName, {
-    onSubmit() {
-      return confirm("Are you sure about this ?");
-    },
-  });
-
-  const router = useRouter();
-
-  React.useEffect(() => {
-    return () => {
-      if (errors) {
-        // Refresh the router because we don't want to keep old values on mount (errors, defaultValue)
-        return React.startTransition(() => router.refresh());
-      }
-    };
-  }, [router, errors]);
+  const [isPending, startTransition] = React.useTransition();
 
   return (
-    <Form className="flex flex-col gap-4 items-stretch md:items-start">
+    <form
+      action={updateUserName}
+      className="flex flex-col gap-4 items-stretch md:items-start"
+      onSubmit={(e) => {
+        // we stop the event because we want the user to confirm their actino before submiting
+        e.preventDefault();
+
+        if (confirm("Are you sure about this ?")) {
+          startTransition(() => updateUserName(new FormData(e.currentTarget)));
+        }
+      }}
+    >
       <Input
         name="username"
         label="New username"
@@ -53,6 +47,6 @@ export function ChangeUsernameForm({
       <Button isLoading={isPending} variant="subtle" type="submit">
         {isPending ? "Updating your username..." : "Change username"}
       </Button>
-    </Form>
+    </form>
   );
 }
