@@ -63,7 +63,7 @@ export default function Page() {
           variant="invisible"
         >
           <HomeIcon className="h-4 w-4" />
-          Go home (segment)
+          Go home
         </Button>
       </section>
     </>
