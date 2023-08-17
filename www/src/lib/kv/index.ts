@@ -1,4 +1,5 @@
-import { HttpKV } from "./http";
+import { env } from "~/env.mjs";
+import { WebdisKV } from "./redis-web";
 import { SqliteKV } from "./sqlite";
 
 export interface KVStore {
@@ -12,8 +13,8 @@ export interface KVStore {
 }
 
 function getKV(): KVStore {
-  if (process.env.NODE_ENV === "development") {
-    return new HttpKV();
+  if (env.REDIS_HTTP_URL) {
+    return new WebdisKV();
   }
   return new SqliteKV();
 }

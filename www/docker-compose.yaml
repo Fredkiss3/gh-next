@@ -1,0 +1,9 @@
+version: "3.1"
+
+services:
+  webdis:
+    image: nicolas/webdis:latest
+    volumes: # mount volume containing the config file
+      - ./docker/webdis.json:/etc/webdis.prod.json
+    ports:
+      - "6380:7379"
