@@ -43,13 +43,11 @@ Expect stuff to break.
 - [vercel](https://vercel.com) for the hosting
 - [tailwindCSS](https://tailwindcss.com/) for the styling
 
-- [bun](https://bun.sh/) + [honojs](https://hono.dev/) for replacing a local instance of [turso](https://turso.tech), used for sessions and caching of data
-
 # Requirements
 
 - Node >= v16.6.2
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
-- A [neon](https://neon.tech/) database
+- A [turso sqlite](https://turso.tech/) database
 - A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
 ## 🚀 How to work on the project ?
@@ -139,8 +137,11 @@ A quick look at the top-level files and directories you will see in this project
 | Nom                            | role                                                                             |
 | :----------------------------- | :------------------------------------------------------------------------------- |
 | `SESSION_SECRET`               | random 32 chars length string used to encode the session id                      |
-| `NEON_DB_URL`                  | url of the neon database, as shown in neon dashboard                             |
-| `KV_REST_URL`                  | LOCAL file server URL for storing key values                                     |
+| `TURSO_DB_URL`                 | url of the turso database                                                        |
+| `TURSO_DB_TOKEN`               | the generated token to authenticate to your turso database                       |
+| `REDIS_HTTP_URL`               | The URL to the connect to redis HTTP for a key/value store                       |
+| `REDIS_HTTP_USERNAME`          | LOCAL file server URL for storing key values                                     |
+| `REDIS_HTTP_PASSWORD`          | LOCAL file server URL for storing key values                                     |
 | `GITHUB_CLIENT_ID`             | github client id stored for our app used for authenticating users with github    |
 | `GITHUB_PERSONAL_ACCESS_TOKEN` | github client token stored for our app used for authenticating users with github |
 | `GITHUB_REDIRECT_URI`          | URL to redirect when a user has been authenticated                               |
