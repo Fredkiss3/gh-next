@@ -1,5 +1,5 @@
 import * as React from "react";
 
-export default function LoadingPage() {
+export default function Loading() {
   return <>Suspense</>;
 }

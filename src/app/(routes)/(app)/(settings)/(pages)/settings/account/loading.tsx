@@ -1,12 +1,14 @@
+import { Skeleton } from "~/app/(components)/skeleton";
+
 export default function Loading() {
   return (
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-3 md:gap-5">
-        <div className="rounded-md animate-pulse bg-grey h-14 font-medium border-b border-neutral "></div>
+        <Skeleton className="h-14 border-b border-neutral" />
 
-        <div className="rounded-md animate-pulse bg-grey h-12"></div>
+        <Skeleton className="h-12 border-b border-neutral" />
 
-        <div className="rounded-md animate-pulse bg-grey h-32 w-full" />
+        <Skeleton className="h-32 border-b border-neutral" />
       </section>
     </div>
   );
