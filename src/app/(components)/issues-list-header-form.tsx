@@ -9,12 +9,12 @@ import {
   LinkExternalIcon,
   TriangleDownIcon,
 } from "@primer/octicons-react";
+import Link from "next/link";
+import { IssueListSearchInput } from "./issue-list-search-input";
 
 // utils
-import { useForm } from "~/lib/hooks/use-form";
+import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "~/lib/shared-utils";
-import { IssueListSearchInput } from "./issue-list-search-input";
-import Link from "next/link";
 
 // types
 export type IssuesListHeaderFormProps = {
@@ -22,9 +22,23 @@ export type IssuesListHeaderFormProps = {
 };
 
 export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
-  const { Form, formRef } = useForm();
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const router = useRouter();
+  const path = usePathname();
+
   return (
-    <Form method="get" className={clsx(className, "w-full flex items-center")}>
+    <form
+      ref={formRef}
+      method="get"
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        // @ts-expect-error the URLSearchParams constructor supports formData
+        const searchParams = new URLSearchParams(new FormData(e.currentTarget));
+        router.push(path + "?" + searchParams.toString());
+      }}
+      className={clsx(className, "w-full flex items-center")}
+    >
       <ActionList
         items={[
           {
@@ -90,6 +104,6 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
       </ActionList>
 
       <IssueListSearchInput onSearch={() => formRef.current?.requestSubmit()} />
-    </Form>
+    </form>
   );
 }
