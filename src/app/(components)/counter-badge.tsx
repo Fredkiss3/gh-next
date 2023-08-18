@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export type CounterBadgeProps = {
-  count: number;
+  count?: number;
 };
 
 export function CounterBadge({ count }: CounterBadgeProps) {
@@ -11,9 +11,13 @@ export function CounterBadge({ count }: CounterBadgeProps) {
         className="bg-neutral rounded-full px-2 text-foreground text-sm"
         aria-hidden="true"
       >
-        {new Intl.NumberFormat("en-US", { notation: "compact" }).format(count)}
+        {count
+          ? new Intl.NumberFormat("en-US", { notation: "compact" }).format(
+              count
+            )
+          : "-"}
       </span>
-      <span className="sr-only">({count})</span>
+      <span className="sr-only">({count ?? "undefined"})</span>
     </>
   );
 }
