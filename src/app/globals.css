@@ -118,7 +118,7 @@
 }
 
 #nprogress .bar {
-  background: var(rgb(--accent-color)) !important;
+  background: rgb(var(--accent-color)) !important;
 }
 
 @layer components {
