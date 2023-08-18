@@ -32,6 +32,8 @@ export class WebdisKV implements KVStore {
       console.log({
         text: bodyText,
         headers: Object.fromEntries(r.headers),
+        status: r.status,
+        statusText: r.statusText,
       });
       return JSON.parse(bodyText) as T;
     });
