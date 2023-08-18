@@ -21,7 +21,8 @@ function setRequestAndResponseCookies(
     name: cookie.name,
     value: cookie.value,
   });
-  const response = NextResponse.rewrite(request.nextUrl, {
+
+  const response = NextResponse.next({
     request,
   });
 
