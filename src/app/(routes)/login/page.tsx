@@ -24,10 +24,46 @@ export default function LoginPage({
     <>
       <main className="w-full flex flex-col gap-4 justify-center items-center p-8">
         <h1 className="text-3xl font-semibold">Sign in</h1>
-        <Card className="inline-flex">
-          <form action={authenticateWithGithub}>
+        <Card className="flex flex-col gap-8 max-w-[400px]">
+          <div>
+            <h2 className="text-lg font-medium mb-4">
+              We collect these <span className="underline">public</span>&nbsp;
+              informations when you login :
+            </h2>
+            <ul className="">
+              <li>
+                <span className="font-semibold underline">username :</span> used
+                to identify you by your username inside issues
+              </li>
+              <li>
+                <span className="font-semibold underline">avatar_url :</span>
+                &nbsp; used to automatically give you a default avatar
+              </li>
+              <li>
+                <span className="font-semibold underline">github_id :</span>
+                &nbsp; to automatically create or associate to your account when
+                you log in
+              </li>
+              <li>
+                <span className="font-semibold underline">name :</span>&nbsp;
+                displayed in your profile
+              </li>
+              <li>
+                <span className="font-semibold underline">bio :</span> displayed
+                in your profile
+              </li>
+              <li>
+                <span className="font-semibold underline">location :</span>
+                &nbsp; displayed in your profile
+              </li>
+            </ul>
+          </div>
+          <form
+            action={authenticateWithGithub}
+            className="flex flex-col items-center w-full"
+          >
             <input type="hidden" name="_nextUrl" value={nextUrl} />
-            <Button variant="secondary" type="submit">
+            <Button variant="primary" type="submit" isBlock>
               <MarkGithubIcon className="h-4 w-4" />
               <span>Login with GitHub</span>
             </Button>
