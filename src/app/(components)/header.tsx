@@ -14,7 +14,10 @@ import Link from "next/link";
 import { Input } from "./input";
 import { Button } from "./button";
 import { HeaderUnderlineNavbar } from "./underline-navbar";
-import { UserDropdown, UserDropdownSkeleton } from "./user-dropdown.server";
+import {
+  UserDropdown,
+  UserDropdownSkeleton,
+} from "./user-dropdown/user-dropdown.server";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
