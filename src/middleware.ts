@@ -51,8 +51,13 @@ export default async function middleware(request: NextRequest) {
   // Extends expiration time on first load and not on link navigation
   // only if the request doesn't come from a bot
   if (request.headers.get("accept")?.includes("text/html") && !isBot) {
-    await session.extendValidity();
-    return setRequestAndResponseCookies(request, session.getCookie());
+    try {
+      await session.extendValidity();
+    } catch (error) {
+      session = await Session.create();
+    } finally {
+      return setRequestAndResponseCookies(request, session.getCookie());
+    }
   }
 
   // Pass method to headers so that it is accessible within components
