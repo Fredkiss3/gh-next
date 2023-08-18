@@ -15,12 +15,6 @@ export class WebdisKV implements KVStore {
         .map((arg) => (typeof arg === "string" ? encodeURIComponent(arg) : arg))
         .join("/");
 
-    console.log({
-      fullURL,
-      headers: {
-        Authorization: `Basic ${btoa(authString)}`,
-      },
-    });
     return await fetch(fullURL, {
       method: command === "GET" ? "GET" : "PUT",
       cache: "no-store",
@@ -30,6 +24,9 @@ export class WebdisKV implements KVStore {
     }).then(async (r) => {
       const bodyText = await r.text();
       console.log({
+        authString,
+        fullURL,
+        Authorization: `Basic ${btoa(authString)}`,
         text: bodyText,
         headers: Object.fromEntries(r.headers),
         status: r.status,
