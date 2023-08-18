@@ -22,17 +22,7 @@ export class WebdisKV implements KVStore {
         Authorization: `Basic ${btoa(authString)}`,
       },
     }).then(async (r) => {
-      const bodyText = await r.text();
-      console.log({
-        authString,
-        fullURL,
-        Authorization: `Basic ${btoa(authString)}`,
-        text: bodyText,
-        headers: Object.fromEntries(r.headers),
-        status: r.status,
-        statusText: r.statusText,
-      });
-      return JSON.parse(bodyText) as T;
+      return r.json() as T;
     });
   }
 
