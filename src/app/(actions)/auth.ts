@@ -128,9 +128,17 @@ export const redirectIfNotAuthed = cache(async function getUserOrRedirect(
 });
 
 export const getAuthedUser = cache(async function getUser() {
-  return await getSession()
-    .then((s) => (!s.user ? null : getUserById(s.user.id)))
-    .then((users) => (users ? users[0] : null));
+  const user = await getSession().then((session) => session.user);
+
+  if (user) {
+    const dbUsers = await getUserById(user.id);
+
+    if (dbUsers !== null && dbUsers.length > 0) {
+      return dbUsers[0];
+    }
+  }
+
+  return null;
 });
 
 const updateUserNameSchema = zfd.formData({
