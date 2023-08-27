@@ -39,15 +39,15 @@ Expect stuff to break.
 # Stack
 
 - [Next App Router](https://nextjs.org/docs/app)
-- [drizzle](https://orm.drizzle.team/) + [turso](https://turso.tech/)
-- [vercel](https://vercel.com) for the hosting
+- [drizzle](https://orm.drizzle.team/) + local Postgres database
+- Hosted to a custom VPS, see [the CI/CD workflow](./.github/workflows/deploy-to-vps.yaml) for how it is all deployed
 - [tailwindCSS](https://tailwindcss.com/) for the styling
 
 # Requirements
 
 - Node >= v16.6.2
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
-- A [turso sqlite](https://turso.tech/) database
+- [docker](https://docs.docker.com/engine/install/) installed for local development
 - A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
 ## 🚀 How to work on the project ?
@@ -58,27 +58,21 @@ Expect stuff to break.
    git clone https://github.com/Fredkiss3/gh-next.git
    ```
 
-2. **Install the dependencies on the bun server and launch it :**
+2. **Start the docker compose instance to start the DB + redis instance :**
 
    ```bash
-   cd server
-   bun install
-   bun run dev
+   docker-compose up -d --remove-orphans
    ```
 
-   the server will be open at http://127.0.0.1:3001
-
-3. **Move to the `www` folder :**
-
-4. **Then, Install the dependencies :**
+3. **Install the dependencies :**
 
    ```bash
    pnpm install
    ```
 
-5. Rename `.env.example` to `.env.local` And change the file to your needs,
+4. Rename `.env.example` to `.env.local` And change the file to your needs,
 
-6. **And launch the project :**
+5. **And launch the project :**
 
    ```bash
    pnpm run dev
@@ -86,31 +80,27 @@ Expect stuff to break.
 
    The app will show at [http://localhost:3000](http://localhost:3000).
 
-7. **Open the source code and start rocking ! 😎**
+6. **Open the source code and start rocking ! 😎**
 
 ## 🧐 Project structure
 
 A quick look at the top-level files and directories you will see in this project.
 
-    .
-    ├── server/
-    └── www/
-         ├── src/
-         │    ├── app/
-         │    │   ├── (actions)
-         │    │   ├── (components)
-         │    │   ├── (models)
-         │    │   └── (routes)
-         │    └──lib/
-         │        ├── db/schema
-         │        └── hooks
-         ├── .prettierrc
-         ├── pnpm-lock.yaml
-         └── tsconfig.json
+      .
+      ├── src/
+      │    ├── app/
+      │    │   ├── (actions)
+      │    │   ├── (components)
+      │    │   ├── (models)
+      │    │   └── (routes)
+      │    └──lib/
+      │        ├── db/schema
+      │        └── hooks
+      ├── .prettierrc
+      ├── pnpm-lock.yaml
+      └── tsconfig.json
 
-1. **`server/`**: this folder contains the source code to a local server implemented in bun used for replacing the Key/Value Store on cloudfare, since we use edge runtime for our projet we couldn't have just done it in our next app as it store keys in files and we don't have access to FILE I/O on edge runtime.
-
-1. **`www/src/app/`**: this folder contains the source code to our app :
+1. **`src/app/`**: this folder contains the source code to our app :
 
    1. **`(actions)`** : this folder contains all the logic of our app.
 
@@ -120,26 +110,25 @@ A quick look at the top-level files and directories you will see in this project
 
    4. **`(routes)`** : this folder contains all the routes & pages of our app.
 
-1. **`www/src/lib/`**: this folder contains utils & helpers used throughout our app :
+1. **`src/lib/`**: this folder contains utils & helpers used throughout our app :
 
    1. **`db/schema`** : this folder contains all the drizzle sqlite schema for our DB.
 
    2. **`hooks`** : this folder contains all the react custom hooks used in the app.
 
-1. **`www/.prettierrc`**: this file contains the configuration for prettier to enable autoformatting.
+1. **`.prettierrc`**: this file contains the configuration for prettier to enable autoformatting.
 
-1. **`www/pnpm-lock.yaml`**: this file contains the dependencies lock for the repo.
+1. **`pnpm-lock.yaml`**: this file contains the dependencies lock for the repo.
 
-1. **`www/tsconfig.json`**: this file contains the configuration for typescript, that are used by the all the underlying packages
+1. **`tsconfig.json`**: this file contains the configuration for typescript, that are used by the all the underlying packages
 
 ## 🍳 ENV VARIABLES USED
 
 | Nom                            | role                                                                             |
 | :----------------------------- | :------------------------------------------------------------------------------- |
 | `SESSION_SECRET`               | random 32 chars length string used to encode the session id                      |
-| `TURSO_DB_URL`                 | url of the turso database                                                        |
-| `TURSO_DB_TOKEN`               | the generated token to authenticate to your turso database                       |
 | `REDIS_HTTP_URL`               | The URL to the connect to redis HTTP for a key/value store                       |
+| `DATABASE_URL`                 | The URL to the connect to the Postres Database                                   |
 | `REDIS_HTTP_USERNAME`          | LOCAL file server URL for storing key values                                     |
 | `REDIS_HTTP_PASSWORD`          | LOCAL file server URL for storing key values                                     |
 | `GITHUB_CLIENT_ID`             | github client id stored for our app used for authenticating users with github    |

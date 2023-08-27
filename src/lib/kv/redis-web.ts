@@ -9,11 +9,13 @@ export class WebdisKV implements KVStore {
     ...args: Array<string | number>
   ) {
     const authString = `${env.REDIS_HTTP_USERNAME}:${env.REDIS_HTTP_PASSWORD}`;
+    const dateNow = Date.now();
     let fullURL =
       `${env.REDIS_HTTP_URL}/${command}/` +
       args
         .map((arg) => (typeof arg === "string" ? encodeURIComponent(arg) : arg))
         .join("/");
+    console.time(`[${dateNow}] ${command} ${args[0]}`);
 
     return await fetch(fullURL, {
       method: command === "GET" ? "GET" : "PUT",
@@ -22,6 +24,7 @@ export class WebdisKV implements KVStore {
         Authorization: `Basic ${btoa(authString)}`,
       },
     }).then(async (r) => {
+      console.timeEnd(`[${dateNow}] ${command} ${args[0]}`);
       return r.json() as T;
     });
   }

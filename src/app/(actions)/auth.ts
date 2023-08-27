@@ -76,7 +76,7 @@ export async function loginUser(user: any) {
   // Find or create the corresponding user in DB
   const ghUser = sessionResult.data;
 
-  const dbUser = await getUserFromGithubProfile(ghUser);
+  const [dbUser] = await getUserFromGithubProfile(ghUser);
 
   const session = await getSession();
   await session.generateForUser(dbUser);

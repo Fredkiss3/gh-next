@@ -7,3 +7,22 @@ services:
       - ./docker/webdis.json:/etc/webdis.prod.json
     ports:
       - "6380:7379"
+  db:
+    image: postgres:12-alpine
+    restart: always
+    volumes:
+        - db-data:/var/lib/postgresql/data
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: gh_next
+    ports:
+        - '5433:5432'
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+        - 8081:8080
+
+volumes:
+  db-data:

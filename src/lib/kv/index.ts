@@ -1,6 +1,5 @@
 import { env } from "~/env.mjs";
 import { WebdisKV } from "./redis-web";
-import { SqliteKV } from "./sqlite";
 
 export interface KVStore {
   set<T extends Record<string, any> = {}>(
@@ -13,10 +12,7 @@ export interface KVStore {
 }
 
 function getKV(): KVStore {
-  if (env.REDIS_HTTP_URL) {
-    return new WebdisKV();
-  }
-  return new SqliteKV();
+  return new WebdisKV();
 }
 
 export const kv = getKV();

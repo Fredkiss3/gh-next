@@ -5,6 +5,7 @@ import { isValidURLPathname } from "~/lib/shared-utils";
 import type { NextRequest } from "next/server";
 
 export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -13,9 +14,6 @@ export async function GET(req: NextRequest) {
     redirect("/");
   }
 
-  console.log({
-    ROUTE_GITHUB_REDIRECT_URI: env.GITHUB_REDIRECT_URI,
-  });
   const response: any = await fetch(
     "https://github.com/login/oauth/access_token",
     {

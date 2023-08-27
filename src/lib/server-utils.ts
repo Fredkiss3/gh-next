@@ -4,7 +4,8 @@ import { z } from "zod";
 import { getSession, getAuthedUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
 import { GITHUB_AUTHOR_USERNAME } from "./constants";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
+import { cache } from "react";
 
 export function isSSR() {
   return headers().get("accept")?.includes("text/html");
@@ -76,7 +77,7 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
       // this header is required per the documentation : https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#user-agent-required
       "User-Agent": GITHUB_AUTHOR_USERNAME,
     },
-    cache: "no-store",
+    // cache: "no-store",
   })
     .then((r) => r.json())
     .then((json) => {
@@ -99,4 +100,15 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
         throw new Error(`GraphQL error : check the terminal for errors.`);
       }
     });
+}
+
+type Callback = (...args: any[]) => Promise<any>;
+export function nextCache<T extends Callback>(
+  cb: T,
+  options: {
+    tags: string[];
+    revalidate?: number;
+  }
+) {
+  return cache(unstable_cache(cb, options.tags, options));
 }

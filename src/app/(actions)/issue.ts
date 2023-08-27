@@ -1,6 +1,6 @@
 "use server";
 
-import { IssueStatuses } from "~/lib/db/schema/issue";
+import { IssueStatuses } from "~/lib/db/schema/issue.sql";
 
 const authorList = [
   {
@@ -46,7 +46,7 @@ export async function filterIssueAuthors(name: string) {
       item.name &&
       (item.username.toLowerCase().startsWith(name.toLowerCase()) ||
         item.name.toLowerCase().includes(name.toLowerCase()))
-  ) as Array<Required<(typeof authorList)[number]>>;
+  ) as Array<Required<typeof authorList[number]>>;
 }
 
 // FIXME: Change this to actually query the DB in production

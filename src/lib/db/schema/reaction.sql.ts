@@ -1,8 +1,9 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { serial, integer, pgEnum } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { users } from "./user";
-import { issues } from "./issue";
-import { comments } from "./comment";
+import { users } from "./user.sql";
+import { issues } from "./issue.sql";
+import { comments } from "./comment.sql";
+import { pgTable } from "./index.sql";
 
 import type { InferModel } from "drizzle-orm";
 
@@ -18,20 +19,20 @@ export const ReactionTypes = {
 } as const;
 export type ReactionType = keyof typeof ReactionTypes;
 
-export const reactions = sqliteTable("reactions", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  type: text("type", {
-    enum: [
-      "PLUS_ONE",
-      "MINUS_ONE",
-      "LAUGH",
-      "CONFUSED",
-      "HEART",
-      "HOORAY",
-      "ROCKET",
-      "EYES",
-    ],
-  }).notNull(),
+export const reactionTypeEnum = pgEnum("reaction_type", [
+  "PLUS_ONE",
+  "MINUS_ONE",
+  "LAUGH",
+  "CONFUSED",
+  "HEART",
+  "HOORAY",
+  "ROCKET",
+  "EYES",
+]);
+
+export const reactions = pgTable("reactions", {
+  id: serial("id").primaryKey(),
+  type: reactionTypeEnum("type").notNull(),
   author_id: integer("author_id").references(() => users.id, {
     onDelete: "set null",
   }),

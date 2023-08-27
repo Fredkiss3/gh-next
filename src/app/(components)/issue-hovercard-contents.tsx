@@ -10,11 +10,11 @@ import { LabelBadge } from "./label-badge";
 
 // utils
 import { excerpt, formatDate } from "~/lib/shared-utils";
-import { IssueStatuses } from "~/lib/db/schema/issue";
+import { IssueStatuses } from "~/lib/db/schema/issue.sql";
 
 // types
-import type { IssueStatus } from "~/lib/db/schema/issue";
-import type { Label } from "~/lib/db/schema/label";
+import type { IssueStatus } from "~/lib/db/schema/issue.sql";
+import type { Label } from "~/lib/db/schema/label.sql";
 export type IssueHoverCardContentsProps = {
   id: number;
   status: IssueStatus;

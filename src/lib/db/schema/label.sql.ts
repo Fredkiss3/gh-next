@@ -1,23 +1,19 @@
-import {
-  sqliteTable,
-  text,
-  integer,
-  primaryKey,
-} from "drizzle-orm/sqlite-core";
+import { serial, varchar, integer, primaryKey } from "drizzle-orm/pg-core";
 
 import { relations, type InferModel } from "drizzle-orm";
-import { issues } from "./issue";
+import { issues } from "./issue.sql";
+import { pgTable } from "./index.sql";
 
-export const labels = sqliteTable("labels", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name", { length: 255 }).notNull(),
-  description: text("description", { length: 255 }).default("").notNull(),
+export const labels = pgTable("labels", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: varchar("description", { length: 255 }).default("").notNull(),
   // 10 chars for a generous length, in practice it is 7 chars at most
   // ex: #FF10C0
-  color: text("color", { length: 10 }).notNull(),
+  color: varchar("color", { length: 10 }).notNull(),
 });
 
-export const labelToIssues = sqliteTable(
+export const labelToIssues = pgTable(
   "labels_to_issues",
   {
     issue_id: integer("issue_id")
