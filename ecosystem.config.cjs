@@ -12,7 +12,7 @@ module.exports = {
       instance_var: "INSTANCE_ID",
       max_memory_restart: "1G",
       env: {
-        PORT: 8889,
+        PORT: 8892,
         HOSTNAME: "0.0.0.0",
       },
     },
