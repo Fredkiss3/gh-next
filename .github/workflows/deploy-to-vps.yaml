@@ -38,7 +38,7 @@ jobs:
           SESSION_SECRET=${{ secrets.SESSION_SECRET }}
           TURSO_DB_TOKEN=${{ secrets.TURSO_DB_TOKEN }}
           TURSO_DB_URL=${{ secrets.TURSO_DB_URL }}
-          # DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5434/locaci_db?schema=public"
+          DATABASE_URL=${{ secrets.POSTGRES_DB_URL }}
           GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
           GITHUB_REDIRECT_URI="http://gh.fredkiss.dev/api/auth/callback"
           GITHUB_SECRET=${{ secrets.GH_SECRET }}
