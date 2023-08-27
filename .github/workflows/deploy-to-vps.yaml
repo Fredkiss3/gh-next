@@ -40,7 +40,7 @@ jobs:
           TURSO_DB_URL=${{ secrets.TURSO_DB_URL }}
           DATABASE_URL=${{ secrets.POSTGRES_DB_URL }}
           GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
-          GITHUB_REDIRECT_URI="http://gh.fredkiss.dev/api/auth/callback"
+          GITHUB_REDIRECT_URI="https://gh.fredkiss.dev/api/auth/callback"
           GITHUB_SECRET=${{ secrets.GH_SECRET }}
           GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           REDIS_HTTP_URL="http://127.0.0.1:6380"
