@@ -5,6 +5,7 @@ import { isValidURLPathname } from "~/lib/shared-utils";
 import type { NextRequest } from "next/server";
 
 export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");

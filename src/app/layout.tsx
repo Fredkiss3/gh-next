@@ -24,10 +24,8 @@ export const metadata: Metadata = {
   description: "This is an issue management app",
 };
 
-export const runtime = "edge";
 export const revalidate = 0;
 export const fetchCache = "default-cache";
-export const preferredRegion = "fra1";
 
 export default async function RootLayout({
   children,

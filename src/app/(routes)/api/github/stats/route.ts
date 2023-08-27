@@ -47,6 +47,9 @@ type StargazersResponse = {
   };
 };
 
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
+
 export async function GET() {
   const repostatsQuery = /* GraphQL */ `
     query ($repoName: String!, $repoOwner: String!) {
