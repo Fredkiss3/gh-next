@@ -85,5 +85,3 @@ jobs:
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
           DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
-          DCR_USER: ${{ secrets.DCR_USER }}
