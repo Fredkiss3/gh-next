@@ -13,7 +13,7 @@ module.exports = {
       max_memory_restart: "1G",
       env: {
         PORT: 8889,
-        // NEXT_SHARP_PATH: "{{SHARP_PATH}}",
+        HOSTNAME: "0.0.0.0",
       },
     },
   ],

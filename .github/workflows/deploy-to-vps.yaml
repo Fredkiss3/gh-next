@@ -1,0 +1,88 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI/CD For the Deployment
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches:
+      - diff-providers
+
+  # Allows you to run this workflow manually from the Actions tab+1
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_SERVER_KEY }}
+          name: id_rsa # optional
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Deploy to Server
+        run: |
+          echo Copying env files...
+          cat > .env.local << EOF
+          NEXT_PUBLIC_SITE_URL="gh.fredkiss.dev"
+          SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+          TURSO_DB_TOKEN=${{ secrets.TURSO_DB_TOKEN }}
+          TURSO_DB_URL=${{ secrets.TURSO_DB_URL }}
+          # DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5434/locaci_db?schema=public"
+          GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_REDIRECT_URI="http://gh.fredkiss.dev/api/auth/callback"
+          GITHUB_SECRET=${{ secrets.GITHUB_SECRET }}
+          GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+          REDIS_HTTP_URL="http://127.0.0.1:6380"
+          REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }}
+          REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }}
+          EOF
+
+          scp -P $DEPLOY_PORT ./.env.local $DEPLOY_USER@$DEPLOY_DOMAIN:$DEPLOY_DIR/.env.local
+          echo env copied ✅
+
+          ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_DOMAIN "
+          source ~/.zshrc
+          set -e -o errexit
+          cd $DEPLOY_DIR
+
+          echo Pulling latest version...
+          git pull origin ${GITHUB_REF##*/}
+
+          echo Building packages...
+          pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
+
+          # Return to root dir
+          cd $DEPLOY_DIR
+          pnpm run db:migrate
+          pnpm run build
+          echo build success ✅
+
+          # Copy standalone static files
+          rsync -a .next/static/ .next/standalone/.next/static
+
+          # Replace port variable to support multiport with pm2 cluster_mode
+          sed -i 's/parseInt(process.env.PORT, 10)/parseInt(process.env.PORT, 10) + parseInt(process.env.INSTANCE_ID, 10)/g' .next/standalone/server.js
+
+          # Start 3 pm2 processes
+          echo Starting processes...
+          pm2 startOrReload ecosystem.config.cjs --update-env
+          echo processes succesfully started ✅
+          "
+        env:
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+          DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
+          DCR_USER: ${{ secrets.DCR_USER }}
