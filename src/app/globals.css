@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --accent-color: 10, 105, 218;
+    --success-color: 31, 136, 61;
+    --attention-color: 191, 135, 0;
+    --danger-color: 164, 14, 38;
+    --severe-color: 188, 76, 0;
+    --closed-color: 207, 33, 46;
+    --done-color: 130, 80, 223;
+    --neutral-color: 208, 215, 222;
+
+    --grey-color: 110, 118, 129;
+    --subtle-color: 246, 248, 250;
+
+    --accent-color-bg: 221, 244, 255;
+    --success-color-bg: 218, 251, 225;
+    --attention-color-bg: 255, 248, 197;
+    --danger-color-bg: 255, 235, 232;
+    --severe-color-bg: 255, 242, 229;
+    --open-color-bg: 218, 251, 225;
+    --closed-color-bg: 255, 235, 232;
+    --done-color-bg: 251, 239, 255;
+
+    --accent-color-border: 187, 223, 255;
+    --success-color-border: 183, 231, 196;
+    --attention-color-border: 238, 220, 171;
+    --danger-color-border: 255, 205, 205;
+    --severe-color-border: 247, 129, 102;
+    --open-color-border: 183, 231, 196;
+    --closed-color-border: 255, 205, 205;
+    --done-color-border: 231, 213, 255;
+    font-size: 14px;
+
+    --tooltip-light-color: 255, 255, 255;
+    --tooltip-dark-color: 0, 0, 0;
+
+    --fg-color: 0, 0, 0;
+    --bg-color: 255, 255, 255;
+
+    --disabled-color: 239, 241, 243, 1;
+
+    --backdrop-color: 255, 255, 255;
+    --header-color: 246, 248, 250;
+    --ghost-color: 246, 248, 250;
+  }
+
+  [data-bright-theme="github-light"] {
+    display: block !important;
+  }
+
+  [data-bright-theme="github-dark"] {
+    display: none !important;
+  }
+
+  [data-theme="dark"] [data-bright-theme="github-dark"] {
+    display: block !important;
+  }
+
+  [data-theme="dark"] [data-bright-theme="github-light"] {
+    display: none !important;
+  }
+
+  [data-theme="dark"] {
+    --tooltip-light-color: 22, 28, 34;
+    --tooltip-dark-color: 110, 118, 129;
+
+    --success-color: 63, 185, 80;
+    --fg-color: 255, 255, 255;
+    --bg-color: 1, 4, 9;
+    --danger-color: 248, 81, 73;
+    --accent-color: 47, 129, 247;
+
+    --neutral-color: 48, 54, 60;
+    --subtle-color: 22, 28, 34;
+    --disabled-color: 0, 0, 0, 0;
+
+    --backdrop-color: 13, 17, 22;
+    --header-color: 1, 4, 9;
+    --ghost-color: 33, 38, 45;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] [data-bright-theme="github-dark"] {
+      display: block !important;
+    }
+
+    [data-theme="system"] [data-bright-theme="github-light"] {
+      display: none !important;
+    }
+
+    [data-theme="system"] {
+      --tooltip-light-color: 22, 28, 34;
+      --tooltip-dark-color: 110, 118, 129;
+
+      --success-color: 63, 185, 80;
+      --fg-color: 255, 255, 255;
+      --bg-color: 1, 4, 9;
+      --danger-color: 248, 81, 73;
+      --accent-color: 47, 129, 247;
+
+      --neutral-color: 48, 54, 60;
+      --subtle-color: 22, 28, 34;
+      --disabled-color: 0, 0, 0, 0;
+      --backdrop-color: 13, 17, 22;
+      --header-color: 1, 4, 9;
+      --ghost-color: 33, 38, 45;
+    }
+  }
+
+  body {
+    color: rgb(var(--fg-color));
+    background: rgb(var(--bg-color));
+  }
+}
+
+#nprogress .bar {
+  background: rgb(var(--accent-color)) !important;
+}
+
+@layer components {
+  /** Styles Copied from github */
+  .label-badge {
+    --lightness-threshold: 0.453;
+    --border-threshold: 0.96;
+    --border-alpha: max(
+      0,
+      min(calc((var(--perceived-lightness) - var(--border-threshold)) * 100), 1)
+    );
+    color: hsl(0deg, 0%, calc(var(--lightness-switch) * 100%));
+    background: rgb(var(--label-r), var(--label-g), var(--label-b));
+    border-color: hsla(
+      var(--label-h),
+      calc(var(--label-s) * 1%),
+      calc((var(--label-l) - 25) * 1%),
+      var(--border-alpha)
+    );
+
+    --perceived-lightness: calc(
+      (
+          (var(--label-r) * 0.2126) + (var(--label-g) * 0.7152) +
+            (var(--label-b) * 0.0722)
+        ) / 255
+    );
+    --lightness-switch: max(
+      0,
+      min(
+        calc((1 / (var(--lightness-threshold) - var(--perceived-lightness)))),
+        1
+      )
+    );
+  }
+
+  [data-theme="dark"] .label-badge {
+    --lightness-threshold: 0.6;
+    --background-alpha: 0.18;
+    --border-alpha: 0.3;
+    --lighten-by: calc(
+      ((var(--lightness-threshold) - var(--perceived-lightness)) * 100) *
+        var(--lightness-switch)
+    );
+    color: hsl(
+      var(--label-h),
+      calc(var(--label-s) * 1%),
+      calc((var(--label-l) + var(--lighten-by)) * 1%)
+    );
+    background: rgba(
+      var(--label-r),
+      var(--label-g),
+      var(--label-b),
+      var(--background-alpha)
+    );
+    border-color: hsla(
+      var(--label-h),
+      calc(var(--label-s) * 1%),
+      calc((var(--label-l) + var(--lighten-by)) * 1%),
+      var(--border-alpha)
+    );
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] .label-badge {
+      --lightness-threshold: 0.6;
+      --background-alpha: 0.18;
+      --border-alpha: 0.3;
+      --lighten-by: calc(
+        ((var(--lightness-threshold) - var(--perceived-lightness)) * 100) *
+          var(--lightness-switch)
+      );
+      color: hsl(
+        var(--label-h),
+        calc(var(--label-s) * 1%),
+        calc((var(--label-l) + var(--lighten-by)) * 1%)
+      );
+      background: rgba(
+        var(--label-r),
+        var(--label-g),
+        var(--label-b),
+        var(--background-alpha)
+      );
+      border-color: hsla(
+        var(--label-h),
+        calc(var(--label-s) * 1%),
+        calc((var(--label-l) + var(--lighten-by)) * 1%),
+        var(--border-alpha)
+      );
+    }
+  }
+}

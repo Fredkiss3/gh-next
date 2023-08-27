@@ -39,17 +39,14 @@ Expect stuff to break.
 # Stack
 
 - [Next App Router](https://nextjs.org/docs/app)
-- [drizzle](https://orm.drizzle.team/) + [turso](https://turso.tech/)
-- [vercel](https://vercel.com) for the hosting
+- [drizzle](https://orm.drizzle.team/) + local Postgres database
+- Hosted to a custom VPS, see [the CI/CD workflow](./.github/workflows/deploy-to-vps.yaml) for how it is all deployed
 - [tailwindCSS](https://tailwindcss.com/) for the styling
-
-- [bun](https://bun.sh/) + [honojs](https://hono.dev/) for replacing a local instance of [turso](https://turso.tech), used for sessions and caching of data
 
 # Requirements
 
 - Node >= v16.6.2
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
-- A [neon](https://neon.tech/) database
 - A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
 ## 🚀 How to work on the project ?
@@ -139,8 +136,10 @@ A quick look at the top-level files and directories you will see in this project
 | Nom                            | role                                                                             |
 | :----------------------------- | :------------------------------------------------------------------------------- |
 | `SESSION_SECRET`               | random 32 chars length string used to encode the session id                      |
-| `NEON_DB_URL`                  | url of the neon database, as shown in neon dashboard                             |
-| `KV_REST_URL`                  | LOCAL file server URL for storing key values                                     |
+| `REDIS_HTTP_URL`               | The URL to the connect to redis HTTP for a key/value store                       |
+| `DATABASE_URL`                 | The URL to the connect to the Postres Database                                   |
+| `REDIS_HTTP_USERNAME`          | LOCAL file server URL for storing key values                                     |
+| `REDIS_HTTP_PASSWORD`          | LOCAL file server URL for storing key values                                     |
 | `GITHUB_CLIENT_ID`             | github client id stored for our app used for authenticating users with github    |
 | `GITHUB_PERSONAL_ACCESS_TOKEN` | github client token stored for our app used for authenticating users with github |
 | `GITHUB_REDIRECT_URI`          | URL to redirect when a user has been authenticated                               |
