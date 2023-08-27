@@ -1,0 +1,113 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI/CD For the Deployment
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches:
+      - develop
+
+  # Allows you to run this workflow manually from the Actions tab+1
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    environment: dev
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_SERVER_KEY }}
+          name: id_rsa # optional
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Deploy to Server
+        run: |
+          echo Copying env files...
+          # cat > .env.local << EOF
+          # NEXT_PUBLIC_SITE_URL="https://gh.fredkiss.dev"
+          # JWT_SECRET=${{ secrets.JWT_SECRET }}
+          # DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5434/locaci_db?schema=public"
+          # OSM_SEARCH_URL=http://127.0.0.1:8090
+          # TYPESENSE_SEARCH_URL=http://127.0.0.1:7700
+          # TYPESENSE_SEARCH_API_KEY=${{ secrets.TYPESENSE_SEARCH_API_KEY }}
+          # NEXT_PUBLIC_MAPBOX_KEY=${{ secrets.MAPBOX_KEY }}
+          # NEXT_PUBLIC_OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}
+          # NEXT_PUBLIC_OAUTH_ISSUER_BASE_URL=${{ secrets.ISSUER_BASE_URL }}
+          # OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}
+          # NEXT_PUBLIC_CF_IMAGES_URL=${{ secrets.CF_IMAGES_URL }}
+          # CF_IMAGES_DOMAIN=${{ secrets.CF_IMAGES_DOMAIN }}
+          # CF_ACCOUNT_ID=${{ secrets.CF_ACCOUNT_ID }}
+          # CF_ACCESS_KEY_ID=${{ secrets.CF_ACCESS_KEY_ID }}
+          # CF_ACCESS_KEY_SECRET=${{ secrets.CF_ACCESS_KEY_SECRET }}
+          # CF_IMAGES_BUCKET_NAME=${{ secrets.CF_IMAGES_BUCKET_NAME }}
+          # NEXT_REVALIDATE_SECRET=${{ secrets.NEXT_REVALIDATE_SECRET }}
+          # NEXT_PUBLIC_FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}
+          # REDIS_URL=${{ secrets.REDIS_URL }}
+          # CACHE_BYPASS="false"
+          # CACHE_PREFIX="__cache"
+          # CACHE_TTL="604800"
+          # EOF
+
+          # scp -P $DEPLOY_PORT ./.env $DEPLOY_USER@$DEPLOY_DOMAIN:$DEPLOY_DIR/web/.env
+          # echo env copied ✅
+
+          ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_DOMAIN "
+          source ~/.zshrc
+          set -e -o errexit
+          cd $DEPLOY_DIR
+
+          # Reset ecosystem.config.js to its original state to avoid conflicts
+          git checkout -- ecosystem.config.js 
+
+          echo Pulling latest version...
+          git pull origin ${GITHUB_REF##*/}
+
+          echo Building packages...
+          pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile --ignore-scripts=true
+
+          # Install sharp binairies for the OS version
+          cd ./web/node_modules/sharp
+          pnpm run install
+
+          # Return to root dir
+          cd $DEPLOY_DIR
+          pnpm run db:generate
+          pnpm run db:migrate
+          pnpm run build
+          echo build success ✅
+
+          # Sync standalone output
+          rsync -a web/.next/standalone/ standalone/
+          rsync -a web/.next/static/ standalone/web/.next/static
+
+          # Replace port variable to support multiport with pm2 cluster_mode
+          sed -i 's/parseInt(process.env.PORT, 10)/parseInt(process.env.PORT, 10) + parseInt(process.env.INSTANCE_ID, 10)/g' standalone/web/server.js
+          # sed -i 's/localhost/0.0.0.0/g' standalone/web/server.js 
+
+          echo "sharp path: $DEPLOY_DIR/node_modules/sharp"
+          sed -i "s#{{SHARP_PATH}}#$DEPLOY_DIR/node_modules/sharp#g" ecosystem.config.js 
+
+          # Start 3 pm2 processes
+          echo Starting processes...
+          pm2 startOrReload ecosystem.config.js --update-env
+          echo processes succesfully started ✅
+          "
+        env:
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+          DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
+          DCR_USER: ${{ secrets.DCR_USER }}
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
