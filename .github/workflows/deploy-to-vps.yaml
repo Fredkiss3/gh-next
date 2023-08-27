@@ -70,6 +70,7 @@ jobs:
 
           # Copy standalone static files
           rsync -a .next/static/ .next/standalone/.next/static
+          cp .env.local .next/standalone/.env.local
 
           # Replace port variable to support multiport with pm2 cluster_mode
           sed -i 's/parseInt(process.env.PORT, 10)/parseInt(process.env.PORT, 10) + parseInt(process.env.INSTANCE_ID, 10)/g' .next/standalone/server.js
