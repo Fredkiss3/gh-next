@@ -14,10 +14,10 @@
     "pages:build-dev": "pnpm run pages:build && pnpm run pages:dev",
     "pages:deploy": "wrangler pages deploy .vercel/output/static",
     "pages:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",
-    "db:generate": "set -a; source .env.local; set +a && drizzle-kit generate:sqlite",
-    "db:studio": "set -a; source .env.local; set +a && drizzle-kit studio --port 3003 --verbose",
-    "db:migrate": "set -a; source .env.local; set +a && tsx ./migrate.ts",
-    "cache:migrate": "set -a; source .env.local; set +a &&  drizzle-kit push:sqlite --config=./src/lib/kv/sqlite/config.ts"
+    "db:generate": "set -a; . ./.env.local; set +a && drizzle-kit generate:sqlite",
+    "db:studio": "set -a; . ./.env.local; set +a && drizzle-kit studio --port 3003 --verbose",
+    "db:migrate": "set -a; . ./.env.local; set +a && tsx ./migrate.ts",
+    "cache:migrate": "set -a; . ./.env.local; set +a &&  drizzle-kit push:sqlite --config=./src/lib/kv/sqlite/config.ts"
   },
   "type": "module",
   "dependencies": {
