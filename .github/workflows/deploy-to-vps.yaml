@@ -34,7 +34,7 @@ jobs:
         run: |
           echo Copying env files...
           cat > .env.local << EOF
-          NEXT_PUBLIC_SITE_URL="gh.fredkiss.dev"
+          NEXT_PUBLIC_VERCEL_URL="gh.fredkiss.dev"
           SESSION_SECRET=${{ secrets.SESSION_SECRET }}
           TURSO_DB_TOKEN=${{ secrets.TURSO_DB_TOKEN }}
           TURSO_DB_URL=${{ secrets.TURSO_DB_URL }}
