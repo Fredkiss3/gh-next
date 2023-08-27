@@ -1,22 +1,23 @@
 import {
-  sqliteTable,
-  text,
+  serial,
+  varchar,
   integer,
+  timestamp,
+  pgEnum,
   primaryKey,
-} from "drizzle-orm/sqlite-core";
+} from "drizzle-orm/pg-core";
 
-import { relations, sql } from "drizzle-orm";
-import { users } from "./user";
-import { labels } from "./label";
-import { issues } from "./issue";
+import { relations } from "drizzle-orm";
+import { users } from "./user.sql";
+import { labels } from "./label.sql";
+import { issues } from "./issue.sql";
 
 import type { InferModel } from "drizzle-orm";
+import { pgTable } from "./index.sql";
 
 const baseActivityFields = {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  created_at: integer("created_at", { mode: "timestamp" })
-    .default(sql`(strftime('%s', 'now'))`)
-    .notNull(),
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
   initiator_id: integer("initiator_id").references(() => users.id, {
     onDelete: "set null",
   }),
@@ -27,10 +28,10 @@ const baseActivityFields = {
     .notNull(),
 };
 
-export const changeTitleActivities = sqliteTable("change_title_activities", {
+export const changeTitleActivities = pgTable("change_title_activities", {
   ...baseActivityFields,
-  old_title: text("old_title", { length: 255 }).notNull(),
-  new_title: text("new_title", { length: 255 }).notNull(),
+  old_title: varchar("old_title", { length: 255 }).notNull(),
+  new_title: varchar("new_title", { length: 255 }).notNull(),
 });
 
 export const changeTitleActivitiesRelations = relations(
@@ -51,15 +52,15 @@ export const changeTitleActivitiesRelations = relations(
 
 // this is repeated but not included in the database migration because it is not exported,
 // the original enum is defined in `issue.ts` file
-// const issueStatusEnum = pgEnum("issue_status", [
-//   "OPEN",
-//   "CLOSED",
-//   "NOT_PLANNED",
-// ]);
+const issueStatusEnum = pgEnum("issue_status", [
+  "OPEN",
+  "CLOSED",
+  "NOT_PLANNED",
+]);
 
-export const toggleActivities = sqliteTable("issue_toggle_activities", {
+export const toggleActivities = pgTable("issue_toggle_activities", {
   ...baseActivityFields,
-  status: text("status", { enum: ["OPEN", "CLOSED", "NOT_PLANNED"] }).notNull(),
+  status: issueStatusEnum("status").notNull(),
 });
 
 export const issueToggleActivitiesRelations = relations(
@@ -78,7 +79,7 @@ export const issueToggleActivitiesRelations = relations(
   })
 );
 
-export const mentionActivities = sqliteTable("issue_mention_activities", {
+export const mentionActivities = pgTable("issue_mention_activities", {
   ...baseActivityFields,
   mentionned_issue_id: integer("mentionned_issue_id")
     .references(() => issues.id, {
@@ -108,7 +109,7 @@ export const issueMentionActivitiesRelations = relations(
   })
 );
 
-export const assignActivities = sqliteTable("assign_activities", {
+export const assignActivities = pgTable("assign_activities", {
   ...baseActivityFields,
   assignee_id: integer("assignee_id")
     .references(() => users.id, {
@@ -138,7 +139,7 @@ export const assignActivitiesRelations = relations(
   })
 );
 
-export const editLabelsActivities = sqliteTable("edit_labels_activities", {
+export const editLabelsActivities = pgTable("edit_labels_activities", {
   ...baseActivityFields,
 });
 
@@ -161,7 +162,12 @@ export const editLabelsActivitiesRelations = relations(
   })
 );
 
-export const editActiviyToLabels = sqliteTable(
+export const editActivityActionEnum = pgEnum("edit_activity_action", [
+  "REMOVED",
+  "ADDED",
+]);
+
+export const editActiviyToLabels = pgTable(
   "edit_activity_to_labels",
   {
     activity_id: integer("activity_id")
@@ -174,9 +180,7 @@ export const editActiviyToLabels = sqliteTable(
       .references(() => labels.id, {
         onDelete: "cascade",
       }),
-    action: text("action", {
-      enum: ["REMOVED", "ADDED"],
-    }).notNull(),
+    action: editActivityActionEnum("action").notNull(),
   },
   (table) => ({
     pk: primaryKey(table.activity_id, table.label_id),

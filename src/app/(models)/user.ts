@@ -1,8 +1,8 @@
 import { eq, placeholder, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "~/lib/db";
-import { users } from "~/lib/db/schema/user";
-import type { Theme } from "~/lib/db/schema/user";
+import { users } from "~/lib/db/schema/user.sql";
+import type { Theme } from "~/lib/db/schema/user.sql";
 
 /**
  * Find or create the corresponding user in DB from their github profile

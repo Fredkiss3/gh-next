@@ -1,4 +1,4 @@
-import { users, usersRelations } from "./schema/user";
+import { users, usersRelations } from "./schema/user.sql";
 import {
   issues,
   issuesRelations,
@@ -6,19 +6,19 @@ import {
   issueRevisionsRelations,
   issueUserSubscriptionRelations,
   issueUserSubscriptions,
-} from "./schema/issue";
+} from "./schema/issue.sql";
 import {
   labels,
   labelToIssues,
   labelRelations,
   labelToIssuesRelations,
-} from "./schema/label";
+} from "./schema/label.sql";
 import {
   comments,
   commentsRelations,
   commentRevisions,
   commentRevisionsRelations,
-} from "./schema/comment";
+} from "./schema/comment.sql";
 import {
   assignActivities,
   changeTitleActivities,
@@ -32,61 +32,45 @@ import {
   editLabelsActivitiesRelations,
   issueMentionActivitiesRelations,
   issueToggleActivitiesRelations,
-} from "./schema/activity";
-import { reactions, reactionsRelations } from "./schema/reaction";
-import { drizzle } from "drizzle-orm/libsql";
+} from "./schema/activity.sql";
+import { reactions, reactionsRelations } from "./schema/reaction.sql";
 import { env } from "~/env.mjs";
-import { createClient } from "@libsql/client/http";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
-export const db = drizzle(
-  createClient({
-    url: env.TURSO_DB_URL,
-    authToken: env.TURSO_DB_TOKEN,
-    fetch: (request: Request) => {
-      return fetch(request.url, {
-        cache: "no-store",
-        headers: request.headers,
-        body: request.body,
-        method: request.method,
-        // @ts-expect-error duplex is required in nodejs
-        duplex: "half",
-      });
-    },
-  }),
-  {
-    logger: true,
-    schema: {
-      users,
-      issues,
-      labels,
-      labelToIssues,
-      comments,
-      reactions,
-      issueRevisions,
-      commentRevisions,
-      assignActivities,
-      changeTitleActivities,
-      editLabelsActivities,
-      mentionActivities,
-      toggleActivities,
-      editActiviyToLabels,
-      issueUserSubscriptions,
-      // relations
-      issueUserSubscriptionRelations,
-      editActiviyToLabelsRelations,
-      assignActivitiesRelations,
-      changeTitleActivitiesRelations,
-      editLabelsActivitiesRelations,
-      issueMentionActivitiesRelations,
-      issueToggleActivitiesRelations,
-      issueRevisionsRelations,
-      commentRevisionsRelations,
-      usersRelations,
-      issuesRelations,
-      labelRelations,
-      labelToIssuesRelations,
-      commentsRelations,
-      reactionsRelations,
-    },
-  }
-);
+export const db = drizzle(postgres(env.DATABASE_URL), {
+  logger: true,
+  schema: {
+    users,
+    issues,
+    labels,
+    labelToIssues,
+    comments,
+    reactions,
+    issueRevisions,
+    commentRevisions,
+    assignActivities,
+    changeTitleActivities,
+    editLabelsActivities,
+    mentionActivities,
+    toggleActivities,
+    editActiviyToLabels,
+    issueUserSubscriptions,
+    // relations
+    issueUserSubscriptionRelations,
+    editActiviyToLabelsRelations,
+    assignActivitiesRelations,
+    changeTitleActivitiesRelations,
+    editLabelsActivitiesRelations,
+    issueMentionActivitiesRelations,
+    issueToggleActivitiesRelations,
+    issueRevisionsRelations,
+    commentRevisionsRelations,
+    usersRelations,
+    issuesRelations,
+    labelRelations,
+    labelToIssuesRelations,
+    commentsRelations,
+    reactionsRelations,
+  },
+});

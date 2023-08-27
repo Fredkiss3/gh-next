@@ -8,7 +8,7 @@ import Link from "next/link";
 import { clsx, excerpt } from "~/lib/shared-utils";
 
 // types
-import type { User } from "~/lib/db/schema/user";
+import type { User } from "~/lib/db/schema/user.sql";
 export type UserHoverCardContentsProps = {
   className?: string;
 } & Omit<User, "preferred_theme" | "id" | "github_id">;

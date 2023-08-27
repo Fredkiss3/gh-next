@@ -7,7 +7,7 @@ import { cache } from "react";
 import { updateUserTheme } from "~/app/(models)/user";
 import { revalidatePath } from "next/cache";
 
-import { users } from "~/lib/db/schema/user";
+import { users } from "~/lib/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
 
 const userThemeSchema = createSelectSchema(users).pick({

@@ -19,9 +19,9 @@ import { Tooltip } from "./tooltip";
 import { clsx, formatDate } from "~/lib/shared-utils";
 
 // types
-import type { IssueStatus } from "~/lib/db/schema/issue";
-import type { Label } from "~/lib/db/schema/label";
-import type { User } from "~/lib/db/schema/user";
+import type { IssueStatus } from "~/lib/db/schema/issue.sql";
+import type { Label } from "~/lib/db/schema/label.sql";
+import type { User } from "~/lib/db/schema/user.sql";
 
 export type IssueRowProps = {
   id: number;

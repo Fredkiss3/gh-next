@@ -10,10 +10,10 @@ import {
 import { env } from "~/env.mjs";
 import { nanoid } from "nanoid";
 
-import { users } from "~/lib/db/schema/user";
+import { users } from "~/lib/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
 
-import type { User } from "~/lib/db/schema/user";
+import type { User } from "~/lib/db/schema/user.sql";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 const primitiveSchema = z.union([z.string(), z.number(), z.boolean()]);

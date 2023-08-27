@@ -1,18 +1,17 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
-import { relations, sql } from "drizzle-orm";
+import { serial, timestamp, text, integer } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { pgTable } from "./index.sql";
 
-import { users } from "./user";
-import { issues } from "./issue";
-import { reactions } from "./reaction";
+import { users } from "./user.sql";
+import { issues } from "./issue.sql";
+import { reactions } from "./reaction.sql";
 
 import type { InferModel } from "drizzle-orm";
 
-export const comments = sqliteTable("comments", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
   content: text("content").notNull(),
-  created_at: integer("created_at", { mode: "timestamp" })
-    .default(sql`(strftime('%s', 'now'))`)
-    .notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
   author_id: integer("author_id").references(() => users.id, {
     onDelete: "set null",
   }),
@@ -40,11 +39,9 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
   }),
 }));
 
-export const commentRevisions = sqliteTable("comment_revisions", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  created_at: integer("created_at", { mode: "timestamp" })
-    .default(sql`(strftime('%s', 'now'))`)
-    .notNull(),
+export const commentRevisions = pgTable("comment_revisions", {
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
   comment_id: integer("comment_id")
     .references(() => comments.id, {
       onDelete: "cascade",
