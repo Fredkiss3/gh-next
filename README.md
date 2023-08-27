@@ -39,15 +39,14 @@ Expect stuff to break.
 # Stack
 
 - [Next App Router](https://nextjs.org/docs/app)
-- [drizzle](https://orm.drizzle.team/) + [turso](https://turso.tech/)
-- [vercel](https://vercel.com) for the hosting
+- [drizzle](https://orm.drizzle.team/) + local Postgres database
+- Hosted to a custom VPS, see [the CI/CD workflow](./.github/workflows/deploy-to-vps.yaml) for how it is all deployed
 - [tailwindCSS](https://tailwindcss.com/) for the styling
 
 # Requirements
 
 - Node >= v16.6.2
 - [PNPM](https://pnpm.io/installation) >= v6.22.2
-- A [turso sqlite](https://turso.tech/) database
 - A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
 ## 🚀 How to work on the project ?
@@ -137,9 +136,8 @@ A quick look at the top-level files and directories you will see in this project
 | Nom                            | role                                                                             |
 | :----------------------------- | :------------------------------------------------------------------------------- |
 | `SESSION_SECRET`               | random 32 chars length string used to encode the session id                      |
-| `TURSO_DB_URL`                 | url of the turso database                                                        |
-| `TURSO_DB_TOKEN`               | the generated token to authenticate to your turso database                       |
 | `REDIS_HTTP_URL`               | The URL to the connect to redis HTTP for a key/value store                       |
+| `DATABASE_URL`                 | The URL to the connect to the Postres Database                                   |
 | `REDIS_HTTP_USERNAME`          | LOCAL file server URL for storing key values                                     |
 | `REDIS_HTTP_PASSWORD`          | LOCAL file server URL for storing key values                                     |
 | `GITHUB_CLIENT_ID`             | github client id stored for our app used for authenticating users with github    |
