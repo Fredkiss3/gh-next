@@ -31,8 +31,7 @@ export async function getUserFromGithubProfile(
         bio: ghUser.bio,
       },
     })
-    .returning()
-    .get();
+    .returning();
 }
 
 const userByUserNamePrepared = db
@@ -41,7 +40,7 @@ const userByUserNamePrepared = db
   })
   .from(users)
   .where(sql`lower(${users.username}) = ${placeholder("username_lowercase")}`)
-  .prepare();
+  .prepare("user_by_username");
 
 /**
  * get user by username, this function is case insensitive
@@ -49,7 +48,7 @@ const userByUserNamePrepared = db
  * @returns
  */
 export async function getUserByUsername(username: string) {
-  return await userByUserNamePrepared.all({
+  return await userByUserNamePrepared.execute({
     username_lowercase: username.toLowerCase(),
   });
 }
@@ -58,10 +57,10 @@ const userByIdPrepared = db
   .select()
   .from(users)
   .where(eq(users.id, placeholder("id")))
-  .prepare();
+  .prepare("user_by_id");
 
 export async function getUserById(id: number) {
-  return await userByIdPrepared.all({
+  return await userByIdPrepared.execute({
     id,
   });
 }
@@ -73,8 +72,7 @@ export async function updateUserUsername(username: string, id: number) {
       username,
     })
     .where(eq(users.id, id))
-    .returning()
-    .get();
+    .returning();
 }
 
 export async function updateUserTheme(newTheme: Theme, id: number) {
@@ -84,8 +82,7 @@ export async function updateUserTheme(newTheme: Theme, id: number) {
       preferred_theme: newTheme,
     })
     .where(eq(users.id, id))
-    .returning()
-    .get();
+    .returning();
 }
 
 export const githubUserSchema = z.object({
