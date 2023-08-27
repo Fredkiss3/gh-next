@@ -39,10 +39,10 @@ jobs:
           TURSO_DB_TOKEN=${{ secrets.TURSO_DB_TOKEN }}
           TURSO_DB_URL=${{ secrets.TURSO_DB_URL }}
           # DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5434/locaci_db?schema=public"
-          GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
           GITHUB_REDIRECT_URI="http://gh.fredkiss.dev/api/auth/callback"
-          GITHUB_SECRET=${{ secrets.GITHUB_SECRET }}
-          GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+          GITHUB_SECRET=${{ secrets.GH_SECRET }}
+          GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           REDIS_HTTP_URL="http://127.0.0.1:6380"
           REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }}
           REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }}
