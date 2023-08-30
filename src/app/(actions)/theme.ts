@@ -50,6 +50,6 @@ export const updateTheme = withAuth(async function updateTheme(
     message: `Theme changed to ${theme}`,
   });
 
-  // FIXME: Until this issue is fixed : https://github.com/vercel/next.js/issues/54030
+  revalidatePath("/settings/appearance");
   redirect("/settings/appearance");
 });

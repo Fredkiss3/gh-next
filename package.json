@@ -35,7 +35,7 @@
     "eslint-config-next": "13.4.15",
     "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
-    "next": "13.4.20-canary.9",
+    "next": "13.4.19",
     "nextjs-toploader": "^1.4.2",
     "postgres": "^3.3.5",
     "react": "18.2.0",

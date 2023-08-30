@@ -196,6 +196,5 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   });
 
   revalidatePath(`/`);
-  // FIXME : Until this issue is fixed, we still have to do this https://github.com/vercel/next.js/issues/52075
   return redirect("/settings/account");
 });
