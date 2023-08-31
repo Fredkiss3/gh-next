@@ -1,7 +1,8 @@
 {
   "http_host": "0.0.0.0",
   "http_port": 7379,
-  "redis_host": "127.0.0.1",
+  "redis_host": "redis",
+  "redis_auth": "redis_password",
   "redis_port": 6379,
 
   "acl": [

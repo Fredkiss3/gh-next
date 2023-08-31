@@ -29,6 +29,8 @@ import {
 } from "~/lib/constants";
 import { clsx } from "~/lib/shared-utils";
 
+export const fetchCache = "force-cache";
+
 export default async function Page() {
   const { user } = await getSession();
   const repositoryData = await getGithubRepoData();

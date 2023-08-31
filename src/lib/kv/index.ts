@@ -1,4 +1,4 @@
-import { env } from "~/env.mjs";
+// @ts-check
 import { WebdisKV } from "./redis-web";
 
 export interface KVStore {
@@ -9,9 +9,10 @@ export interface KVStore {
   ): Promise<void>;
   get<T extends Record<string, any> = {}>(key: string): Promise<T | null>;
   delete(key: string): Promise<void>;
+  getFullKey(key: string): string;
 }
 
-function getKV(): KVStore {
+function getKV() {
   return new WebdisKV();
 }
 
