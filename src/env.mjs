@@ -14,6 +14,11 @@ export const env = createEnv({
     REDIS_HTTP_USERNAME: z.string().optional(),
     REDIS_HTTP_PASSWORD: z.string().optional(),
     DATABASE_URL: z.string().url(),
+    KV_PREFIX: z
+      .string()
+      .regex(/^[a-zA-Z_][a-zA-Z0-9_]+$/)
+      .optional()
+      .default(""),
   },
   client: {
     NEXT_PUBLIC_VERCEL_URL: preprocess((arg) => {
@@ -25,6 +30,7 @@ export const env = createEnv({
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    KV_PREFIX: process.env.KV_PREFIX,
     REDIS_HTTP_URL: process.env.REDIS_HTTP_URL,
     REDIS_HTTP_USERNAME: process.env.REDIS_HTTP_USERNAME,
     REDIS_HTTP_PASSWORD: process.env.REDIS_HTTP_PASSWORD,
