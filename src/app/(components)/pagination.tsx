@@ -42,7 +42,6 @@ export function Pagination({
     >
       <div className={clsx(className, "flex items-center gap-2")}>
         <Button
-          // @ts-ignore
           href={currentPage === 1 ? "#" : baseURL + (currentPage - 1)}
           variant="accent-ghost"
           prefetch={false}
@@ -72,7 +71,6 @@ export function Pagination({
             return (
               <li key={pageNumber}>
                 <Button
-                  // @ts-ignore
                   href={baseURL + pageNumber}
                   prefetch={false}
                   variant="ghost"
@@ -93,7 +91,6 @@ export function Pagination({
         </ul>
 
         <Button
-          // @ts-ignore
           href={currentPage === lastPage ? "#" : baseURL + (currentPage + 1)}
           variant="accent-ghost"
           prefetch={false}

@@ -2,8 +2,8 @@
 import * as React from "react";
 // components
 import Link from "next/link";
-import { Input } from "./input";
-import { ActionList } from "./action-list";
+import { Input } from "~/app/(components)/input";
+import { ActionList } from "~/app/(components)/action-list";
 import { CheckIcon } from "@primer/octicons-react";
 
 // utils
@@ -59,7 +59,6 @@ export function IssueLabelFilterActionList({
       }) => (
         <Link
           prefetch={false}
-          // @ts-ignore the href is a valid one
           href={
             `/issues?q=is:open+` + (color ? `label:"${title}"` : "no:label")
           }

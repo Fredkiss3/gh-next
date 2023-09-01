@@ -12,15 +12,16 @@ import {
 import Link from "next/link";
 import { Button } from "~/app/(components)/button";
 import { CounterBadge } from "~/app/(components)/counter-badge";
-import { IssuesListHeaderForm } from "~/app/(components)/issues-list-header-form";
+import { IssuesListHeaderForm } from "~/app/(components)/issue-list/issues-list-header-form";
 import { SegmentedLayout } from "~/app/(components)/segmented-layout";
-import { IssueAuthorFilterActionList } from "~/app/(components)/issue-author-filter-action-list";
-import { IssueLabelFilterActionList } from "~/app/(components)/issue-label-filter-action-list";
-import { IssueAssigneeFilterActionList } from "~/app/(components)/issue-assignee-filter-action-list";
-import { IssueSortActionList } from "~/app/(components)/issue-sort-action-list";
-import { IssueRowSkeleton } from "~/app/(components)/issue-row-skeleton";
+import { IssueAuthorFilterActionList } from "~/app/(components)/issue-list/issue-author-filter-action-list";
+import { IssueLabelFilterActionList } from "~/app/(components)/issue-list/issue-label-filter-action-list";
+import { IssueAssigneeFilterActionList } from "~/app/(components)/issue-list/issue-assignee-filter-action-list";
+import { IssueSortActionList } from "~/app/(components)/issue-list/issue-sort-action-list";
+import { IssueRowSkeleton } from "~/app/(components)/issues/issue-row-skeleton";
 import { Pagination } from "~/app/(components)/pagination";
-import { IssueRow } from "~/app/(components)/issue-row";
+import { IssueRow } from "~/app/(components)/issues/issue-row";
+import { IssueListMainParent } from "~/app/(components)/issue-list/issue-list-main-parent";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -34,11 +35,17 @@ export const metadata: Metadata = {
   title: "Issues",
 };
 
-export default function IssuesListPage({ searchParams }: PageProps) {
+export default function IssuesListPage({
+  searchParams,
+}: PageProps<{}, { q: string; page: string }>) {
+  const initialQuery = searchParams?.q;
+
   return (
     <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
-      <IssuesListHeader />
-      <IssuesListBody params={searchParams} />
+      <IssueListMainParent initialQuery={initialQuery}>
+        <IssuesListHeader />
+        <IssuesListBody params={searchParams} />
+      </IssueListMainParent>
     </div>
   );
 }
@@ -54,7 +61,6 @@ function IssuesListHeader() {
         <SegmentedLayout>
           <li>
             <Button
-              // @ts-ignore
               href="/labels"
               variant="invisible"
               className="!text-foreground"
@@ -92,10 +98,7 @@ async function IssuesListBody(props: {
   }
   return (
     <section className="flex flex-col gap-4" id="issue-list">
-      <React.Suspense
-        // key={Math.random()}
-        fallback={<IssueContentTableSkeleton />}
-      >
+      <React.Suspense fallback={<IssueContentTableSkeleton />}>
         <IssueContentTable currentPage={currentPage} />
       </React.Suspense>
 

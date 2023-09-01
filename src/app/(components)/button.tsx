@@ -133,7 +133,7 @@ export const Button = React.forwardRef<
     } = restProps;
 
     return (
-      // @ts-expect-error formAction is defined
+      // @ts-expect-error formAction is defined, but react aria don't take it as an argument
       <ReactAriaButton
         ref={ref as React.Ref<HTMLButtonElement>}
         isDisabled={disabled || isLoading}

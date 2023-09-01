@@ -1,11 +1,15 @@
 "use client";
 import * as React from "react";
-import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
-import { ActionList } from "./action-list";
+// components
+import { ActionList } from "~/app/(components)/action-list";
 import { CheckIcon } from "@primer/octicons-react";
-import { clsx } from "~/lib/shared/utils.shared";
 import Link from "next/link";
 
+// utils
+import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
+import { clsx } from "~/lib/shared/utils.shared";
+
+// types
 export type IssueSortActionListProps = {
   children: React.ReactNode;
 };

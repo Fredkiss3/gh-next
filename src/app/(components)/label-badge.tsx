@@ -22,7 +22,7 @@ export function LabelBadge({ title, color, className }: LabelBadgeProps) {
   return (
     <span
       style={{
-        // @ts-expect-error css variables
+        // @ts-expect-error these are css variables and valid, but react complains
         "--label-r": r,
         "--label-g": g,
         "--label-b": b,

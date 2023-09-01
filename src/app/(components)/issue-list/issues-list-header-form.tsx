@@ -2,8 +2,8 @@
 import * as React from "react";
 
 // components
-import { ActionList } from "./action-list";
-import { Button } from "./button";
+import { ActionList } from "~/app/(components)/action-list";
+import { Button } from "~/app/(components)/button";
 import {
   CheckIcon,
   LinkExternalIcon,
@@ -15,6 +15,7 @@ import { IssueListSearchInput } from "./issue-list-search-input";
 // utils
 import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "~/lib/shared/utils.shared";
+import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 
 // types
 export type IssuesListHeaderFormProps = {
@@ -25,6 +26,8 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
   const formRef = React.useRef<HTMLFormElement>(null);
   const router = useRouter();
   const path = usePathname();
+
+  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
 
   return (
     <form
@@ -65,7 +68,16 @@ export function IssuesListHeaderForm({ className }: IssuesListHeaderFormProps) {
         renderItem={({ text, selected, onCloseList, href, className }) => (
           <Link
             prefetch={false}
-            onClick={onCloseList}
+            onClick={() => {
+              const url = new URL(
+                href,
+                window.location.protocol + "//" + window.location.host
+              );
+              const query = url.searchParams.get("q")?.toString() ?? "is:open";
+
+              setSearchQuery(query);
+              onCloseList();
+            }}
             href={href}
             className={clsx(
               className,
