@@ -18,14 +18,19 @@ import {
   STATUS_FILTERS,
 } from "~/lib/shared/constants";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { SearchIcon } from "@primer/octicons-react";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
+  squaredInputBorder?: boolean;
 };
 
 // Inspired by : https://github.com/openstatusHQ/openstatus/blob/main/apps/web/src/app/_components/input-search.tsx
 // Don't ask me how the logic works, i just copied it from there
-export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
+export function IssueListSearchInput({
+  onSearch,
+  squaredInputBorder,
+}: IssueListSearchInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [isMenuOpen, setMenuOpen] = React.useState(false);
   const {
@@ -58,45 +63,55 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
         }}
         className="relative"
       >
-        <CommandPrimitive.Input
-          ref={inputRef}
-          name="q"
-          value={inputValue}
-          onValueChange={(value) => {
-            setInputValue(value);
-            onSearchDebounced();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") inputRef?.current?.blur();
-          }}
-          onBlur={() => setMenuOpen(false)}
-          onFocus={() => setMenuOpen(true)}
-          onInput={(e) => {
-            // ✨ Magic ✨
-            const caretPositionStart = e.currentTarget?.selectionStart || -1;
-            const inputValue = e.currentTarget?.value || "";
-
-            let start = caretPositionStart;
-            let end = caretPositionStart;
-
-            while (start > 0 && inputValue[start - 1] !== " ") {
-              start--;
-            }
-            while (end < inputValue.length && inputValue[end] !== " ") {
-              end++;
-            }
-
-            const word = inputValue.substring(start, end);
-            setCurrentWord(word);
-          }}
-          placeholder="Search all issues"
+        <div
           className={clsx(
-            "border-neutral rounded-l-none rounded-r-md border bg-transparent px-3 py-1.5",
-            "bg-background shadow-sm ring-accent outline-none w-full",
-            "flex-grow text-grey",
-            "focus:border focus:border-accent focus:ring-1"
+            "flex items-center gap-1.5",
+            "border-neutral rounded-r-md border bg-transparent px-3 py-1.5",
+            "bg-black shadow-sm ring-accent outline-none w-full",
+            "text-grey",
+            "focus-within:border focus-within:border-accent focus-within:ring-1 flex-1",
+            {
+              "rounded-l-none": squaredInputBorder,
+              "rounded-l-md": !squaredInputBorder,
+            }
           )}
-        />
+        >
+          <SearchIcon className="h-5 w-5 flex-shrink-0" />
+          <CommandPrimitive.Input
+            ref={inputRef}
+            name="q"
+            value={inputValue}
+            onValueChange={(value) => {
+              setInputValue(value);
+              onSearchDebounced();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") inputRef?.current?.blur();
+            }}
+            onBlur={() => setMenuOpen(false)}
+            onFocus={() => setMenuOpen(true)}
+            onInput={(e) => {
+              // ✨ Magic ✨
+              const caretPositionStart = e.currentTarget?.selectionStart || -1;
+              const inputValue = e.currentTarget?.value || "";
+
+              let start = caretPositionStart;
+              let end = caretPositionStart;
+
+              while (start > 0 && inputValue[start - 1] !== " ") {
+                start--;
+              }
+              while (end < inputValue.length && inputValue[end] !== " ") {
+                end++;
+              }
+
+              const word = inputValue.substring(start, end);
+              setCurrentWord(word);
+            }}
+            placeholder="Search all issues"
+            className={clsx("bg-transparent flex-grow outline-none")}
+          />
+        </div>
 
         <div className="relative">
           {isMenuOpen ? (

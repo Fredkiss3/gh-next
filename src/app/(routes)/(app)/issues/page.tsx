@@ -22,7 +22,7 @@ import { IssueRowSkeleton } from "~/app/(components)/issues/issue-row-skeleton";
 import { Pagination } from "~/app/(components)/pagination";
 import { IssueRow } from "~/app/(components)/issues/issue-row";
 import { IssueListMainParent } from "~/app/(components)/issue-list/issue-list-main-parent";
-import { ClearSearchButton } from "~/app/(components)/issue-list/clear-search-button";
+import { ClearSearchButtonSection } from "~/app/(components)/issue-list/clear-search-button";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -31,6 +31,7 @@ import { getIssueList } from "~/app/(actions)/issue";
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
+import { getAuthedUser, getSession } from "~/app/(actions)/auth";
 
 export const metadata: Metadata = {
   title: "Issues",
@@ -45,22 +46,24 @@ export default function IssuesListPage({
     <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
       <IssueListMainParent initialQuery={initialQuery}>
         <IssuesListHeader />
-        <section className="px-5 md:px-0">
-          <ClearSearchButton />
-        </section>
+        <ClearSearchButtonSection />
         <IssuesListBody params={searchParams} />
       </IssueListMainParent>
     </div>
   );
 }
 
-function IssuesListHeader() {
+async function IssuesListHeader() {
+  const isAuthed = (await getAuthedUser()) !== null;
   return (
     <section
       className="flex flex-col gap-4 px-5 md:px-0 md:flex-row"
       id="search-bar"
     >
-      <IssuesListHeaderForm className="order-last md:order-first" />
+      <IssuesListHeaderForm
+        className="order-last md:order-first"
+        showActionList={isAuthed}
+      />
 
       <div className="flex justify-between gap-4 items-center">
         <SegmentedLayout>
