@@ -17,6 +17,7 @@ export const env = createEnv({
     KV_PREFIX: z
       .string()
       .regex(/^[a-zA-Z_][a-zA-Z0-9_]+$/)
+      .catch("")
       .optional()
       .default(""),
   },
