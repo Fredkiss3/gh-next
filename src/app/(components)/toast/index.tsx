@@ -11,11 +11,11 @@ import {
 } from "@primer/octicons-react";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
-import { PauseableTimeout } from "~/lib/pauseable-timeout";
+import { clsx } from "~/lib/shared/utils.shared";
+import { PauseableTimeout } from "~/lib/client/pauseable-timeout";
 
 // types
-import type { SessionFlash } from "~/lib/session";
+import type { SessionFlash } from "~/lib/server/session.server";
 
 type ToastProps = {
   type?: SessionFlash["type"];

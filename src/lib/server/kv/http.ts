@@ -1,8 +1,8 @@
 import { z } from "zod";
-import type { KVStore } from ".";
+import type { KVStore } from "./index.server";
 import { env } from "~/env.mjs";
-import { jsonFetch } from "~/lib/shared-utils";
-import { DEFAULT_CACHE_TTL } from "~/lib/constants";
+import { jsonFetch } from "~/lib/shared/utils.shared";
+import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 
 const kvRESTSchema = z.object({
   KV_REST_URL: z.string().url(),

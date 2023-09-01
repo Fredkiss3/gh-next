@@ -1,8 +1,8 @@
 import { eq, sql } from "drizzle-orm";
 import { kvEntry } from "./kv-entry.sql";
-import { db } from "~/lib/db";
+import { db } from "~/lib/server/db/index.server";
 
-import type { KVStore } from "~/lib/kv";
+import type { KVStore } from "~/lib/server/kv/index.server";
 
 // export class SqliteKV implements KVStore {
 //   public async get<T extends Record<string, any> = {}>(

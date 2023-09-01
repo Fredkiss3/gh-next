@@ -3,9 +3,9 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env.mjs";
-import { SESSION_COOKIE_KEY } from "~/lib/constants";
-import { withAuth } from "~/lib/server-utils";
-import { Session } from "~/lib/session";
+import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
+import { withAuth } from "~/lib/server/utils.server";
+import { Session } from "~/lib/server/session.server";
 import {
   getUserById,
   getUserByUsername,

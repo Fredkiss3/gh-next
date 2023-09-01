@@ -1,13 +1,13 @@
 "use server";
 
 import { z } from "zod";
-import { withAuth } from "~/lib/server-utils";
+import { withAuth } from "~/lib/server/utils.server";
 import { getSession } from "./auth";
 import { cache } from "react";
 import { updateUserTheme } from "~/app/(models)/user";
 import { revalidatePath } from "next/cache";
 
-import { users } from "~/lib/db/schema/user.sql";
+import { users } from "~/lib/server/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
 import { redirect } from "next/navigation";
 

@@ -5,7 +5,7 @@ import * as React from "react";
 import { Toast } from ".";
 
 // types
-import type { SessionFlash } from "~/lib/session";
+import type { SessionFlash } from "~/lib/server/session.server";
 
 export type ToasterClientProps = {
   flashes: (SessionFlash & { id: string; delay: number })[];

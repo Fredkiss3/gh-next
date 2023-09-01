@@ -10,7 +10,7 @@ import { IconSwitcher } from "~/app/(components)/icon-switcher";
 // utils
 import { Inter } from "next/font/google";
 import { getTheme } from "~/app/(actions)/theme";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";

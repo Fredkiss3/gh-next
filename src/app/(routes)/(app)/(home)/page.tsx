@@ -26,8 +26,8 @@ import {
   AUTHOR_AVATAR_URL,
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_NAME,
-} from "~/lib/constants";
-import { clsx } from "~/lib/shared-utils";
+} from "~/lib/shared/constants";
+import { clsx } from "~/lib/shared/utils.shared";
 
 export default async function Page() {
   const { user } = await getSession();

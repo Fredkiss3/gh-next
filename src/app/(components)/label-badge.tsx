@@ -1,9 +1,9 @@
 import * as React from "react";
 // utils
-import { clsx, hexToRGBHSL } from "~/lib/shared-utils";
+import { clsx, hexToRGBHSL } from "~/lib/shared/utils.shared";
 
 // types
-import type { RGBHSLColor } from "~/lib/shared-utils";
+import type { RGBHSLColor } from "~/lib/shared/utils.shared";
 export type LabelBadgeProps = {
   title: string;
   color: string;

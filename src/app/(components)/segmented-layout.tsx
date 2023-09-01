@@ -1,5 +1,5 @@
 import * as React from "react";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 export type SegmentedLayoutProps = {
   children: React.ReactNode;

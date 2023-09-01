@@ -6,7 +6,7 @@ import { LoadingIndicator } from "./loading-indicator";
 import { ReactAriaButton, ReactAriaLink } from "./react-aria-button";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 export type CommonButtonProps = {

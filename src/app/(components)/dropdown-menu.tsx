@@ -13,7 +13,7 @@ import {
 } from "react-aria-components";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { PopoverProps } from "react-aria-components";

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSession, getAuthedUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
-import { GITHUB_AUTHOR_USERNAME } from "./constants";
+import { GITHUB_AUTHOR_USERNAME } from "~/lib/shared/constants";
 import { revalidatePath, unstable_cache } from "next/cache";
 import { cache } from "react";
 

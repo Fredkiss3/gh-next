@@ -1,4 +1,4 @@
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { Skeleton } from "~/app/(components)/skeleton";
 
 export default function Loading() {

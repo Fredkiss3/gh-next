@@ -1,14 +1,23 @@
 "use client";
 import * as React from "react";
+// components
+import { Command as CommandPrimitive } from "cmdk";
+
+// utils
+import { useCommandState } from "cmdk";
 import { useSearchParams } from "next/navigation";
-import { Command as CommandPrimitive, useCommandState } from "cmdk";
-import { clsx, debounce } from "~/lib/shared-utils";
+import {
+  clsx,
+  debounce,
+  issueSearchFilterToString,
+  parseIssueSearchString,
+} from "~/lib/shared/utils.shared";
 import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
   SORT_FILTERS,
   STATUS_FILTERS,
-} from "~/lib/constants";
+} from "~/lib/shared/constants";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
@@ -26,7 +35,7 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
   const [currentWord, setCurrentWord] = React.useState("");
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onSearchDebounced = React.useCallback(debounce(onSearch), []);
+  const onSearchDebounced = React.useCallback(debounce(onSearch), [onSearch]);
 
   const search = {
     sort: { values: SORT_FILTERS, multiple: false },
@@ -40,11 +49,11 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
     <>
       <Command
         filter={(value) => {
-          console.log({
-            filterVal: value,
-            currentWord: currentWord.toLowerCase(),
-            filtered: value.includes(currentWord.toLowerCase()) ? 1 : 0,
-          });
+          // console.log({
+          //   filterVal: value,
+          //   currentWord: currentWord.toLowerCase(),
+          //   filtered: value.includes(currentWord.toLowerCase()) ? 1 : 0,
+          // });
           if (value.includes(currentWord.toLowerCase())) return 1;
           return 0;
         }}
@@ -144,10 +153,29 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
                             }}
                             onSelect={(value) => {
                               setInputValue((prev) => {
-                                const input = prev
-                                  .replace(currentWord, value)
+                                /**
+                                 * @example
+                                 * // We add the new value to the input string and remove astray commands so that :
+                                 * if (prev === `in:title no:`) {
+                                 *     // when we do this
+                                 *     (prev + " " + value) = `in:title no: no:label`
+                                 *     // and remove the empty `no:` in the middle of the string with the
+                                 *     inputWithNewValue = `in:title no:label`
+                                 * }
+                                 */
+                                const inputWithNewValue = (prev + " " + value)
+                                  .replace(
+                                    new RegExp(`${currentWord}(?=\\s|$)`, "g"),
+                                    ""
+                                  )
                                   .trim();
-                                return `${input} `;
+
+                                // We parse then stringify the string to make it valid
+                                const filters =
+                                  parseIssueSearchString(inputWithNewValue);
+
+                                onSearchDebounced();
+                                return issueSearchFilterToString(filters) + " ";
                               });
 
                               setCurrentWord("");
@@ -162,7 +190,6 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
                   );
                 })}
               </CommandGroup>
-              <CommandEmpty>No results found.</CommandEmpty>
             </div>
           ) : null}
         </div>

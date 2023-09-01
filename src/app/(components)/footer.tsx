@@ -5,7 +5,7 @@ import { MarkGithubIcon } from "@primer/octicons-react";
 import Link from "next/link";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 export type FooterProps = {};
 

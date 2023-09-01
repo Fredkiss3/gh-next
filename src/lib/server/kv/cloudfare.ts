@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { env } from "~/env.mjs";
-import { DEFAULT_CACHE_TTL } from "~/lib/constants";
+import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 
-import type { KVStore } from ".";
+import type { KVStore } from "./index.server";
 
 const CloudfarekvNamespaceSchema = z.object({
   KV: z.object({

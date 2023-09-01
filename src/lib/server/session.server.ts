@@ -1,19 +1,19 @@
 // import "server-only";
-import { kv } from "~/lib/kv";
+import { kv } from "~/lib/server/kv/index.server";
 import { preprocess, z } from "zod";
 
 import {
   LOGGED_IN_SESSION_TTL,
   SESSION_COOKIE_KEY,
   LOGGED_OUT_SESSION_TTL,
-} from "~/lib/constants";
+} from "~/lib/shared/constants";
 import { env } from "~/env.mjs";
 import { nanoid } from "nanoid";
 
-import { users } from "~/lib/db/schema/user.sql";
+import { users } from "~/lib/server/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
 
-import type { User } from "~/lib/db/schema/user.sql";
+import type { User } from "~/lib/server/db/schema/user.sql";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 const primitiveSchema = z.union([z.string(), z.number(), z.boolean()]);

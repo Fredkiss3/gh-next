@@ -14,7 +14,7 @@ import { IssueListSearchInput } from "./issue-list-search-input";
 
 // utils
 import { usePathname, useRouter } from "next/navigation";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 export type IssuesListHeaderFormProps = {

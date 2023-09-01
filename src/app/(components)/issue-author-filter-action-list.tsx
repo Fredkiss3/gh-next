@@ -8,9 +8,9 @@ import { Avatar } from "./avatar";
 import { CheckIcon } from "@primer/octicons-react";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { filterIssueAuthors } from "~/app/(actions)/issue";
-import { useMediaQuery } from "~/lib/hooks/use-media-query";
+import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 
 // types
 export type IssueAuthorFilterActionProps = {

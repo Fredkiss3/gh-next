@@ -16,12 +16,12 @@ import { UserHoverCardContents } from "./user-hovercard-contents";
 import { Tooltip } from "./tooltip";
 
 // utils
-import { clsx, formatDate } from "~/lib/shared-utils";
+import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueStatus } from "~/lib/db/schema/issue.sql";
-import type { Label } from "~/lib/db/schema/label.sql";
-import type { User } from "~/lib/db/schema/user.sql";
+import type { IssueStatus } from "~/lib/server/db/schema/issue.sql";
+import type { Label } from "~/lib/server/db/schema/label.sql";
+import type { User } from "~/lib/server/db/schema/user.sql";
 
 export type IssueRowProps = {
   id: number;

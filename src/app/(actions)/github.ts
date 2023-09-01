@@ -1,13 +1,11 @@
 import "server-only";
 
 import type { GithubRepositoryData } from "~/lib/types";
-import { fetchFromGithubAPI, nextCache } from "~/lib/server-utils";
+import { fetchFromGithubAPI, nextCache } from "~/lib/server/utils.server";
 import {
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_NAME,
-} from "~/lib/constants";
-
-
+} from "~/lib/shared/constants";
 
 type RepositoryStatsResponse = {
   repository: {
@@ -177,7 +175,7 @@ export const getGithubRepoData = async function () {
         watcherCount: repository.watchers.totalCount,
         stargazers: allStargazers,
         readmeContent: await fetch(
-          `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/README.md`,
+          `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/README.md`
         ).then((r) => r.text()),
       } satisfies GithubRepositoryData;
       return data;

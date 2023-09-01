@@ -7,7 +7,7 @@ import { Button } from "~/app/(components)/button";
 
 // utils
 import { Inter } from "next/font/google";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 const inter = Inter({ subsets: ["latin"] });
 

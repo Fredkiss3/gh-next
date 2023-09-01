@@ -23,7 +23,7 @@ import { Pagination } from "~/app/(components)/pagination";
 import { IssueRow } from "~/app/(components)/issue-row";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { getIssueList } from "~/app/(actions)/issue";
 
 // types

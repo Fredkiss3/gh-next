@@ -1,7 +1,10 @@
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@primer/octicons-react";
-import { clsx } from "~/lib/shared-utils";
-import { PAGINATION_DOTS, usePagination } from "~/lib/hooks/use-pagination";
+import { clsx } from "~/lib/shared/utils.shared";
+import {
+  PAGINATION_DOTS,
+  usePagination,
+} from "~/lib/client/hooks/use-pagination";
 import { Button } from "./button";
 
 export type PaginationProps = {

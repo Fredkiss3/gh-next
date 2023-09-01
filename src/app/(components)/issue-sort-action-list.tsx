@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
-import { useMediaQuery } from "~/lib/hooks/use-media-query";
+import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 import { ActionList } from "./action-list";
 import { CheckIcon } from "@primer/octicons-react";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import Link from "next/link";
 
 export type IssueSortActionListProps = {
