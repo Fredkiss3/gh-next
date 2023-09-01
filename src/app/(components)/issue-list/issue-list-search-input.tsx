@@ -5,7 +5,6 @@ import { Command as CommandPrimitive } from "cmdk";
 
 // utils
 import { useCommandState } from "cmdk";
-// import { useSearchParams } from "next/navigation";
 import {
   clsx,
   debounce,
@@ -27,11 +26,6 @@ export type IssueListSearchInputProps = {
 // Inspired by : https://github.com/openstatusHQ/openstatus/blob/main/apps/web/src/app/_components/input-search.tsx
 // Don't ask me how the logic works, i just copied it from there
 export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
-  // const searchStr = useSearchParams();
-  // const [inputValue, setInputValue] = React.useState(
-  //   searchStr.get("q")?.toString() ?? "is:open" + " "
-  // );
-
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [isMenuOpen, setMenuOpen] = React.useState(false);
   const {
@@ -45,6 +39,8 @@ export function IssueListSearchInput({ onSearch }: IssueListSearchInputProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSearchDebounced = React.useCallback(debounce(onSearch), [onSearch]);
 
+  // TODO : add async data -> for mentions, authors & assignees and  -mentions, -authors & -assignees
+  // Reference : https://github.com/pacocoursey/cmdk#asynchronous-results
   const search = {
     sort: { values: SORT_FILTERS, multiple: false },
     in: { values: IN_FILTERS, multiple: true },

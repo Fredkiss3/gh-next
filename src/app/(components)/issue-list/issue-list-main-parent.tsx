@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { BASE_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 export type IssueListMainParentProps = {
   initialQuery?: string;
@@ -15,7 +16,7 @@ export function IssueListMainParent({
   // and that once is either in SSR or page navigation
   const [] = React.useState(() => {
     useSearchQueryStore.setState({
-      query: initialQuery ?? "is:open",
+      query: initialQuery ?? BASE_ISSUE_SEARCH_QUERY,
     });
   });
 
