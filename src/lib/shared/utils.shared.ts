@@ -436,7 +436,7 @@ export function debounce(callback: Function, delay: number = 500) {
   return (...args: any[]) => {
     clearTimeout(timer);
     timer = window.setTimeout(() => {
-      // @ts-ignore
+      // @ts-expect-error typescript complain because of `this` and idk why
       callback.apply(this, args);
     }, delay);
   };

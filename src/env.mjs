@@ -23,8 +23,7 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_VERCEL_URL: preprocess((arg) => {
-      if (!arg) return arg;
-      // @ts-expect-error
+      if (!arg || typeof arg !== "string") return arg;
       const protocol = arg.startsWith("localhost") ? "http" : "https";
       return `${protocol}://${arg}`;
     }, z.string().url()),
