@@ -36,8 +36,6 @@ jobs:
           cat > .env.local << EOF
           NEXT_PUBLIC_VERCEL_URL="gh.fredkiss.dev"
           SESSION_SECRET=${{ secrets.SESSION_SECRET }}
-          TURSO_DB_TOKEN=${{ secrets.TURSO_DB_TOKEN }}
-          TURSO_DB_URL=${{ secrets.TURSO_DB_URL }}
           DATABASE_URL=${{ secrets.POSTGRES_DB_URL }}
           GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
           GITHUB_REDIRECT_URI="https://gh.fredkiss.dev/api/auth/callback"
