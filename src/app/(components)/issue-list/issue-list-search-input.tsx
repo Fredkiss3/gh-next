@@ -66,7 +66,7 @@ export function IssueListSearchInput({
         <div
           className={clsx(
             "flex items-center gap-1.5",
-            "border-neutral rounded-r-md border bg-transparent px-3 py-1.5",
+            "border-neutral rounded-r-md border px-3 py-1.5",
             "bg-black shadow-sm ring-accent outline-none w-full",
             "text-grey",
             "focus-within:border focus-within:border-accent focus-within:ring-1 flex-1",
