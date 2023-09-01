@@ -36,7 +36,6 @@ next-env.d.ts
 
 
 # cloudfare pages
-wrangler.toml
 .wrangler/
 /cache/
 .idea/

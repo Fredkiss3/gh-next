@@ -9,14 +9,16 @@ export class WebdisKV implements KVStore {
     ...args: Array<string | number>
   ) {
     const authString = `${env.REDIS_HTTP_USERNAME}:${env.REDIS_HTTP_PASSWORD}`;
-    const dateNow = Date.now();
+    const [key, ...restArgs] = args;
+
     let fullURL =
       `${env.REDIS_HTTP_URL}/${command}/` +
-      args
+      [env.KV_PREFIX + key, ...restArgs]
         .map((arg) => (typeof arg === "string" ? encodeURIComponent(arg) : arg))
         .join("/");
-    console.time(`[${dateNow}] ${command} ${args[0]}`);
 
+    const dateNow = Date.now();
+    console.time(`[${dateNow}] ${command} ${args[0]}`);
     return await fetch(fullURL, {
       method: command === "GET" ? "GET" : "PUT",
       cache: "no-store",

@@ -6,6 +6,7 @@ const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
   experimental: {
+    isrMemoryCacheSize: 0,
     serverActions: true,
     logging: "verbose",
   },
