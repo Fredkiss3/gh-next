@@ -23,16 +23,16 @@ import { Pagination } from "~/app/(components)/pagination";
 import { IssueRow } from "~/app/(components)/issues/issue-row";
 import { IssueListMainParent } from "~/app/(components)/issue-list/issue-list-main-parent";
 import { ClearSearchButtonSection } from "~/app/(components)/issue-list/clear-search-button";
+import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 import { getIssueList } from "~/app/(actions)/issue";
+import { getAuthedUser } from "~/app/(actions)/auth";
 
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
-import { getAuthedUser, getSession } from "~/app/(actions)/auth";
-import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 
 export const metadata: Metadata = {
   title: "Issues",
