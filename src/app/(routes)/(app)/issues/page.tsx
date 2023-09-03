@@ -32,6 +32,7 @@ import { getIssueList } from "~/app/(actions)/issue";
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
 import { getAuthedUser, getSession } from "~/app/(actions)/auth";
+import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 
 export const metadata: Metadata = {
   title: "Issues",
@@ -43,13 +44,15 @@ export default function IssuesListPage({
   const initialQuery = searchParams?.q;
 
   return (
-    <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
-      <IssueListMainParent initialQuery={initialQuery}>
-        <IssuesListHeader />
-        <ClearSearchButtonSection />
-        <IssuesListBody params={searchParams} />
-      </IssueListMainParent>
-    </div>
+    <ReactQueryProvider>
+      <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
+        <IssueListMainParent initialQuery={initialQuery}>
+          <IssuesListHeader />
+          <ClearSearchButtonSection />
+          <IssuesListBody params={searchParams} />
+        </IssueListMainParent>
+      </div>
+    </ReactQueryProvider>
   );
 }
 

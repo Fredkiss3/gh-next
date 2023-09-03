@@ -340,8 +340,14 @@ export function parseIssueSearchString(input: string): IssueSearchFilters {
 
   for (const part of parts) {
     // Splitting on the first colon only
-    const [key, ...valueParts] = part.split(":");
+    let [key, ...valueParts] = part.split(":");
     const value = valueParts.join(":").trim().replace(/"/g, "");
+
+    // we want to consider lone `key:` as in the query
+    // so that people can search for them
+    if (!value) {
+      key = "query";
+    }
 
     switch (key) {
       // Multiple filters
@@ -366,7 +372,6 @@ export function parseIssueSearchString(input: string): IssueSearchFilters {
       case "-author":
       case "mentions":
       case "-mentions":
-      case "comments":
       case "sort": {
         const values = value.split(",").map((v) => v.trim());
         result[key] = values[values.length - 1];

@@ -24,11 +24,13 @@ export function IssueAssigneeFilterActionList({
   const [inputQuery, setInputQuery] = React.useState("");
   const [_, startTransition] = React.useTransition();
   const [filteredDataList, setFilteredDataList] = React.useState<
-    Awaited<ReturnType<typeof filterIssueAssignees>>
+    Awaited<Awaited<ReturnType<typeof filterIssueAssignees>>["promise"]>
   >([]);
 
   React.useEffect(() => {
-    filterIssueAssignees("").then(setFilteredDataList);
+    filterIssueAssignees("")
+      .then((r) => r.promise)
+      .then(setFilteredDataList);
   }, []);
 
   return (
@@ -84,9 +86,9 @@ export function IssueAssigneeFilterActionList({
           onChange={(e) => {
             setInputQuery(e.target.value);
             startTransition(async () => {
-              await filterIssueAssignees(e.target.value).then(
-                setFilteredDataList
-              );
+              await filterIssueAssignees(e.target.value)
+                .then((r) => r.promise)
+                .then(setFilteredDataList);
             });
           }}
           label="name or username"

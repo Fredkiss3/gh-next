@@ -9,7 +9,7 @@ import { CheckIcon } from "@primer/octicons-react";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
-import { filterIssueAuthors } from "~/app/(actions)/issue";
+import { filterIssueAuthorsByName } from "~/app/(actions)/issue";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 
 // types
@@ -24,11 +24,11 @@ export function IssueAuthorFilterActionList({
   const [inputQuery, setInputQuery] = React.useState("");
   const [_, startTransition] = React.useTransition();
   const [filteredDataList, setFilteredDataList] = React.useState<
-    Awaited<ReturnType<typeof filterIssueAuthors>>
+    Awaited<ReturnType<typeof filterIssueAuthorsByName>>
   >([]);
 
   React.useEffect(() => {
-    filterIssueAuthors("").then(setFilteredDataList);
+    filterIssueAuthorsByName("").then(setFilteredDataList);
   }, []);
 
   return (
@@ -73,7 +73,7 @@ export function IssueAuthorFilterActionList({
           onChange={(e) => {
             setInputQuery(e.target.value);
             startTransition(async () => {
-              await filterIssueAuthors(e.target.value).then(
+              await filterIssueAuthorsByName(e.target.value).then(
                 setFilteredDataList
               );
             });
