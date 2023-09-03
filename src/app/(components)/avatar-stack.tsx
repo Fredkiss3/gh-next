@@ -7,7 +7,7 @@ import { Tooltip } from "./tooltip";
 import { ReactAriaLink } from "./react-aria-button";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 export type AvatarStackProps = {

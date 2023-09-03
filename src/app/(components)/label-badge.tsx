@@ -1,9 +1,9 @@
 import * as React from "react";
 // utils
-import { clsx, hexToRGBHSL } from "~/lib/shared-utils";
+import { clsx, hexToRGBHSL } from "~/lib/shared/utils.shared";
 
 // types
-import type { RGBHSLColor } from "~/lib/shared-utils";
+import type { RGBHSLColor } from "~/lib/shared/utils.shared";
 export type LabelBadgeProps = {
   title: string;
   color: string;
@@ -22,7 +22,7 @@ export function LabelBadge({ title, color, className }: LabelBadgeProps) {
   return (
     <span
       style={{
-        // @ts-expect-error css variables
+        // @ts-expect-error these are css variables and valid, but react complains
         "--label-r": r,
         "--label-g": g,
         "--label-b": b,

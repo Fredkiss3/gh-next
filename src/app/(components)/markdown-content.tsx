@@ -1,21 +1,26 @@
 import "server-only";
 import * as React from "react";
+
+// components
 import { Code } from "bright";
+import { MarkdownCodeBlock } from "./markdown-code-block";
+import { LinkIcon } from "@primer/octicons-react";
+
+// utils
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeReact from "rehype-react";
 import rehypeSlug from "rehype-slug";
-import { MarkdownCodeBlock } from "./markdown-code-block";
-import { clsx } from "~/lib/shared-utils";
-import { LinkIcon } from "@primer/octicons-react";
-import githubDark from "~/lib/themes/github-dark.json";
-import githubLight from "~/lib/themes/github-light.json";
+import { clsx } from "~/lib/shared/utils.shared";
+import githubDark from "~/lib/server/themes/github-dark.json";
+import githubLight from "~/lib/server/themes/github-light.json";
 
 // TODO : INTEGRATE GITHUB REMARK LINKING : https://github.com/remarkjs/remark-github
-import remarkGithub from "remark-github";
+// import remarkGithub from "remark-github";
 
+// types
 export type MarkdownContentProps = {
   content: string;
   linkHeaders?: boolean;

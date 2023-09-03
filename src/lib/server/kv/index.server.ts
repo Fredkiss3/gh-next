@@ -1,5 +1,5 @@
 import { env } from "~/env.mjs";
-import { WebdisKV } from "./redis-web";
+import { WebdisKV } from "./webdis.server";
 
 export interface KVStore {
   set<T extends Record<string, any> = {}>(

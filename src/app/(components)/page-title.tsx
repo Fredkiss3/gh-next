@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { usePathname } from "next/navigation";
 
 export function PageTitle() {

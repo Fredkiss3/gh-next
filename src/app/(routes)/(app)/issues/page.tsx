@@ -12,19 +12,23 @@ import {
 import Link from "next/link";
 import { Button } from "~/app/(components)/button";
 import { CounterBadge } from "~/app/(components)/counter-badge";
-import { IssuesListHeaderForm } from "~/app/(components)/issues-list-header-form";
+import { IssuesListHeaderForm } from "~/app/(components)/issue-list/issues-list-header-form";
 import { SegmentedLayout } from "~/app/(components)/segmented-layout";
-import { IssueAuthorFilterActionList } from "~/app/(components)/issue-author-filter-action-list";
-import { IssueLabelFilterActionList } from "~/app/(components)/issue-label-filter-action-list";
-import { IssueAssigneeFilterActionList } from "~/app/(components)/issue-assignee-filter-action-list";
-import { IssueSortActionList } from "~/app/(components)/issue-sort-action-list";
-import { IssueRowSkeleton } from "~/app/(components)/issue-row-skeleton";
+import { IssueAuthorFilterActionList } from "~/app/(components)/issue-list/issue-author-filter-action-list";
+import { IssueLabelFilterActionList } from "~/app/(components)/issue-list/issue-label-filter-action-list";
+import { IssueAssigneeFilterActionList } from "~/app/(components)/issue-list/issue-assignee-filter-action-list";
+import { IssueSortActionList } from "~/app/(components)/issue-list/issue-sort-action-list";
+import { IssueRowSkeleton } from "~/app/(components)/issues/issue-row-skeleton";
 import { Pagination } from "~/app/(components)/pagination";
-import { IssueRow } from "~/app/(components)/issue-row";
+import { IssueRow } from "~/app/(components)/issues/issue-row";
+import { IssueListMainParent } from "~/app/(components)/issue-list/issue-list-main-parent";
+import { ClearSearchButtonSection } from "~/app/(components)/issue-list/clear-search-button";
+import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { getIssueList } from "~/app/(actions)/issue";
+import { getAuthedUser } from "~/app/(actions)/auth";
 
 // types
 import type { Metadata } from "next";
@@ -34,27 +38,40 @@ export const metadata: Metadata = {
   title: "Issues",
 };
 
-export default function IssuesListPage({ searchParams }: PageProps) {
+export default function IssuesListPage({
+  searchParams,
+}: PageProps<{}, { q: string; page: string }>) {
+  const initialQuery = searchParams?.q;
+
   return (
-    <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
-      <IssuesListHeader />
-      <IssuesListBody params={searchParams} />
-    </div>
+    <ReactQueryProvider>
+      <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
+        <IssueListMainParent initialQuery={initialQuery}>
+          <IssuesListHeader />
+          <ClearSearchButtonSection />
+          <IssuesListBody params={searchParams} />
+        </IssueListMainParent>
+      </div>
+    </ReactQueryProvider>
   );
 }
 
-function IssuesListHeader() {
+async function IssuesListHeader() {
+  const isAuthed = (await getAuthedUser()) !== null;
   return (
     <section
       className="flex flex-col gap-4 px-5 md:px-0 md:flex-row"
       id="search-bar"
     >
-      <IssuesListHeaderForm className="order-last md:order-first" />
+      <IssuesListHeaderForm
+        className="order-last md:order-first"
+        showActionList={isAuthed}
+      />
+
       <div className="flex justify-between gap-4 items-center">
         <SegmentedLayout>
           <li>
             <Button
-              // @ts-ignore
               href="/labels"
               variant="invisible"
               className="!text-foreground"
@@ -92,10 +109,7 @@ async function IssuesListBody(props: {
   }
   return (
     <section className="flex flex-col gap-4" id="issue-list">
-      <React.Suspense
-        // key={Math.random()}
-        fallback={<IssueContentTableSkeleton />}
-      >
+      <React.Suspense fallback={<IssueContentTableSkeleton />}>
         <IssueContentTable currentPage={currentPage} />
       </React.Suspense>
 
@@ -271,42 +285,29 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col gap-4 px-5 md:px-0">
+      <div className="flex items-center gap-4 md:hidden  px-5 md:px-0">
         <Link
           prefetch={false}
-          href="/issues"
-          className="flex gap-2 items-center text-grey font-semibold group hover:text-accent"
+          href="/issues?q=is:open"
+          className={clsx(
+            "font-semibold text-foreground flex items-center gap-2"
+          )}
         >
-          <div className="bg-grey rounded-md p-1 flex items-center justify-center group-hover:bg-accent">
-            <XIcon className="text-white h-4 w-4" />
-          </div>
-          <span>Clear current search query, filters, and sorts</span>
+          <IssueOpenedIcon className="h-5 w-5" />
+          <p>
+            0 <span className="sr-only">issues</span>&nbsp;Open
+          </p>
         </Link>
-
-        <div className="flex items-center gap-4 md:hidden">
-          <Link
-            prefetch={false}
-            href="/issues?q=is:open"
-            className={clsx(
-              "font-semibold text-foreground flex items-center gap-2"
-            )}
-          >
-            <IssueOpenedIcon className="h-5 w-5" />
-            <p>
-              0 <span className="sr-only">issues</span>&nbsp;Open
-            </p>
-          </Link>
-          <Link
-            prefetch={false}
-            href="/issues?q=is:closed"
-            className={clsx("text-grey flex items-center gap-2")}
-          >
-            <CheckIcon className="h-5 w-5" />
-            <span>
-              0 <span className="sr-only">issues</span>&nbsp;Closed
-            </span>
-          </Link>
-        </div>
+        <Link
+          prefetch={false}
+          href="/issues?q=is:closed"
+          className={clsx("text-grey flex items-center gap-2")}
+        >
+          <CheckIcon className="h-5 w-5" />
+          <span>
+            0 <span className="sr-only">issues</span>&nbsp;Closed
+          </span>
+        </Link>
       </div>
 
       <div className={clsx("border border-neutral", "sm:rounded-md")}>

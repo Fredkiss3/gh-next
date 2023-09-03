@@ -16,7 +16,7 @@ import {
 import { CounterBadge } from "./counter-badge";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { usePathname } from "next/navigation";
 
 // types

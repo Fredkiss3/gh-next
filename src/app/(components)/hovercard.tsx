@@ -8,8 +8,8 @@ import {
 } from "react-aria-components";
 
 // utils
-import { clsx } from "~/lib/shared-utils";
-import { useMediaQuery } from "~/lib/hooks/use-media-query";
+import { clsx } from "~/lib/shared/utils.shared";
+import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 
 // types
 import type { TooltipProps as ReactAriaTooltipProps } from "react-aria-components";

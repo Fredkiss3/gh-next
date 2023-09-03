@@ -3,9 +3,9 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env.mjs";
-import { SESSION_COOKIE_KEY } from "~/lib/constants";
-import { ssrRedirect, withAuth } from "~/lib/server-utils";
-import { Session } from "~/lib/session";
+import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
+import { withAuth } from "~/lib/server/utils.server";
+import { Session } from "~/lib/server/session.server";
 import {
   getUserById,
   getUserByUsername,
@@ -196,6 +196,5 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   });
 
   revalidatePath(`/`);
-  // FIXME : Until this issue is fixed, we still have to do this https://github.com/vercel/next.js/issues/52075
-  return ssrRedirect("/settings/account");
+  return redirect("/settings/account");
 });

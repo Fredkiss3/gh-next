@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE_KEY } from "./lib/constants";
-import { Session } from "./lib/session";
+import { SESSION_COOKIE_KEY } from "./lib/shared/constants";
+import { Session } from "./lib/server/session.server";
 import isbot from "isbot";
 
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";

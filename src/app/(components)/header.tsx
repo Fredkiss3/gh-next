@@ -21,7 +21,7 @@ import {
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
-import { clsx } from "~/lib/shared-utils";
+import { clsx } from "~/lib/shared/utils.shared";
 import { PageTitle } from "./page-title";
 
 // types

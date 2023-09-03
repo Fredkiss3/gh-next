@@ -5,10 +5,10 @@ import { LocationIcon } from "@primer/octicons-react";
 import Link from "next/link";
 
 // utils
-import { clsx, excerpt } from "~/lib/shared-utils";
+import { clsx, excerpt } from "~/lib/shared/utils.shared";
 
 // types
-import type { User } from "~/lib/db/schema/user.sql";
+import type { User } from "~/lib/server/db/schema/user.sql";
 export type UserHoverCardContentsProps = {
   className?: string;
 } & Omit<User, "preferred_theme" | "id" | "github_id">;

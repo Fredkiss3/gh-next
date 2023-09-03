@@ -1,7 +1,10 @@
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@primer/octicons-react";
-import { clsx } from "~/lib/shared-utils";
-import { PAGINATION_DOTS, usePagination } from "~/lib/hooks/use-pagination";
+import { clsx } from "~/lib/shared/utils.shared";
+import {
+  PAGINATION_DOTS,
+  usePagination,
+} from "~/lib/client/hooks/use-pagination";
 import { Button } from "./button";
 
 export type PaginationProps = {
@@ -39,7 +42,6 @@ export function Pagination({
     >
       <div className={clsx(className, "flex items-center gap-2")}>
         <Button
-          // @ts-ignore
           href={currentPage === 1 ? "#" : baseURL + (currentPage - 1)}
           variant="accent-ghost"
           prefetch={false}
@@ -69,7 +71,6 @@ export function Pagination({
             return (
               <li key={pageNumber}>
                 <Button
-                  // @ts-ignore
                   href={baseURL + pageNumber}
                   prefetch={false}
                   variant="ghost"
@@ -90,7 +91,6 @@ export function Pagination({
         </ul>
 
         <Button
-          // @ts-ignore
           href={currentPage === lastPage ? "#" : baseURL + (currentPage + 1)}
           variant="accent-ghost"
           prefetch={false}

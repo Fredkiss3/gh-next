@@ -1,11 +1,9 @@
 "use server";
 
-import { IssueStatuses } from "~/lib/db/schema/issue.sql";
+import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
+import { wait } from "~/lib/shared/utils.shared";
 
 const authorList = [
-  {
-    name: "nobody",
-  },
   {
     username: "balazsorban45",
     name: "Balázs Orbán",
@@ -39,23 +37,54 @@ const authorList = [
 ];
 
 // FIXME: Change this to actually query the DB in production
-export async function filterIssueAuthors(name: string) {
-  return authorList.filter(
-    (item) =>
-      item.username &&
-      item.name &&
-      (item.username.toLowerCase().startsWith(name.toLowerCase()) ||
-        item.name.toLowerCase().includes(name.toLowerCase()))
-  ) as Array<Required<typeof authorList[number]>>;
+export async function filterIssueAuthorsByName(name: string) {
+  const authors = authorList.filter(
+    (user) =>
+      user.username.toLowerCase().startsWith(name.toLowerCase()) ||
+      user.name.toLowerCase().includes(name.toLowerCase())
+  ) as Array<{
+    username: string;
+    name: string;
+    avatar: string;
+  }>;
+
+  return authors;
+}
+
+// FIXME: Change this to actually query the DB in production
+export async function filterIssueAuthorsByUsername(name: string) {
+  return {
+    // We use `promise` because server actions are not batched,
+    // if a server action is running, the others will have to wait
+    // this hack prevents that => because returning promise objects ared returned automatically
+    promise: wait(1).then((_) =>
+      authorList.filter((user) =>
+        user.username.toLowerCase().startsWith(name.toLowerCase())
+      )
+    ),
+  };
 }
 
 // FIXME: Change this to actually query the DB in production
 export async function filterIssueAssignees(name: string) {
-  return authorList.filter(
-    (item) =>
-      item.username?.toLowerCase().startsWith(name.toLowerCase()) ||
-      item.name?.toLowerCase().includes(name.toLowerCase())
-  );
+  return {
+    promise: wait(1).then((_) =>
+      authorList.filter((user) =>
+        user.username.toLowerCase().startsWith(name.toLowerCase())
+      )
+    ),
+  };
+}
+
+// FIXME: Change this to actually query the DB in production
+export async function filterIssueMentions(name: string) {
+  return {
+    promise: wait(1).then((_) =>
+      authorList.filter((user) =>
+        user.username.toLowerCase().startsWith(name.toLowerCase())
+      )
+    ),
+  };
 }
 
 const issues = [

@@ -18,8 +18,8 @@ import {
   GITHUB_AUTHOR_USERNAME,
   AUTHOR_AVATAR_URL,
   GITHUB_REPOSITORY_NAME,
-} from "~/lib/constants";
-import { clsx } from "~/lib/shared-utils";
+} from "~/lib/shared/constants";
+import { clsx } from "~/lib/shared/utils.shared";
 
 export default function Loading() {
   return (

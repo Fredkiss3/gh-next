@@ -7,21 +7,21 @@ import {
   SkipIcon,
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { AvatarStack } from "./avatar-stack";
-import { LabelBadge } from "./label-badge";
-import { HoverCard } from "./hovercard";
-import { ReactAriaLink } from "./react-aria-button";
-import { IssueHoverCardContents } from "./issue-hovercard-contents";
-import { UserHoverCardContents } from "./user-hovercard-contents";
-import { Tooltip } from "./tooltip";
+import { AvatarStack } from "~/app/(components)/avatar-stack";
+import { LabelBadge } from "~/app/(components)/label-badge";
+import { HoverCard } from "~/app/(components)/hovercard";
+import { ReactAriaLink } from "~/app/(components)/react-aria-button";
+import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-contents";
+import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
+import { Tooltip } from "~/app/(components)/tooltip";
 
 // utils
-import { clsx, formatDate } from "~/lib/shared-utils";
+import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueStatus } from "~/lib/db/schema/issue.sql";
-import type { Label } from "~/lib/db/schema/label.sql";
-import type { User } from "~/lib/db/schema/user.sql";
+import type { IssueStatus } from "~/lib/server/db/schema/issue.sql";
+import type { Label } from "~/lib/server/db/schema/label.sql";
+import type { User } from "~/lib/server/db/schema/user.sql";
 
 export type IssueRowProps = {
   id: number;
