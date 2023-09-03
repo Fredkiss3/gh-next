@@ -212,7 +212,7 @@ export function IssueListSearchInput({
 
         <div className="relative">
           {isMenuOpen ? (
-            <div className="bg-subtle text-foreground absolute top-2 z-10 w-full rounded-md border shadow-md outline-none border-neutral">
+            <ItemGroupWrapper>
               <CommandGroup className="max-h-64 !overflow-scroll">
                 {Object.keys(search).map((key) => {
                   // this is to filter items
@@ -315,11 +315,27 @@ export function IssueListSearchInput({
                   );
                 })}
               </CommandGroup>
-            </div>
+            </ItemGroupWrapper>
           ) : null}
         </div>
       </Command>
     </>
+  );
+}
+
+function ItemGroupWrapper({ children }: { children: React.ReactNode }) {
+  const filteredCount = useCommandState((state) => state.filtered.count);
+  return (
+    <div
+      className={clsx(
+        "bg-subtle text-foreground absolute top-2 z-10 w-full rounded-md shadow-md outline-none border-neutral",
+        {
+          border: filteredCount > 0,
+        }
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
