@@ -1,6 +1,6 @@
 ---
-name: Task 
-about: Add a new task to the project
+name: Refactor 
+about: Add a new refactor task to the project
 title: "[⚙️ refactor] We need to do..."
 labels: refactor, need-triage
 assignees: ''
