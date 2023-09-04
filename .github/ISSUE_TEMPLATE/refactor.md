@@ -1,7 +1,7 @@
 ---
 name: Refactor 
 about: Suggest a new refactor task to the project
-title: "[⚙️ refactor] We need to do..."
+title: "[♻️ refactor] We need to do..."
 labels: refactor, need-triage
 assignees: ''
 
