@@ -8,8 +8,8 @@ const CloudfarekvNamespaceSchema = z.object({
   KV: z.object({
     get: z.function(),
     put: z.function(),
-    delete: z.function(),
-  }),
+    delete: z.function()
+  })
 });
 
 export class CloudfareKV implements KVStore {
@@ -30,7 +30,7 @@ export class CloudfareKV implements KVStore {
       JSON.stringify(value),
       ttl_in_seconds
         ? {
-            expirationTtl: ttl_in_seconds,
+            expirationTtl: ttl_in_seconds
           }
         : undefined
     );

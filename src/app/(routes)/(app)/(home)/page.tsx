@@ -10,7 +10,7 @@ import {
   RepoForkedIcon,
   StarFillIcon,
   StarIcon,
-  TriangleDownIcon,
+  TriangleDownIcon
 } from "@primer/octicons-react";
 import { Avatar } from "~/app/(components)/avatar";
 import { Badge } from "~/app/(components)/badge";
@@ -25,7 +25,7 @@ import { getGithubRepoData } from "~/app/(actions)/github";
 import {
   AUTHOR_AVATAR_URL,
   GITHUB_AUTHOR_USERNAME,
-  GITHUB_REPOSITORY_NAME,
+  GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
 import { clsx } from "~/lib/shared/utils.shared";
 
@@ -44,13 +44,13 @@ export default async function Page() {
       <section
         id="repository-header-desktop"
         className={clsx(
-          "pb-6 border-b border-neutral px-8",
-          "hidden items-center justify-between flex-wrap",
+          "border-b border-neutral px-8 pb-6",
+          "hidden flex-wrap items-center justify-between",
           "md:flex",
-          "xl:px-0 xl:mx-8"
+          "xl:mx-8 xl:px-0"
         )}
       >
-        <h1 className="text-2xl font-semibold flex items-center gap-3">
+        <h1 className="flex items-center gap-3 text-2xl font-semibold">
           <Avatar
             username={GITHUB_AUTHOR_USERNAME}
             src={AUTHOR_AVATAR_URL}
@@ -111,7 +111,7 @@ export default async function Page() {
       <section
         id="repository-header-mobile"
         className={clsx(
-          "pb-6 px-5",
+          "px-5 pb-6",
           "flex flex-col items-start gap-5 border-neutral",
           "sm:border-b",
           "md:hidden"
@@ -154,19 +154,19 @@ export default async function Page() {
           </Button>
         </div>
 
-        <p className="text-grey text-lg">{repositoryData.description}</p>
+        <p className="text-lg text-grey">{repositoryData.description}</p>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           <LinkIcon className="h-4 w-4 text-grey" />
-          <a href={repositoryData.url} className="text-accent font-medium">
+          <a href={repositoryData.url} className="font-medium text-accent">
             {repositoryData.url}
           </a>
         </div>
 
-        <ul className="flex items-center flex-wrap gap-4">
+        <ul className="flex flex-wrap items-center gap-4">
           <li>
             <a
-              className="text-grey flex items-center gap-2 hover:text-accent group"
+              className="group flex items-center gap-2 text-grey hover:text-accent"
               href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/stargazers`}
             >
               <StarIcon className="h-4 w-4" />
@@ -181,7 +181,7 @@ export default async function Page() {
           </li>
           <li>
             <a
-              className="text-grey flex items-center gap-2 hover:text-accent group"
+              className="group flex items-center gap-2 text-grey hover:text-accent"
               href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/forks`}
             >
               <RepoForkedIcon className="h-4 w-4" />
@@ -194,7 +194,7 @@ export default async function Page() {
               </div>
             </a>
           </li>
-          <li className="text-grey flex items-center gap-2">
+          <li className="flex items-center gap-2 text-grey">
             <EyeIcon className="h-4 w-4" />
             <div>
               <strong className="text-foreground">
@@ -206,7 +206,7 @@ export default async function Page() {
           </li>
           <li>
             <a
-              className="text-grey flex items-center gap-2 hover:text-accent group"
+              className="group flex items-center gap-2 text-grey hover:text-accent"
               href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/pulse`}
             >
               <PulseIcon className="h-4 w-4" />
@@ -215,7 +215,7 @@ export default async function Page() {
           </li>
         </ul>
 
-        <div className="flex gap-2 items-center text-grey">
+        <div className="flex items-center gap-2 text-grey">
           <GlobeIcon className="h-4 w-4" />
           <span>Pulic repository</span>
         </div>
@@ -224,31 +224,31 @@ export default async function Page() {
       <section
         id="body"
         className={clsx(
-          "md:grid items-start gap-4",
+          "items-start gap-4 md:grid",
           "sm:px-5",
           "md:grid-cols-11 md:px-8",
           "lg:grid-cols-[repeat(13,_minmax(0,_1fr))]",
           "xl:grid-cols-[repeat(15,_minmax(0,_1fr))]"
         )}
       >
-        <ReadmeContent className="md:col-span-7 lg:col-span-9 xl:col-span-11 w-full" />
+        <ReadmeContent className="w-full md:col-span-7 lg:col-span-9 xl:col-span-11" />
 
         <aside
           className={clsx(
-            "hidden col-span-4 flex-col gap-6 sticky top-4",
+            "sticky top-4 col-span-4 hidden flex-col gap-6",
             "md:flex"
           )}
         >
-          <div className="flex flex-col items-start gap-5 border-neutral pb-6 border-b">
+          <div className="flex flex-col items-start gap-5 border-b border-neutral pb-6">
             <h2 className="text-lg font-semibold">About</h2>
             <p className="text-lg">{repositoryData.description}</p>
 
-            <div className="flex gap-3 items-center">
+            <div className="flex items-center gap-3">
               <LinkIcon className="h-4 w-4" />
               <a
                 href={repositoryData.url}
                 target="_blank"
-                className="text-accent font-semibold"
+                className="font-semibold text-accent"
               >
                 {repositoryData.url}
               </a>
@@ -258,7 +258,7 @@ export default async function Page() {
               <li>
                 <a
                   href="#readme"
-                  className="text-grey flex items-center gap-3 hover:text-accent"
+                  className="flex items-center gap-3 text-grey hover:text-accent"
                 >
                   <BookIcon className="h-4 w-4" />
                   <span>Readme</span>
@@ -268,7 +268,7 @@ export default async function Page() {
               <li>
                 <a
                   href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/pulse`}
-                  className="text-grey flex items-center gap-3 hover:text-accent"
+                  className="flex items-center gap-3 text-grey hover:text-accent"
                 >
                   <PulseIcon className="h-4 w-4" />
                   <span>Activity</span>
@@ -278,7 +278,7 @@ export default async function Page() {
               <li>
                 <a
                   href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/stargazers`}
-                  className="text-grey flex items-center gap-3 hover:text-accent"
+                  className="flex items-center gap-3 text-grey hover:text-accent"
                 >
                   <StarIcon className="h-4 w-4" />
 
@@ -290,7 +290,7 @@ export default async function Page() {
                 </a>
               </li>
 
-              <li className="text-grey flex items-center gap-3">
+              <li className="flex items-center gap-3 text-grey">
                 <EyeIcon className="h-4 w-4" />
                 <div>
                   <strong>{repositoryData.watcherCount}</strong>
@@ -299,10 +299,10 @@ export default async function Page() {
                 </div>
               </li>
 
-              <li className="text-grey flex items-center gap-3">
+              <li className="flex items-center gap-3 text-grey">
                 <a
                   href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/forks`}
-                  className="text-grey flex items-center gap-3 hover:text-accent"
+                  className="flex items-center gap-3 text-grey hover:text-accent"
                 >
                   <RepoForkedIcon className="h-4 w-4" />
                   <div>
@@ -315,19 +315,19 @@ export default async function Page() {
             </ul>
           </div>
           <div className="flex flex-col items-start pb-6">
-            <h2 className="text-lg font-semibold mb-5">Languages</h2>
-            <div className="flex rounded-md h-2 w-full mb-3">
+            <h2 className="mb-5 text-lg font-semibold">Languages</h2>
+            <div className="mb-3 flex h-2 w-full rounded-md">
               {repositoryData.languages.map((lang, index) => (
                 <div
                   className={clsx("h-full", {
                     "rounded-l-md": index === 0,
                     "rounded-r-md":
                       index === repositoryData.languages.length - 1,
-                    "border-l-2 border-neutral": index !== 0,
+                    "border-l-2 border-neutral": index !== 0
                   })}
                   style={{
                     backgroundColor: lang.color,
-                    width: `${lang.percent}%`,
+                    width: `${lang.percent}%`
                   }}
                   key={lang.name}
                 />
@@ -340,7 +340,7 @@ export default async function Page() {
                   <div
                     className="flex items-center justify-center"
                     style={{
-                      color: lang.color,
+                      color: lang.color
                     }}
                   >
                     <DotFillIcon className="h-4 w-4" />
@@ -364,16 +364,16 @@ async function ReadmeContent({ className }: { className?: string }) {
     <div className={className}>
       <div
         className={clsx(
-          "border border-neutral flex items-center gap-2 p-4",
-          "sticky -top-1 bg-backdrop z-10",
+          "flex items-center gap-2 border border-neutral p-4",
+          "sticky -top-1 z-10 bg-backdrop",
           "sm:rounded-t-md"
         )}
       >
-        <button className="flex items-center justify-center p-2 rounded-md hover:bg-neutral/50">
+        <button className="flex items-center justify-center rounded-md p-2 hover:bg-neutral/50">
           <ListUnorderedIcon className="h-4 w-4 text-grey" />
         </button>
         <h2
-          className="font-semibold text-base scroll-mt-10 hover:text-accent hover:underline"
+          className="scroll-mt-10 text-base font-semibold hover:text-accent hover:underline"
           id="readme"
         >
           <Link href="#readme">README.md</Link>
@@ -382,14 +382,14 @@ async function ReadmeContent({ className }: { className?: string }) {
 
       <div
         className={clsx(
-          "p-4 border-l border-r border-b border-neutral",
+          "border-b border-l border-r border-neutral p-4",
           "sm:rounded-b-md"
         )}
       >
         <MarkdownContent
           linkHeaders
           content={readmeContent}
-          className="px-8 pb-8 pt-4 w-full max-w-full"
+          className="w-full max-w-full px-8 pb-8 pt-4"
         />
       </div>
     </div>

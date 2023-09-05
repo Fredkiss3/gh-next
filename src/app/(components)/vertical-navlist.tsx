@@ -12,7 +12,7 @@ export function VerticalNavlist({ className }: VerticalNavlistProps) {
   return (
     <aside className={className}>
       <nav>
-        <ul className="flex flex-col gap-1 w-full">
+        <ul className="flex w-full flex-col gap-1">
           <li>
             <VerticalNavLink href="/settings/account" icon={GearIcon}>
               Account

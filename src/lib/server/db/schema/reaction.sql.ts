@@ -15,7 +15,7 @@ export const ReactionTypes = {
   HEART: "HEART",
   HOORAY: "HOORAY",
   ROCKET: "ROCKET",
-  EYES: "EYES",
+  EYES: "EYES"
 } as const;
 export type ReactionType = keyof typeof ReactionTypes;
 
@@ -27,39 +27,39 @@ export const reactionTypeEnum = pgEnum("reaction_type", [
   "HEART",
   "HOORAY",
   "ROCKET",
-  "EYES",
+  "EYES"
 ]);
 
 export const reactions = pgTable("reactions", {
   id: serial("id").primaryKey(),
   type: reactionTypeEnum("type").notNull(),
   author_id: integer("author_id").references(() => users.id, {
-    onDelete: "set null",
+    onDelete: "set null"
   }),
   comment_id: integer("comment_id").references(() => comments.id, {
-    onDelete: "cascade",
+    onDelete: "cascade"
   }),
   issue_id: integer("issue_id").references(() => issues.id, {
-    onDelete: "cascade",
-  }),
+    onDelete: "cascade"
+  })
 });
 
 export const reactionsRelations = relations(reactions, ({ one }) => ({
   author: one(users, {
     fields: [reactions.author_id],
     references: [users.id],
-    relationName: "reactions",
+    relationName: "reactions"
   }),
   issue: one(issues, {
     fields: [reactions.issue_id],
     references: [issues.id],
-    relationName: "issue",
+    relationName: "issue"
   }),
   comment: one(comments, {
     fields: [reactions.issue_id],
     references: [comments.id],
-    relationName: "comment",
-  }),
+    relationName: "comment"
+  })
 }));
 
 export type Reaction = InferModel<typeof reactions>;

@@ -5,19 +5,19 @@ import {
   issueRevisions,
   issueRevisionsRelations,
   issueUserSubscriptionRelations,
-  issueUserSubscriptions,
+  issueUserSubscriptions
 } from "./schema/issue.sql";
 import {
   labels,
   labelToIssues,
   labelRelations,
-  labelToIssuesRelations,
+  labelToIssuesRelations
 } from "./schema/label.sql";
 import {
   comments,
   commentsRelations,
   commentRevisions,
-  commentRevisionsRelations,
+  commentRevisionsRelations
 } from "./schema/comment.sql";
 import {
   assignActivities,
@@ -31,7 +31,7 @@ import {
   editActiviyToLabels,
   editLabelsActivitiesRelations,
   issueMentionActivitiesRelations,
-  issueToggleActivitiesRelations,
+  issueToggleActivitiesRelations
 } from "./schema/activity.sql";
 import { reactions, reactionsRelations } from "./schema/reaction.sql";
 import { env } from "~/env.mjs";
@@ -71,6 +71,6 @@ export const db = drizzle(postgres(env.DATABASE_URL), {
     labelRelations,
     labelToIssuesRelations,
     commentsRelations,
-    reactionsRelations,
-  },
+    reactionsRelations
+  }
 });

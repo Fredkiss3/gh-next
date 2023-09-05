@@ -51,7 +51,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
         <label
           htmlFor={defaultId ?? id}
           className={clsx({
-            "sr-only": hideLabel,
+            "sr-only": hideLabel
           })}
         >
           {label}
@@ -73,7 +73,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
               "border-danger": validationStatus === "error",
               "border-success": validationStatus === "success",
 
-              "cursor-not-allowed bg-gray-200": disabled,
+              "cursor-not-allowed bg-gray-200": disabled
             }
           )}
         >
@@ -89,12 +89,12 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
             disabled={disabled}
             required={required}
             className={clsx(
-              "w-full focus:outline-none bg-transparent px-3",
+              "w-full bg-transparent px-3 focus:outline-none",
               inputClassName,
               {
                 "py-1": size === "medium",
                 "py-0": size === "small",
-                "py-2": size === "large",
+                "py-2": size === "large"
               }
             )}
           />
@@ -109,7 +109,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
             role={"alert"}
             className={clsx("flex gap-1", {
               "text-danger": validationStatus === "error",
-              "text-success": validationStatus === "success",
+              "text-success": validationStatus === "success"
             })}
           >
             {validationStatus === "error" && (

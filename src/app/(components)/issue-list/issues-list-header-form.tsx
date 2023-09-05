@@ -7,7 +7,7 @@ import { Button } from "~/app/(components)/button";
 import {
   CheckIcon,
   LinkExternalIcon,
-  TriangleDownIcon,
+  TriangleDownIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
 import { IssueListSearchInput } from "./issue-list-search-input";
@@ -25,7 +25,7 @@ export type IssuesListHeaderFormProps = {
 
 export function IssuesListHeaderForm({
   className,
-  showActionList,
+  showActionList
 }: IssuesListHeaderFormProps) {
   const formRef = React.useRef<HTMLFormElement>(null);
   const router = useRouter();
@@ -47,7 +47,7 @@ export function IssuesListHeaderForm({
           );
           router.push(path + "?" + searchParams.toString());
         }}
-        className={clsx(className, "w-full flex items-center")}
+        className={clsx(className, "flex w-full items-center")}
       >
         {showActionList && (
           <ActionList
@@ -56,22 +56,22 @@ export function IssuesListHeaderForm({
                 items: [
                   {
                     href: "/issues?q=is:open" as const,
-                    text: "Open issues",
+                    text: "Open issues"
                   },
                   {
                     href: "/issues?q=is:open+author:@me" as const,
-                    text: "Your issues",
+                    text: "Your issues"
                   },
                   {
                     href: "/issues?q=is:open+assignee:@me" as const,
-                    text: "Everything assigned to you",
+                    text: "Everything assigned to you"
                   },
                   {
                     href: "/issues?q=is:open+mention:@me" as const,
-                    text: "Everything mentionning you",
-                  },
-                ],
-              },
+                    text: "Everything mentionning you"
+                  }
+                ]
+              }
             ]}
             renderItem={({ text, selected, onCloseList, href, className }) => (
               <Link
@@ -93,7 +93,7 @@ export function IssuesListHeaderForm({
                   "flex items-center gap-2 hover:bg-neutral/50"
                 )}
               >
-                <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
+                <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
                   {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
                 </div>
                 <span>{text}</span>
@@ -107,7 +107,7 @@ export function IssuesListHeaderForm({
                 target="_blank"
                 className="flex items-center gap-2"
               >
-                <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
+                <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
                   <LinkExternalIcon className="h-5 w-5 flex-shrink-0" />
                 </div>
                 <strong className="font-medium">

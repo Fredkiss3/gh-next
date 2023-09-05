@@ -7,7 +7,7 @@ export const kvEntry = sqliteTable("kv_entries", {
   value: text("value").notNull(),
   expiry: integer("expiry", { mode: "timestamp" }).default(
     sql`(strftime('%s', 'now'))`
-  ),
+  )
 });
 
 export type KVEntry = InferModel<typeof kvEntry>;

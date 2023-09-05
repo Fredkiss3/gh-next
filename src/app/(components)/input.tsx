@@ -52,7 +52,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <label
           htmlFor={defaultId ?? id}
           className={clsx({
-            "sr-only": hideLabel,
+            "sr-only": hideLabel
           })}
         >
           {label}
@@ -76,14 +76,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "py-1.5": size === "medium",
               "py-1 text-sm": size === "small",
               "py-3": size === "large",
-              "cursor-not-allowed bg-disabled": disabled,
+              "cursor-not-allowed bg-disabled": disabled
             }
           )}
         >
           {renderLeadingIcon?.(
             clsx("text-gray-500 flex-shrink-0", {
               "h-4 w-4": size === "small",
-              "h-5 w-5": size === "medium",
+              "h-5 w-5": size === "medium"
             })
           )}
 
@@ -99,26 +99,26 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             disabled={disabled}
             required={required}
             className={clsx(
-              "w-full focus:outline-none bg-transparent disabled:text-foreground/30",
+              "w-full bg-transparent focus:outline-none disabled:text-foreground/30",
               inputClassName,
               {
-                "cursor-not-allowed": disabled,
+                "cursor-not-allowed": disabled
               }
             )}
           />
 
           {isLoading ? (
             <LoadingIndicator
-              className={clsx("text-grey flex-shrink-0 pointer-events-none", {
+              className={clsx("pointer-events-none flex-shrink-0 text-grey", {
                 "h-4 w-4": size === "small",
-                "h-5 w-5": size === "medium",
+                "h-5 w-5": size === "medium"
               })}
             />
           ) : (
             renderTrailingIcon?.(
               clsx("text-grey flex-shrink-0", {
                 "h-4 w-4": size === "small",
-                "h-5 w-5": size === "medium",
+                "h-5 w-5": size === "medium"
               })
             )
           )}
@@ -131,7 +131,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             role="alert"
             className={clsx("flex gap-1", {
               "text-danger": validationStatus === "error",
-              "text-success": validationStatus === "success",
+              "text-success": validationStatus === "success"
             })}
           >
             {validationStatus === "error" && (

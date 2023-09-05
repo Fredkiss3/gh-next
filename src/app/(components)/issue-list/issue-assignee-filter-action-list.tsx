@@ -18,7 +18,7 @@ export type IssueAssigneeFilterActionProps = {
 };
 
 export function IssueAssigneeFilterActionList({
-  children,
+  children
 }: IssueAssigneeFilterActionProps) {
   const alignRight = useMediaQuery(`(min-width: 768px)`);
   const [inputQuery, setInputQuery] = React.useState("");
@@ -37,8 +37,8 @@ export function IssueAssigneeFilterActionList({
     <ActionList
       items={[
         {
-          items: filteredDataList,
-        },
+          items: filteredDataList
+        }
       ]}
       renderItem={({
         selected,
@@ -46,7 +46,7 @@ export function IssueAssigneeFilterActionList({
         username,
         name,
         avatar,
-        onCloseList,
+        onCloseList
       }) => (
         <Link
           prefetch={false}
@@ -60,7 +60,7 @@ export function IssueAssigneeFilterActionList({
           )}
           onClick={onCloseList}
         >
-          <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
+          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
             {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
           </div>
           {username && avatar && (

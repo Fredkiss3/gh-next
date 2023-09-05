@@ -4,7 +4,7 @@ import * as React from "react";
 import {
   OverlayArrow,
   Tooltip as ReactAriaTooltip,
-  TooltipTrigger,
+  TooltipTrigger
 } from "react-aria-components";
 
 // utils
@@ -36,7 +36,7 @@ export function HoverCard({
   children,
   delayInMs = 150,
   closeDelayInMs = 150,
-  placement = "top right",
+  placement = "top right"
 }: HoverCardProps) {
   const isTooltipEnabled = useMediaQuery(`(min-width: 768px)`);
   return (
@@ -51,9 +51,9 @@ export function HoverCard({
         offset={10}
         placement={placement}
         className={clsx(
-          "hidden md:block relative",
-          "w-max z-20",
-          "border border-neutral bg-tooltip-light rounded-md shadow-lg",
+          "relative hidden md:block",
+          "z-20 w-max",
+          "rounded-md border border-neutral bg-tooltip-light shadow-lg",
           "group/row-title-tooltip"
 
           // these horribles styles are for the little arrow
@@ -69,16 +69,16 @@ export function HoverCard({
         <OverlayArrow className="relative">
           <TriangleDownIcon
             className={clsx(
-              "h-6 w-6 absolute -top-2.5 text-neutral",
+              "absolute -top-2.5 h-6 w-6 text-neutral",
               "group-data-[placement=bottom]/row-title-tooltip:rotate-180",
-              "group-data-[placement=bottom]/row-title-tooltip:top-auto group-data-[placement=bottom]/row-title-tooltip:-bottom-2.5"
+              "group-data-[placement=bottom]/row-title-tooltip:-bottom-2.5 group-data-[placement=bottom]/row-title-tooltip:top-auto"
             )}
           />
           <TriangleDownIcon
             className={clsx(
-              "h-6 w-6 absolute -top-3 text-subtle",
+              "absolute -top-3 h-6 w-6 text-subtle",
               "group-data-[placement=bottom]/row-title-tooltip:rotate-180",
-              "group-data-[placement=bottom]/row-title-tooltip:top-auto group-data-[placement=bottom]/row-title-tooltip:-bottom-3"
+              "group-data-[placement=bottom]/row-title-tooltip:-bottom-3 group-data-[placement=bottom]/row-title-tooltip:top-auto"
             )}
           />
         </OverlayArrow>

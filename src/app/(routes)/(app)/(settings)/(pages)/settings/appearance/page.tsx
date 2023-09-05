@@ -11,7 +11,7 @@ import { getTheme } from "~/app/(actions)/theme";
 // types
 import type { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Appearance",
+  title: "Appearance"
 };
 
 export default async function Page() {
@@ -20,7 +20,7 @@ export default async function Page() {
   return (
     <div>
       <section className="flex flex-col gap-4 md:gap-8">
-        <h2 className="text-3xl font-medium border-b border-neutral py-2.5">
+        <h2 className="border-b border-neutral py-2.5 text-3xl font-medium">
           Theme preferences
         </h2>
 

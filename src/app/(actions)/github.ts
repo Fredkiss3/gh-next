@@ -4,7 +4,7 @@ import type { GithubRepositoryData } from "~/lib/types";
 import { fetchFromGithubAPI, nextCache } from "~/lib/server/utils.server";
 import {
   GITHUB_AUTHOR_USERNAME,
-  GITHUB_REPOSITORY_NAME,
+  GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
 
 type RepositoryStatsResponse = {
@@ -107,15 +107,15 @@ export const getGithubRepoData = async function () {
         repostatsQuery,
         {
           repoName: GITHUB_REPOSITORY_NAME,
-          repoOwner: GITHUB_AUTHOR_USERNAME,
+          repoOwner: GITHUB_AUTHOR_USERNAME
         }
       );
 
       const {
-        repository: { stargazers: allStargazersData },
+        repository: { stargazers: allStargazersData }
       } = await fetchFromGithubAPI<StargazersResponse>(stargazersQuery, {
         repoName: GITHUB_REPOSITORY_NAME,
-        repoOwner: GITHUB_AUTHOR_USERNAME,
+        repoOwner: GITHUB_AUTHOR_USERNAME
       });
 
       let allStargazers: GithubRepositoryData["stargazers"] =
@@ -129,12 +129,12 @@ export const getGithubRepoData = async function () {
       while (hasNextPage) {
         const {
           repository: {
-            stargazers: { pageInfo, edges },
-          },
+            stargazers: { pageInfo, edges }
+          }
         } = await fetchFromGithubAPI<StargazersResponse>(stargazersQuery, {
           cursor: nextCursor,
           repoName: GITHUB_REPOSITORY_NAME,
-          repoOwner: GITHUB_AUTHOR_USERNAME,
+          repoOwner: GITHUB_AUTHOR_USERNAME
         });
 
         nextCursor = pageInfo.endCursor;
@@ -162,7 +162,7 @@ export const getGithubRepoData = async function () {
 
         return {
           ...edge.node,
-          percent,
+          percent
         };
       });
 
@@ -176,13 +176,13 @@ export const getGithubRepoData = async function () {
         stargazers: allStargazers,
         readmeContent: await fetch(
           `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/README.md`
-        ).then((r) => r.text()),
+        ).then((r) => r.text())
       } satisfies GithubRepositoryData;
       return data;
     },
     {
       tags: ["GITHUB_REPO_DATA"],
-      revalidate: THIRTY_MINUTES_IN_SECONDS,
+      revalidate: THIRTY_MINUTES_IN_SECONDS
     }
   );
 

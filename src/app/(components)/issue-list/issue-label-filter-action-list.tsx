@@ -16,7 +16,7 @@ export type IssueLabelFilterActionListProps = {
 };
 
 export function IssueLabelFilterActionList({
-  children,
+  children
 }: IssueLabelFilterActionListProps) {
   // const [inputQuery, setInputQuery] = React.useState("");
   const alignRight = useMediaQuery(`(min-width: 768px)`);
@@ -30,24 +30,24 @@ export function IssueLabelFilterActionList({
             {
               color: "#a53ef5",
               title: "linear: next",
-              description: "tracked issue",
+              description: "tracked issue"
             },
             {
               color: "#9a507e",
               title: "area: app",
-              description: "app directory (appDir: true)",
+              description: "app directory (appDir: true)"
             },
             {
               color: "#fddf99",
               title: "template: bug",
-              description: "A user has filled out the bug report template",
+              description: "A user has filled out the bug report template"
             },
             {
               color: "#c2e0c6",
-              title: "template: documentation",
-            },
-          ],
-        },
+              title: "template: documentation"
+            }
+          ]
+        }
       ]}
       renderItem={({
         selected,
@@ -55,7 +55,7 @@ export function IssueLabelFilterActionList({
         color,
         title,
         description,
-        onCloseList,
+        onCloseList
       }) => (
         <Link
           prefetch={false}
@@ -68,7 +68,7 @@ export function IssueLabelFilterActionList({
           )}
           onClick={onCloseList}
         >
-          <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
+          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
             {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
           </div>
 

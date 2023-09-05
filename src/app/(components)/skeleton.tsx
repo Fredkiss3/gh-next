@@ -11,7 +11,7 @@ export function Skeleton({ className, shape = "rectangle" }: SkeletonProps) {
     <div
       className={clsx(className, "animate-pulse bg-grey/60", {
         "rounded-md": shape === "rectangle",
-        "rounded-full": shape === "circle",
+        "rounded-full": shape === "circle"
       })}
     />
   );

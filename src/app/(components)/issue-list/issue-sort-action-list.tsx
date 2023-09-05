@@ -28,12 +28,12 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
             { title: "Least commented", id: "comments-desc" },
             { title: "Recently updated", id: "updated-desc" },
             { title: "Least recently updated", id: "updated-asc" },
-            { title: "Best match", id: "releveance-desc" },
-          ],
+            { title: "Best match", id: "releveance-desc" }
+          ]
         },
         {
           header: {
-            title: "Most reactions",
+            title: "Most reactions"
           },
           horizontal: true,
           items: [
@@ -44,9 +44,9 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
             { emoji: true, title: "😕", id: "reactions-thinking_face-desc" },
             { emoji: true, title: "❤️", id: "reactions-heart-desc" },
             { emoji: true, title: "🚀", id: "reactions-rocket-desc" },
-            { emoji: true, title: "👀", id: "reactions-eyes-desc" },
-          ],
-        },
+            { emoji: true, title: "👀", id: "reactions-eyes-desc" }
+          ]
+        }
       ]}
       renderItem={({ selected, className, title, id, onCloseList, emoji }) => (
         <Link
@@ -54,13 +54,13 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
           href={`/issues?q=is:open+sort:${id}`}
           className={clsx(className, "flex items-center gap-4", {
             "hover:bg-neutral/50": !emoji,
-            "hover:bg-accent rounded-md p-2 justify-center": emoji,
+            "justify-center rounded-md p-2 hover:bg-accent": emoji
           })}
           onClick={onCloseList}
         >
           {!emoji ? (
             <>
-              <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
+              <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
                 {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
               </div>
               <span>{title}</span>

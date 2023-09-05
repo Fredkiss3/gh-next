@@ -19,11 +19,11 @@ function setRequestAndResponseCookies(
 ) {
   request.cookies.set({
     name: cookie.name,
-    value: cookie.value,
+    value: cookie.value
   });
 
   const response = NextResponse.next({
-    request,
+    request
   });
 
   response.cookies.set(cookie);
@@ -66,14 +66,14 @@ export default async function middleware(request: NextRequest) {
 
   return NextResponse.next({
     request: {
-      headers,
-    },
+      headers
+    }
   });
 }
 
 export const config = {
   // dont match `_next`, `api` routes or static paths
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|fonts|opengraph-image*|robots.txt|sitemap.xml).*)",
-  ],
+    "/((?!_next/static|_next/image|favicon.ico|fonts|opengraph-image*|robots.txt|sitemap.xml).*)"
+  ]
 };

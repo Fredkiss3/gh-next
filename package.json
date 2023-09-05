@@ -11,7 +11,8 @@
     "postinstall": "next telemetry disable",
     "db:generate": "set -a; . ./.env.local; set +a && drizzle-kit generate:pg",
     "db:studio": "set -a; . ./.env.local; set +a && drizzle-kit studio --port 3003 --verbose",
-    "db:migrate": "set -a; . ./.env.local; set +a && tsx ./migrate.ts"
+    "db:migrate": "set -a; . ./.env.local; set +a && tsx ./migrate.ts",
+    "format": "prettier . --write"
   },
   "type": "module",
   "dependencies": {
@@ -58,6 +59,7 @@
     "drizzle-kit": "^0.19.13",
     "pg": "^8.11.3",
     "postcss": "8.4.29",
+    "prettier-plugin-tailwindcss": "^0.5.4",
     "tailwindcss": "3.3.3",
     "tsx": "^3.12.8"
   }

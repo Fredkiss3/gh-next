@@ -7,7 +7,7 @@ import {
   AlertFillIcon,
   CheckIcon,
   StopIcon,
-  XIcon,
+  XIcon
 } from "@primer/octicons-react";
 
 // utils
@@ -34,7 +34,7 @@ export function Toast({
   keep = false,
   type = "success",
   dismissable = false,
-  className,
+  className
 }: ToastProps) {
   const [removed, setRemoved] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
@@ -62,11 +62,11 @@ export function Toast({
     <div
       className={clsx(
         className,
-        "rounded-md text-foreground flex",
+        "flex rounded-md text-foreground",
         "bg-background shadow-md transition",
         {
           hidden,
-          "translate-x-[calc(100%+50px)]": removed,
+          "translate-x-[calc(100%+50px)]": removed
         }
       )}
       // Remove toast after animation ends
@@ -84,12 +84,12 @@ export function Toast({
     >
       <div
         className={clsx(
-          "flex items-center justify-center w-12 text-white rounded-l-md",
+          "flex w-12 items-center justify-center rounded-l-md text-white",
           {
             "bg-success": type === "success",
             "bg-danger": type === "error",
             "bg-accent": type === "info",
-            "bg-severe": type === "warning",
+            "bg-severe": type === "warning"
           }
         )}
       >
@@ -98,7 +98,7 @@ export function Toast({
         {type === "error" && <StopIcon className="h-4 w-4" />}
         {type === "warning" && <AlertFillIcon className="h-4 w-4" />}
       </div>
-      <div className="flex p-4 border-neutral border-r border-b border-t rounded-r-md gap-2">
+      <div className="flex gap-2 rounded-r-md border-b border-r border-t border-neutral p-4">
         <span>{children}</span>
         {dismissable && (
           <Button

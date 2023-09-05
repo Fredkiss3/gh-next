@@ -8,7 +8,7 @@ import { getAuthedUser, redirectIfNotAuthed } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared/utils.shared";
 
 export default async function SettingsLayout({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }) {
@@ -18,7 +18,7 @@ export default async function SettingsLayout({
     <>
       <main
         className={clsx(
-          "my-5 max-w-[1270px] mx-auto px-5 flex flex-col gap-6",
+          "mx-auto my-5 flex max-w-[1270px] flex-col gap-6 px-5",
           "md:my-6 md:px-8"
         )}
       >

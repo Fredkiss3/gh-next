@@ -11,10 +11,10 @@ export const useSearchQueryStore = create<SearchQueryStore>((set) => ({
   query: "",
   setQuery: (query) =>
     set(() => ({
-      query,
+      query
     })),
   setQueryFromPrevious: (callback) =>
     set((store) => ({
-      query: callback(store.query),
-    })),
+      query: callback(store.query)
+    }))
 }));

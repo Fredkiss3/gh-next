@@ -2,7 +2,7 @@ import * as React from "react";
 import type { PageProps } from "~/lib/types";
 
 export default async function UserPage({
-  params: { username },
+  params: { username }
 }: PageProps<{ username: string }>) {
   return (
     <>

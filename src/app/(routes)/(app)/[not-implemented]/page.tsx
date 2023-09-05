@@ -10,11 +10,11 @@ import { clsx } from "~/lib/shared/utils.shared";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Not implemented",
+  title: "Not implemented"
 };
 
 export default function Page({
-  params: { "not-implemented": path },
+  params: { "not-implemented": path }
 }: {
   params: { "not-implemented": string };
 }) {
@@ -27,8 +27,8 @@ export default function Page({
   return (
     <section
       className={clsx(
-        "flex flex-col gap-4 items-center justify-center",
-        "px-5 h-[80vh] text-foreground text-center",
+        "flex flex-col items-center justify-center gap-4",
+        "h-[80vh] px-5 text-center text-foreground",
         "md:px-8"
       )}
     >
@@ -40,7 +40,7 @@ export default function Page({
 
       <Button
         href="/"
-        className="inline-flex gap-2 items-center !text-foreground !border-foreground"
+        className="inline-flex items-center gap-2 !border-foreground !text-foreground"
         variant="invisible"
       >
         <HomeIcon className="h-4 w-4" />

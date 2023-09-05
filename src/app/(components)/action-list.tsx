@@ -51,7 +51,7 @@ export function ActionList<TItem>({
   header,
   footer,
   noItemBorders = false,
-  renderItem,
+  renderItem
 }: ActionListProps<TItem>) {
   return (
     <Popover as="div" className={clsx("relative", className)}>
@@ -71,12 +71,12 @@ export function ActionList<TItem>({
             <div
               className={clsx(
                 itemsClassName,
-                "fixed inset-0 overflow-y-auto flex min-h-full items-center justify-center p-5",
-                "sm:absolute sm:top-[calc(100%+5px)] sm:bottom-[auto] sm:p-0",
+                "fixed inset-0 flex min-h-full items-center justify-center overflow-y-auto p-5",
+                "sm:absolute sm:bottom-[auto] sm:top-[calc(100%+5px)] sm:p-0",
                 "z-50",
                 {
-                  "sm:right-0 sm:left-[auto]": align === "right",
-                  "sm:left-0 sm:right-[auto]": align === "left",
+                  "sm:left-[auto] sm:right-0": align === "right",
+                  "sm:left-0 sm:right-[auto]": align === "left"
                 }
               )}
             >
@@ -85,18 +85,18 @@ export function ActionList<TItem>({
               <Popover.Panel
                 as="div"
                 className={clsx(
-                  "rounded-md w-full text-base",
-                  "bg-subtle text-foreground shadow-lg border-2 border-neutral",
-                  "flex flex-col min-w-max",
+                  "w-full rounded-md text-base",
+                  "border-2 border-neutral bg-subtle text-foreground shadow-lg",
+                  "flex min-w-max flex-col",
                   "relative z-50",
-                  "sm:text-sm sm:border",
+                  "sm:border sm:text-sm",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 )}
               >
                 {title && (
                   <header
                     className={clsx(
-                      "flex font-medium justify-between gap-4 border-b border-neutral/70 px-4 py-4",
+                      "flex justify-between gap-4 border-b border-neutral/70 px-4 py-4 font-medium",
                       "sm:py-2"
                     )}
                   >
@@ -118,15 +118,15 @@ export function ActionList<TItem>({
                     <div
                       key={`group-${groupIndex}`}
                       className={clsx("border-neutral/70", {
-                        "border-b": groupIndex < groups.length - 1,
+                        "border-b": groupIndex < groups.length - 1
                       })}
                     >
                       {group.header && (
                         <div
                           className={clsx(
-                            "font-medium text-grey px-4 py-2 sm:py-2 w-full border-t border-b border-neutral/70",
+                            "w-full border-b border-t border-neutral/70 px-4 py-2 font-medium text-grey sm:py-2",
                             {
-                              "bg-neutral/50": group.header.filled,
+                              "bg-neutral/50": group.header.filled
                             }
                           )}
                         >
@@ -135,9 +135,9 @@ export function ActionList<TItem>({
                       )}
                       <ul
                         className={clsx("flex max-h-[400px] overflow-auto", {
-                          "flex-col min-w-max": !group.horizontal,
-                          "flex-row px-4 py-4 flex-wrap gap-2 max-w-[300px]":
-                            group.horizontal,
+                          "min-w-max flex-col": !group.horizontal,
+                          "max-w-[300px] flex-row flex-wrap gap-2 px-4 py-4":
+                            group.horizontal
                         })}
                       >
                         {group.items.map((item, itemIndex) => (
@@ -153,11 +153,11 @@ export function ActionList<TItem>({
                                   "border-b":
                                     itemIndex < group.items.length - 1 &&
                                     !noItemBorders &&
-                                    !group.horizontal,
+                                    !group.horizontal
                                 }
                               ),
                               onCloseList: close,
-                              ...item,
+                              ...item
                             })}
                           </React.Fragment>
                         ))}
@@ -169,7 +169,7 @@ export function ActionList<TItem>({
                 {footer && (
                   <footer
                     className={clsx(
-                      "px-4 py-4 border-t border-neutral/70 font-medium",
+                      "border-t border-neutral/70 px-4 py-4 font-medium",
                       "sm:py-2"
                     )}
                   >

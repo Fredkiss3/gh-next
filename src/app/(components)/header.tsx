@@ -8,7 +8,7 @@ import {
   IssueOpenedIcon,
   MarkGithubIcon,
   PlusIcon,
-  SearchIcon,
+  SearchIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
 import { Input } from "./input";
@@ -16,7 +16,7 @@ import { Button } from "./button";
 import { HeaderUnderlineNavbar } from "./underline-navbar";
 import {
   UserDropdown,
-  UserDropdownSkeleton,
+  UserDropdownSkeleton
 } from "./user-dropdown/user-dropdown.server";
 
 // utils
@@ -35,12 +35,12 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
   return (
     <header
       className={clsx({
-        "border-b border-neutral": hideRepoNavbar,
+        "border-b border-neutral": hideRepoNavbar
       })}
     >
       <div
         className={clsx(
-          "flex py-4 px-5 items-center justify-between h-16 bg-header relative z-5",
+          "z-5 relative flex h-16 items-center justify-between bg-header px-5 py-4",
           "md:px-8"
         )}
       >
@@ -52,7 +52,7 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
           <PageTitle />
         </div>
 
-        <nav className="flex items-center gap-2 h-full">
+        <nav className="flex h-full items-center gap-2">
           <Input
             name="search"
             label="search input"
@@ -65,11 +65,11 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
           />
 
           <div
-            className="hidden md:block h-full w-[1px] bg-neutral self-stretch"
+            className="hidden h-full w-[1px] self-stretch bg-neutral md:block"
             aria-hidden="true"
           />
 
-          <ul className="flex items-center gap-2 h-full">
+          <ul className="flex h-full items-center gap-2">
             <li className="hidden md:block">
               <Button
                 isSquared
@@ -122,7 +122,7 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
             </React.Suspense>
           ) : (
             <Button
-              className="flex-shrink-0 !text-foreground !border-foreground"
+              className="flex-shrink-0 !border-foreground !text-foreground"
               href="/login"
               variant="invisible"
             >

@@ -7,7 +7,7 @@ import {
   MilestoneIcon,
   TagIcon,
   TriangleDownIcon,
-  XIcon,
+  XIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
 import { Button } from "~/app/(components)/button";
@@ -35,11 +35,11 @@ import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
 
 export const metadata: Metadata = {
-  title: "Issues",
+  title: "Issues"
 };
 
 export default function IssuesListPage({
-  searchParams,
+  searchParams
 }: PageProps<{}, { q: string; page: string }>) {
   const initialQuery = searchParams?.q;
 
@@ -60,7 +60,7 @@ async function IssuesListHeader() {
   const isAuthed = (await getAuthedUser()) !== null;
   return (
     <section
-      className="flex flex-col gap-4 px-5 md:px-0 md:flex-row"
+      className="flex flex-col gap-4 px-5 md:flex-row md:px-0"
       id="search-bar"
     >
       <IssuesListHeaderForm
@@ -68,7 +68,7 @@ async function IssuesListHeader() {
         showActionList={isAuthed}
       />
 
-      <div className="flex justify-between gap-4 items-center">
+      <div className="flex items-center justify-between gap-4">
         <SegmentedLayout>
           <li>
             <Button
@@ -113,7 +113,7 @@ async function IssuesListBody(props: {
         <IssueContentTable currentPage={currentPage} />
       </React.Suspense>
 
-      <div className="px-5 md:px-0 justify-center text-grey flex items-start gap-2 py-12">
+      <div className="flex items-start justify-center gap-2 px-5 py-12 text-grey md:px-0">
         <LightBulbIcon className="h-5 w-5" />
         <p>
           <strong className="text-foreground">ProTip!</strong> Ears burning? Get
@@ -141,7 +141,7 @@ function IssueContentTableSkeleton() {
             prefetch={false}
             href="/issues?q=is:open"
             className={clsx(
-              "font-semibold text-foreground flex items-center gap-2"
+              "flex items-center gap-2 font-semibold text-foreground"
             )}
           >
             <IssueOpenedIcon className="h-5 w-5" />
@@ -152,7 +152,7 @@ function IssueContentTableSkeleton() {
           <Link
             prefetch={false}
             href="/issues?q=is:closed"
-            className={clsx("text-grey flex items-center gap-2")}
+            className={clsx("flex items-center gap-2 text-grey")}
           >
             <CheckIcon className="h-5 w-5" />
             <span>
@@ -167,16 +167,16 @@ function IssueContentTableSkeleton() {
         <div
           className={clsx(
             "flex items-center justify-between gap-8",
-            "p-5 border-b border-neutral bg-subtle text-grey"
+            "border-b border-neutral bg-subtle p-5 text-grey"
           )}
         >
-          <ul className="hidden md:flex items-center gap-4">
+          <ul className="hidden items-center gap-4 md:flex">
             <li>
               <Link
                 prefetch={false}
                 href="/issues?q=is:open"
                 className={clsx(
-                  "font-semibold text-foreground flex items-center gap-2"
+                  "flex items-center gap-2 font-semibold text-foreground"
                 )}
               >
                 <IssueOpenedIcon className="h-5 w-5" />
@@ -189,7 +189,7 @@ function IssueContentTableSkeleton() {
               <Link
                 prefetch={false}
                 href="/issues?q=is:closed"
-                className={clsx("text-grey flex items-center gap-2")}
+                className={clsx("flex items-center gap-2 text-grey")}
               >
                 <CheckIcon className="h-5 w-5" />
                 <span>
@@ -201,7 +201,7 @@ function IssueContentTableSkeleton() {
 
           <ul
             className={clsx(
-              "flex items-center gap-6 justify-evenly flex-grow",
+              "flex flex-grow items-center justify-evenly gap-6",
               "sm:justify-start",
               "md:flex-grow-0"
             )}
@@ -285,12 +285,12 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center gap-4 md:hidden  px-5 md:px-0">
+      <div className="flex items-center gap-4 px-5  md:hidden md:px-0">
         <Link
           prefetch={false}
           href="/issues?q=is:open"
           className={clsx(
-            "font-semibold text-foreground flex items-center gap-2"
+            "flex items-center gap-2 font-semibold text-foreground"
           )}
         >
           <IssueOpenedIcon className="h-5 w-5" />
@@ -301,7 +301,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
         <Link
           prefetch={false}
           href="/issues?q=is:closed"
-          className={clsx("text-grey flex items-center gap-2")}
+          className={clsx("flex items-center gap-2 text-grey")}
         >
           <CheckIcon className="h-5 w-5" />
           <span>
@@ -315,16 +315,16 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
         <div
           className={clsx(
             "flex items-center justify-between gap-8",
-            "p-5 border-b border-neutral bg-subtle text-grey"
+            "border-b border-neutral bg-subtle p-5 text-grey"
           )}
         >
-          <ul className="hidden md:flex items-center gap-4">
+          <ul className="hidden items-center gap-4 md:flex">
             <li>
               <Link
                 prefetch={false}
                 href="/issues?q=is:open"
                 className={clsx(
-                  "font-semibold text-foreground flex items-center gap-2"
+                  "flex items-center gap-2 font-semibold text-foreground"
                 )}
               >
                 <IssueOpenedIcon className="h-5 w-5" />
@@ -337,7 +337,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
               <Link
                 prefetch={false}
                 href="/issues?q=is:closed"
-                className={clsx("text-grey flex items-center gap-2")}
+                className={clsx("flex items-center gap-2 text-grey")}
               >
                 <CheckIcon className="h-5 w-5" />
                 <span>
@@ -349,7 +349,7 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
 
           <ul
             className={clsx(
-              "flex items-center gap-6 justify-evenly flex-grow",
+              "flex flex-grow items-center justify-evenly gap-6",
               "sm:justify-start",
               "md:flex-grow-0"
             )}
@@ -412,12 +412,12 @@ async function IssueContentTable({ currentPage }: IssueContentTableProps) {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col py-24 px-12 justify-center items-center gap-4">
+    <div className="flex flex-col items-center justify-center gap-4 px-12 py-24">
       <IssueOpenedIcon className="h-6 w-6 text-grey" />
 
       <h3 className="text-2xl font-semibold">Nothing to see here!</h3>
 
-      <p className="text-center text-grey text-lg">
+      <p className="text-center text-lg text-grey">
         Either no issue matched your search or there is not issue yet in the
         database. <br /> You can still &nbsp;
         <Link href="/issues/new" className="text-accent">

@@ -11,7 +11,7 @@ import {
   getUserByUsername,
   getUserFromGithubProfile,
   githubUserSchema,
-  updateUserUsername,
+  updateUserUsername
 } from "~/app/(models)/user";
 
 import { z } from "zod";
@@ -29,12 +29,12 @@ export async function authenticateWithGithub(formData: FormData) {
   if (nextUrl) {
     const session = await getSession();
     await session.addAdditionnalData({
-      nextUrl,
+      nextUrl
     });
   }
 
   console.log({
-    ACTION_GITHUB_REDIRECT_URI: env.GITHUB_REDIRECT_URI,
+    ACTION_GITHUB_REDIRECT_URI: env.GITHUB_REDIRECT_URI
   });
 
   redirect(
@@ -48,7 +48,7 @@ export const logoutUser = withAuth(async function logoutUser() {
   const newSession = await session.invalidate();
   await newSession.addFlash({
     type: "info",
-    message: "Logged out successfully.",
+    message: "Logged out successfully."
   });
 
   cookies().set(newSession.getCookie());
@@ -62,7 +62,7 @@ export async function loginUser(user: any) {
 
     await session.addFlash({
       type: "error",
-      message: "An unexpected error happenned on authentication, please retry",
+      message: "An unexpected error happenned on authentication, please retry"
     });
 
     return revalidatePath(`/`);
@@ -83,7 +83,7 @@ export async function loginUser(user: any) {
 
   await session.addFlash({
     type: "success",
-    message: "Logged in successfully.",
+    message: "Logged in successfully."
   });
   cookies().set(session.getCookie());
 
@@ -148,7 +148,7 @@ const updateUserNameSchema = zfd.formData({
       .trim()
       .min(1, "please enter a username")
       .regex(/^[a-zA-Z_][a-zA-Z0-9_]+$/, "Invalid username")
-  ),
+  )
 });
 
 export const updateUserName = withAuth(async function (formData: FormData) {
@@ -159,9 +159,9 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   if (!result.success) {
     await session.addFormData({
       data: {
-        username: formData.get("username")?.toString() ?? null,
+        username: formData.get("username")?.toString() ?? null
       },
-      errors: result.error.flatten().fieldErrors,
+      errors: result.error.flatten().fieldErrors
     });
     return revalidatePath(`/settings/account`);
   }
@@ -169,7 +169,7 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   if (result.data.username.toLowerCase() === user!.username.toLowerCase()) {
     await session.addFlash({
       type: "info",
-      message: "username not changed",
+      message: "username not changed"
     });
 
     return revalidatePath(`/settings/account`);
@@ -181,8 +181,8 @@ export const updateUserName = withAuth(async function (formData: FormData) {
     await session.addFormData({
       data: result.data,
       errors: {
-        username: ["A user with this username already exists"],
-      },
+        username: ["A user with this username already exists"]
+      }
     });
     return revalidatePath(`/settings/account`);
   }
@@ -192,7 +192,7 @@ export const updateUserName = withAuth(async function (formData: FormData) {
   // await session.setUser(user);
   await session.addFlash({
     type: "success",
-    message: "username changed with success",
+    message: "username changed with success"
   });
 
   revalidatePath(`/`);

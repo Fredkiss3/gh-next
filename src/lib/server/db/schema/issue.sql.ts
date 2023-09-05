@@ -6,7 +6,7 @@ import {
   pgEnum,
   integer,
   boolean,
-  primaryKey,
+  primaryKey
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { users } from "./user.sql";
@@ -20,20 +20,20 @@ import {
   changeTitleActivities,
   editLabelsActivities,
   mentionActivities,
-  toggleActivities,
+  toggleActivities
 } from "./activity.sql";
 import { pgTable } from "./index.sql";
 
 export const IssueStatuses = {
   OPEN: "OPEN",
   CLOSED: "CLOSED",
-  NOT_PLANNED: "NOT_PLANNED",
+  NOT_PLANNED: "NOT_PLANNED"
 } as const;
 
 export const issueStatusEnum = pgEnum("issue_status", [
   "OPEN",
   "CLOSED",
-  "NOT_PLANNED",
+  "NOT_PLANNED"
 ]);
 
 export const issues = pgTable("issues", {
@@ -43,38 +43,38 @@ export const issues = pgTable("issues", {
   created_at: timestamp("created_at").defaultNow().notNull(),
   status: issueStatusEnum("status").default(IssueStatuses.OPEN).notNull(),
   author_id: integer("author_id").references(() => users.id, {
-    onDelete: "set null",
+    onDelete: "set null"
   }),
   assignee_id: integer("assignee_id").references(() => users.id),
-  is_locked: boolean("is_locked").default(false).notNull(),
+  is_locked: boolean("is_locked").default(false).notNull()
 });
 
 export const issuesRelations = relations(issues, ({ one, many }) => ({
   author: one(users, {
     fields: [issues.author_id],
     references: [users.id],
-    relationName: "author",
+    relationName: "author"
   }),
   assignees: many(issueToAssignees, {
-    relationName: "assignees",
+    relationName: "assignees"
   }),
   labelToIssues: many(labelToIssues),
   comments: many(comments),
   reactions: many(reactions),
   revisions: many(issueRevisions),
   subcriptions: many(issueUserSubscriptions, {
-    relationName: "issue",
+    relationName: "issue"
   }),
   changeTitleActivities: many(changeTitleActivities),
   toggleActivities: many(toggleActivities),
   mentionnedByActivities: many(mentionActivities, {
-    relationName: "mentionnedIssue",
+    relationName: "mentionnedIssue"
   }),
   mentionnedFromActivities: many(mentionActivities, {
-    relationName: "parentIssue",
+    relationName: "parentIssue"
   }),
   assignActivities: many(assignActivities),
-  editLabelsActivities: many(editLabelsActivities),
+  editLabelsActivities: many(editLabelsActivities)
 }));
 
 export const issueToAssignees = pgTable(
@@ -85,10 +85,10 @@ export const issueToAssignees = pgTable(
       .notNull(),
     issue_id: integer("issue_id")
       .references(() => issues.id)
-      .notNull(),
+      .notNull()
   },
   (table) => ({
-    pk: primaryKey(table.issue_id, table.assignee_id),
+    pk: primaryKey(table.issue_id, table.assignee_id)
   })
 );
 
@@ -98,13 +98,13 @@ export const issueToAssigneesRelation = relations(
     issue: one(issues, {
       fields: [issueToAssignees.issue_id],
       references: [issues.id],
-      relationName: "assignees",
+      relationName: "assignees"
     }),
     assignee: one(users, {
       fields: [issueToAssignees.assignee_id],
       references: [users.id],
-      relationName: "assignee",
-    }),
+      relationName: "assignee"
+    })
   })
 );
 
@@ -116,37 +116,37 @@ export const issueRevisions = pgTable("issue_revisions", {
     .notNull(),
   issue_id: integer("issue_id")
     .references(() => issues.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
     .notNull(),
-  updated_description: text("updated_description").notNull(),
+  updated_description: text("updated_description").notNull()
 });
 
 export const issueRevisionsRelations = relations(issueRevisions, ({ one }) => ({
   revised_by: one(users, {
     fields: [issueRevisions.revised_by_id],
     references: [users.id],
-    relationName: "revised_by",
+    relationName: "revised_by"
   }),
   issue: one(issues, {
     fields: [issueRevisions.issue_id],
     references: [issues.id],
-    relationName: "issue",
-  }),
+    relationName: "issue"
+  })
 }));
 
 export const issueUserSubscriptions = pgTable("issue_user_subscriptions", {
   id: serial("id").primaryKey(),
   user_id: integer("user_id")
     .references(() => users.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
     .notNull(),
   issue_id: integer("issue_id")
     .references(() => issues.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
-    .notNull(),
+    .notNull()
 });
 
 export const issueUserSubscriptionRelations = relations(
@@ -155,13 +155,13 @@ export const issueUserSubscriptionRelations = relations(
     user: one(users, {
       fields: [issueUserSubscriptions.user_id],
       references: [users.id],
-      relationName: "user",
+      relationName: "user"
     }),
     issue: one(issues, {
       fields: [issueUserSubscriptions.issue_id],
       references: [issues.id],
-      relationName: "issue",
-    }),
+      relationName: "issue"
+    })
   })
 );
 

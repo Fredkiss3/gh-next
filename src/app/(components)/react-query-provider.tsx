@@ -19,9 +19,9 @@ export function ReactQueryProvider({ children }: ReactQueryProviderProps) {
           queries: {
             refetchOnWindowFocus: false,
             retry: 2, // retry twice by default
-            staleTime: 5 * 60 * 1_000, // 5 minutes
-          },
-        },
+            staleTime: 5 * 60 * 1_000 // 5 minutes
+          }
+        }
       })
   );
   return (

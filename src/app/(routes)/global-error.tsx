@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Error({
   error,
-  reset,
+  reset
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -34,7 +34,7 @@ export default function Error({
         className={clsx(inter.className, "bg-backdrop")}
         suppressHydrationWarning
       >
-        <section className="h-[80vh] flex flex-col gap-4 items-center justify-center text-foreground">
+        <section className="flex h-[80vh] flex-col items-center justify-center gap-4 text-foreground">
           <h1 className="text-4xl font-bold">OOPS ! An error occured</h1>
 
           <h2 className="text-2xl">
@@ -44,7 +44,7 @@ export default function Error({
 
           <Button
             onClick={() => reset()}
-            className="inline-flex gap-2 items-center !text-foreground !border-foreground"
+            className="inline-flex items-center gap-2 !border-foreground !text-foreground"
             variant="invisible"
           >
             <HomeIcon className="h-4 w-4" />

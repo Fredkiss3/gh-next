@@ -12,6 +12,6 @@ export async function UserDropdown() {
 }
 export async function UserDropdownSkeleton() {
   return (
-    <div className="rounded-full flex-shrink-0 h-10 w-10 animate-pulse bg-grey" />
+    <div className="h-10 w-10 flex-shrink-0 animate-pulse rounded-full bg-grey" />
   );
 }

@@ -10,13 +10,13 @@ export type IssueListMainParentProps = {
 
 export function IssueListMainParent({
   initialQuery,
-  children,
+  children
 }: IssueListMainParentProps) {
   // we hack around useState, because useState will only called once
   // and that once is either in SSR or page navigation
   const [] = React.useState(() => {
     useSearchQueryStore.setState({
-      query: initialQuery ?? BASE_ISSUE_SEARCH_QUERY,
+      query: initialQuery ?? BASE_ISSUE_SEARCH_QUERY
     });
   });
 

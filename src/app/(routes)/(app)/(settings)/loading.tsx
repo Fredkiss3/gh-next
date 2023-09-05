@@ -5,7 +5,7 @@ export default function Loading() {
   return (
     <main
       className={clsx(
-        "my-5 max-w-[1270px] mx-auto px-5 flex flex-col gap-6",
+        "mx-auto my-5 flex max-w-[1270px] flex-col gap-6 px-5",
         "md:my-6 md:px-8"
       )}
     >
@@ -19,11 +19,11 @@ export default function Loading() {
       </section>
 
       <div className="grid gap-4 md:grid-cols-9">
-        <div className="md:col-span-3 lg:col-span-2 flex flex-col gap-2 w-full">
+        <div className="flex w-full flex-col gap-2 md:col-span-3 lg:col-span-2">
           <Skeleton className="h-7 w-full" />
           <Skeleton className="h-7 w-full" />
         </div>
-        <Skeleton className="md:col-span-6 lg:col-span-7 h-64" />
+        <Skeleton className="h-64 md:col-span-6 lg:col-span-7" />
       </div>
     </main>
   );

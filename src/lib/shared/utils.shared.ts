@@ -6,7 +6,7 @@ import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
   SORT_FILTERS,
-  STATUS_FILTERS,
+  STATUS_FILTERS
 } from "./constants";
 
 /**
@@ -117,7 +117,7 @@ export async function jsonFetch<T>(
   return fetch(url, {
     ...options,
     headers,
-    credentials: "include",
+    credentials: "include"
   })
     .then((response) => response.json() as Promise<T>)
     .catch((error) => {
@@ -204,7 +204,7 @@ export function hexToRGBHSL(hex: string): RGBHSLColor | null {
     b,
     h: Math.round(h * 360),
     s: Math.round(s * 100),
-    l: Math.round(l * 100),
+    l: Math.round(l * 100)
   };
 }
 
@@ -272,19 +272,33 @@ export function excerpt(str: string, maxChars: number): string {
 }
 
 const issueSearchFiltersSchema = z.object({
-  in: preprocess((arg) => {
-    if (Array.isArray(arg)) {
-      return new Set(arg);
-    }
-    return arg;
-  }, z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).default(new Set(IN_FILTERS)).nullish()),
+  in: preprocess(
+    (arg) => {
+      if (Array.isArray(arg)) {
+        return new Set(arg);
+      }
+      return arg;
+    },
+    z
+      .set(z.enum(IN_FILTERS))
+      .catch(new Set(IN_FILTERS))
+      .default(new Set(IN_FILTERS))
+      .nullish()
+  ),
   is: z.enum(STATUS_FILTERS).default("open").nullish().catch(null),
-  no: preprocess((arg) => {
-    if (Array.isArray(arg)) {
-      return new Set(arg);
-    }
-    return arg;
-  }, z.set(z.enum(NO_METADATA_FILTERS)).catch(new Set(NO_METADATA_FILTERS)).default(new Set(NO_METADATA_FILTERS)).nullish()),
+  no: preprocess(
+    (arg) => {
+      if (Array.isArray(arg)) {
+        return new Set(arg);
+      }
+      return arg;
+    },
+    z
+      .set(z.enum(NO_METADATA_FILTERS))
+      .catch(new Set(NO_METADATA_FILTERS))
+      .default(new Set(NO_METADATA_FILTERS))
+      .nullish()
+  ),
   label: z.array(z.string()).catch([]).default([]).nullish(),
   "-label": z.array(z.string()).catch([]).default([]).nullish(),
   assignee: z.array(z.string()).catch([]).default([]).nullish(),
@@ -298,7 +312,7 @@ const issueSearchFiltersSchema = z.object({
     .catch("created-asc")
     .default("created-asc")
     .nullish(),
-  query: z.string().nullish(),
+  query: z.string().nullish()
 });
 
 export type IssueSearchFilters = z.infer<typeof issueSearchFiltersSchema>;

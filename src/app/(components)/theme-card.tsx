@@ -12,12 +12,12 @@ export type ThemeCardProps = {
 
 export function ThemeCard({ value, defaultSelected }: ThemeCardProps) {
   return (
-    <label className="inline-flex flex-col items-start relative cursor-pointer">
+    <label className="relative inline-flex cursor-pointer flex-col items-start">
       {value !== "system" ? (
         <img
           src={clsx({
             "/dark_theme_preview.svg": value === "dark",
-            "/light_theme_preview.svg": value === "light",
+            "/light_theme_preview.svg": value === "light"
           })}
           className="rounded-t-md"
           alt={`theme ${value}`}
@@ -42,7 +42,7 @@ export function ThemeCard({ value, defaultSelected }: ThemeCardProps) {
         </picture>
       )}
 
-      <div className="p-3 flex items-center gap-1 border-t border-neutral w-full">
+      <div className="flex w-full items-center gap-1 border-t border-neutral p-3">
         <input
           type="radio"
           name="theme"
@@ -54,7 +54,7 @@ export function ThemeCard({ value, defaultSelected }: ThemeCardProps) {
 
         <div
           className={clsx(
-            "after:absolute after:border after:border-neutral after:rounded-md after:inset-0",
+            "after:absolute after:inset-0 after:rounded-md after:border after:border-neutral",
             "peer-checked:after:border-accent"
           )}
         />

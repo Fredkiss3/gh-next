@@ -21,16 +21,16 @@ export const metadata: Metadata = {
   title: {
     template: "%s - Fredkiss3/gh-next",
     default:
-      "Fredkiss3/gh-next - A minimal Github clone built on nextjs app router",
+      "Fredkiss3/gh-next - A minimal Github clone built on nextjs app router"
   },
-  description: "This is an issue management app",
+  description: "This is an issue management app"
 };
 
 export const revalidate = 0;
 export const fetchCache = "default-cache";
 
 export default async function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }) {

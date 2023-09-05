@@ -18,7 +18,7 @@ export type ChangeUsernameFormProps = {
 
 export function ChangeUsernameForm({
   defaultValue,
-  errors,
+  errors
 }: ChangeUsernameFormProps) {
   const [isPending, startTransition] = React.useTransition();
 
@@ -36,7 +36,7 @@ export function ChangeUsernameForm({
   return (
     <form
       action={updateUserName}
-      className="flex flex-col gap-4 items-stretch md:items-start"
+      className="flex flex-col items-stretch gap-4 md:items-start"
       onSubmit={(e) => {
         // we stop the event because we want the user to confirm their actino before submiting
         e.preventDefault();

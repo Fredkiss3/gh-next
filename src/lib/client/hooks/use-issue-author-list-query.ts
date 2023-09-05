@@ -3,7 +3,7 @@ import { filterIssueAuthorsByUsername } from "~/app/(actions)/issue";
 
 export function useIssueAuthorListQuery({
   name = "",
-  enabled,
+  enabled
 }: {
   name?: string;
   enabled: boolean;
@@ -12,6 +12,6 @@ export function useIssueAuthorListQuery({
     queryKey: ["ISSUE_AUTHOR_LIST", name],
     queryFn: () =>
       filterIssueAuthorsByUsername(name).then((result) => result.promise),
-    enabled,
+    enabled
   });
 }

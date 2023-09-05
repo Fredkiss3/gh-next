@@ -28,20 +28,20 @@ export function VerticalNavLink({
     <Link
       {...props}
       aria-current={isActive && "page"}
-      className={clsx("py-3 group relative w-full", {
+      className={clsx("group relative w-full py-3", {
         "font-medium before:absolute before:-left-1.5": isActive,
-        "before:bg-accent before:rounded-md before:w-1 before:h-[calc(100%-16px)]":
+        "before:h-[calc(100%-16px)] before:w-1 before:rounded-md before:bg-accent":
           isActive,
-        "before:top-1/2 before:translate-y-[-55%]": isActive,
+        "before:top-1/2 before:translate-y-[-55%]": isActive
       })}
       href={href}
     >
       <div
         className={clsx(
-          "inline-flex gap-2 items-center rounded-md py-1 px-1.5 w-full",
-          "group-hover:bg-neutral/50 transition duration-150",
+          "inline-flex w-full items-center gap-2 rounded-md px-1.5 py-1",
+          "transition duration-150 group-hover:bg-neutral/50",
           {
-            "bg-neutral/40": isActive,
+            "bg-neutral/40": isActive
           }
         )}
       >

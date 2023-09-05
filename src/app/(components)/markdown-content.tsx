@@ -35,11 +35,11 @@ type HTMLHeadingProps = React.DetailedHTMLProps<
 export async function MarkdownContent({
   content,
   linkHeaders = false,
-  className,
+  className
 }: MarkdownContentProps) {
   Code.theme = {
     dark: githubDark,
-    light: githubLight,
+    light: githubLight
   };
   console.time("markdown parsing");
   const html = await unified()
@@ -74,27 +74,27 @@ export async function MarkdownContent({
             {...props}
             className={clsx("text-sm md:text-base", {
               "pl-12": props.className === "contains-task-list",
-              "pl-10 list-disc": props.className !== "contains-task-list",
+              "list-disc pl-10": props.className !== "contains-task-list"
             })}
           />
         ),
         ol: (props: any) => (
           <ol
             {...props}
-            className={"pl-10 list-decimal [&_ol]:list-[lower-roman]"}
+            className={"list-decimal pl-10 [&_ol]:list-[lower-roman]"}
           />
         ),
         p: (props: any) => <p {...props} className={"my-4"} />,
         table: (props: any) => (
           <table
             {...props}
-            className="border-collapse table-auto border border-neutral w-max max-w-full overflow-auto block"
+            className="block w-max max-w-full table-auto border-collapse overflow-auto border border-neutral"
           />
         ),
         th: (props: any) => (
           <th
             {...props}
-            className="font-semibold text-left text-lg border border-neutral px-5 py-2"
+            className="border border-neutral px-5 py-2 text-left text-lg font-semibold"
           />
         ),
         tr: (props: any) => <tr {...props} className="even:bg-subtle" />,
@@ -106,7 +106,7 @@ export async function MarkdownContent({
             {...props}
             className={clsx({
               "mt-1.5": props.className === "task-list-item",
-              "my-2": props.className !== "task-list-item",
+              "my-2": props.className !== "task-list-item"
             })}
           />
         ),
@@ -114,7 +114,7 @@ export async function MarkdownContent({
           <input
             {...props}
             className={clsx({
-              "mb-1 mr-0.5 -ml-8 mt-0 align-middle": props.type === "checkbox",
+              "-ml-8 mb-1 mr-0.5 mt-0 align-middle": props.type === "checkbox"
             })}
           />
         ),
@@ -140,7 +140,7 @@ export async function MarkdownContent({
             // they don't end with '\n'
             if (lang === undefined && !children.endsWith("\n")) {
               return (
-                <code className="bg-neutral/50 rounded-md px-1.5 py-1">
+                <code className="rounded-md bg-neutral/50 px-1.5 py-1">
                   {children}
                 </code>
               );
@@ -154,7 +154,7 @@ export async function MarkdownContent({
                 <Code
                   lang={lang}
                   codeClassName="bg-neutral/50 mb-4 rounded-md py-[16px] px-[2px] overflow-auto w-full"
-                  className="p-0 overflow-auto w-full rounded-md"
+                  className="w-full overflow-auto rounded-md p-0"
                 >
                   {children.trim()}
                 </Code>
@@ -163,8 +163,8 @@ export async function MarkdownContent({
           } else {
             return <></>;
           }
-        },
-      },
+        }
+      }
     })
     .process(content);
 
@@ -187,15 +187,15 @@ function Header({ as, showLink, ...props }: HeaderProps) {
   return (
     <Tag
       className={clsx(
-        "border-b border-neutral pb-2.5 mb-4 relative group",
-        "scroll-mt-20 mt-8 first:mt-0",
+        "group relative mb-4 border-b border-neutral pb-2.5",
+        "mt-8 scroll-mt-20 first:mt-0",
         "sm:scroll-mt-24",
         {
-          "font-bold text-4xl": as === "h1",
+          "text-4xl font-bold": as === "h1",
           "font-semibold": as !== "h1",
           "text-3xl": as === "h2",
           "text-2xl": as === "h3",
-          "text-xl": as === "h4" || as === "h5" || as === "h6",
+          "text-xl": as === "h4" || as === "h5" || as === "h6"
         }
       )}
       {...props}

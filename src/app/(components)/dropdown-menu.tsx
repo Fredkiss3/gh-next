@@ -9,7 +9,7 @@ import {
   Popover,
   Menu,
   Item,
-  MenuTrigger,
+  MenuTrigger
 } from "react-aria-components";
 
 // utils
@@ -52,14 +52,14 @@ export function DropdownMenu({
   items,
   placement = "bottom right",
   className,
-  children,
+  children
 }: DropdownMenuProps) {
   const router = useRouter();
   return (
     <MenuTrigger>
       <Button
         aria-label="menu"
-        className="flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
+        className="flex-shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         {children}
       </Button>
@@ -81,8 +81,8 @@ export function DropdownMenu({
           className={clsx(
             className,
             "z-40 rounded-lg p-2",
-            "bg-subtle text-foreground shadow-md border border-neutral",
-            "flex flex-col min-w-max",
+            "border border-neutral bg-subtle text-foreground shadow-md",
+            "flex min-w-max flex-col",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           )}
           items={items}
@@ -95,13 +95,13 @@ export function DropdownMenu({
                   return (
                     <button
                       className={clsx(
-                        "flex items-center gap-2 min-w-max p-2  w-full focus:outline-none focus-visible:outline-none",
+                        "flex w-full min-w-max items-center gap-2  p-2 focus:outline-none focus-visible:outline-none",
                         {
-                          "bg-neutral rounded-md":
+                          "rounded-md bg-neutral":
                             isFocused ||
                             isHovered ||
                             isPressed ||
-                            isFocusVisible,
+                            isFocusVisible
                         }
                       )}
                       onClick={item.onClick}
@@ -121,13 +121,13 @@ export function DropdownMenu({
                       href={item.href}
                       onClick={close}
                       className={clsx(
-                        "flex items-center gap-2 min-w-max p-2  w-full focus:outline-none focus-visible:outline-none",
+                        "flex w-full min-w-max items-center gap-2  p-2 focus:outline-none focus-visible:outline-none",
                         {
-                          "bg-neutral  rounded-md outline-none":
+                          "rounded-md  bg-neutral outline-none":
                             isFocused ||
                             isHovered ||
                             isFocusVisible ||
-                            isPressed,
+                            isPressed
                         }
                       )}
                     >

@@ -17,7 +17,7 @@ export function LabelBadge({ title, color, className }: LabelBadgeProps) {
     b: 255,
     h: 0,
     s: 0,
-    l: 0,
+    l: 0
   };
   return (
     <span
@@ -28,11 +28,11 @@ export function LabelBadge({ title, color, className }: LabelBadgeProps) {
         "--label-b": b,
         "--label-h": h,
         "--label-s": s,
-        "--label-l": l,
+        "--label-l": l
       }}
       className={clsx(
         className,
-        "font-normal rounded-full px-2 border text-sm label-badge"
+        "label-badge rounded-full border px-2 text-sm font-normal"
       )}
     >
       {title}

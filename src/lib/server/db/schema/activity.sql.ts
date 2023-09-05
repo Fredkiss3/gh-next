@@ -4,7 +4,7 @@ import {
   integer,
   timestamp,
   pgEnum,
-  primaryKey,
+  primaryKey
 } from "drizzle-orm/pg-core";
 
 import { relations } from "drizzle-orm";
@@ -19,19 +19,19 @@ const baseActivityFields = {
   id: serial("id").primaryKey(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   initiator_id: integer("initiator_id").references(() => users.id, {
-    onDelete: "set null",
+    onDelete: "set null"
   }),
   issue_id: integer("issue_id")
     .references(() => issues.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
-    .notNull(),
+    .notNull()
 };
 
 export const changeTitleActivities = pgTable("change_title_activities", {
   ...baseActivityFields,
   old_title: varchar("old_title", { length: 255 }).notNull(),
-  new_title: varchar("new_title", { length: 255 }).notNull(),
+  new_title: varchar("new_title", { length: 255 }).notNull()
 });
 
 export const changeTitleActivitiesRelations = relations(
@@ -40,13 +40,13 @@ export const changeTitleActivitiesRelations = relations(
     initiator: one(users, {
       fields: [changeTitleActivities.initiator_id],
       references: [users.id],
-      relationName: "initiator",
+      relationName: "initiator"
     }),
     issue: one(issues, {
       fields: [changeTitleActivities.issue_id],
       references: [issues.id],
-      relationName: "issue",
-    }),
+      relationName: "issue"
+    })
   })
 );
 
@@ -55,12 +55,12 @@ export const changeTitleActivitiesRelations = relations(
 const issueStatusEnum = pgEnum("issue_status", [
   "OPEN",
   "CLOSED",
-  "NOT_PLANNED",
+  "NOT_PLANNED"
 ]);
 
 export const toggleActivities = pgTable("issue_toggle_activities", {
   ...baseActivityFields,
-  status: issueStatusEnum("status").notNull(),
+  status: issueStatusEnum("status").notNull()
 });
 
 export const issueToggleActivitiesRelations = relations(
@@ -69,13 +69,13 @@ export const issueToggleActivitiesRelations = relations(
     initiator: one(users, {
       fields: [toggleActivities.initiator_id],
       references: [users.id],
-      relationName: "initiator",
+      relationName: "initiator"
     }),
     issue: one(issues, {
       fields: [toggleActivities.issue_id],
       references: [issues.id],
-      relationName: "issue",
-    }),
+      relationName: "issue"
+    })
   })
 );
 
@@ -83,9 +83,9 @@ export const mentionActivities = pgTable("issue_mention_activities", {
   ...baseActivityFields,
   mentionned_issue_id: integer("mentionned_issue_id")
     .references(() => issues.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
-    .notNull(),
+    .notNull()
 });
 
 export const issueMentionActivitiesRelations = relations(
@@ -94,18 +94,18 @@ export const issueMentionActivitiesRelations = relations(
     initiator: one(users, {
       fields: [mentionActivities.initiator_id],
       references: [users.id],
-      relationName: "initiator",
+      relationName: "initiator"
     }),
     issue: one(issues, {
       fields: [mentionActivities.issue_id],
       references: [issues.id],
-      relationName: "parentIssue",
+      relationName: "parentIssue"
     }),
     mentionnedIssue: one(issues, {
       fields: [mentionActivities.issue_id],
       references: [issues.id],
-      relationName: "mentionnedIssue",
-    }),
+      relationName: "mentionnedIssue"
+    })
   })
 );
 
@@ -113,9 +113,9 @@ export const assignActivities = pgTable("assign_activities", {
   ...baseActivityFields,
   assignee_id: integer("assignee_id")
     .references(() => users.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
-    .notNull(),
+    .notNull()
 });
 
 export const assignActivitiesRelations = relations(
@@ -124,23 +124,23 @@ export const assignActivitiesRelations = relations(
     initiator: one(users, {
       fields: [assignActivities.initiator_id],
       references: [users.id],
-      relationName: "initiator",
+      relationName: "initiator"
     }),
     issue: one(issues, {
       fields: [assignActivities.issue_id],
       references: [issues.id],
-      relationName: "issue",
+      relationName: "issue"
     }),
     assignee: one(users, {
       fields: [assignActivities.issue_id],
       references: [users.id],
-      relationName: "assignee",
-    }),
+      relationName: "assignee"
+    })
   })
 );
 
 export const editLabelsActivities = pgTable("edit_labels_activities", {
-  ...baseActivityFields,
+  ...baseActivityFields
 });
 
 export const editLabelsActivitiesRelations = relations(
@@ -149,22 +149,22 @@ export const editLabelsActivitiesRelations = relations(
     initiator: one(users, {
       fields: [editLabelsActivities.initiator_id],
       references: [users.id],
-      relationName: "initiator",
+      relationName: "initiator"
     }),
     issue: one(issues, {
       fields: [editLabelsActivities.issue_id],
       references: [issues.id],
-      relationName: "issue",
+      relationName: "issue"
     }),
     labels: many(editActiviyToLabels, {
-      relationName: "labels",
-    }),
+      relationName: "labels"
+    })
   })
 );
 
 export const editActivityActionEnum = pgEnum("edit_activity_action", [
   "REMOVED",
-  "ADDED",
+  "ADDED"
 ]);
 
 export const editActiviyToLabels = pgTable(
@@ -173,17 +173,17 @@ export const editActiviyToLabels = pgTable(
     activity_id: integer("activity_id")
       .notNull()
       .references(() => editLabelsActivities.id, {
-        onDelete: "cascade",
+        onDelete: "cascade"
       }),
     label_id: integer("label_id")
       .notNull()
       .references(() => labels.id, {
-        onDelete: "cascade",
+        onDelete: "cascade"
       }),
-    action: editActivityActionEnum("action").notNull(),
+    action: editActivityActionEnum("action").notNull()
   },
   (table) => ({
-    pk: primaryKey(table.activity_id, table.label_id),
+    pk: primaryKey(table.activity_id, table.label_id)
   })
 );
 
@@ -193,12 +193,12 @@ export const editActiviyToLabelsRelations = relations(
     activity: one(editLabelsActivities, {
       fields: [editActiviyToLabels.activity_id],
       references: [editLabelsActivities.id],
-      relationName: "labels",
+      relationName: "labels"
     }),
     label: one(labels, {
       fields: [editActiviyToLabels.label_id],
-      references: [labels.id],
-    }),
+      references: [labels.id]
+    })
   })
 );
 

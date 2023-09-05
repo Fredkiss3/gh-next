@@ -102,7 +102,7 @@ export const Button = React.forwardRef<
       "hover:border-neutral focus:border-neutral focus-visible:border-accent focus-visible:!border-2 focus-visible:outline-none":
         variant === "ghost" && !isDisabled,
       "aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
-        variant === "ghost" && !isDisabled,
+        variant === "ghost" && !isDisabled
     }
   );
 
@@ -143,10 +143,10 @@ export const Button = React.forwardRef<
           "focus:outline focus:-outline-offset-2": !isLoading && !disabled,
           "[&[aria-pressed=true]]:outline [&[aria-pressed=true]]:-outline-offset-2":
             !isLoading && !disabled,
-          "focus-visible:shadow-inset focus:shadow-inset [&[aria-pressed=true]]:shadow-inset":
+          "focus:shadow-inset focus-visible:shadow-inset [&[aria-pressed=true]]:shadow-inset":
             !isLoading && !disabled && variant === "primary",
           "cursor-default": isLoading,
-          "cursor-not-allowed": disabled,
+          "cursor-not-allowed": disabled
         })}
         {...buttonProps}
       >
