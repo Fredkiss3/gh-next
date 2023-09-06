@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@primer/octicons-react";
 import { clsx } from "~/lib/shared/utils.shared";
@@ -13,6 +14,7 @@ export type PaginationProps = {
   perPage: number;
   className?: string;
   baseURL: string;
+  onNavigate?: (page: number) => void;
 };
 
 export function Pagination({
@@ -20,7 +22,8 @@ export function Pagination({
   currentPage,
   className,
   perPage,
-  baseURL
+  baseURL,
+  onNavigate
 }: PaginationProps) {
   const paginationRange = usePagination({
     currentPage,
@@ -50,6 +53,7 @@ export function Pagination({
             "pointer-events-none": currentPage === 1
           })}
           renderLeadingIcon={(cls) => <ChevronLeftIcon className={cls} />}
+          onClick={() => onNavigate?.(currentPage - 1)}
         >
           Previous <span className="sr-only">page</span>
         </Button>
@@ -99,6 +103,7 @@ export function Pagination({
           className={clsx({
             "pointer-events-none": currentPage === lastPage
           })}
+          onClick={() => onNavigate?.(currentPage + 1)}
         >
           Next <span className="sr-only">page</span>
         </Button>

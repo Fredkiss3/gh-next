@@ -2,6 +2,7 @@
 
 import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
 import { wait } from "~/lib/shared/utils.shared";
+import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
 
 const authorList = [
   {
@@ -221,8 +222,13 @@ const issues = [
     status_updated_at: new Date(),
     created_at: new Date()
   }
-];
+] satisfies IssueListResult["issues"];
 
-export async function getIssueList() {
-  return issues;
+export async function getIssueList(): Promise<IssueListResult> {
+  return {
+    issues,
+    noOfIssuesOpen: 1150,
+    noOfIssuesClosed: 1001,
+    totalCount: 2151
+  };
 }

@@ -1,6 +1,6 @@
 import { serial, varchar, integer, primaryKey } from "drizzle-orm/pg-core";
 
-import { relations, type InferModel } from "drizzle-orm";
+import { relations, type InferModel, type InferSelectModel } from "drizzle-orm";
 import { issues } from "./issue.sql";
 import { pgTable } from "./index.sql";
 
@@ -47,4 +47,4 @@ export const labelRelations = relations(labels, ({ many }) => ({
   labelToIssues: many(labelToIssues)
 }));
 
-export type Label = InferModel<typeof labels>;
+export type Label = InferSelectModel<typeof labels>;

@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 // components
 import {
@@ -16,25 +17,16 @@ import { UserHoverCardContents } from "~/app/(components)/user-hovercard-content
 import { Tooltip } from "~/app/(components)/tooltip";
 
 // utils
-import { clsx, formatDate } from "~/lib/shared/utils.shared";
+import {
+  clsx,
+  formatDate,
+  issueSearchFilterToString
+} from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueStatus } from "~/lib/server/db/schema/issue.sql";
-import type { Label } from "~/lib/server/db/schema/label.sql";
-import type { User } from "~/lib/server/db/schema/user.sql";
-
-export type IssueRowProps = {
-  id: number;
-  status: IssueStatus;
-  title: string;
-  author: Omit<User, "preferred_theme" | "id" | "github_id">;
-  description?: string;
-  status_updated_at: Date;
-  created_at: Date;
-  noOfComments: number;
-  labels: Array<Omit<Label, "description"> & { description?: string }>;
-  assigned_to: Array<Pick<User, "username" | "avatar_url">>;
-};
+import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
+import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+export type IssueRowProps = IssueListResult["issues"][number];
 
 export function IssueRow({
   status,
@@ -49,6 +41,8 @@ export function IssueRow({
   description
 }: IssueRowProps) {
   const assignTooltipLabel = assigned_to.map((u) => u.username).join(" and ");
+  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
+
   return (
     <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
       {status === "OPEN" && (
@@ -120,6 +114,14 @@ export function IssueRow({
                     <ReactAriaLink>
                       <Link
                         prefetch={false}
+                        onClick={() =>
+                          setSearchQuery(
+                            issueSearchFilterToString({
+                              is: "open",
+                              label: [name]
+                            })
+                          )
+                        }
                         href={`/issues?q=is:open+label:"${name}"`}
                       >
                         <LabelBadge color={color} title={name} />
@@ -150,6 +152,14 @@ export function IssueRow({
             <ReactAriaLink>
               <Link
                 prefetch={false}
+                onClick={() =>
+                  setSearchQuery(
+                    issueSearchFilterToString({
+                      is: "open",
+                      author: author.username
+                    })
+                  )
+                }
                 href={`/issues?q=is:open+author:${author.username}`}
                 className="hover:text-accent"
               >
@@ -164,6 +174,14 @@ export function IssueRow({
         <AvatarStack
           tooltipLabel={`assigned to ${assignTooltipLabel}`}
           users={assigned_to}
+          onAvatarLinkClick={(username) =>
+            setSearchQuery(
+              issueSearchFilterToString({
+                is: "open",
+                assignee: [username]
+              })
+            )
+          }
           getUserUrl={(username) => `/issues?q=is:open+assignee:${username}`}
         />
         {noOfComments > 0 && (

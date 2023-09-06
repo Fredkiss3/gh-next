@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 type PreviousCallback = (params: string) => string;
-type SearchQueryStore = {
+type IssueSearchStore = {
   query: string;
   setQuery: (params: string) => void;
   setQueryFromPrevious: (callback: PreviousCallback) => void;
 };
 
-export const useSearchQueryStore = create<SearchQueryStore>((set) => ({
+export const useSearchQueryStore = create<IssueSearchStore>((set) => ({
   query: "",
   setQuery: (query) =>
     set(() => ({

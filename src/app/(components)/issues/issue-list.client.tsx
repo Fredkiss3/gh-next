@@ -15,17 +15,20 @@ import { IssueSortActionList } from "~/app/(components)/issue-list/issue-sort-ac
 import { Pagination } from "~/app/(components)/pagination";
 
 // utils
-import { clsx } from "~/lib/shared/utils.shared";
+import { clsx, pluralize } from "~/lib/shared/utils.shared";
 
-export type IssueContentTableProps = {
-  noOfIssuesOpen: number;
-  noOfIssuesClosed: number;
-  totalPages: number;
-  currentPage: number;
-  issues: {}[];
-};
+// types
+import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
+import { IssueRow } from "./issue-row";
+export type IssueListClientProps = IssueListResult & { currentPage: number };
 
-export function IssueContentTable({ currentPage }: IssueContentTableProps) {
+export function IssueListClient({
+  currentPage,
+  issues,
+  totalCount,
+  noOfIssuesClosed,
+  noOfIssuesOpen
+}: IssueListClientProps) {
   return (
     <>
       {/* Header */}
@@ -39,7 +42,11 @@ export function IssueContentTable({ currentPage }: IssueContentTableProps) {
         >
           <IssueOpenedIcon className="h-5 w-5" />
           <p>
-            0 <span className="sr-only">issues</span>&nbsp;Open
+            {noOfIssuesOpen}&nbsp;
+            <span className="sr-only">
+              {pluralize("issue", noOfIssuesOpen)}
+            </span>
+            &nbsp;Open
           </p>
         </Link>
         <Link
@@ -49,7 +56,11 @@ export function IssueContentTable({ currentPage }: IssueContentTableProps) {
         >
           <CheckIcon className="h-5 w-5" />
           <span>
-            0 <span className="sr-only">issues</span>&nbsp;Closed
+            {noOfIssuesClosed}&nbsp;
+            <span className="sr-only">
+              {pluralize("issue", noOfIssuesClosed)}
+            </span>
+            &nbsp;Closed
           </span>
         </Link>
       </div>
@@ -73,7 +84,11 @@ export function IssueContentTable({ currentPage }: IssueContentTableProps) {
               >
                 <IssueOpenedIcon className="h-5 w-5" />
                 <p>
-                  0 <span className="sr-only">issues</span>&nbsp;Open
+                  {noOfIssuesOpen}&nbsp;
+                  <span className="sr-only">
+                    {pluralize("issue", noOfIssuesOpen)}
+                  </span>
+                  &nbsp;Open
                 </p>
               </Link>
             </li>
@@ -85,7 +100,11 @@ export function IssueContentTable({ currentPage }: IssueContentTableProps) {
               >
                 <CheckIcon className="h-5 w-5" />
                 <span>
-                  0 <span className="sr-only">issues</span>&nbsp;Closed
+                  {noOfIssuesClosed}&nbsp;
+                  <span className="sr-only">
+                    {pluralize("issue", noOfIssuesClosed)}
+                  </span>
+                  &nbsp;Closed
                 </span>
               </Link>
             </li>
@@ -131,25 +150,46 @@ export function IssueContentTable({ currentPage }: IssueContentTableProps) {
         {/* END Issue content table - header */}
 
         {/* Issue content table - list */}
-        {/* <EmptyState /> */}
-
-        <ul>
-          {/* {issues.map((issue) => (
-            <li key={issue.id}>
-              <IssueRow {...issue} />
-            </li>
-          ))} */}
-        </ul>
+        {issues.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <ul>
+            {issues.map((issue) => (
+              <li key={issue.id}>
+                <IssueRow {...issue} />
+              </li>
+            ))}
+          </ul>
+        )}
 
         {/* END Issue content table - list */}
       </div>
 
       <Pagination
         currentPage={currentPage}
-        perPage={5}
-        totalCount={50}
+        perPage={25}
+        totalCount={totalCount}
         baseURL="/issues?q=is:open&page="
       />
     </>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 px-12 py-24">
+      <IssueOpenedIcon className="h-6 w-6 text-grey" />
+
+      <h3 className="text-2xl font-semibold">Nothing to see here!</h3>
+
+      <p className="text-center text-lg text-grey">
+        Either no issue matched your search or there is not issue yet in the
+        database. <br /> You can still &nbsp;
+        <Link href="/issues/new" className="text-accent">
+          create a new issue
+        </Link>
+        .
+      </p>
+    </div>
   );
 }

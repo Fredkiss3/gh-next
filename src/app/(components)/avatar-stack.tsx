@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 
 // components
@@ -19,6 +20,7 @@ export type AvatarStackProps = {
   size?: "small" | "medium" | "large";
   getUserUrl?: (username: string) => string;
   tooltipLabel: string;
+  onAvatarLinkClick?: (username: string) => void;
 };
 
 export function AvatarStack({
@@ -26,6 +28,7 @@ export function AvatarStack({
   className,
   size = "small",
   getUserUrl,
+  onAvatarLinkClick,
   tooltipLabel
 }: AvatarStackProps) {
   return (
@@ -45,7 +48,11 @@ export function AvatarStack({
           >
             {getUserUrl ? (
               <ReactAriaLink>
-                <Link prefetch={false} href={getUserUrl(u.username)}>
+                <Link
+                  prefetch={false}
+                  href={getUserUrl(u.username)}
+                  onClick={() => onAvatarLinkClick?.(u.username)}
+                >
                   <Avatar
                     src={u.avatar_url}
                     username={u.username}

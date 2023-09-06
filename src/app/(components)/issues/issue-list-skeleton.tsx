@@ -1,17 +1,13 @@
 import * as React from "react";
 // components
 import { IssueRowSkeleton } from "./issue-row-skeleton";
-import {
-  CheckIcon,
-  IssueOpenedIcon,
-  TriangleDownIcon
-} from "@primer/octicons-react";
+import { CheckIcon, IssueOpenedIcon } from "@primer/octicons-react";
 import Link from "next/link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 
-export function IssueContentTableSkeleton() {
+export function IssueListSkeleton() {
   return (
     <>
       {/* Header */}

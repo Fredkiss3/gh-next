@@ -1,4 +1,4 @@
-import { relations, type InferModel } from "drizzle-orm";
+import { relations, type InferModel, type InferSelectModel } from "drizzle-orm";
 import { issueToAssignees, issueUserSubscriptions, issues } from "./issue.sql";
 import { reactions } from "./reaction.sql";
 import { comments } from "./comment.sql";
@@ -37,5 +37,5 @@ export const usersRelations = relations(users, ({ many }) => ({
   })
 }));
 
-export type User = InferModel<typeof users>;
+export type User = InferSelectModel<typeof users>;
 export type Theme = (typeof THEMES)[number];

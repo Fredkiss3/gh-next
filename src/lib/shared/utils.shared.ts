@@ -145,8 +145,8 @@ export type RGBHSLColor = {
  * @returns {RGBHSLColor | null} An object with the r, g, b, h, s, l values or null if the input is invalid.
  *
  * @example
- * console.log(hexToRGB('#0033ff')); // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
- * console.log(hexToRGB('03f'));     // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
+ * console.log(hexToRGBHSL('#0033ff')); // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
+ * console.log(hexToRGBHSL('03f'));     // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
  */
 export function hexToRGBHSL(hex: string): RGBHSLColor | null {
   let sanitizedHex = hex.startsWith("#") ? hex.slice(1) : hex;
@@ -459,4 +459,15 @@ export function debounce(callback: Function, delay: number = 500) {
       callback.apply(this, args);
     }, delay);
   };
+}
+
+/**
+ * Pluralize a string
+ * @example
+ *  pluralize('issue', 0) // returns issue
+ *  pluralize('issue', 1) // returns issue
+ *  pluralize('issue', 2) // returns issues
+ */
+export function pluralize(str: string, count: number) {
+  return str + (count > 1 ? "s" : "");
 }
