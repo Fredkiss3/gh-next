@@ -158,11 +158,11 @@ export function IssueListSearchInput({
       >
         <div
           className={clsx(
-            "flex items-center gap-1.5",
+            "flex flex-1 items-center gap-1.5",
             "rounded-r-md border border-neutral px-3 py-1.5",
-            "w-full bg-black shadow-sm outline-none ring-accent",
+            "w-full bg-header shadow-sm outline-none ring-accent",
             "text-grey",
-            "flex-1 focus-within:border focus-within:border-accent focus-within:ring-1",
+            "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
             {
               "rounded-l-none": squaredInputBorder,
               "rounded-l-md": !squaredInputBorder
