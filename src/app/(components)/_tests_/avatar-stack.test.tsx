@@ -21,7 +21,7 @@ const expectToHaveClasses = (classes: string[], classList: DOMTokenList) =>
 describe("Avatar", () => {
   const username = "john";
   const src = "./mocks/shoe.jpg";
-  test("should render img correctly with default size medium", () => {
+  test("should render correctly with default size medium", () => {
     render(<Avatar src={src} username={username} />);
 
     const img = screen.getByAltText(`@${username}`);

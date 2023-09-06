@@ -9,17 +9,18 @@ import { ReactAriaButton, ReactAriaLink } from "./react-aria-button";
 import { clsx } from "~/lib/shared-utils";
 
 // types
+export type Variant =
+  | "primary"
+  | "secondary"
+  | "accent-ghost"
+  | "ghost"
+  | "danger"
+  | "invisible"
+  | "subtle";
 export type CommonButtonProps = {
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
-  variant?:
-    | "primary"
-    | "secondary"
-    | "accent-ghost"
-    | "ghost"
-    | "danger"
-    | "invisible"
-    | "subtle";
+  variant?: Variant;
   isSquared?: boolean;
   isBlock?: boolean;
 };
@@ -48,6 +49,8 @@ function isButton(
 ): props is BaseButtonProps {
   return !("href" in props);
 }
+
+export const DEFAULT_LOADING_MESSAGE = "Chargement, veuillez patientez...";
 
 export const Button = React.forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
@@ -96,7 +99,7 @@ export const Button = React.forwardRef<
         variant === "secondary" && !isDisabled,
       "text-accent border-transparent !border": variant === "accent-ghost",
       "text-grey": variant === "accent-ghost" && isDisabled,
-      " hover:border-grey focus:border-transparent focus-visible:border-transparent focus:!ring-2 focus:ring-accent focus-visible:ring-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
+      "hover:border-grey focus:border-transparent focus-visible:border-transparent focus:!ring-2 focus:ring-accent focus-visible:ring-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
         variant === "accent-ghost" && !isDisabled,
       "!border text-foreground": variant === "ghost",
       "hover:border-neutral focus:border-neutral focus-visible:border-accent focus-visible:!border-2 focus-visible:outline-none":
@@ -125,7 +128,7 @@ export const Button = React.forwardRef<
     );
   } else if (isButton(restProps)) {
     const {
-      loadingMessage = "Chargement, veuillez patientez...",
+      loadingMessage = DEFAULT_LOADING_MESSAGE,
       isLoading = false,
       disabled = false,
       children,
