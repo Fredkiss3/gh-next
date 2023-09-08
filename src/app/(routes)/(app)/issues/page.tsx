@@ -3,12 +3,14 @@ import * as React from "react";
 import Link from "next/link";
 import { Button } from "~/app/(components)/button";
 import { CounterBadge } from "~/app/(components)/counter-badge";
-import { IssuesListHeaderForm } from "~/app/(components)/issue-list/issues-list-header-form";
+import { IssuesListHeaderForm } from "~/app/(components)/issues/issues-list-header-form";
 import { SegmentedLayout } from "~/app/(components)/segmented-layout";
-import { IssueListMainParent } from "~/app/(components)/issue-list/issue-list-main-parent";
-import { ClearSearchButtonSection } from "~/app/(components)/issue-list/clear-search-button";
+import { IssueListMainParent } from "~/app/(components)/issues/issue-list-main-parent";
+import { ClearSearchButtonSection } from "~/app/(components)/issues/clear-search-button";
 import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 import { LightBulbIcon, MilestoneIcon, TagIcon } from "@primer/octicons-react";
+import { IssueListSkeleton } from "~/app/(components)/issues/issue-list-skeleton";
+import { IssueListServer } from "~/app/(components)/issues/issue-list.server";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -17,8 +19,6 @@ import { getAuthedUser } from "~/app/(actions)/auth";
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
-import { IssueListSkeleton } from "~/app/(components)/issues/issue-list-skeleton";
-import { IssueListServer } from "~/app/(components)/issues/issue-list.server";
 
 export const metadata: Metadata = {
   title: "Issues"

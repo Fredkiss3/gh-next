@@ -227,8 +227,8 @@ const issues = [
 export async function getIssueList(): Promise<IssueListResult> {
   return {
     issues,
-    noOfIssuesOpen: 1150,
-    noOfIssuesClosed: 1001,
-    totalCount: 2151
+    noOfIssuesOpen: 115,
+    noOfIssuesClosed: 100,
+    totalCount: 215
   };
 }

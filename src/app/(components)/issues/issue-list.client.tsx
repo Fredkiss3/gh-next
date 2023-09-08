@@ -8,18 +8,19 @@ import {
   TriangleDownIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { IssueAuthorFilterActionList } from "~/app/(components)/issue-list/issue-author-filter-action-list";
-import { IssueLabelFilterActionList } from "~/app/(components)/issue-list/issue-label-filter-action-list";
-import { IssueAssigneeFilterActionList } from "~/app/(components)/issue-list/issue-assignee-filter-action-list";
-import { IssueSortActionList } from "~/app/(components)/issue-list/issue-sort-action-list";
+import { IssueAuthorFilterActionList } from "./issue-author-filter-action-list";
+import { IssueLabelFilterActionList } from "./issue-label-filter-action-list";
+import { IssueAssigneeFilterActionList } from "./issue-assignee-filter-action-list";
+import { IssueSortActionList } from "./issue-sort-action-list";
 import { Pagination } from "~/app/(components)/pagination";
+import { IssueRow } from "./issue-row";
 
 // utils
 import { clsx, pluralize } from "~/lib/shared/utils.shared";
 
 // types
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
-import { IssueRow } from "./issue-row";
+
 export type IssueListClientProps = IssueListResult & { currentPage: number };
 
 export function IssueListClient({
