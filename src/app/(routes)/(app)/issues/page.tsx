@@ -19,6 +19,7 @@ import { getAuthedUser } from "~/app/(actions)/auth";
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
+import { IssueSearchLink } from "~/app/(components)/issues/issue-search-link";
 
 export const metadata: Metadata = {
   title: "Issues"
@@ -104,13 +105,16 @@ async function IssuesListBody(props: {
         <p>
           <strong className="text-foreground">ProTip!</strong> Ears burning? Get
           mentions with&nbsp;
-          <Link
-            href="/issues?q=is:open+mention:@me"
+          <IssueSearchLink
+            // href="/issues?q=is:open+mention:@me"
+            filters={{
+              is: "open",
+              mentions: "@me"
+            }}
             className="text-accent"
-            prefetch={false}
           >
             mentions:@me.
-          </Link>
+          </IssueSearchLink>
         </p>
       </div>
     </section>
