@@ -1,6 +1,6 @@
 import { serial, varchar, integer, primaryKey } from "drizzle-orm/pg-core";
 
-import { relations, type InferModel } from "drizzle-orm";
+import { relations, type InferModel, type InferSelectModel } from "drizzle-orm";
 import { issues } from "./issue.sql";
 import { pgTable } from "./index.sql";
 
@@ -10,7 +10,7 @@ export const labels = pgTable("labels", {
   description: varchar("description", { length: 255 }).default("").notNull(),
   // 10 chars for a generous length, in practice it is 7 chars at most
   // ex: #FF10C0
-  color: varchar("color", { length: 10 }).notNull(),
+  color: varchar("color", { length: 10 }).notNull()
 });
 
 export const labelToIssues = pgTable(
@@ -19,32 +19,32 @@ export const labelToIssues = pgTable(
     issue_id: integer("issue_id")
       .notNull()
       .references(() => issues.id, {
-        onDelete: "cascade",
+        onDelete: "cascade"
       }),
     label_id: integer("label_id")
       .notNull()
       .references(() => labels.id, {
-        onDelete: "cascade",
-      }),
+        onDelete: "cascade"
+      })
   },
   (table) => ({
-    pk: primaryKey(table.issue_id, table.label_id),
+    pk: primaryKey(table.issue_id, table.label_id)
   })
 );
 
 export const labelToIssuesRelations = relations(labelToIssues, ({ one }) => ({
   issue: one(issues, {
     fields: [labelToIssues.issue_id],
-    references: [issues.id],
+    references: [issues.id]
   }),
   label: one(labels, {
     fields: [labelToIssues.label_id],
-    references: [labels.id],
-  }),
+    references: [labels.id]
+  })
 }));
 
 export const labelRelations = relations(labels, ({ many }) => ({
-  labelToIssues: many(labelToIssues),
+  labelToIssues: many(labelToIssues)
 }));
 
-export type Label = InferModel<typeof labels>;
+export type Label = InferSelectModel<typeof labels>;

@@ -44,7 +44,7 @@ function InternalForm<T>({
       return {
         requestSubmit() {
           formRef.current?.requestSubmit();
-        },
+        }
       };
     },
     []
@@ -157,6 +157,6 @@ export function useForm<T extends unknown>(
   return {
     Form,
     isPending,
-    formRef: ref,
+    formRef: ref
   } as const;
 }

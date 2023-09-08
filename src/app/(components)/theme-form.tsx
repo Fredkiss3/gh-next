@@ -20,9 +20,9 @@ export function ThemeForm({ theme }: ThemeFormProps) {
   return (
     <form
       action={updateTheme}
-      className="flex flex-col gap-4 items-center md:gap-8 md:items-start"
+      className="flex flex-col items-center gap-4 md:items-start md:gap-8"
     >
-      <fieldset className="flex flex-col items-stretch sm:flex-row sm:items-start gap-4 flex-wrap">
+      <fieldset className="flex flex-col flex-wrap items-stretch gap-4 sm:flex-row sm:items-start">
         <ThemeCard value="light" defaultSelected={theme === "light"} />
         <ThemeCard value="dark" defaultSelected={theme === "dark"} />
         <ThemeCard value="system" defaultSelected={theme === "system"} />

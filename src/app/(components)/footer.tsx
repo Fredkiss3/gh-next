@@ -13,12 +13,12 @@ export async function Footer({}: FooterProps) {
   return (
     <footer
       className={clsx(
-        "max-w-[1270px] mx-auto border-t border-neutral py-6 px-5",
+        "mx-auto max-w-[1270px] border-t border-neutral px-5 py-6",
         "md:px-8"
       )}
     >
       <h2 className="sr-only">Footer</h2>
-      <div className="flex items-center text-grey gap-4">
+      <div className="flex items-center gap-4 text-grey">
         <Link href="/">
           <MarkGithubIcon className="h-8 w-8" />
         </Link>

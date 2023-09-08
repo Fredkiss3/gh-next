@@ -14,7 +14,7 @@ fixes #
 
 Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your environment configuration.
 
-Steps : 
+Steps :
 
 1. ...
 2. ...
@@ -25,6 +25,6 @@ Steps :
 - [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
 
-## ! For Breaking Changes ! 
+## ! For Breaking Changes !
 
-Please describe the steps & configuration needed to upgrade the project. 
+Please describe the steps & configuration needed to upgrade the project.

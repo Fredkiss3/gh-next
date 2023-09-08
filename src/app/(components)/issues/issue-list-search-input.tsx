@@ -11,13 +11,13 @@ import {
   clsx,
   debounce,
   issueSearchFilterToString,
-  parseIssueSearchString,
+  parseIssueSearchString
 } from "~/lib/shared/utils.shared";
 import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
   SORT_FILTERS,
-  STATUS_FILTERS,
+  STATUS_FILTERS
 } from "~/lib/shared/constants";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
@@ -32,7 +32,7 @@ export type IssueListSearchInputProps = {
 // Inspired by : https://github.com/openstatusHQ/openstatus/blob/main/apps/web/src/app/_components/input-search.tsx
 export function IssueListSearchInput({
   onSearch,
-  squaredInputBorder,
+  squaredInputBorder
 }: IssueListSearchInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,7 +42,7 @@ export function IssueListSearchInput({
   const {
     query: inputValue,
     setQuery: setInputValue,
-    setQueryFromPrevious: setInputValueFromPrevious,
+    setQueryFromPrevious: setInputValueFromPrevious
   } = useSearchQueryStore();
 
   const [currentWord, setCurrentWord] = React.useState("");
@@ -57,7 +57,7 @@ export function IssueListSearchInput({
       name: currentWord.match(authorRegex)
         ? currentWord.replace(authorRegex, "")
         : "",
-      enabled: !!currentWord.match(authorRegex),
+      enabled: !!currentWord.match(authorRegex)
     });
 
   const { data: assigneeList, isInitialLoading: isLoadingAssignee } =
@@ -65,7 +65,7 @@ export function IssueListSearchInput({
       name: currentWord.match(assigneeRegex)
         ? currentWord.replace(assigneeRegex, "")
         : "",
-      enabled: !!currentWord.match(assigneeRegex),
+      enabled: !!currentWord.match(assigneeRegex)
     });
 
   const { data: mentionList, isInitialLoading: isLoadingMentions } =
@@ -73,7 +73,7 @@ export function IssueListSearchInput({
       name: currentWord.match(mentionsRegex)
         ? currentWord.replace(mentionsRegex, "")
         : "",
-      enabled: !!currentWord.match(mentionsRegex),
+      enabled: !!currentWord.match(mentionsRegex)
     });
 
   const isLoading = isLoadingAuthor || isLoadingAssignee || isLoadingMentions;
@@ -81,59 +81,59 @@ export function IssueListSearchInput({
   const search = {
     sort: {
       values: SORT_FILTERS,
-      getPlaceholder: () => SORT_FILTERS.map((str) => `[${str}]`).join(" "),
+      getPlaceholder: () => SORT_FILTERS.map((str) => `[${str}]`).join(" ")
     },
     in: {
       values: IN_FILTERS,
-      getPlaceholder: () => IN_FILTERS.map((str) => `[${str}]`).join(" "),
+      getPlaceholder: () => IN_FILTERS.map((str) => `[${str}]`).join(" ")
     },
     is: {
       values: STATUS_FILTERS,
-      getPlaceholder: () => STATUS_FILTERS.map((str) => `[${str}]`).join(" "),
+      getPlaceholder: () => STATUS_FILTERS.map((str) => `[${str}]`).join(" ")
     },
     no: {
       values: NO_METADATA_FILTERS,
       getPlaceholder: () =>
-        NO_METADATA_FILTERS.map((str) => `[${str}]`).join(" "),
+        NO_METADATA_FILTERS.map((str) => `[${str}]`).join(" ")
     },
     author: {
       // this is to fix a bug where results of `-author` also appears for `author`
       values: currentWord.startsWith("-")
         ? []
         : (authorList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues with author]",
+      getPlaceholder: () => "[Issues with author]"
     },
     "-author": {
       // this is to fix a bug where results of `author` also appears for `-author`
       values: !currentWord.startsWith("-")
         ? []
         : (authorList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues without author]",
+      getPlaceholder: () => "[Issues without author]"
     },
     assignee: {
       values: currentWord.startsWith("-")
         ? []
         : (assigneeList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues with assignees]",
+      getPlaceholder: () => "[Issues with assignees]"
     },
     "-assignee": {
       values: !currentWord.startsWith("-")
         ? []
         : (assigneeList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues without assignees]",
+      getPlaceholder: () => "[Issues without assignees]"
     },
     mentions: {
       values: currentWord.startsWith("-")
         ? []
         : (mentionList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues mentionning users]",
+      getPlaceholder: () => "[Issues mentionning users]"
     },
     "-mentions": {
       values: !currentWord.startsWith("-")
         ? []
         : (mentionList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues not mentionning users]",
-    },
+      getPlaceholder: () => "[Issues not mentionning users]"
+    }
   };
   type SearchKey = keyof typeof search;
 
@@ -158,14 +158,14 @@ export function IssueListSearchInput({
       >
         <div
           className={clsx(
-            "flex items-center gap-1.5",
-            "border-neutral rounded-r-md border px-3 py-1.5",
-            "bg-black shadow-sm ring-accent outline-none w-full",
+            "flex flex-1 items-center gap-1.5",
+            "rounded-r-md border border-neutral px-3 py-1.5",
+            "w-full bg-header shadow-sm outline-none ring-accent",
             "text-grey",
-            "focus-within:border focus-within:border-accent focus-within:ring-1 flex-1",
+            "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
             {
               "rounded-l-none": squaredInputBorder,
-              "rounded-l-md": !squaredInputBorder,
+              "rounded-l-md": !squaredInputBorder
             }
           )}
         >
@@ -206,7 +206,7 @@ export function IssueListSearchInput({
               setCurrentWord(word);
             }}
             placeholder="Search all issues"
-            className={clsx("bg-transparent flex-grow outline-none")}
+            className={clsx("flex-grow bg-transparent outline-none")}
           />
         </div>
 
@@ -263,7 +263,7 @@ export function IssueListSearchInput({
                         className="group"
                       >
                         {key}
-                        <span className="text-white/50 ml-1 hidden truncate group-aria-[selected=true]:block">
+                        <span className="ml-1 hidden truncate text-white/50 group-aria-[selected=true]:block">
                           {search[key as SearchKey].getPlaceholder()}
                         </span>
                       </CommandItem>
@@ -328,9 +328,9 @@ function ItemGroupWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={clsx(
-        "bg-subtle text-foreground absolute top-2 z-10 w-full rounded-md shadow-md outline-none border-neutral",
+        "absolute top-2 z-10 w-full rounded-md border-neutral bg-subtle text-foreground shadow-md outline-none",
         {
-          border: filteredCount > 0,
+          border: filteredCount > 0
         }
       )}
     >
@@ -378,7 +378,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={clsx(
-      "text-foreground [&_[cmdk-group-heading]]:text-foreground/50 overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
+      "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-foreground/50",
       className
     )}
     {...props}
@@ -394,7 +394,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={clsx(
-      "aria-selected:bg-accent aria-selected:text-white relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-base outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-base outline-none aria-selected:bg-accent aria-selected:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}

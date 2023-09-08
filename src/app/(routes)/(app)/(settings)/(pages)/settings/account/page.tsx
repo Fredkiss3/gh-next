@@ -7,14 +7,14 @@ import { ChangeUsernameForm } from "~/app/(components)/change-username-form";
 import {
   getAuthedUser,
   getSession,
-  redirectIfNotAuthed,
+  redirectIfNotAuthed
 } from "~/app/(actions)/auth";
 
 // types
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Account settings",
+  title: "Account settings"
 };
 
 export default async function Page() {
@@ -25,7 +25,7 @@ export default async function Page() {
   return (
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-4 md:gap-8">
-        <h2 className="text-3xl font-medium border-b border-neutral py-2.5">
+        <h2 className="border-b border-neutral py-2.5 text-3xl font-medium">
           Change username
         </h2>
 

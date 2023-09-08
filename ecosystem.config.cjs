@@ -13,8 +13,8 @@ module.exports = {
       max_memory_restart: "1G",
       env: {
         PORT: 8892,
-        HOSTNAME: "0.0.0.0",
-      },
-    },
-  ],
+        HOSTNAME: "0.0.0.0"
+      }
+    }
+  ]
 };

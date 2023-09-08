@@ -23,8 +23,8 @@ export class WebdisKV implements KVStore {
       method: command === "GET" ? "GET" : "PUT",
       cache: "no-store",
       headers: {
-        Authorization: `Basic ${btoa(authString)}`,
-      },
+        Authorization: `Basic ${btoa(authString)}`
+      }
     }).then(async (r) => {
       console.timeEnd(`[${dateNow}] ${command} ${args[0]}`);
       return r.json() as T;

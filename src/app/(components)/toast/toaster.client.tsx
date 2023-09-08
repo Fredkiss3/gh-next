@@ -28,7 +28,7 @@ export function ToasterClient({ flashes }: ToasterClientProps) {
   return (
     <>
       {allFlashes.length > 0 && (
-        <ul className="flex flex-col gap-2 fixed bottom-10 right-10 items-end">
+        <ul className="fixed bottom-10 right-10 flex flex-col items-end gap-2">
           {allFlashes.map((flash, index) => (
             <Toast
               type={flash.type}

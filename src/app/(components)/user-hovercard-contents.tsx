@@ -19,13 +19,13 @@ export function UserHoverCardContents({
   bio,
   location,
   avatar_url,
-  className,
+  className
 }: UserHoverCardContentsProps) {
   return (
     <div
       className={clsx(
         className,
-        "flex flex-col gap-2 p-5 w-[300px] max-w-[300px]"
+        "flex w-[300px] max-w-[300px] flex-col gap-2 p-5"
       )}
     >
       <Avatar size="medium" src={avatar_url} username={username} />
@@ -44,7 +44,7 @@ export function UserHoverCardContents({
       </Link>
       {bio && <p>{excerpt(bio, 88)}</p>}
       {location && (
-        <div className="text-grey flex items-center gap-1">
+        <div className="flex items-center gap-1 text-grey">
           <LocationIcon className="h-4 w-4" />
           <span>{location}</span>
         </div>

@@ -28,7 +28,7 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
       const session = await getSession();
       await session.addFlash({
         type: "warning",
-        message: "You must be authenticated to do this action.",
+        message: "You must be authenticated to do this action."
       });
 
       revalidatePath("/");
@@ -41,17 +41,17 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
 const githubGraphQLAPIResponseSchema = z.union([
   z.object({
     message: z.string(),
-    documentation_url: z.string().url(),
+    documentation_url: z.string().url()
   }),
   z.object({
     message: z.undefined(),
-    data: z.record(z.string(), z.any()),
+    data: z.record(z.string(), z.any())
   }),
   z.object({
     data: z.undefined(),
     message: z.undefined(),
-    errors: z.array(z.record(z.string(), z.any())),
-  }),
+    errors: z.array(z.record(z.string(), z.any()))
+  })
 ]);
 
 /**
@@ -69,17 +69,28 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
     method: "POST",
     body: JSON.stringify({
       query: graphqlQuery,
-      variables,
+      variables
     }),
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
       // this header is required per the documentation : https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#user-agent-required
-      "User-Agent": GITHUB_AUTHOR_USERNAME,
-    },
+      "User-Agent": GITHUB_AUTHOR_USERNAME
+    }
     // cache: "no-store",
   })
-    .then((r) => r.json())
+    .then(async (r) => {
+      const text = await r.text();
+      if (!r.ok) {
+        console.error({
+          text,
+          status: r.status,
+          statusText: r.statusText
+        });
+        throw new Error(text);
+      }
+      return JSON.parse(text);
+    })
     .then((json) => {
       const parsed = githubGraphQLAPIResponseSchema.parse(json);
 
@@ -95,7 +106,7 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
         return parsed.data as T;
       } else {
         console.error({
-          errors: parsed.errors,
+          errors: parsed.errors
         });
         throw new Error(`GraphQL error : check the terminal for errors.`);
       }

@@ -17,7 +17,7 @@ export async function Toaster() {
       flashes={flashes.map((flash, index) => ({
         ...flash,
         id: Math.random().toString(),
-        delay: index * 500,
+        delay: index * 500
       }))}
     />
   );

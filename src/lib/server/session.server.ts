@@ -5,7 +5,7 @@ import { preprocess, z } from "zod";
 import {
   LOGGED_IN_SESSION_TTL,
   SESSION_COOKIE_KEY,
-  LOGGED_OUT_SESSION_TTL,
+  LOGGED_OUT_SESSION_TTL
 } from "~/lib/shared/constants";
 import { env } from "~/env.mjs";
 import { nanoid } from "nanoid";
@@ -25,7 +25,7 @@ const sessionSchema = z.object({
     .pick({
       id: true,
       preferred_theme: true,
-      github_id: true,
+      github_id: true
     })
     .nullish(),
   flashMessages: z
@@ -39,12 +39,12 @@ const sessionSchema = z.object({
           z.union([primitiveSchema, z.array(primitiveSchema)]).nullable()
         )
         .nullish(),
-      errors: z.record(z.string(), z.array(z.string())).nullish(),
+      errors: z.record(z.string(), z.array(z.string())).nullish()
     })
     .nullish(),
   signature: z.string(),
   additionnalData: z.record(z.string(), z.any()).nullish(),
-  bot: z.boolean().optional().default(false),
+  bot: z.boolean().optional().default(false)
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;
@@ -87,7 +87,7 @@ export class Session {
   public static async create(isBot: boolean = false) {
     return Session.#fromPayload(
       await Session.#create({
-        isBot,
+        isBot
       })
     );
   }
@@ -112,7 +112,7 @@ export class Session {
       // when testing on local, the cookies should not be set to secure
       secure: !env.NEXT_PUBLIC_VERCEL_URL.startsWith("localhost")
         ? true
-        : undefined,
+        : undefined
     };
   }
 
@@ -138,9 +138,9 @@ export class Session {
         user: {
           id: user.id,
           preferred_theme: user.preferred_theme,
-          github_id: user.github_id,
-        },
-      },
+          github_id: user.github_id
+        }
+      }
     });
 
     await Session.#save(this.#_session);
@@ -155,8 +155,8 @@ export class Session {
     this.#_session = await Session.#create({
       init: {
         flashMessages: this.#_session.flashMessages,
-        additionnalData: this.#_session.additionnalData,
-      },
+        additionnalData: this.#_session.additionnalData
+      }
     });
 
     return this;
@@ -188,8 +188,8 @@ export class Session {
       ([key, value]) =>
         ({
           type: key,
-          message: value,
-        } as SessionFlash)
+          message: value
+        }) as SessionFlash
     );
 
     return flash;
@@ -264,7 +264,7 @@ export class Session {
       flashMessages: options?.init?.flashMessages,
       additionnalData: options?.init?.additionnalData,
       bot: Boolean(options?.isBot),
-      user: options?.init?.user,
+      user: options?.init?.user
     } satisfies SerializedSession;
 
     await Session.#save(sessionObject);
@@ -327,7 +327,7 @@ export class Session {
     const signature = await this.#sign(sessionId, env.SESSION_SECRET);
     return {
       sessionId,
-      signature,
+      signature
     };
   }
 

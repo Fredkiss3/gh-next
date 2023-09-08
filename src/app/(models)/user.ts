@@ -20,7 +20,7 @@ export async function getUserFromGithubProfile(
       avatar_url: ghUser.avatar_url,
       name: ghUser.name,
       location: ghUser.location,
-      bio: ghUser.bio,
+      bio: ghUser.bio
     })
     .onConflictDoUpdate({
       target: users.github_id,
@@ -28,15 +28,15 @@ export async function getUserFromGithubProfile(
         avatar_url: ghUser.avatar_url,
         name: ghUser.name,
         location: ghUser.location,
-        bio: ghUser.bio,
-      },
+        bio: ghUser.bio
+      }
     })
     .returning();
 }
 
 const userByUserNamePrepared = db
   .select({
-    username: users.username,
+    username: users.username
   })
   .from(users)
   .where(
@@ -51,7 +51,7 @@ const userByUserNamePrepared = db
  */
 export async function getUserByUsername(username: string) {
   return await userByUserNamePrepared.execute({
-    username_lowercase: username.toLowerCase(),
+    username_lowercase: username.toLowerCase()
   });
 }
 
@@ -63,7 +63,7 @@ const userByIdPrepared = db
 
 export async function getUserById(id: number) {
   return await userByIdPrepared.execute({
-    id,
+    id
   });
 }
 
@@ -71,7 +71,7 @@ export async function updateUserUsername(username: string, id: number) {
   return await db
     .update(users)
     .set({
-      username,
+      username
     })
     .where(eq(users.id, id))
     .returning();
@@ -81,7 +81,7 @@ export async function updateUserTheme(newTheme: Theme, id: number) {
   return await db
     .update(users)
     .set({
-      preferred_theme: newTheme,
+      preferred_theme: newTheme
     })
     .where(eq(users.id, id))
     .returning();
@@ -93,5 +93,5 @@ export const githubUserSchema = z.object({
   name: z.string(),
   avatar_url: z.string(),
   location: z.string().nullish(),
-  bio: z.string().nullish(),
+  bio: z.string().nullish()
 });

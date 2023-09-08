@@ -14,7 +14,7 @@ export function usePagination({
   totalCount,
   perPage,
   siblingCount = 1,
-  currentPage,
+  currentPage
 }: {
   totalCount: number;
   perPage: number;
@@ -75,7 +75,7 @@ export function usePagination({
         PAGINATION_DOTS,
         ...middleRange,
         PAGINATION_DOTS,
-        lastPageIndex,
+        lastPageIndex
       ];
     }
 

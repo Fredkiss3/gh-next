@@ -1,9 +1,10 @@
+"use client";
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@primer/octicons-react";
 import { clsx } from "~/lib/shared/utils.shared";
 import {
   PAGINATION_DOTS,
-  usePagination,
+  usePagination
 } from "~/lib/client/hooks/use-pagination";
 import { Button } from "./button";
 
@@ -13,6 +14,7 @@ export type PaginationProps = {
   perPage: number;
   className?: string;
   baseURL: string;
+  onNavigate?: (page: number) => void;
 };
 
 export function Pagination({
@@ -21,12 +23,13 @@ export function Pagination({
   className,
   perPage,
   baseURL,
+  onNavigate
 }: PaginationProps) {
   const paginationRange = usePagination({
     currentPage,
     totalCount,
     siblingCount: 1,
-    perPage,
+    perPage
   });
 
   if (currentPage === 0 || paginationRange.length < 2) {
@@ -47,14 +50,15 @@ export function Pagination({
           prefetch={false}
           aria-disabled={currentPage === 1 ? true : undefined}
           className={clsx({
-            "pointer-events-none": currentPage === 1,
+            "pointer-events-none": currentPage === 1
           })}
           renderLeadingIcon={(cls) => <ChevronLeftIcon className={cls} />}
+          onClick={() => onNavigate?.(currentPage - 1)}
         >
           Previous <span className="sr-only">page</span>
         </Button>
 
-        <ul className="hidden sm:flex items-center gap-2">
+        <ul className="hidden items-center gap-2 sm:flex">
           {paginationRange.map((pageNumber, index) => {
             if (pageNumber === PAGINATION_DOTS) {
               return (
@@ -97,8 +101,9 @@ export function Pagination({
           aria-disabled={currentPage === lastPage ? true : undefined}
           renderTrailingIcon={(cls) => <ChevronRightIcon className={cls} />}
           className={clsx({
-            "pointer-events-none": currentPage === lastPage,
+            "pointer-events-none": currentPage === lastPage
           })}
+          onClick={() => onNavigate?.(currentPage + 1)}
         >
           Next <span className="sr-only">page</span>
         </Button>

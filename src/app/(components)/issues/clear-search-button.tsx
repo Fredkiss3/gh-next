@@ -19,10 +19,10 @@ export function ClearSearchButtonSection() {
             prefetch={false}
             href="/issues"
             onClick={() => setSearchQuery(BASE_ISSUE_SEARCH_QUERY)}
-            className="flex gap-2 items-center text-grey font-semibold group hover:text-accent"
+            className="group flex items-center gap-2 font-semibold text-grey hover:text-accent"
           >
-            <div className="bg-grey rounded-md p-1 flex items-center justify-center group-hover:bg-accent">
-              <XIcon className="text-white h-4 w-4" />
+            <div className="flex items-center justify-center rounded-md bg-grey p-1 group-hover:bg-accent">
+              <XIcon className="h-4 w-4 text-white" />
             </div>
             <span>Clear current search query, filters, and sorts</span>
           </Link>

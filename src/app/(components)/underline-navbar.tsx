@@ -11,7 +11,7 @@ import {
   GraphIcon,
   IssueOpenedIcon,
   PlayIcon,
-  ShieldIcon,
+  ShieldIcon
 } from "@primer/octicons-react";
 import { CounterBadge } from "./counter-badge";
 
@@ -27,7 +27,7 @@ export type UnderlineNavbarProps = {
 
 export function HeaderUnderlineNavbar({
   className,
-  noOfOpennedIssues = 0,
+  noOfOpennedIssues = 0
 }: UnderlineNavbarProps) {
   const path = usePathname();
 
@@ -39,7 +39,7 @@ export function HeaderUnderlineNavbar({
       <nav
         className={clsx(
           "border-b border-neutral",
-          "px-5 relative z-20 overflow-x-auto overflow-y-clip",
+          "relative z-20 overflow-x-auto overflow-y-clip px-5",
           "md:px-8",
           "h-[52px]",
           className
@@ -47,7 +47,7 @@ export function HeaderUnderlineNavbar({
       >
         <ul
           className={clsx(
-            "flex items-end gap-4 justify-start min-w-max pr-5",
+            "flex min-w-max items-end justify-start gap-4 pr-5",
             "md:pr-0"
           )}
         >

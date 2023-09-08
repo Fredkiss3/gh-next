@@ -1,10 +1,11 @@
+"use client";
 import * as React from "react";
 // components
 import {
   CommentIcon,
   IssueClosedIcon,
   IssueOpenedIcon,
-  SkipIcon,
+  SkipIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
 import { AvatarStack } from "~/app/(components)/avatar-stack";
@@ -14,27 +15,19 @@ import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-contents";
 import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
 import { Tooltip } from "~/app/(components)/tooltip";
+import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import { clsx, formatDate } from "~/lib/shared/utils.shared";
+import {
+  clsx,
+  formatDate,
+  issueSearchFilterToString
+} from "~/lib/shared/utils.shared";
+import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 
 // types
-import type { IssueStatus } from "~/lib/server/db/schema/issue.sql";
-import type { Label } from "~/lib/server/db/schema/label.sql";
-import type { User } from "~/lib/server/db/schema/user.sql";
-
-export type IssueRowProps = {
-  id: number;
-  status: IssueStatus;
-  title: string;
-  author: Omit<User, "preferred_theme" | "id" | "github_id">;
-  description?: string;
-  status_updated_at: Date;
-  created_at: Date;
-  noOfComments: number;
-  labels: Array<Omit<Label, "description"> & { description?: string }>;
-  assigned_to: Array<Pick<User, "username" | "avatar_url">>;
-};
+import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
+export type IssueRowProps = IssueListResult["issues"][number];
 
 export function IssueRow({
   status,
@@ -46,11 +39,13 @@ export function IssueRow({
   labels,
   assigned_to,
   created_at,
-  description,
+  description
 }: IssueRowProps) {
   const assignTooltipLabel = assigned_to.map((u) => u.username).join(" and ");
+  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
+
   return (
-    <div className="flex relative w-full gap-4 items-start p-5 border-b border-neutral/70 hover:bg-subtle">
+    <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
       {status === "OPEN" && (
         <IssueOpenedIcon className="h-5 w-5 flex-shrink-0 text-success" />
       )}
@@ -63,18 +58,18 @@ export function IssueRow({
 
       <Link
         href={`/issues/${id}`}
-        className="after:inset-0 after:absolute sm:hidden"
+        className="after:absolute after:inset-0 sm:hidden"
       >
         <span className="sr-only">Link to issue #{id}</span>
       </Link>
 
       <div
         className={clsx(
-          "flex flex-col items-start gap-2 w-full sm:w-[70%] md:w-full"
+          "flex w-full flex-col items-start gap-2 sm:w-[70%] md:w-full"
         )}
       >
-        <div className="flex-auto gap-2 flex-wrap">
-          <span className="relative group/issue-row-title">
+        <div className="flex-auto flex-wrap gap-2">
+          <span className="group/issue-row-title relative">
             <HoverCard
               content={
                 <IssueHoverCardContents
@@ -91,7 +86,7 @@ export function IssueRow({
                 <Link
                   href={`/issues/${id}`}
                   className={clsx(
-                    "inline text-foreground break-words font-semibold text-lg",
+                    "inline break-words text-lg font-semibold text-foreground",
                     "hover:text-accent"
                   )}
                 >
@@ -109,7 +104,7 @@ export function IssueRow({
                     key={id}
                     disabled={!description}
                     content={
-                      <p className="text-sm max-w-[250px] text-center">
+                      <p className="max-w-[250px] text-center text-sm">
                         {description}
                       </p>
                     }
@@ -118,12 +113,13 @@ export function IssueRow({
                     placement="bottom end"
                   >
                     <ReactAriaLink>
-                      <Link
-                        prefetch={false}
-                        href={`/issues?q=is:open+label:"${name}"`}
+                      <IssueSearchLink
+                        filters={{
+                          label: [name]
+                        }}
                       >
                         <LabelBadge color={color} title={name} />
-                      </Link>
+                      </IssueSearchLink>
                     </ReactAriaLink>
                   </Tooltip>
                 ))}
@@ -148,28 +144,37 @@ export function IssueRow({
             }
           >
             <ReactAriaLink>
-              <Link
-                prefetch={false}
-                href={`/issues?q=is:open+author:${author.username}`}
+              <IssueSearchLink
+                filters={{
+                  author: author.username
+                }}
                 className="hover:text-accent"
               >
                 {author.username}
-              </Link>
+              </IssueSearchLink>
             </ReactAriaLink>
           </HoverCard>
         </small>
       </div>
 
-      <div className="hidden sm:flex items-center gap-4 w-[30%] justify-end">
+      <div className="hidden w-[30%] items-center justify-end gap-4 sm:flex">
         <AvatarStack
           tooltipLabel={`assigned to ${assignTooltipLabel}`}
           users={assigned_to}
+          onAvatarLinkClick={(username) =>
+            setSearchQuery(
+              issueSearchFilterToString({
+                is: "open",
+                assignee: [username]
+              })
+            )
+          }
           getUserUrl={(username) => `/issues?q=is:open+assignee:${username}`}
         />
         {noOfComments > 0 && (
           <Link
             href={`/issues/${id}`}
-            className="text-grey flex items-center gap-1 hover:text-accent"
+            className="flex items-center gap-1 text-grey hover:text-accent"
           >
             <CommentIcon className="h-4 w-4 flex-shrink-0" />
             <span>{noOfComments}</span>

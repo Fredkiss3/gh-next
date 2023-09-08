@@ -19,14 +19,14 @@ export const env = createEnv({
       .regex(/^[a-zA-Z_][a-zA-Z0-9_]+$/)
       .catch("")
       .optional()
-      .default(""),
+      .default("")
   },
   client: {
     NEXT_PUBLIC_VERCEL_URL: preprocess((arg) => {
       if (!arg || typeof arg !== "string") return arg;
       const protocol = arg.startsWith("localhost") ? "http" : "https";
       return `${protocol}://${arg}`;
-    }, z.string().url()),
+    }, z.string().url())
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -40,6 +40,6 @@ export const env = createEnv({
     GITHUB_SECRET: process.env.GITHUB_SECRET,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI,
-    GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
-  },
+    GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN
+  }
 });

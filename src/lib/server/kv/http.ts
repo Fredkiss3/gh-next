@@ -5,7 +5,7 @@ import { jsonFetch } from "~/lib/shared/utils.shared";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 
 const kvRESTSchema = z.object({
-  KV_REST_URL: z.string().url(),
+  KV_REST_URL: z.string().url()
 });
 
 export class HttpKV implements KVStore {
@@ -26,8 +26,8 @@ export class HttpKV implements KVStore {
       body: JSON.stringify({
         key,
         value,
-        TTL: ttl_in_seconds ?? DEFAULT_CACHE_TTL,
-      }),
+        TTL: ttl_in_seconds ?? DEFAULT_CACHE_TTL
+      })
     });
   }
   public async get<T extends Record<string, any> = {}>(
@@ -42,7 +42,7 @@ export class HttpKV implements KVStore {
         }
     >(`${this.#rest_url}/get/${key}`, {
       method: "GET",
-      cache: "no-store",
+      cache: "no-store"
     });
 
     if ("errors" in result) {
@@ -54,7 +54,7 @@ export class HttpKV implements KVStore {
   public async delete(key: string): Promise<void> {
     await jsonFetch(`${this.#rest_url}/delete/${key}`, {
       method: "DELETE",
-      cache: "no-store",
+      cache: "no-store"
     });
   }
 }

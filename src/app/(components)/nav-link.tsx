@@ -27,18 +27,17 @@ export function NavLink({
   return (
     <Link
       {...props}
-      className={clsx("py-3 group relative", {
-        "font-medium after:absolute after:left-0 after:right-0 after:-bottom-0.5":
+      className={clsx("group relative py-3", {
+        "font-medium after:absolute after:-bottom-0.5 after:left-0 after:right-0":
           isActive,
-        "after:bg-severe-border after:rounded-md after:h-1 after:z-20":
-          isActive,
+        "after:z-20 after:h-1 after:rounded-md after:bg-severe-border": isActive
       })}
       href={href}
     >
       <div
         className={clsx(
-          "inline-flex gap-3 items-center rounded-md py-1 px-1.5",
-          "group-hover:bg-neutral/50 transition duration-150"
+          "inline-flex items-center gap-3 rounded-md px-1.5 py-1",
+          "transition duration-150 group-hover:bg-neutral/50"
         )}
       >
         <Icon className="h-4 w-4 text-grey" />

@@ -13,30 +13,30 @@ export const comments = pgTable("comments", {
   content: text("content").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   author_id: integer("author_id").references(() => users.id, {
-    onDelete: "set null",
+    onDelete: "set null"
   }),
   issue_id: integer("issue_id")
     .references(() => issues.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
-    .notNull(),
+    .notNull()
 });
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
   author: one(users, {
     fields: [comments.author_id],
     references: [users.id],
-    relationName: "comments",
+    relationName: "comments"
   }),
   parent: one(issues, {
     fields: [comments.issue_id],
     references: [issues.id],
-    relationName: "issue",
+    relationName: "issue"
   }),
   reactions: many(reactions),
   revisions: many(commentRevisions, {
-    relationName: "comment",
-  }),
+    relationName: "comment"
+  })
 }));
 
 export const commentRevisions = pgTable("comment_revisions", {
@@ -44,10 +44,10 @@ export const commentRevisions = pgTable("comment_revisions", {
   created_at: timestamp("created_at").defaultNow().notNull(),
   comment_id: integer("comment_id")
     .references(() => comments.id, {
-      onDelete: "cascade",
+      onDelete: "cascade"
     })
     .notNull(),
-  updated_content: text("updated_content").notNull(),
+  updated_content: text("updated_content").notNull()
 });
 
 export const commentRevisionsRelations = relations(
@@ -56,8 +56,8 @@ export const commentRevisionsRelations = relations(
     comment: one(comments, {
       fields: [commentRevisions.comment_id],
       references: [comments.id],
-      relationName: "comment",
-    }),
+      relationName: "comment"
+    })
   })
 );
 

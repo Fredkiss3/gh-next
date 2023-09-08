@@ -5,7 +5,7 @@ import * as React from "react";
 import {
   OverlayArrow,
   Tooltip as ReactAriaTooltip,
-  TooltipTrigger,
+  TooltipTrigger
 } from "react-aria-components";
 
 // utils
@@ -28,7 +28,7 @@ export function Tooltip({
   closeDelayInMs = 150,
   placement,
   isOpen,
-  disabled,
+  disabled
 }: TooltipProps) {
   return (
     <TooltipTrigger
@@ -42,7 +42,7 @@ export function Tooltip({
         offset={5}
         placement={placement}
         className={clsx(
-          "bg-tooltip-dark text-white px-2 py-1 rounded-md group/tooltip"
+          "group/tooltip rounded-md bg-tooltip-dark px-2 py-1 text-white"
         )}
       >
         <OverlayArrow>

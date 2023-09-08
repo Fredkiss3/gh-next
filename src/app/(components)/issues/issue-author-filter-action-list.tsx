@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
 // components
-import Link from "next/link";
 import { Input } from "~/app/(components)/input";
 import { ActionList } from "~/app/(components)/action-list";
 import { Avatar } from "~/app/(components)/avatar";
 import { CheckIcon } from "@primer/octicons-react";
+import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -18,7 +18,7 @@ export type IssueAuthorFilterActionProps = {
 };
 
 export function IssueAuthorFilterActionList({
-  children,
+  children
 }: IssueAuthorFilterActionProps) {
   const alignRight = useMediaQuery(`(min-width: 768px)`);
   const [inputQuery, setInputQuery] = React.useState("");
@@ -35,8 +35,8 @@ export function IssueAuthorFilterActionList({
     <ActionList
       items={[
         {
-          items: filteredDataList,
-        },
+          items: filteredDataList
+        }
       ]}
       renderItem={({
         selected,
@@ -44,18 +44,19 @@ export function IssueAuthorFilterActionList({
         username,
         name,
         avatar,
-        onCloseList,
+        onCloseList
       }) => (
-        <Link
-          prefetch={false}
-          href={`/issues?q=is:open+author:${username}`}
+        <IssueSearchLink
+          filters={{
+            author: username
+          }}
           className={clsx(
             className,
             "flex items-center gap-4 hover:bg-neutral/50"
           )}
           onClick={onCloseList}
         >
-          <div className="h-6 w-6 flex items-center justify-center px-2 flex-shrink-0">
+          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
             {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
           </div>
           <Avatar src={avatar} username={username} size="small" />
@@ -63,7 +64,7 @@ export function IssueAuthorFilterActionList({
             <strong className="font-semibold">{username}</strong>&nbsp;
             <span className="text-grey">{name}</span>
           </div>
-        </Link>
+        </IssueSearchLink>
       )}
       align={alignRight ? "right" : "left"}
       title="Filter by author"

@@ -6,7 +6,7 @@ import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
   SORT_FILTERS,
-  STATUS_FILTERS,
+  STATUS_FILTERS
 } from "./constants";
 
 /**
@@ -117,7 +117,7 @@ export async function jsonFetch<T>(
   return fetch(url, {
     ...options,
     headers,
-    credentials: "include",
+    credentials: "include"
   })
     .then((response) => response.json() as Promise<T>)
     .catch((error) => {
@@ -145,8 +145,8 @@ export type RGBHSLColor = {
  * @returns {RGBHSLColor | null} An object with the r, g, b, h, s, l values or null if the input is invalid.
  *
  * @example
- * console.log(hexToRGB('#0033ff')); // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
- * console.log(hexToRGB('03f'));     // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
+ * console.log(hexToRGBHSL('#0033ff')); // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
+ * console.log(hexToRGBHSL('03f'));     // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
  */
 export function hexToRGBHSL(hex: string): RGBHSLColor | null {
   let sanitizedHex = hex.startsWith("#") ? hex.slice(1) : hex;
@@ -204,7 +204,7 @@ export function hexToRGBHSL(hex: string): RGBHSLColor | null {
     b,
     h: Math.round(h * 360),
     s: Math.round(s * 100),
-    l: Math.round(l * 100),
+    l: Math.round(l * 100)
   };
 }
 
@@ -272,19 +272,33 @@ export function excerpt(str: string, maxChars: number): string {
 }
 
 const issueSearchFiltersSchema = z.object({
-  in: preprocess((arg) => {
-    if (Array.isArray(arg)) {
-      return new Set(arg);
-    }
-    return arg;
-  }, z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).default(new Set(IN_FILTERS)).nullish()),
+  in: preprocess(
+    (arg) => {
+      if (Array.isArray(arg)) {
+        return new Set(arg);
+      }
+      return arg;
+    },
+    z
+      .set(z.enum(IN_FILTERS))
+      .catch(new Set(IN_FILTERS))
+      .default(new Set(IN_FILTERS))
+      .nullish()
+  ),
   is: z.enum(STATUS_FILTERS).default("open").nullish().catch(null),
-  no: preprocess((arg) => {
-    if (Array.isArray(arg)) {
-      return new Set(arg);
-    }
-    return arg;
-  }, z.set(z.enum(NO_METADATA_FILTERS)).catch(new Set(NO_METADATA_FILTERS)).default(new Set(NO_METADATA_FILTERS)).nullish()),
+  no: preprocess(
+    (arg) => {
+      if (Array.isArray(arg)) {
+        return new Set(arg);
+      }
+      return arg;
+    },
+    z
+      .set(z.enum(NO_METADATA_FILTERS))
+      .catch(new Set(NO_METADATA_FILTERS))
+      .default(new Set(NO_METADATA_FILTERS))
+      .nullish()
+  ),
   label: z.array(z.string()).catch([]).default([]).nullish(),
   "-label": z.array(z.string()).catch([]).default([]).nullish(),
   assignee: z.array(z.string()).catch([]).default([]).nullish(),
@@ -298,7 +312,7 @@ const issueSearchFiltersSchema = z.object({
     .catch("created-asc")
     .default("created-asc")
     .nullish(),
-  query: z.string().nullish(),
+  query: z.string().nullish()
 });
 
 export type IssueSearchFilters = z.infer<typeof issueSearchFiltersSchema>;
@@ -445,4 +459,15 @@ export function debounce(callback: Function, delay: number = 500) {
       callback.apply(this, args);
     }, delay);
   };
+}
+
+/**
+ * Pluralize a string
+ * @example
+ *  pluralize('issue', 0) // returns issue
+ *  pluralize('issue', 1) // returns issue
+ *  pluralize('issue', 2) // returns issues
+ */
+export function pluralize(str: string, count: number) {
+  return str + (count > 1 ? "s" : "");
 }

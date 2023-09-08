@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 
 // components
@@ -19,6 +20,7 @@ export type AvatarStackProps = {
   size?: "small" | "medium" | "large";
   getUserUrl?: (username: string) => string;
   tooltipLabel: string;
+  onAvatarLinkClick?: (username: string) => void;
 };
 
 export function AvatarStack({
@@ -26,7 +28,8 @@ export function AvatarStack({
   className,
   size = "small",
   getUserUrl,
-  tooltipLabel,
+  onAvatarLinkClick,
+  tooltipLabel
 }: AvatarStackProps) {
   return (
     <Tooltip
@@ -35,17 +38,21 @@ export function AvatarStack({
       closeDelayInMs={500}
       placement="bottom end"
     >
-      <ul className={clsx(className, "flex group gap-1")}>
+      <ul className={clsx(className, "group flex gap-1")}>
         {users.map((u, index) => (
           <li
             key={u.username}
             className={clsx("transition-all duration-150", {
-              "-mr-4 group-hover:mr-0": index !== users.length - 1,
+              "-mr-4 group-hover:mr-0": index !== users.length - 1
             })}
           >
             {getUserUrl ? (
               <ReactAriaLink>
-                <Link prefetch={false} href={getUserUrl(u.username)}>
+                <Link
+                  prefetch={false}
+                  href={getUserUrl(u.username)}
+                  onClick={() => onAvatarLinkClick?.(u.username)}
+                >
                   <Avatar
                     src={u.avatar_url}
                     username={u.username}

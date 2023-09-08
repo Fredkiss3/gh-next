@@ -12,7 +12,7 @@ import { createSelectSchema } from "drizzle-zod";
 import { redirect } from "next/navigation";
 
 const userThemeSchema = createSelectSchema(users).pick({
-  preferred_theme: true,
+  preferred_theme: true
 });
 const themeSchema = userThemeSchema.shape.preferred_theme;
 
@@ -35,7 +35,7 @@ export const updateTheme = withAuth(async function updateTheme(
   if (!themeResult.success) {
     await session.addFlash({
       type: "warning",
-      message: "Invalid theme provided, please retry",
+      message: "Invalid theme provided, please retry"
     });
     return;
   }
@@ -47,7 +47,7 @@ export const updateTheme = withAuth(async function updateTheme(
 
   await session.addFlash({
     type: "success",
-    message: `Theme changed to ${theme}`,
+    message: `Theme changed to ${theme}`
   });
 
   revalidatePath("/settings/appearance");

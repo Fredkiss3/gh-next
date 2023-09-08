@@ -2,7 +2,7 @@
 import { redirectIfNotAuthed } from "~/app/(actions)/auth";
 
 export default async function SettingsLayout({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }) {

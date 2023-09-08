@@ -12,21 +12,21 @@ import type { PageProps } from "~/lib/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login",
+  title: "Login"
 };
 
 export default function LoginPage({
-  searchParams,
+  searchParams
 }: PageProps<{}, { nextUrl: string }>) {
   const nextUrl = searchParams?.nextUrl;
 
   return (
     <>
-      <main className="w-full flex flex-col gap-4 justify-center items-center p-8">
+      <main className="flex w-full flex-col items-center justify-center gap-4 p-8">
         <h1 className="text-3xl font-semibold">Sign in</h1>
-        <Card className="flex flex-col gap-8 max-w-[400px]">
+        <Card className="flex max-w-[400px] flex-col gap-8">
           <div>
-            <h2 className="text-lg font-medium mb-4">
+            <h2 className="mb-4 text-lg font-medium">
               We collect these <span className="underline">public</span>&nbsp;
               informations when you login :
             </h2>
@@ -60,7 +60,7 @@ export default function LoginPage({
           </div>
           <form
             action={authenticateWithGithub}
-            className="flex flex-col items-center w-full"
+            className="flex w-full flex-col items-center"
           >
             <input type="hidden" name="_nextUrl" value={nextUrl} />
             <Button variant="primary" type="submit" isBlock>
@@ -71,7 +71,7 @@ export default function LoginPage({
         </Card>
       </main>
 
-      <div className="flex items-center text-grey gap-4 justify-center">
+      <div className="flex items-center justify-center gap-4 text-grey">
         <Link href="/">
           <MarkGithubIcon className="h-8 w-8" />
         </Link>

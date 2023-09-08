@@ -1,4 +1,4 @@
-import { relations, type InferModel } from "drizzle-orm";
+import { relations, type InferModel, type InferSelectModel } from "drizzle-orm";
 import { issueToAssignees, issueUserSubscriptions, issues } from "./issue.sql";
 import { reactions } from "./reaction.sql";
 import { comments } from "./comment.sql";
@@ -16,26 +16,26 @@ export const users = pgTable("users", {
   name: varchar("name", { length: 255 }),
   bio: text("bio"),
   location: varchar("location", { length: 255 }),
-  preferred_theme: themesEnum("preferred_theme").default("system").notNull(),
+  preferred_theme: themesEnum("preferred_theme").default("system").notNull()
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   createdIssues: many(issues, {
-    relationName: "author",
+    relationName: "author"
   }),
   assignedIssues: many(issueToAssignees, {
-    relationName: "assignee",
+    relationName: "assignee"
   }),
   reactions: many(reactions, {
-    relationName: "reactions",
+    relationName: "reactions"
   }),
   comments: many(comments, {
-    relationName: "comments",
+    relationName: "comments"
   }),
   subcriptions: many(issueUserSubscriptions, {
-    relationName: "user",
-  }),
+    relationName: "user"
+  })
 }));
 
-export type User = InferModel<typeof users>;
-export type Theme = typeof THEMES[number];
+export type User = InferSelectModel<typeof users>;
+export type Theme = (typeof THEMES)[number];

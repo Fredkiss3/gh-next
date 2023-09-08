@@ -3,7 +3,7 @@ import * as React from "react";
 import {
   IssueClosedIcon,
   IssueOpenedIcon,
-  SkipIcon,
+  SkipIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
 import { LabelBadge } from "./label-badge";
@@ -30,10 +30,10 @@ export function IssueHoverCardContents({
   title,
   description,
   created_at,
-  labels,
+  labels
 }: IssueHoverCardContentsProps) {
   return (
-    <div className="flex flex-col gap-4 p-5 max-w-[350px]">
+    <div className="flex max-w-[350px] flex-col gap-4 p-5">
       <small className="text-grey">Opened {formatDate(created_at)}</small>
       <div className="flex items-start gap-2">
         {status === IssueStatuses.OPEN && (
@@ -50,20 +50,20 @@ export function IssueHoverCardContents({
           <div className="flex flex-col gap-2">
             <Link
               href={`/issues/${id}`}
-              className="inline text-foreground group/card hover:text-accent break-words font-semibold"
+              className="group/card inline break-words font-semibold text-foreground hover:text-accent"
             >
               {title}&nbsp;
-              <span className="text-grey group-hover/card:text-accent font-normal">
+              <span className="font-normal text-grey group-hover/card:text-accent">
                 #{id}
               </span>
             </Link>
 
             {description && (
-              <p className="text-grey text-sm">{excerpt(description, 84)}</p>
+              <p className="text-sm text-grey">{excerpt(description, 84)}</p>
             )}
           </div>
 
-          <ul className="flex gap-2 flex-wrap">
+          <ul className="flex flex-wrap gap-2">
             {labels.map(({ id, name, color }) => (
               <LabelBadge key={id} color={color} title={name} />
             ))}

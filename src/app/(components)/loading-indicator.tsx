@@ -3,7 +3,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 
 export function LoadingIndicator({
   className,
-  "aria-label": ariaLabel,
+  "aria-label": ariaLabel
 }: {
   className?: string;
   "aria-label"?: string;

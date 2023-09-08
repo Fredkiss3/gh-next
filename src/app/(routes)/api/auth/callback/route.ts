@@ -20,20 +20,20 @@ export async function GET(req: NextRequest) {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         client_id: env.GITHUB_CLIENT_ID,
         client_secret: env.GITHUB_SECRET,
         redirect_uri: env.GITHUB_REDIRECT_URI,
-        code,
-      }),
+        code
+      })
     }
   ).then((r) => r.json());
 
   if (response.error || !response.access_token) {
     console.error({
-      error: response.error,
+      error: response.error
     });
     return redirect("/");
   }
@@ -42,8 +42,8 @@ export async function GET(req: NextRequest) {
     headers: {
       "User-Agent": `Github-OAuth-${env.GITHUB_CLIENT_ID}`,
       Authorization: `token ${response.access_token}`,
-      Accept: "application/json",
-    },
+      Accept: "application/json"
+    }
   }).then((r) => r.json());
 
   const nextURL = await loginUser(githubUser);

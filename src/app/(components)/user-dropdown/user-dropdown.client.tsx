@@ -6,7 +6,7 @@ import { Avatar } from "../avatar";
 import {
   PaintbrushIcon,
   PersonIcon,
-  SignOutIcon,
+  SignOutIcon
 } from "@primer/octicons-react";
 
 // utils
@@ -27,13 +27,13 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
           id: "account",
           href: "/settings/account",
           text: "Your account",
-          icon: PersonIcon,
+          icon: PersonIcon
         },
         {
           id: "appearance",
           href: "/settings/appearance",
           text: "Change Theme",
-          icon: PaintbrushIcon,
+          icon: PaintbrushIcon
         },
         {
           id: "sign-out",
@@ -41,8 +41,8 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
           icon: SignOutIcon,
           onClick: async () => {
             startTransition(() => logoutUser());
-          },
-        },
+          }
+        }
       ]}
     >
       <Avatar username={username} src={avatar_url} />

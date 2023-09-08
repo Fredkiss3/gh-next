@@ -26,7 +26,7 @@ export const SORT_FILTERS = [
   "reactions-thinking_face-desc",
   "reactions-heart-desc",
   "reactions-rocket-desc",
-  "reactions-eyes-desc",
+  "reactions-eyes-desc"
 ] as const;
 
 export const IN_FILTERS = ["title", "body", "comments"] as const;

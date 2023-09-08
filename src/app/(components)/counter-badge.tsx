@@ -8,7 +8,7 @@ export function CounterBadge({ count }: CounterBadgeProps) {
   return (
     <>
       <span
-        className="bg-neutral rounded-full px-2 text-foreground text-sm"
+        className="rounded-full bg-neutral px-2 text-sm text-foreground"
         aria-hidden="true"
       >
         {count

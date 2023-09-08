@@ -17,81 +17,81 @@ module.exports = {
       colors: {
         disabled: `rgba(var(--disabled-color))`,
         grey: {
-          DEFAULT: withOpactity(`--grey-color`),
+          DEFAULT: withOpactity(`--grey-color`)
         },
         "tooltip-light": {
-          DEFAULT: withOpactity(`--tooltip-light-color`),
+          DEFAULT: withOpactity(`--tooltip-light-color`)
         },
         "tooltip-dark": {
-          DEFAULT: withOpactity(`--tooltip-dark-color`),
+          DEFAULT: withOpactity(`--tooltip-dark-color`)
         },
         accent: {
           DEFAULT: withOpactity(`--accent-color`),
           bg: withOpactity(`--accent-color-bg`),
-          border: withOpactity(`--accent-color-border`),
+          border: withOpactity(`--accent-color-border`)
         },
         background: {
-          DEFAULT: withOpactity(`--bg-color`),
+          DEFAULT: withOpactity(`--bg-color`)
         },
         foreground: {
-          DEFAULT: withOpactity(`--fg-color`),
+          DEFAULT: withOpactity(`--fg-color`)
         },
         success: {
           DEFAULT: withOpactity(`--success-color`),
           bg: withOpactity(`--success-color-bg`),
-          border: withOpactity(`--success-color-border`),
+          border: withOpactity(`--success-color-border`)
         },
         attention: {
           DEFAULT: withOpactity(`--attention-color`),
           bg: withOpactity(`--attention-color-bg`),
-          border: withOpactity(`--attention-color-border`),
+          border: withOpactity(`--attention-color-border`)
         },
         danger: {
           DEFAULT: withOpactity(`--danger-color`),
           bg: withOpactity(`--danger-color-bg`),
-          border: withOpactity(`--danger-color-border`),
+          border: withOpactity(`--danger-color-border`)
         },
         severe: {
           DEFAULT: withOpactity(`--severe-color`),
           bg: withOpactity(`--severe-color-bg`),
-          border: withOpactity(`--severe-color-border`),
+          border: withOpactity(`--severe-color-border`)
         },
         open: {
           DEFAULT: withOpactity(`--open-color`),
           bg: withOpactity(`--open-color-bg`),
-          border: withOpactity(`--open-color-border`),
+          border: withOpactity(`--open-color-border`)
         },
         closed: {
           DEFAULT: withOpactity(`--closed-color`),
           bg: withOpactity(`--closed-color-bg`),
-          border: withOpactity(`--closed-color-border`),
+          border: withOpactity(`--closed-color-border`)
         },
         done: {
           DEFAULT: withOpactity(`--done-color`),
           bg: withOpactity(`--done-color-bg`),
-          border: withOpactity(`--done-color-border`),
+          border: withOpactity(`--done-color-border`)
         },
         neutral: {
-          DEFAULT: withOpactity(`--neutral-color`),
+          DEFAULT: withOpactity(`--neutral-color`)
         },
         subtle: {
-          DEFAULT: withOpactity(`--subtle-color`),
+          DEFAULT: withOpactity(`--subtle-color`)
         },
         header: {
-          DEFAULT: withOpactity(`--header-color`),
+          DEFAULT: withOpactity(`--header-color`)
         },
         ghost: {
-          DEFAULT: withOpactity(`--ghost-color`),
+          DEFAULT: withOpactity(`--ghost-color`)
         },
         backdrop: {
-          DEFAULT: withOpactity(`--backdrop-color`),
-        },
+          DEFAULT: withOpactity(`--backdrop-color`)
+        }
       },
       boxShadow: {
         inset: "0px 0px 0px 3px inset",
-        subtle: "rgba(31, 35, 40, 0.1) 0px 1px 0px",
-      },
-    },
+        subtle: "rgba(31, 35, 40, 0.1) 0px 1px 0px"
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 };

@@ -14,13 +14,13 @@ export function PageTitle() {
         <span
           className={clsx(
             "font-medium text-grey",
-            "md:text-foreground md:font-normal"
+            "md:font-normal md:text-foreground"
           )}
         >
           Fredkiss3&nbsp;&nbsp;/
         </span>
 
-        <strong className="font-semibold whitespace-nowrap">gh-next</strong>
+        <strong className="whitespace-nowrap font-semibold">gh-next</strong>
       </>
     ),
     []
@@ -29,12 +29,12 @@ export function PageTitle() {
 
   if (path.startsWith("/settings")) {
     title = (
-      <strong className="font-semibold whitespace-nowrap">Settings</strong>
+      <strong className="whitespace-nowrap font-semibold">Settings</strong>
     );
     href = "/settings";
   } else if (path.startsWith("/notifications")) {
     title = (
-      <strong className="font-semibold whitespace-nowrap">Notifications</strong>
+      <strong className="whitespace-nowrap font-semibold">Notifications</strong>
     );
     href = "/notifications";
   }
@@ -43,7 +43,7 @@ export function PageTitle() {
     <Link
       href={href}
       className={clsx(
-        "py-1 px-2 rounded-md transition duration-150",
+        "rounded-md px-2 py-1 transition duration-150",
         "md:text-lg",
         "hover:bg-neutral/50",
         "flex flex-wrap gap-2"
