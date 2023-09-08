@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
 // components
-import Link from "next/link";
 import { Input } from "../input";
 import { ActionList } from "../action-list";
 import { Avatar } from "../avatar";
 import { CheckIcon } from "@primer/octicons-react";
+import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -48,11 +48,15 @@ export function IssueAssigneeFilterActionList({
         avatar,
         onCloseList
       }) => (
-        <Link
-          prefetch={false}
-          href={
-            `/issues?q=is:open+` +
-            (username ? `assignee:${username}` : `no:assignee`)
+        <IssueSearchLink
+          filters={
+            username
+              ? {
+                  assignee: [username]
+                }
+              : {
+                  no: new Set(["assignee"])
+                }
           }
           className={clsx(
             className,
@@ -76,7 +80,7 @@ export function IssueAssigneeFilterActionList({
               </>
             )}
           </div>
-        </Link>
+        </IssueSearchLink>
       )}
       align={alignRight ? "right" : "left"}
       title="Filter by who’s assigned"

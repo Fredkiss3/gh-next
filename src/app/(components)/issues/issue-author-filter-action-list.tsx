@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
 // components
-import Link from "next/link";
 import { Input } from "~/app/(components)/input";
 import { ActionList } from "~/app/(components)/action-list";
 import { Avatar } from "~/app/(components)/avatar";
 import { CheckIcon } from "@primer/octicons-react";
+import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -46,9 +46,10 @@ export function IssueAuthorFilterActionList({
         avatar,
         onCloseList
       }) => (
-        <Link
-          prefetch={false}
-          href={`/issues?q=is:open+author:${username}`}
+        <IssueSearchLink
+          filters={{
+            author: username
+          }}
           className={clsx(
             className,
             "flex items-center gap-4 hover:bg-neutral/50"
@@ -63,7 +64,7 @@ export function IssueAuthorFilterActionList({
             <strong className="font-semibold">{username}</strong>&nbsp;
             <span className="text-grey">{name}</span>
           </div>
-        </Link>
+        </IssueSearchLink>
       )}
       align={alignRight ? "right" : "left"}
       title="Filter by author"

@@ -106,14 +106,12 @@ async function IssuesListBody(props: {
           <strong className="text-foreground">ProTip!</strong> Ears burning? Get
           mentions with&nbsp;
           <IssueSearchLink
-            // href="/issues?q=is:open+mention:@me"
             filters={{
-              is: "open",
               mentions: "@me"
             }}
             className="text-accent"
           >
-            mentions:@me.
+            mentions:@me
           </IssueSearchLink>
         </p>
       </div>

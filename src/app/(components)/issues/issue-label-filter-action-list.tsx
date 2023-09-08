@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Input } from "~/app/(components)/input";
 import { ActionList } from "~/app/(components)/action-list";
 import { CheckIcon } from "@primer/octicons-react";
+import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -57,10 +58,15 @@ export function IssueLabelFilterActionList({
         description,
         onCloseList
       }) => (
-        <Link
-          prefetch={false}
-          href={
-            `/issues?q=is:open+` + (color ? `label:"${title}"` : "no:label")
+        <IssueSearchLink
+          filters={
+            color
+              ? {
+                  label: [title]
+                }
+              : {
+                  no: new Set(["label"])
+                }
           }
           className={clsx(
             className,
@@ -85,7 +91,7 @@ export function IssueLabelFilterActionList({
               {description && <p className="text-grey">{description}</p>}
             </div>
           </div>
-        </Link>
+        </IssueSearchLink>
       )}
       align={alignRight ? "right" : "left"}
       title="Filter by label"

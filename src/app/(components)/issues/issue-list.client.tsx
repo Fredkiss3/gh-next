@@ -14,6 +14,7 @@ import { IssueAssigneeFilterActionList } from "./issue-assignee-filter-action-li
 import { IssueSortActionList } from "./issue-sort-action-list";
 import { Pagination } from "~/app/(components)/pagination";
 import { IssueRow } from "./issue-row";
+import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { clsx, pluralize } from "~/lib/shared/utils.shared";
@@ -34,9 +35,7 @@ export function IssueListClient({
     <>
       {/* Header */}
       <div className="flex items-center gap-4 px-5  md:hidden md:px-0">
-        <Link
-          prefetch={false}
-          href="/issues?q=is:open"
+        <IssueSearchLink
           className={clsx(
             "flex items-center gap-2 font-semibold text-foreground"
           )}
@@ -49,10 +48,11 @@ export function IssueListClient({
             </span>
             &nbsp;Open
           </p>
-        </Link>
-        <Link
-          prefetch={false}
-          href="/issues?q=is:closed"
+        </IssueSearchLink>
+        <IssueSearchLink
+          filters={{
+            is: "closed"
+          }}
           className={clsx("flex items-center gap-2 text-grey")}
         >
           <CheckIcon className="h-5 w-5" />
@@ -63,7 +63,7 @@ export function IssueListClient({
             </span>
             &nbsp;Closed
           </span>
-        </Link>
+        </IssueSearchLink>
       </div>
 
       <div className={clsx("border border-neutral", "sm:rounded-md")}>
@@ -76,9 +76,7 @@ export function IssueListClient({
         >
           <ul className="hidden items-center gap-4 md:flex">
             <li>
-              <Link
-                prefetch={false}
-                href="/issues?q=is:open"
+              <IssueSearchLink
                 className={clsx(
                   "flex items-center gap-2 font-semibold text-foreground"
                 )}
@@ -91,12 +89,13 @@ export function IssueListClient({
                   </span>
                   &nbsp;Open
                 </p>
-              </Link>
+              </IssueSearchLink>
             </li>
             <li>
-              <Link
-                prefetch={false}
-                href="/issues?q=is:closed"
+              <IssueSearchLink
+                filters={{
+                  is: "closed"
+                }}
                 className={clsx("flex items-center gap-2 text-grey")}
               >
                 <CheckIcon className="h-5 w-5" />
@@ -107,7 +106,7 @@ export function IssueListClient({
                   </span>
                   &nbsp;Closed
                 </span>
-              </Link>
+              </IssueSearchLink>
             </li>
           </ul>
 

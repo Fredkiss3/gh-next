@@ -15,6 +15,7 @@ import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-contents";
 import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
 import { Tooltip } from "~/app/(components)/tooltip";
+import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import {
@@ -22,10 +23,10 @@ import {
   formatDate,
   issueSearchFilterToString
 } from "~/lib/shared/utils.shared";
+import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 
 // types
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 export type IssueRowProps = IssueListResult["issues"][number];
 
 export function IssueRow({
@@ -112,20 +113,13 @@ export function IssueRow({
                     placement="bottom end"
                   >
                     <ReactAriaLink>
-                      <Link
-                        prefetch={false}
-                        onClick={() =>
-                          setSearchQuery(
-                            issueSearchFilterToString({
-                              is: "open",
-                              label: [name]
-                            })
-                          )
-                        }
-                        href={`/issues?q=is:open+label:"${name}"`}
+                      <IssueSearchLink
+                        filters={{
+                          label: [name]
+                        }}
                       >
                         <LabelBadge color={color} title={name} />
-                      </Link>
+                      </IssueSearchLink>
                     </ReactAriaLink>
                   </Tooltip>
                 ))}
@@ -150,21 +144,14 @@ export function IssueRow({
             }
           >
             <ReactAriaLink>
-              <Link
-                prefetch={false}
-                onClick={() =>
-                  setSearchQuery(
-                    issueSearchFilterToString({
-                      is: "open",
-                      author: author.username
-                    })
-                  )
-                }
-                href={`/issues?q=is:open+author:${author.username}`}
+              <IssueSearchLink
+                filters={{
+                  author: author.username
+                }}
                 className="hover:text-accent"
               >
                 {author.username}
-              </Link>
+              </IssueSearchLink>
             </ReactAriaLink>
           </HoverCard>
         </small>

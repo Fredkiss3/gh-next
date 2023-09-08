@@ -12,7 +12,7 @@ import type { LinkProps } from "next/link";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 
 export type IssueSearchLinkProps = Omit<LinkProps, "href" | "prefetch"> & {
-  filters: IssueSearchFilters;
+  filters?: IssueSearchFilters;
   children?: React.ReactNode;
   className?: string;
 };
@@ -23,7 +23,10 @@ export const IssueSearchLink = React.forwardRef<
 >(function IssueSearchLink({ filters, ...props }, ref) {
   const { setQuery: setSearchQuery } = useSearchQueryStore();
 
-  const searchStr = issueSearchFilterToString(filters);
+  const searchStr = issueSearchFilterToString({
+    is: "open",
+    ...filters
+  });
   const href = `/issues?q=` + encodeURIComponent(searchStr);
 
   return (
