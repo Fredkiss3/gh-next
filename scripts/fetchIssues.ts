@@ -15,11 +15,13 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { users } from "~/lib/server/db/schema/user.sql";
 import { eq, sql } from "drizzle-orm";
-import { labels, type LabelInsert } from "~/lib/server/db/schema/label.sql";
+import {
+  labels,
+  type LabelInsert,
+  labelToIssues
+} from "~/lib/server/db/schema/label.sql";
 
-const db = drizzle(postgres(env.DATABASE_URL), {
-  //   logger: true
-});
+const db = drizzle(postgres(env.DATABASE_URL));
 
 const GITHUB_REPO_SOURCE = {
   owner: "vercel",
@@ -484,14 +486,30 @@ do {
         description: label.description ?? undefined
       } satisfies LabelInsert;
 
-      await db.insert(labels).values(labelPayload).onConflictDoUpdate({
-        target: labels.name,
-        set: labelPayload
-      });
+      const [labelInsertResult] = await db
+        .insert(labels)
+        .values(labelPayload)
+        .onConflictDoUpdate({
+          target: labels.name,
+          set: labelPayload
+        })
+        .returning({
+          label_id: labels.id
+        });
 
       /**
        * INSERTING LABEL RELATIONS TO ISSUES
        */
+      // wipe out any label associated to this issue
+      // Because we don't have any way to handle conflicts for this table
+      await db
+        .delete(labelToIssues)
+        .where(eq(labelToIssues.issue_id, issueInsertQueryResult.issue_id));
+
+      await db.insert(labelToIssues).values({
+        issue_id: issueInsertQueryResult.issue_id,
+        label_id: labelInsertResult.label_id
+      });
     }
 
     /**
