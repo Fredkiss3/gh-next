@@ -3,7 +3,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<
-  React.InputHTMLAttributes<HTMLTextAreaElement>,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   "size"
 > & {
   label: React.ReactNode;
@@ -13,7 +13,7 @@ export type InputProps = Omit<
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   size?: "small" | "medium" | "large";
-  validationText?: string;
+  validationText?: React.ReactNode;
   validationStatus?: "error" | "success";
   hideLabel?: boolean;
 };
@@ -34,7 +34,6 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
       renderTrailingIcon,
       required = false,
       autoComplete = "off",
-      type = "text",
       size = "medium",
       id: defaultId,
       disabled = false,
@@ -50,7 +49,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
       <div className={clsx(className, "flex w-full flex-col gap-1")}>
         <label
           htmlFor={defaultId ?? id}
-          className={clsx({
+          className={clsx("font-semibold", {
             "sr-only": hideLabel
           })}
         >
@@ -66,14 +65,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
           className={clsx(
             className,
             "flex w-full items-center gap-2 rounded-md border",
-            "bg-white shadow-sm focus-within:border",
+            "bg-background shadow-sm focus-within:border",
             "ring-accent focus-within:border-accent focus-within:ring-1",
             {
-              "border-gray-300": !validationStatus,
+              "border-neutral": !validationStatus,
               "border-danger": validationStatus === "error",
               "border-success": validationStatus === "success",
-
-              "cursor-not-allowed bg-gray-200": disabled
+              "cursor-not-allowed bg-disabled": disabled
             }
           )}
         >
@@ -123,7 +121,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
         )}
 
         {helpText && (
-          <small id={helpId} className="text-gray-400">
+          <small id={helpId} className="text-grey">
             {helpText}
           </small>
         )}

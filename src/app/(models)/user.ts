@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "~/lib/server/db/index.server";
 import { users } from "~/lib/server/db/schema/user.sql";
 import type { Theme } from "~/lib/server/db/schema/user.sql";
+import type { UpdateUserProfileInfos } from "../(actions)/auth";
 
 /**
  * Find or create the corresponding user in DB from their github profile
@@ -25,34 +26,10 @@ export async function getUserFromGithubProfile(
     .onConflictDoUpdate({
       target: users.github_id,
       set: {
-        avatar_url: ghUser.avatar_url,
-        name: ghUser.name,
-        location: ghUser.location,
-        bio: ghUser.bio
+        avatar_url: ghUser.avatar_url
       }
     })
     .returning();
-}
-
-const userByUserNamePrepared = db
-  .select({
-    username: users.username
-  })
-  .from(users)
-  .where(
-    sql`lower(${users.username}) = ${sql.placeholder("username_lowercase")}`
-  )
-  .prepare("user_by_username");
-
-/**
- * get user by username, this function is case insensitive
- * @param username
- * @returns
- */
-export async function getUserByUsername(username: string) {
-  return await userByUserNamePrepared.execute({
-    username_lowercase: username.toLowerCase()
-  });
 }
 
 const userByIdPrepared = db
@@ -67,14 +44,11 @@ export async function getUserById(id: number) {
   });
 }
 
-export async function updateUserUsername(username: string, id: number) {
-  return await db
-    .update(users)
-    .set({
-      username
-    })
-    .where(eq(users.id, id))
-    .returning();
+export async function updateUserInfos(
+  data: UpdateUserProfileInfos,
+  id: number
+) {
+  return await db.update(users).set(data).where(eq(users.id, id)).returning();
 }
 
 export async function updateUserTheme(newTheme: Theme, id: number) {

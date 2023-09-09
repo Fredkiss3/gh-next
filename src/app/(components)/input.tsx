@@ -51,7 +51,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className={clsx(className, "flex w-full flex-col gap-1")}>
         <label
           htmlFor={defaultId ?? id}
-          className={clsx({
+          className={clsx("font-semibold", {
             "sr-only": hideLabel
           })}
         >

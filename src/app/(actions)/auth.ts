@@ -7,10 +7,9 @@ import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
 import { Session } from "~/lib/server/session.server";
 import {
   getUserById,
-  getUserByUsername,
   getUserFromGithubProfile,
   githubUserSchema,
-  updateUserUsername
+  updateUserInfos
 } from "~/app/(models)/user";
 
 import { z } from "zod";
@@ -141,20 +140,21 @@ export const getAuthedUser = cache(async function getUser() {
   return null;
 });
 
-const updateUserNameSchema = zfd.formData({
-  username: zfd.text(
-    z
-      .string()
-      .trim()
-      .min(1, "please enter a username")
-      .regex(/^[a-zA-Z_][a-zA-Z0-9_]+$/, "Invalid username")
-  )
+const updateUserProfileInfosSchema = zfd.formData({
+  name: zfd.text(z.string().trim().optional()),
+  bio: zfd.text(z.string().trim().optional()),
+  location: zfd.text(z.string().trim().optional()),
+  company: zfd.text(z.string().trim().optional())
 });
 
-export const updateUserName = withAuth(async function (formData: FormData) {
+export type UpdateUserProfileInfos = z.TypeOf<
+  typeof updateUserProfileInfosSchema
+>;
+
+export const updateUserProfile = withAuth(async function (formData: FormData) {
   const session = await getSession();
-  const user = await getAuthedUser();
-  const result = updateUserNameSchema.safeParse(formData);
+  const currentUser = (await getAuthedUser())!;
+  const result = updateUserProfileInfosSchema.safeParse(formData);
 
   if (!result.success) {
     await session.addFormData({
@@ -166,33 +166,12 @@ export const updateUserName = withAuth(async function (formData: FormData) {
     return revalidatePath(`/settings/account`);
   }
 
-  if (result.data.username.toLowerCase() === user!.username.toLowerCase()) {
-    await session.addFlash({
-      type: "info",
-      message: "username not changed"
-    });
-
-    return revalidatePath(`/settings/account`);
-  }
-
-  const users = await getUserByUsername(result.data.username);
-
-  if (users.length > 0) {
-    await session.addFormData({
-      data: result.data,
-      errors: {
-        username: ["A user with this username already exists"]
-      }
-    });
-    return revalidatePath(`/settings/account`);
-  }
-
-  await updateUserUsername(result.data.username, user!.id);
+  await updateUserInfos(result.data, currentUser!.id);
 
   // await session.setUser(user);
   await session.addFlash({
     type: "success",
-    message: "username changed with success"
+    message: "Profile updated successfully"
   });
 
   revalidatePath(`/`);
