@@ -1,7 +1,7 @@
 import {
   issueToAssignees,
   type IssueToAssigneeInsert
-} from "./../src/lib/server/db/schema/issue.sql";
+} from "~/lib/server/db/schema/issue.sql";
 import {
   issues,
   type IssueInsert,
