@@ -35,10 +35,16 @@ import {
 } from "./schema/activity.sql";
 import { reactions, reactionsRelations } from "./schema/reaction.sql";
 import { env } from "~/env.mjs";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
-export const db = drizzle(postgres(env.DATABASE_URL), {
+const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+  min: 1,
+  max: 5
+});
+
+export const db = drizzle(pool, {
   logger: true,
   schema: {
     users,
