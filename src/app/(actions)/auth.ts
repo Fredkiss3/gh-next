@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env.mjs";
 import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
-import { withAuth } from "~/lib/server/utils.server";
 import { Session } from "~/lib/server/session.server";
 import {
   getUserById,
@@ -17,6 +16,7 @@ import {
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { revalidatePath } from "next/cache";
+import { withAuth } from "~/lib/server/rsc-utils.server";
 
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();

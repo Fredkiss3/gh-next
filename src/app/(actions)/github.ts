@@ -1,11 +1,12 @@
 import "server-only";
 
 import type { GithubRepositoryData } from "~/lib/types";
-import { fetchFromGithubAPI, nextCache } from "~/lib/server/utils.server";
+import { fetchFromGithubAPI } from "~/lib/server/utils.server";
 import {
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
+import { nextCache } from "~/lib/server/rsc-utils.server";
 
 type RepositoryStatsResponse = {
   repository: {
