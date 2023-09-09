@@ -20,6 +20,11 @@ import {
   type LabelInsert,
   labelToIssues
 } from "~/lib/server/db/schema/label.sql";
+import { range } from "~/lib/shared/utils.shared";
+import {
+  reactions,
+  type ReactionType
+} from "~/lib/server/db/schema/reaction.sql";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -120,6 +125,16 @@ type TimelineItems = {
   )[];
 };
 
+type ReactionTypeFromGH =
+  | "THUMBS_UP"
+  | "THUMBS_DOWN"
+  | "LAUGH"
+  | "HOORAY"
+  | "CONFUSED"
+  | "HEART"
+  | "ROCKET"
+  | "EYES";
+
 type IssueReponse = {
   repository: {
     issues: {
@@ -143,15 +158,7 @@ type IssueReponse = {
           login: string;
         };
         reactionGroups: Array<{
-          content:
-            | "THUMBS_UP"
-            | "THUMBS_DOWN"
-            | "LAUGH"
-            | "HOORAY"
-            | "CONFUSED"
-            | "HEART"
-            | "ROCKET"
-            | "EYES";
+          content: ReactionTypeFromGH;
           reactors: {
             totalCount: number;
           };
@@ -542,6 +549,35 @@ do {
       } satisfies IssueToAssigneeInsert;
 
       await db.insert(issueToAssignees).values(issueToAssigneePayload);
+    }
+
+    /**
+     * INSERTING REACTIONS
+     */
+    for (const reactionGroup of issue.reactionGroups) {
+      // wipe out any reaction associated to this issue
+      // Because we don't have any way to handle conflicts for this table
+      await db
+        .delete(reactions)
+        .where(eq(reactions.issue_id, issueInsertQueryResult.issue_id));
+
+      const reactionTypeMapping = {
+        THUMBS_UP: "PLUS_ONE",
+        THUMBS_DOWN: "MINUS_ONE",
+        EYES: "EYES",
+        CONFUSED: "CONFUSED",
+        HEART: "HEART",
+        HOORAY: "HOORAY",
+        ROCKET: "ROCKET",
+        LAUGH: "LAUGH"
+      } satisfies Record<ReactionTypeFromGH, ReactionType>;
+
+      for (let i = 0; i < reactionGroup.reactors.totalCount; i++) {
+        await db.insert(reactions).values({
+          issue_id: issueInsertQueryResult.issue_id,
+          type: reactionTypeMapping[reactionGroup.content]
+        });
+      }
     }
 
     console.log(
