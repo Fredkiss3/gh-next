@@ -20,7 +20,6 @@ import {
   type LabelInsert,
   labelToIssues
 } from "~/lib/server/db/schema/label.sql";
-import { range } from "~/lib/shared/utils.shared";
 import {
   reactions,
   type ReactionType
