@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_issues" ADD CONSTRAINT "gh_next_issues_number_unique" UNIQUE("number");

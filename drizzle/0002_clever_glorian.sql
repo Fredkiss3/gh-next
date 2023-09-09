@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_issues" RENAME COLUMN "description" TO "body";

@@ -13,7 +13,8 @@
     "db:studio": "set -a; . ./.env.local; set +a && drizzle-kit studio --port 3003 --verbose",
     "db:migrate": "set -a; . ./.env.local; set +a && tsx ./migrate.ts",
     "format": "prettier . --write",
-    "db:fetch-users": "set -a; . ./.env.local; set +a && tsx ./scripts/fetchUsers.ts"
+    "db:fetch-users": "set -a; . ./.env.local; set +a && tsx ./scripts/fetchUsers.ts",
+    "db:fetch-issues": "set -a; . ./.env.local; set +a && tsx ./scripts/fetchIssues.ts"
   },
   "type": "module",
   "dependencies": {
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230821.0",
+    "@faker-js/faker": "^8.0.2",
     "@types/node": "20.5.7",
     "@types/pg": "^8.10.2",
     "@types/react": "18.2.21",

@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_labels" ADD CONSTRAINT "gh_next_labels_name_unique" UNIQUE("name");

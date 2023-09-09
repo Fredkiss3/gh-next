@@ -15,6 +15,69 @@
       "when": 1694266290988,
       "tag": "0001_living_morlocks",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1694274898212,
+      "tag": "0002_clever_glorian",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1694276655401,
+      "tag": "0003_zippy_black_tarantula",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1694276722286,
+      "tag": "0004_gifted_exodus",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1694276864952,
+      "tag": "0005_pretty_crusher_hogan",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1694283354182,
+      "tag": "0006_confused_the_watchers",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1694283372652,
+      "tag": "0007_certain_skrulls",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1694283426142,
+      "tag": "0008_free_ghost_rider",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1694287535348,
+      "tag": "0009_lean_hammerhead",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1694287803413,
+      "tag": "0010_nosy_toad",
+      "breakpoints": true
     }
   ]
 }
