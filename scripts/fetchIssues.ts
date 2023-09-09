@@ -488,19 +488,40 @@ do {
         target: labels.name,
         set: labelPayload
       });
+
+      /**
+       * INSERTING LABEL RELATIONS TO ISSUES
+       */
     }
 
     /**
      * INSERTING ASSIGNEES
      */
-    for (const assignees of issue.assignees.nodes) {
+    for (const assignee of issue.assignees.nodes) {
+      faker.seed(stringToNumber(assignee.login));
       // wipe out any assignee existing for the issue
       // Because we don't have any way to handle conflicts for this table
       await db
         .delete(issueToAssignees)
         .where(eq(issueToAssignees.issue_id, issueInsertQueryResult.issue_id));
 
-      const issueToAssigneePayload = {} satisfies IssueToAssigneeInsert;
+      // Replace with user from DB if it exists
+      const dbUser = await db
+        .select()
+        .from(users)
+        .where(sql`${users.username} ILIKE ${assignee.login}`);
+
+      let currentUser = dbUser[0];
+
+      const issueToAssigneePayload = {
+        issue_id: issueInsertQueryResult.issue_id,
+        assignee_username: currentUser
+          ? currentUser.username
+          : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+        assignee_avatar_url: currentUser
+          ? currentUser.avatar_url
+          : faker.image.avatarGitHub()
+      } satisfies IssueToAssigneeInsert;
 
       await db.insert(issueToAssignees).values(issueToAssigneePayload);
     }

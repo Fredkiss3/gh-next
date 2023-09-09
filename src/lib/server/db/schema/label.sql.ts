@@ -53,3 +53,5 @@ export const labelRelations = relations(labels, ({ many }) => ({
 
 export type Label = InferSelectModel<typeof labels>;
 export type LabelInsert = InferInsertModel<typeof labels>;
+
+export type LabelToIssueInsert = InferInsertModel<typeof labelToIssues>;
