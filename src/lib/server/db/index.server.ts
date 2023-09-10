@@ -19,20 +19,7 @@ import {
   commentRevisions,
   commentRevisionsRelations
 } from "./schema/comment.sql";
-import {
-  assignActivities,
-  changeTitleActivities,
-  editLabelsActivities,
-  mentionActivities,
-  toggleActivities,
-  editActiviyToLabelsRelations,
-  assignActivitiesRelations,
-  changeTitleActivitiesRelations,
-  editActiviyToLabels,
-  editLabelsActivitiesRelations,
-  issueMentionActivitiesRelations,
-  issueToggleActivitiesRelations
-} from "./schema/activity.sql";
+import { issueEvents, issueEventsRelations } from "./schema/event.sql";
 import { reactions, reactionsRelations } from "./schema/reaction.sql";
 import { env } from "~/env.mjs";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -55,21 +42,11 @@ export const db = drizzle(pool, {
     reactions,
     issueRevisions,
     commentRevisions,
-    assignActivities,
-    changeTitleActivities,
-    editLabelsActivities,
-    mentionActivities,
-    toggleActivities,
-    editActiviyToLabels,
+    issueEvents,
     issueUserSubscriptions,
     // relations
     issueUserSubscriptionRelations,
-    editActiviyToLabelsRelations,
-    assignActivitiesRelations,
-    changeTitleActivitiesRelations,
-    editLabelsActivitiesRelations,
-    issueMentionActivitiesRelations,
-    issueToggleActivitiesRelations,
+    issueEventsRelations,
     issueRevisionsRelations,
     commentRevisionsRelations,
     usersRelations,

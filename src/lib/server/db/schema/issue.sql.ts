@@ -15,14 +15,9 @@ import { comments } from "./comment.sql";
 import { reactions } from "./reaction.sql";
 
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import {
-  assignActivities,
-  changeTitleActivities,
-  editLabelsActivities,
-  mentionActivities,
-  toggleActivities
-} from "./activity.sql";
+
 import { pgTable } from "./index.sql";
+import { issueEvents } from "./event.sql";
 
 export const IssueStatuses = {
   OPEN: "OPEN",
@@ -67,43 +62,39 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
   subcriptions: many(issueUserSubscriptions, {
     relationName: "issue"
   }),
-  changeTitleActivities: many(changeTitleActivities),
-  toggleActivities: many(toggleActivities),
-  mentionnedByActivities: many(mentionActivities, {
-    relationName: "mentionnedIssue"
-  }),
-  mentionnedFromActivities: many(mentionActivities, {
-    relationName: "parentIssue"
-  }),
-  assignActivities: many(assignActivities),
-  editLabelsActivities: many(editLabelsActivities)
+  events: many(issueEvents, {
+    relationName: "parent"
+  })
 }));
 
-export const issueToAssignees = pgTable(
-  "issues_to_assignees",
-  {
-    assignee_username: varchar("assignee_username", {
-      length: 255
-    }).notNull(),
-    assignee_avatar_url: varchar("assignee_avatar_url", {
-      length: 255
-    }).notNull(),
-    issue_id: integer("issue_id")
-      .references(() => issues.id)
-      .notNull()
-  },
-  (table) => ({
-    pk: primaryKey(table.issue_id)
+export const issueToAssignees = pgTable("issues_to_assignees", {
+  id: serial("id").primaryKey(),
+  assignee_username: varchar("assignee_username", {
+    length: 255
+  }).notNull(),
+  assignee_avatar_url: varchar("assignee_avatar_url", {
+    length: 255
+  }).notNull(),
+  issue_id: integer("issue_id")
+    .references(() => issues.id)
+    .notNull(),
+  assignee_id: integer("assignee_id").references(() => users.id, {
+    onDelete: "cascade"
   })
-);
+});
 
 export const issueToAssigneesRelation = relations(
   issueToAssignees,
-  ({ one }) => ({
+  ({ one, many }) => ({
     issue: one(issues, {
       fields: [issueToAssignees.issue_id],
       references: [issues.id],
       relationName: "assignees"
+    }),
+    assignee: one(users, {
+      fields: [issueToAssignees.assignee_id],
+      references: [users.id],
+      relationName: "assignee"
     })
   })
 );

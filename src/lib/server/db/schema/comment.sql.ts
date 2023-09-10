@@ -6,7 +6,7 @@ import { users } from "./user.sql";
 import { issues } from "./issue.sql";
 import { reactions } from "./reaction.sql";
 
-import type { InferSelectModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
@@ -64,4 +64,8 @@ export const commentRevisionsRelations = relations(
 );
 
 export type Comment = InferSelectModel<typeof comments>;
+export type CommentInsert = InferInsertModel<typeof comments>;
+
 export type CommentRevision = InferSelectModel<typeof commentRevisions>;
+
+export type CommentRevisionInsert = InferInsertModel<typeof commentRevisions>;
