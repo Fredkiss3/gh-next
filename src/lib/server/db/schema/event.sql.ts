@@ -13,6 +13,7 @@ import { issues } from "./issue.sql";
 
 import type { InferSelectModel } from "drizzle-orm";
 import { pgTable } from "./index.sql";
+import { comments } from "./comment.sql";
 
 export const eventTypeEnum = pgEnum("event_type", [
   "CHANGE_TITLE",
@@ -20,7 +21,8 @@ export const eventTypeEnum = pgEnum("event_type", [
   "ISSUE_MENTION",
   "ASSIGN_USER",
   "ADD_LABEL",
-  "REMOVE_LABEL"
+  "REMOVE_LABEL",
+  "ADD_COMMENT"
 ]);
 
 // this is repeated but not included in the database migration because it is not exported,
@@ -74,10 +76,15 @@ export const issueEvents = pgTable("issue_events", {
   // type = ADD_LABEL | REMOVE_LABEL
   label_id: integer("label_id").references(() => labels.id, {
     onDelete: "cascade"
+  }),
+
+  // type = ADD_COMMENT
+  comment_id: integer("comment_id").references(() => comments.id, {
+    onDelete: "cascade"
   })
 });
 
-export const issueEventsRelations = relations(issueEvents, ({ one, many }) => ({
+export const issueEventsRelations = relations(issueEvents, ({ one }) => ({
   initiator: one(users, {
     fields: [issueEvents.initiator_id],
     references: [users.id],
@@ -94,6 +101,12 @@ export const issueEventsRelations = relations(issueEvents, ({ one, many }) => ({
     fields: [issueEvents.label_id],
     references: [labels.id],
     relationName: "label"
+  }),
+
+  comment: one(comments, {
+    fields: [issueEvents.comment_id],
+    references: [comments.id],
+    relationName: "comment"
   }),
 
   issue: one(issues, {
