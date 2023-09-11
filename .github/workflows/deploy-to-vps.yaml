@@ -63,7 +63,6 @@ jobs:
           # Return to root dir
           cd $DEPLOY_DIR
           pnpm run db:migrate
-          pnpm run db:fetch-users
           pnpm run build
           echo build success ✅
 
