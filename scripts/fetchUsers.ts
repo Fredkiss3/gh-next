@@ -3,6 +3,7 @@ import { fetchFromGithubAPI } from "~/lib/server/utils.server";
 import { env } from "~/env.mjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { eq } from "drizzle-orm";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -33,7 +34,10 @@ for (const user of dbUsers) {
   ).catch((error) => null);
 
   if (userFromGithub) {
-    await db.update(users).set(userFromGithub.user);
+    await db
+      .update(users)
+      .set(userFromGithub.user)
+      .where(eq(users.username, user.username));
     console.log(`updated user [${user.username}] with infos : `);
     console.dir(userFromGithub.user, { depth: null });
   }

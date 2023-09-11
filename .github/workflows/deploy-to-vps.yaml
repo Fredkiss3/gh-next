@@ -54,6 +54,9 @@ jobs:
           set -e -o errexit
           cd $DEPLOY_DIR
 
+          echo use node version 20
+          nvm use 20
+
           echo Pulling latest version...
           git pull origin ${GITHUB_REF##*/}
 
