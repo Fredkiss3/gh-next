@@ -31,6 +31,15 @@ export const issueStatusEnum = pgEnum("issue_status", [
   "NOT_PLANNED"
 ]);
 
+export const issueLockReasonEnum = pgEnum("issue_lock_reason", [
+  "OFF_TOPIC",
+  "TOO_HEATED",
+  "RESOLVED",
+  "SPAM"
+]);
+export type IssueLockReason =
+  (typeof issueLockReasonEnum)["enumValues"][number];
+
 export const issues = pgTable("issues", {
   id: serial("id").primaryKey(),
   number: integer("number").notNull().unique(),
@@ -43,7 +52,8 @@ export const issues = pgTable("issues", {
   }),
   author_username: varchar("author_username", { length: 255 }).notNull(),
   author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
-  is_locked: boolean("is_locked").default(false).notNull()
+  is_locked: boolean("is_locked").default(false).notNull(),
+  lock_reason: issueLockReasonEnum("lock_reason")
 });
 
 export const issuesRelations = relations(issues, ({ one, many }) => ({

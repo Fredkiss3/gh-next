@@ -127,6 +127,20 @@
       "when": 1694394956477,
       "tag": "0017_burly_nitro",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1694396178551,
+      "tag": "0018_gifted_kate_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1694396417090,
+      "tag": "0019_real_william_stryker",
+      "breakpoints": true
     }
   ]
 }
