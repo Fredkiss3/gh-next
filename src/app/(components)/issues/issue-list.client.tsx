@@ -17,6 +17,7 @@ import { IssueRow } from "./issue-row";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
+import { useSearchParams } from "next/navigation";
 import { clsx, pluralize } from "~/lib/shared/utils.shared";
 
 // types
@@ -31,6 +32,9 @@ export function IssueListClient({
   noOfIssuesClosed,
   noOfIssuesOpen
 }: IssueListClientProps) {
+  const sp = useSearchParams();
+  const baseURL = sp.get("q") ? `?q=${sp.get("q")}&page=` : `?page=`;
+
   return (
     <>
       {/* Header */}
@@ -165,12 +169,14 @@ export function IssueListClient({
         {/* END Issue content table - list */}
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        perPage={25}
-        totalCount={totalCount}
-        baseURL="/issues?q=is:open&page="
-      />
+      {totalCount > 25 && (
+        <Pagination
+          currentPage={currentPage}
+          perPage={25}
+          totalCount={totalCount}
+          baseURL={`/issues${baseURL}`}
+        />
+      )}
     </>
   );
 }

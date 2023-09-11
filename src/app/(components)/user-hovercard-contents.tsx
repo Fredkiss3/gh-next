@@ -11,7 +11,7 @@ import { clsx, excerpt } from "~/lib/shared/utils.shared";
 import type { User } from "~/lib/server/db/schema/user.sql";
 export type UserHoverCardContentsProps = {
   className?: string;
-} & Omit<User, "preferred_theme" | "id" | "github_id">;
+} & Pick<User, "name" | "username" | "bio" | "location" | "avatar_url">;
 
 export function UserHoverCardContents({
   name,

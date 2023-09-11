@@ -1,4 +1,12 @@
-import { serial, timestamp, text, integer } from "drizzle-orm/pg-core";
+import {
+  serial,
+  timestamp,
+  text,
+  integer,
+  varchar,
+  boolean,
+  pgEnum
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { pgTable } from "./index.sql";
 
@@ -6,7 +14,19 @@ import { users } from "./user.sql";
 import { issues } from "./issue.sql";
 import { reactions } from "./reaction.sql";
 
-import type { InferModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+
+export const commentHideReasonEnum = pgEnum("comment_hide_reason", [
+  "ABUSE",
+  "OFF_TOPIC",
+  "OUTDATED",
+  "RESOLVED",
+  "DUPLICATE",
+  "SPAM"
+]);
+
+export type CommentHideReason =
+  (typeof commentHideReasonEnum)["enumValues"][number];
 
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
@@ -15,11 +35,15 @@ export const comments = pgTable("comments", {
   author_id: integer("author_id").references(() => users.id, {
     onDelete: "set null"
   }),
+  author_username: varchar("author_username", { length: 255 }).notNull(),
+  author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
   issue_id: integer("issue_id")
     .references(() => issues.id, {
       onDelete: "cascade"
     })
-    .notNull()
+    .notNull(),
+  hidden: boolean("hidden").default(false).notNull(),
+  hidden_reason: commentHideReasonEnum("hidden_reason")
 });
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
@@ -61,5 +85,9 @@ export const commentRevisionsRelations = relations(
   })
 );
 
-export type Comment = InferModel<typeof comments>;
-export type CommentRevision = InferModel<typeof commentRevisions>;
+export type Comment = InferSelectModel<typeof comments>;
+export type CommentInsert = InferInsertModel<typeof comments>;
+
+export type CommentRevision = InferSelectModel<typeof commentRevisions>;
+
+export type CommentRevisionInsert = InferInsertModel<typeof commentRevisions>;

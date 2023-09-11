@@ -1,12 +1,16 @@
 import { serial, varchar, integer, primaryKey } from "drizzle-orm/pg-core";
 
-import { relations, type InferModel, type InferSelectModel } from "drizzle-orm";
+import {
+  relations,
+  type InferSelectModel,
+  type InferInsertModel
+} from "drizzle-orm";
 import { issues } from "./issue.sql";
 import { pgTable } from "./index.sql";
 
 export const labels = pgTable("labels", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
   description: varchar("description", { length: 255 }).default("").notNull(),
   // 10 chars for a generous length, in practice it is 7 chars at most
   // ex: #FF10C0
@@ -48,3 +52,6 @@ export const labelRelations = relations(labels, ({ many }) => ({
 }));
 
 export type Label = InferSelectModel<typeof labels>;
+export type LabelInsert = InferInsertModel<typeof labels>;
+
+export type LabelToIssueInsert = InferInsertModel<typeof labelToIssues>;

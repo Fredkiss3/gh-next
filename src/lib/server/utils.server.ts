@@ -1,42 +1,6 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { z } from "zod";
-import { getSession, getAuthedUser } from "~/app/(actions)/auth";
 import { env } from "~/env.mjs";
 import { GITHUB_AUTHOR_USERNAME } from "~/lib/shared/constants";
-import { revalidatePath, unstable_cache } from "next/cache";
-import { cache } from "react";
-
-export function isSSR() {
-  return headers().get("accept")?.includes("text/html");
-}
-
-export function ssrRedirect(path: string): void {
-  // FIXME: this condition is a workaround until this issue is fixed ? : https://github.com/vercel/next.js/issues/49424
-  if (isSSR()) {
-    return redirect(path);
-  }
-}
-
-export function withAuth<T extends (...args: any[]) => Promise<any>>(
-  action: T
-): T {
-  return (async (...args: Parameters<T>) => {
-    const user = await getAuthedUser();
-
-    if (!user) {
-      const session = await getSession();
-      await session.addFlash({
-        type: "warning",
-        message: "You must be authenticated to do this action."
-      });
-
-      revalidatePath("/");
-      return;
-    }
-    return action(...args);
-  }) as T;
-}
 
 const githubGraphQLAPIResponseSchema = z.union([
   z.object({
@@ -105,21 +69,15 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
       } else if (parsed.data) {
         return parsed.data as T;
       } else {
-        console.error({
-          errors: parsed.errors
-        });
+        console.dir(
+          {
+            errors: parsed.errors
+          },
+          {
+            depth: null
+          }
+        );
         throw new Error(`GraphQL error : check the terminal for errors.`);
       }
     });
-}
-
-type Callback = (...args: any[]) => Promise<any>;
-export function nextCache<T extends Callback>(
-  cb: T,
-  options: {
-    tags: string[];
-    revalidate?: number;
-  }
-) {
-  return cache(unstable_cache(cb, options.tags, options));
 }

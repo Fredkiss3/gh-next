@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_users" ADD COLUMN "company" varchar(255);

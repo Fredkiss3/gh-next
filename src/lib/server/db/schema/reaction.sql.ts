@@ -5,7 +5,7 @@ import { issues } from "./issue.sql";
 import { comments } from "./comment.sql";
 import { pgTable } from "./index.sql";
 
-import type { InferModel } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
 
 export const ReactionTypes = {
   PLUS_ONE: "PLUS_ONE",
@@ -62,4 +62,4 @@ export const reactionsRelations = relations(reactions, ({ one }) => ({
   })
 }));
 
-export type Reaction = InferModel<typeof reactions>;
+export type Reaction = InferSelectModel<typeof reactions>;

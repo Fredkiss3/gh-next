@@ -16,6 +16,7 @@ export const users = pgTable("users", {
   name: varchar("name", { length: 255 }),
   bio: text("bio"),
   location: varchar("location", { length: 255 }),
+  company: varchar("company", { length: 255 }),
   preferred_theme: themesEnum("preferred_theme").default("system").notNull()
 });
 
