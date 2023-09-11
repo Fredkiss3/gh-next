@@ -48,7 +48,7 @@ export async function updateUserInfos(
   data: UpdateUserProfileInfos,
   id: number
 ) {
-  return await db.update(users).set(data).where(eq(users.id, id)).returning();
+  return await db.update(users).set(data).where(eq(users.id, id));
 }
 
 export async function updateUserTheme(newTheme: Theme, id: number) {

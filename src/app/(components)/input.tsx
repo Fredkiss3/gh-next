@@ -22,7 +22,6 @@ export type InputProps = Omit<
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   function Input(
     {
-      name,
       label,
       className,
       validationText,
@@ -95,7 +94,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             autoComplete={autoComplete}
             aria-invalid={validationStatus === "error"}
             type={type}
-            name={name}
             disabled={disabled}
             required={required}
             className={clsx(
