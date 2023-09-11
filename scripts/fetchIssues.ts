@@ -1,6 +1,7 @@
 import {
   issueToAssignees,
-  type IssueToAssigneeInsert
+  type IssueToAssigneeInsert,
+  type IssueLockReason
 } from "~/lib/server/db/schema/issue.sql";
 import {
   issues,
@@ -32,7 +33,6 @@ import {
 } from "~/lib/server/db/schema/comment.sql";
 import {
   issueEvents,
-  type IssueEvent,
   type IssueEventInsert,
   type EventType
 } from "~/lib/server/db/schema/event.sql";
@@ -43,7 +43,7 @@ const GITHUB_REPO_SOURCE = {
   owner: "vercel",
   name: "next.js"
 } as const;
-const MAX_ISSUES_TO_FETCH = 25;
+const MAX_ISSUES_TO_FETCH = 5 * 25; // 5 pages of issues
 
 type Actor = {
   login: string;
@@ -102,6 +102,7 @@ type IssueReponse = {
         state: "OPEN" | "CLOSED";
         locked: boolean;
         stateReason: "REOPENED" | "NOT_PLANNED" | "COMPLETED";
+        activeLockReason: IssueLockReason | null;
         body: string;
         userContentEdits: UserContentEdits;
         author: {
@@ -127,7 +128,7 @@ const issuesQuery = /* GraphQL */ `
     repository(name: $repoName, owner: $repoOwner) {
       issues(
         after: $cursor
-        first: 10
+        first: 25
         # since the start of the year 2023
         filterBy: { since: "2023-01-01T00:00:00.000Z" }
         orderBy: { field: COMMENTS, direction: DESC }
@@ -146,6 +147,7 @@ const issuesQuery = /* GraphQL */ `
           state
           locked
           stateReason
+          activeLockReason
           body
           userContentEdits(last: 10) {
             nodes {
@@ -201,6 +203,8 @@ type RenamedTitleEvent = {
   __typename: "RenamedTitleEvent";
   actor: Actor;
   createdAt: string;
+  currentTitle: string;
+  previousTitle: string;
 };
 
 type AssignedEvent = {
@@ -230,14 +234,14 @@ type UnlabeledEvent = {
 type ClosedEvent = {
   __typename: "ClosedEvent";
   actor: Actor;
-  stateReason: string;
+  stateReason: "REOPENED" | "NOT_PLANNED" | "COMPLETED";
   createdAt: string;
 };
 
-type LockedEvent = {
-  __typename: "LockedEvent";
+type ReopenedEvent = {
+  __typename: "ReopenedEvent";
   actor: Actor;
-  lockReason: string;
+  stateReason: "REOPENED" | "NOT_PLANNED" | "COMPLETED";
   createdAt: string;
 };
 
@@ -246,10 +250,12 @@ type CrossReferencedEvent = {
   actor: Actor;
   createdAt: string;
   isCrossRepository: boolean;
-  source: {
-    __typename: "Issue";
-    number: number;
-  };
+  source:
+    | {
+        __typename: "Issue";
+        number: number;
+      }
+    | { __typename: "PullRequest" };
 };
 
 type TimelineItem =
@@ -259,7 +265,7 @@ type TimelineItem =
   | LabeledEvent
   | UnlabeledEvent
   | ClosedEvent
-  | LockedEvent
+  | ReopenedEvent
   | CrossReferencedEvent;
 
 type EventsResponse = {
@@ -290,7 +296,6 @@ const eventsQuery = /* GraphQL */ `
             ASSIGNED_EVENT
             CLOSED_EVENT
             LABELED_EVENT
-            LOCKED_EVENT
             CROSS_REFERENCED_EVENT
             UNLABELED_EVENT
           ]
@@ -331,6 +336,8 @@ const eventsQuery = /* GraphQL */ `
               actor {
                 login
               }
+              currentTitle
+              previousTitle
               createdAt
             }
             ... on AssignedEvent {
@@ -374,11 +381,11 @@ const eventsQuery = /* GraphQL */ `
               stateReason
               createdAt
             }
-            ... on LockedEvent {
+            ... on ReopenedEvent {
               actor {
                 login
               }
-              lockReason
+              stateReason
               createdAt
             }
             ... on CrossReferencedEvent {
@@ -410,6 +417,9 @@ function stringToNumber(str: string) {
     [...str].map((letter, index) => letter.charCodeAt(index)).join("")
   );
 }
+
+// mapping: issue ID -> mention event
+const mentionsEvents: Record<number, CrossReferencedEvent> = {};
 
 do {
   const {
@@ -456,6 +466,7 @@ do {
         ? currentUser.avatar_url
         : faker.image.avatarGitHub(),
       is_locked: issue.locked,
+      lock_reason: issue.activeLockReason,
       created_at: new Date(issue.createdAt),
       status: issue.stateReason === "NOT_PLANNED" ? "NOT_PLANNED" : issue.state
     } satisfies IssueInsert;
@@ -664,7 +675,7 @@ do {
         const eventTypeMapping = {
           AssignedEvent: "ASSIGN_USER",
           ClosedEvent: "TOGGLE_STATUS",
-          LockedEvent: "TOGGLE_STATUS",
+          ReopenedEvent: "TOGGLE_STATUS",
           CrossReferencedEvent: "ISSUE_MENTION",
           RenamedTitleEvent: "CHANGE_TITLE",
           IssueComment: "ADD_COMMENT",
@@ -681,7 +692,8 @@ do {
           initiator_avatar_url: currentUser
             ? currentUser.avatar_url
             : faker.image.avatarGitHub(),
-          type: eventTypeMapping[event.__typename]
+          type: eventTypeMapping[event.__typename],
+          created_at: new Date(event.createdAt)
         };
 
         if (event.__typename === "IssueComment") {
@@ -800,6 +812,42 @@ do {
               ? currentUser.avatar_url
               : faker.image.avatarGitHub()
           };
+        } else if (event.__typename === "ClosedEvent") {
+          eventPayload.status =
+            event.stateReason === "NOT_PLANNED" ? "NOT_PLANNED" : "CLOSED";
+        } else if (event.__typename === "ReopenedEvent") {
+          eventPayload.status = "OPEN";
+        } else if (event.__typename === "RenamedTitleEvent") {
+          eventPayload.old_title = event.previousTitle;
+          eventPayload.new_title = event.currentTitle;
+        } else if (
+          event.__typename === "LabeledEvent" ||
+          event.__typename === "UnlabeledEvent"
+        ) {
+          const { label } = event;
+          const labelPayload = {
+            name: label.name,
+            color: `#${label.color}`,
+            description: label.description ?? undefined
+          } satisfies LabelInsert;
+
+          const [labelInsertResult] = await db
+            .insert(labels)
+            .values(labelPayload)
+            .onConflictDoUpdate({
+              target: labels.name,
+              set: labelPayload
+            })
+            .returning({
+              label_id: labels.id
+            });
+
+          eventPayload.label_id = labelInsertResult.label_id;
+        } else if (event.__typename === "CrossReferencedEvent") {
+          if (!event.isCrossRepository) {
+            mentionsEvents[issueInsertQueryResult.issue_id] = event;
+          }
+          continue; // don't add mentions events yet
         }
 
         await db.insert(issueEvents).values(eventPayload);
@@ -815,5 +863,75 @@ do {
     );
   }
 } while (hasNextPage && totalIssuesFetched < MAX_ISSUES_TO_FETCH);
+
+/**
+ *  We add mention events at the end because we need
+ *  to check whether the issue exists or not and
+ *  since when we loop through issues, some issues may not exist yet,
+ *  we wait for all of the issues to be inserted, then add mention events
+ */
+console.log(`\nInserting mentions events`);
+
+for (const [issue_id_str, event] of Object.entries(mentionsEvents)) {
+  if (event.source.__typename !== "Issue") {
+    continue;
+  }
+
+  let currentUser: User | null | undefined = null;
+  console.dir({
+    event,
+    issue_id_str
+  });
+
+  if (event.actor) {
+    // Faker seed so that it generates the same login for the same user
+    faker.seed(stringToNumber(event.actor.login));
+    // if the user is in our DB, use that instead of a generated username & avatar url
+    console.log("BEFORE CURRENT USER");
+    const dbUser = await db
+      .select()
+      .from(users)
+      .where(sql`${users.username} ILIKE ${event.actor.login}`);
+    currentUser = dbUser[0];
+    console.log("AFTER CURRENT USER");
+  }
+
+  console.log("BEFORE DB ISSUES");
+  const dbIssues = await db
+    .select()
+    .from(issues)
+    .where(eq(issues.number, event.source.number));
+
+  const mentionnedIssueId = dbIssues[0];
+  console.log("AFTER DB ISSUES");
+
+  if (mentionnedIssueId) {
+    console.log("BEFORE INSERTION");
+    const payload = {
+      issue_id: Number(issue_id_str),
+      initiator_id: currentUser ? currentUser.id : null,
+      initiator_username: currentUser
+        ? currentUser.username
+        : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+      initiator_avatar_url: currentUser
+        ? currentUser.avatar_url
+        : faker.image.avatarGitHub(),
+      type: "ISSUE_MENTION",
+      created_at: new Date(event.createdAt),
+      mentionned_issue_id: mentionnedIssueId.id
+    } satisfies IssueEventInsert;
+
+    console.dir(
+      {
+        payload
+      },
+      { depth: null }
+    );
+    await db.insert(issueEvents).values(payload);
+    console.log("AFTER INSERTION");
+  }
+}
+
+console.log(`\nMention events inserted successfully ✅`);
 
 process.exit();
