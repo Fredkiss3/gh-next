@@ -105,7 +105,7 @@ type IssueReponse = {
         activeLockReason: IssueLockReason | null;
         body: string;
         userContentEdits: UserContentEdits;
-        author: {
+        author?: {
           login: string;
         };
         reactionGroups: Array<ReactionGroup>;
@@ -438,6 +438,7 @@ do {
   totalIssuesFetched += nodes.length;
 
   for (const issue of nodes) {
+    if (!issue.author) continue;
     /**
      * INSERTING ISSUES
      */
