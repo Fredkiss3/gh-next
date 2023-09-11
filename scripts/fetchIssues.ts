@@ -13,7 +13,7 @@ import { faker } from "@faker-js/faker/locale/en_US";
 import { env } from "~/env.mjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { users } from "~/lib/server/db/schema/user.sql";
+import { users, type User } from "~/lib/server/db/schema/user.sql";
 import { eq, sql } from "drizzle-orm";
 import {
   labels,
@@ -30,6 +30,12 @@ import {
   commentRevisions,
   type CommentRevisionInsert
 } from "~/lib/server/db/schema/comment.sql";
+import {
+  issueEvents,
+  type IssueEvent,
+  type IssueEventInsert,
+  type EventType
+} from "~/lib/server/db/schema/event.sql";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -54,60 +60,6 @@ type Label = {
   description: string | null;
 };
 
-type AssignedEvent = {
-  __typename: "AssignedEvent";
-  actor: Actor;
-  assignee: {
-    __typename: "User";
-    login: string;
-  };
-};
-
-type LabeledEvent = {
-  __typename: "LabeledEvent";
-  actor: Actor;
-  label: Label;
-  createdAt: string;
-};
-
-type UnlabeledEvent = {
-  __typename: "UnlabeledEvent";
-  actor: Actor;
-  label: Label;
-  createdAt: string;
-};
-
-type ClosedEvent = {
-  __typename: "ClosedEvent";
-  actor: Actor;
-  stateReason: string;
-  createdAt: string;
-};
-
-type MentionedEvent = {
-  __typename: "MentionedEvent";
-  createdAt: string;
-  actor: Actor;
-};
-
-type LockedEvent = {
-  __typename: "LockedEvent";
-  actor: Actor;
-  lockReason: string;
-  createdAt: string;
-};
-
-type ReferencedEvent = {
-  __typename: "ReferencedEvent";
-  actor: Actor;
-  isCrossRepository: boolean;
-  subject: {
-    __typename: "Issue";
-    title: string;
-    number: number;
-  };
-};
-
 type UserContentEdits = {
   nodes: {
     id: number;
@@ -115,19 +67,6 @@ type UserContentEdits = {
     diff: string | null;
     editor: Editor;
   }[];
-};
-
-type TimelineItems = {
-  totalCount: number;
-  nodes: (
-    | AssignedEvent
-    | LabeledEvent
-    | UnlabeledEvent
-    | ClosedEvent
-    | MentionedEvent
-    | LockedEvent
-    | ReferencedEvent
-  )[];
 };
 
 type ReactionTypeFromGH =
@@ -179,33 +118,6 @@ type IssueReponse = {
           nodes: Array<Label>;
         };
       }>;
-    };
-  };
-};
-
-type Comment = {
-  createdAt: string;
-  lastEditedAt?: string; // Optional because a comment might not be edited.
-  isMinimized: boolean;
-  minimizedReason?: string; // Optional because a comment might not be minimized.
-  updatedAt: string;
-  author?: Actor;
-  body: string;
-  reactionGroups: ReactionGroup[];
-  userContentEdits: UserContentEdits;
-};
-
-type CommentsResponse = {
-  repository: {
-    issue: {
-      comments: {
-        totalCount: number;
-        pageInfo: {
-          hasNextPage: boolean;
-          endCursor: string | null; // Might be optional based on API responses when no further pages are present.
-        };
-        nodes: Comment[];
-      };
     };
   };
 };
@@ -274,44 +186,211 @@ const issuesQuery = /* GraphQL */ `
   }
 `;
 
-const commentsQuery = /* GraphQL */ `
-  query comments(
-    $cursor: String
-    $repoName: String!
-    $repoOwner: String!
-    $issue_number: Int!
-  ) {
+type IssueComment = {
+  __typename: "IssueComment";
+  body: string;
+  createdAt: string;
+  isMinimized: boolean;
+  minimizedReason?: string;
+  actor?: Actor; // Comments from deleted users might not have an author.
+  reactionGroups: ReactionGroup[];
+  userContentEdits: UserContentEdits;
+};
+
+type RenamedTitleEvent = {
+  __typename: "RenamedTitleEvent";
+  actor: Actor;
+  createdAt: string;
+};
+
+type AssignedEvent = {
+  __typename: "AssignedEvent";
+  actor: Actor;
+  createdAt: string;
+  assignee: {
+    __typename: "User";
+    login: string;
+  };
+};
+
+type LabeledEvent = {
+  __typename: "LabeledEvent";
+  actor: Actor;
+  label: Label;
+  createdAt: string;
+};
+
+type UnlabeledEvent = {
+  __typename: "UnlabeledEvent";
+  actor: Actor;
+  label: Label;
+  createdAt: string;
+};
+
+type ClosedEvent = {
+  __typename: "ClosedEvent";
+  actor: Actor;
+  stateReason: string;
+  createdAt: string;
+};
+
+type LockedEvent = {
+  __typename: "LockedEvent";
+  actor: Actor;
+  lockReason: string;
+  createdAt: string;
+};
+
+type CrossReferencedEvent = {
+  __typename: "CrossReferencedEvent";
+  actor: Actor;
+  createdAt: string;
+  isCrossRepository: boolean;
+  source: {
+    __typename: "Issue";
+    number: number;
+  };
+};
+
+type TimelineItem =
+  | IssueComment
+  | RenamedTitleEvent
+  | AssignedEvent
+  | LabeledEvent
+  | UnlabeledEvent
+  | ClosedEvent
+  | LockedEvent
+  | CrossReferencedEvent;
+
+type EventsResponse = {
+  repository: {
+    issue: {
+      timelineItems: {
+        pageInfo: {
+          hasNextPage: boolean;
+          endCursor: string;
+        };
+        totalCount: number;
+        nodes: TimelineItem[];
+      };
+    };
+  };
+};
+
+const eventsQuery = /* GraphQL */ `
+  query events($cursor: String, $repoName: String!, $repoOwner: String!) {
     repository(name: $repoName, owner: $repoOwner) {
-      issue(number: $issue_number) {
-        comments(after: $cursor, first: 100) {
-          totalCount
+      issue(number: 42991) {
+        timelineItems(
+          after: $cursor
+          first: 100
+          itemTypes: [
+            ISSUE_COMMENT
+            RENAMED_TITLE_EVENT
+            ASSIGNED_EVENT
+            CLOSED_EVENT
+            LABELED_EVENT
+            LOCKED_EVENT
+            CROSS_REFERENCED_EVENT
+            UNLABELED_EVENT
+          ]
+        ) {
           pageInfo {
             hasNextPage
             endCursor
           }
+          totalCount
           nodes {
-            createdAt
-            lastEditedAt
-            isMinimized
-            minimizedReason
-            updatedAt
-            author {
-              login
-            }
-            body
-            reactionGroups {
-              content
-              reactors {
-                totalCount
+            __typename
+            ... on IssueComment {
+              body
+              createdAt
+              isMinimized
+              minimizedReason
+              actor: author {
+                login
+              }
+              reactionGroups {
+                content
+                reactors {
+                  totalCount
+                }
+              }
+              userContentEdits(last: 10) {
+                nodes {
+                  editedAt
+                  diff
+                  editor {
+                    login
+                    avatarUrl
+                  }
+                }
               }
             }
-            userContentEdits(last: 10) {
-              nodes {
-                editedAt
-                diff
-                editor {
+            ... on RenamedTitleEvent {
+              actor {
+                login
+              }
+              createdAt
+            }
+            ... on AssignedEvent {
+              actor {
+                login
+              }
+              createdAt
+              assignee {
+                __typename
+                ... on User {
                   login
-                  avatarUrl
+                }
+              }
+            }
+            ... on LabeledEvent {
+              actor {
+                login
+              }
+              label {
+                name
+                color
+                description
+              }
+              createdAt
+            }
+            ... on UnlabeledEvent {
+              actor {
+                login
+              }
+              label {
+                name
+                color
+                description
+              }
+              createdAt
+            }
+            ... on ClosedEvent {
+              actor {
+                login
+              }
+              stateReason
+              createdAt
+            }
+            ... on LockedEvent {
+              actor {
+                login
+              }
+              lockReason
+              createdAt
+            }
+            ... on CrossReferencedEvent {
+              actor {
+                login
+              }
+              createdAt
+              isCrossRepository
+              source {
+                __typename
+                ... on Issue {
+                  number
                 }
               }
             }
@@ -527,136 +606,208 @@ do {
       }
     }
 
-    console.log(
-      `\nInserting comments for issue \x1b[34m${issue.number}\x1b[37m`
-    );
-    let nextCommentCursor: string | null = null;
-    let commentsHasNextPage = false;
-    let totalNumberOfComments = 0;
+    console.log(`\nInserting events for issue \x1b[34m${issue.number}\x1b[37m`);
+
+    // delete all comments from issue
+    await db
+      .delete(comments)
+      .where(eq(comments.issue_id, issueInsertQueryResult.issue_id));
+
+    // delete all events from issue
+    await db
+      .delete(issueEvents)
+      .where(eq(issueEvents.issue_id, issueInsertQueryResult.issue_id));
+
+    let nextEventsCursor: string | null = null;
+    let eventsHasNextPage = false;
+    let totalNumberOfEvents = 0;
 
     do {
       /**
-       * INSERTING COMMENTS
+       * INSERTING EVENTS
        */
       const {
         repository: {
           issue: {
-            // @ts-expect-error
-            comments: { nodes: commentResultList, pageInfo: commentsPageIngo }
+            timelineItems: {
+              nodes: eventsResultList,
+              // @ts-expect-error
+              pageInfo: eventsPageInfo
+            }
           }
         }
-      } = await fetchFromGithubAPI<CommentsResponse>(commentsQuery, {
+      } = await fetchFromGithubAPI<EventsResponse>(eventsQuery, {
         repoOwner: GITHUB_REPO_SOURCE.owner,
         repoName: GITHUB_REPO_SOURCE.name,
-        cursor: nextCommentCursor,
+        cursor: nextEventsCursor,
         issue_number: issue.number
       });
 
-      nextCommentCursor = commentsPageIngo.endCursor;
-      commentsHasNextPage = commentsPageIngo.hasNextPage;
+      nextEventsCursor = eventsPageInfo.endCursor;
+      eventsHasNextPage = eventsPageInfo.hasNextPage;
 
-      // delete all comments from issue
-      await db
-        .delete(comments)
-        .where(eq(comments.issue_id, issueInsertQueryResult.issue_id));
+      for (const event of eventsResultList) {
+        totalNumberOfEvents++;
+        let currentUser: User | null | undefined = null;
 
-      for (const comment of commentResultList) {
-        if (!comment.author) {
-          continue;
+        if (event.actor) {
+          // Faker seed so that it generates the same login for the same user
+          faker.seed(stringToNumber(event.actor.login));
+          // if the user is in our DB, use that instead of a generated username & avatar url
+          const dbUser = await db
+            .select()
+            .from(users)
+            .where(sql`${users.username} ILIKE ${event.actor.login}`);
+          currentUser = dbUser[0];
         }
-        totalNumberOfComments++;
-        // Faker so that it generates the same login for the same user
-        faker.seed(stringToNumber(comment.author.login));
 
-        // if the user is in our DB, use that instead of a generated username & avatar url
-        const dbUser = await db
-          .select()
-          .from(users)
-          .where(sql`${users.username} ILIKE ${comment.author.login}`);
+        const eventTypeMapping = {
+          AssignedEvent: "ASSIGN_USER",
+          ClosedEvent: "TOGGLE_STATUS",
+          LockedEvent: "TOGGLE_STATUS",
+          CrossReferencedEvent: "ISSUE_MENTION",
+          RenamedTitleEvent: "CHANGE_TITLE",
+          IssueComment: "ADD_COMMENT",
+          UnlabeledEvent: "REMOVE_LABEL",
+          LabeledEvent: "ADD_LABEL"
+        } satisfies Record<typeof event.__typename, EventType>;
 
-        let currentUser = dbUser[0];
-        const commentPayload = {
-          content: comment.body,
+        let eventPayload: IssueEventInsert = {
           issue_id: issueInsertQueryResult.issue_id,
-          author_id: currentUser ? currentUser.id : null,
-          author_username: currentUser
+          initiator_id: currentUser ? currentUser.id : null,
+          initiator_username: currentUser
             ? currentUser.username
             : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
-          author_avatar_url: currentUser
+          initiator_avatar_url: currentUser
             ? currentUser.avatar_url
             : faker.image.avatarGitHub(),
-          created_at: new Date(issue.createdAt)
-        } satisfies CommentInsert;
+          type: eventTypeMapping[event.__typename]
+        };
 
-        const [commentInsertQueryResult] = await db
-          .insert(comments)
-          .values(commentPayload)
-          .returning({
-            comment_id: comments.id
-          });
-
-        /**
-         * INSERTING COMMENT REVISIONS
-         */
-        for (const edition of comment.userContentEdits.nodes) {
-          // Skip revisions without a diff
-          if (!edition.diff) {
+        if (event.__typename === "IssueComment") {
+          const comment = event;
+          if (!comment.actor) {
             continue;
           }
 
-          faker.seed(stringToNumber(edition.editor.login));
-          // wipe out any revision existing for the comment
-          await db
-            .delete(commentRevisions)
-            .where(
-              eq(
-                commentRevisions.comment_id,
-                commentInsertQueryResult.comment_id
-              )
-            );
+          // Faker so that it generates the same login for the same user
+          faker.seed(stringToNumber(comment.actor.login));
 
-          const revisionPayload = {
-            comment_id: commentInsertQueryResult.comment_id,
-            created_at: new Date(edition.editedAt),
-            updated_content: edition.diff
-          } satisfies CommentRevisionInsert;
+          // if the user is in our DB, use that instead of a generated username & avatar url
+          const dbUser = await db
+            .select()
+            .from(users)
+            .where(sql`${users.username} ILIKE ${comment.actor.login}`);
 
-          await db.insert(commentRevisions).values(revisionPayload);
-        }
+          let currentUser = dbUser[0];
+          const commentPayload = {
+            content: comment.body,
+            issue_id: issueInsertQueryResult.issue_id,
+            author_id: currentUser ? currentUser.id : null,
+            author_username: currentUser
+              ? currentUser.username
+              : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+            author_avatar_url: currentUser
+              ? currentUser.avatar_url
+              : faker.image.avatarGitHub(),
+            created_at: new Date(comment.createdAt)
+          } satisfies CommentInsert;
 
-        /**
-         * INSERTING COMMENT REACTIONS
-         */
-        for (const reactionGroup of comment.reactionGroups) {
-          // wipe out any reaction associated to this comment
-          await db
-            .delete(reactions)
-            .where(
-              eq(reactions.comment_id, commentInsertQueryResult.comment_id)
-            );
-
-          const reactionTypeMapping = {
-            THUMBS_UP: "PLUS_ONE",
-            THUMBS_DOWN: "MINUS_ONE",
-            EYES: "EYES",
-            CONFUSED: "CONFUSED",
-            HEART: "HEART",
-            HOORAY: "HOORAY",
-            ROCKET: "ROCKET",
-            LAUGH: "LAUGH"
-          } satisfies Record<ReactionTypeFromGH, ReactionType>;
-
-          for (let i = 0; i < reactionGroup.reactors.totalCount; i++) {
-            await db.insert(reactions).values({
-              comment_id: commentInsertQueryResult.comment_id,
-              type: reactionTypeMapping[reactionGroup.content]
+          const [commentInsertQueryResult] = await db
+            .insert(comments)
+            .values(commentPayload)
+            .returning({
+              comment_id: comments.id
             });
+
+          // Add event
+          eventPayload.comment_id = commentInsertQueryResult.comment_id;
+
+          /**
+           * INSERTING COMMENT REVISIONS
+           */
+          for (const edition of comment.userContentEdits.nodes) {
+            // Skip revisions without a diff
+            if (!edition.diff) {
+              continue;
+            }
+
+            faker.seed(stringToNumber(edition.editor.login));
+            // wipe out any revision existing for the comment
+            await db
+              .delete(commentRevisions)
+              .where(
+                eq(
+                  commentRevisions.comment_id,
+                  commentInsertQueryResult.comment_id
+                )
+              );
+
+            const revisionPayload = {
+              comment_id: commentInsertQueryResult.comment_id,
+              created_at: new Date(edition.editedAt),
+              updated_content: edition.diff
+            } satisfies CommentRevisionInsert;
+
+            await db.insert(commentRevisions).values(revisionPayload);
           }
+
+          /**
+           * INSERTING COMMENT REACTIONS
+           */
+          for (const reactionGroup of comment.reactionGroups) {
+            // wipe out any reaction associated to this comment
+            await db
+              .delete(reactions)
+              .where(
+                eq(reactions.comment_id, commentInsertQueryResult.comment_id)
+              );
+
+            const reactionTypeMapping = {
+              THUMBS_UP: "PLUS_ONE",
+              THUMBS_DOWN: "MINUS_ONE",
+              EYES: "EYES",
+              CONFUSED: "CONFUSED",
+              HEART: "HEART",
+              HOORAY: "HOORAY",
+              ROCKET: "ROCKET",
+              LAUGH: "LAUGH"
+            } satisfies Record<ReactionTypeFromGH, ReactionType>;
+
+            for (let i = 0; i < reactionGroup.reactors.totalCount; i++) {
+              await db.insert(reactions).values({
+                comment_id: commentInsertQueryResult.comment_id,
+                type: reactionTypeMapping[reactionGroup.content]
+              });
+            }
+          }
+        } else if (event.__typename === "AssignedEvent") {
+          // Faker seed so that it generates the same login for the same user
+          faker.seed(stringToNumber(event.assignee.login));
+          // if the user is in our DB, use that instead of a generated username & avatar url
+          const dbUser = await db
+            .select()
+            .from(users)
+            .where(sql`${users.username} ILIKE ${event.assignee.login}`);
+          const currentUser = dbUser[0];
+
+          eventPayload = {
+            ...eventPayload,
+            assignee_username: currentUser
+              ? currentUser.username
+              : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+            assignee_avatar_url: currentUser
+              ? currentUser.avatar_url
+              : faker.image.avatarGitHub()
+          };
         }
+
+        await db.insert(issueEvents).values(eventPayload);
       }
-    } while (commentsHasNextPage);
+    } while (eventsHasNextPage);
+
     console.log(
-      `\nsuccessfully inserted \x1b[34m${totalNumberOfComments} comments\x1b[37m ✅`
+      `\nsuccessfully inserted \x1b[34m${totalNumberOfEvents} events\x1b[37m ✅`
     );
 
     console.log(
