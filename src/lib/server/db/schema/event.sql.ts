@@ -22,8 +22,20 @@ export const eventTypeEnum = pgEnum("event_type", [
   "ASSIGN_USER",
   "ADD_LABEL",
   "REMOVE_LABEL",
-  "ADD_COMMENT"
+  "ADD_COMMENT",
+  "ISSUE_LOCK"
 ]);
+
+export const issueLockReasonEnum = pgEnum("issue_lock_reason", [
+  "OFF_TOPIC",
+  "TOO_HEATED",
+  "RESOLVED",
+  "SPAM"
+]);
+
+export type EventType = (typeof eventTypeEnum)["enumValues"][number];
+export type IssueLockReason =
+  (typeof issueLockReasonEnum)["enumValues"][number];
 
 // this is repeated but not included in the database migration because it is not exported,
 // the original enum is defined in `issue.ts` file
@@ -32,8 +44,6 @@ const issueStatusEnum = pgEnum("issue_status", [
   "CLOSED",
   "NOT_PLANNED"
 ]);
-
-export type EventType = (typeof eventTypeEnum)["enumValues"][number];
 
 export const issueEvents = pgTable("issue_events", {
   id: serial("id").primaryKey(),
@@ -81,7 +91,10 @@ export const issueEvents = pgTable("issue_events", {
   // type = ADD_COMMENT
   comment_id: integer("comment_id").references(() => comments.id, {
     onDelete: "cascade"
-  })
+  }),
+
+  // type = ISSUE_LOCK
+  lock_reason: issueLockReasonEnum("lock_reason")
 });
 
 export const issueEventsRelations = relations(issueEvents, ({ one }) => ({
