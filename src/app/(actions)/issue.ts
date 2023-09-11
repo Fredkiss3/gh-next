@@ -3,6 +3,7 @@
 import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
 import { wait } from "~/lib/shared/utils.shared";
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
+import { getLabelsName } from "../(models)/label";
 
 const authorList = [
   {
@@ -238,5 +239,11 @@ export async function getIssueList(): Promise<IssueListResult> {
     noOfIssuesOpen: 115,
     noOfIssuesClosed: 100,
     totalCount: 215
+  };
+}
+
+export async function getLabelsByName(name: string) {
+  return {
+    promise: getLabelsName(name)
   };
 }

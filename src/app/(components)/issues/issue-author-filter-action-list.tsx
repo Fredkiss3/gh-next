@@ -10,7 +10,7 @@ import { IssueSearchLink } from "./issue-search-link";
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
-import { useIssueAuthorListByNameQuery } from "~/lib/client/hooks/use-issue-author-list-by-name";
+import { useIssueAuthorListByNameQuery } from "~/lib/client/hooks/use-issue-author-list-by-name-query";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 
 // types

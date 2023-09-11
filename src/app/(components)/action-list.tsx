@@ -10,7 +10,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 // types
 export type ActionListItem<T> = T & {
   selected?: boolean;
-  id?: string;
+  id?: string | number;
 };
 
 export type ActionListGroup<T> = {
