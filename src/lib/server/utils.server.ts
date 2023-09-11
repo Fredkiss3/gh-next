@@ -69,9 +69,14 @@ export async function fetchFromGithubAPI<T extends Record<string, any>>(
       } else if (parsed.data) {
         return parsed.data as T;
       } else {
-        console.error({
-          errors: parsed.errors
-        });
+        console.dir(
+          {
+            errors: parsed.errors
+          },
+          {
+            depth: null
+          }
+        );
         throw new Error(`GraphQL error : check the terminal for errors.`);
       }
     });
