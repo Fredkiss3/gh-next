@@ -17,7 +17,7 @@ export function IssueListMainParent({
   // which is exactly when we want to run this
   const [] = React.useState(() => {
     useSearchQueryStore.setState({
-      query: initialQuery ?? BASE_ISSUE_SEARCH_QUERY
+      query: initialQuery ?? BASE_ISSUE_SEARCH_QUERY + " "
     });
   });
 

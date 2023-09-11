@@ -6,6 +6,11 @@ import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
 
 const authorList = [
   {
+    username: "Fredkiss3",
+    name: "Adrien KISSIE",
+    avatar: "https://avatars.githubusercontent.com/u/38298743?v=4"
+  },
+  {
     username: "balazsorban45",
     name: "Balázs Orbán",
     avatar: "https://avatars.githubusercontent.com/u/18369201?v=4"
@@ -39,17 +44,20 @@ const authorList = [
 
 // FIXME: Change this to actually query the DB in production
 export async function filterIssueAuthorsByName(name: string) {
-  const authors = authorList.filter(
-    (user) =>
-      user.username.toLowerCase().startsWith(name.toLowerCase()) ||
-      user.name.toLowerCase().includes(name.toLowerCase())
-  ) as Array<{
-    username: string;
-    name: string;
-    avatar: string;
-  }>;
-
-  return authors;
+  return {
+    promise: wait(1).then(
+      () =>
+        authorList.filter(
+          (user) =>
+            user.username.toLowerCase().startsWith(name.toLowerCase()) ||
+            user.name.toLowerCase().includes(name.toLowerCase())
+        ) as Array<{
+          username: string;
+          name: string;
+          avatar: string;
+        }>
+    )
+  };
 }
 
 // FIXME: Change this to actually query the DB in production

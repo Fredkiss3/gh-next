@@ -9,8 +9,9 @@ import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
-import { filterIssueAuthorsByName } from "~/app/(actions)/issue";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
+import { useIssueAuthorListByNameQuery } from "~/lib/client/hooks/use-issue-author-list-by-name";
+import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 
 // types
 export type IssueAuthorFilterActionProps = {
@@ -22,20 +23,21 @@ export function IssueAuthorFilterActionList({
 }: IssueAuthorFilterActionProps) {
   const alignRight = useMediaQuery(`(min-width: 768px)`);
   const [inputQuery, setInputQuery] = React.useState("");
-  const [_, startTransition] = React.useTransition();
-  const [filteredDataList, setFilteredDataList] = React.useState<
-    Awaited<ReturnType<typeof filterIssueAuthorsByName>>
-  >([]);
 
-  React.useEffect(() => {
-    filterIssueAuthorsByName("").then(setFilteredDataList);
-  }, []);
+  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
+  const currentAuthor = getParsedQuery().author;
+  const { data: filteredDataList } = useIssueAuthorListByNameQuery({
+    name: inputQuery
+  });
 
   return (
     <ActionList
       items={[
         {
-          items: filteredDataList
+          items: (filteredDataList ?? []).map((author) => ({
+            ...author,
+            selected: author.username === currentAuthor
+          }))
         }
       ]}
       renderItem={({
@@ -48,7 +50,7 @@ export function IssueAuthorFilterActionList({
       }) => (
         <IssueSearchLink
           filters={{
-            author: username
+            author: username !== currentAuthor ? username : null
           }}
           className={clsx(
             className,
@@ -71,18 +73,12 @@ export function IssueAuthorFilterActionList({
       header={
         <Input
           value={inputQuery}
-          onChange={(e) => {
-            setInputQuery(e.target.value);
-            startTransition(async () => {
-              await filterIssueAuthorsByName(e.target.value).then(
-                setFilteredDataList
-              );
-            });
-          }}
+          onChange={(e) => setInputQuery(e.target.value)}
           label="Author name or username"
           hideLabel
           autoFocus
           placeholder="Filter users"
+          className="min-w-[270px]"
         />
       }
     >
