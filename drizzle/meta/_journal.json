@@ -113,6 +113,20 @@
       "when": 1694392993026,
       "tag": "0015_lucky_sentinels",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "5",
+      "when": 1694394768949,
+      "tag": "0016_glorious_mariko_yashida",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1694394956477,
+      "tag": "0017_burly_nitro",
+      "breakpoints": true
     }
   ]
 }

@@ -11,7 +11,7 @@ import { users } from "./user.sql";
 import { labels } from "./label.sql";
 import { issues } from "./issue.sql";
 
-import type { InferSelectModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { pgTable } from "./index.sql";
 import { comments } from "./comment.sql";
 
@@ -79,8 +79,9 @@ export const issueEvents = pgTable("issue_events", {
   ),
 
   // type = ASSIGN_USER
-  assignee_id: integer("assignee_id").references(() => users.id, {
-    onDelete: "cascade"
+  assignee_username: varchar("assignee_username", { length: 255 }),
+  assignee_avatar_url: varchar("assignee_avatar_url", {
+    length: 255
   }),
 
   // type = ADD_LABEL | REMOVE_LABEL
@@ -102,12 +103,6 @@ export const issueEventsRelations = relations(issueEvents, ({ one }) => ({
     fields: [issueEvents.initiator_id],
     references: [users.id],
     relationName: "initiator"
-  }),
-
-  assignee: one(users, {
-    fields: [issueEvents.assignee_id],
-    references: [users.id],
-    relationName: "assignee"
   }),
 
   label: one(labels, {
@@ -136,3 +131,4 @@ export const issueEventsRelations = relations(issueEvents, ({ one }) => ({
 }));
 
 export type IssueEvent = InferSelectModel<typeof issueEvents>;
+export type IssueEventInsert = InferInsertModel<typeof issueEvents>;
