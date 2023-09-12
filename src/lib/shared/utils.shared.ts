@@ -412,7 +412,8 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
     if (key === "query") {
       continue;
     }
-    if (key === "label" && Array.isArray(value)) {
+    // For labels, wrap them inside quotes
+    if ((key === "label" || key === "-label") && Array.isArray(value)) {
       for (const label of value) {
         terms.push(`${key}:"${label}"`);
       }

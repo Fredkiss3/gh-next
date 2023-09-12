@@ -23,6 +23,7 @@ import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store
 import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
 import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
 import { useIssueMentionListQuery } from "~/lib/client/hooks/use-issue-mention-list-query";
+import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
@@ -51,6 +52,7 @@ export function IssueListSearchInput({
   const authorRegex = /^(-)?author:(\@)?/;
   const assigneeRegex = /^(-)?assignee:(\@)?/;
   const mentionsRegex = /^(-)?mentions:(\@)?/;
+  const labelListRegex = /^(-)?label:/;
 
   const { data: authorList, isInitialLoading: isLoadingAuthor } =
     useIssueAuthorListQuery({
@@ -76,7 +78,19 @@ export function IssueListSearchInput({
       enabled: !!currentWord.match(mentionsRegex)
     });
 
-  const isLoading = isLoadingAuthor || isLoadingAssignee || isLoadingMentions;
+  const { data: labelList, isInitialLoading: isLoadingLabels } =
+    useIssueLabelListByNameQuery({
+      name: currentWord.match(labelListRegex)
+        ? currentWord.replace(labelListRegex, "")
+        : "",
+      enabled: !!currentWord.match(labelListRegex)
+    });
+
+  const isLoading =
+    isLoadingAuthor ||
+    isLoadingAssignee ||
+    isLoadingMentions ||
+    isLoadingLabels;
 
   const search = {
     sort: {
@@ -133,6 +147,18 @@ export function IssueListSearchInput({
         ? []
         : (mentionList ?? []).map((user) => user.username),
       getPlaceholder: () => "[Issues not mentionning users]"
+    },
+    label: {
+      values: currentWord.startsWith("-")
+        ? []
+        : (labelList ?? []).map((label) => label.name),
+      getPlaceholder: () => "[Issues with labels]"
+    },
+    "-label": {
+      values: !currentWord.startsWith("-")
+        ? []
+        : (labelList ?? []).map((label) => label.name),
+      getPlaceholder: () => "[Issues without labels]"
     }
   };
   type SearchKey = keyof typeof search;
@@ -268,10 +294,15 @@ export function IssueListSearchInput({
                         </span>
                       </CommandItem>
                       {search[key as SearchKey].values.map((option) => {
+                        let value = `${key}:${option}`;
+                        // labels should be wrapped inside of quotes
+                        if (key === "label" || key === "-label") {
+                          value = `${key}:"${option}"`;
+                        }
                         return (
                           <SubItem
                             key={option}
-                            value={`${key}:${option}`}
+                            value={value}
                             onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
