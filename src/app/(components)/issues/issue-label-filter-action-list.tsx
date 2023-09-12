@@ -30,7 +30,7 @@ export function IssueLabelFilterActionList({
   const alignRight = useMediaQuery(`(min-width: 768px)`);
 
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  const currentLabels = getParsedQuery().label;
+  const currentLabels = getParsedQuery().label ?? [];
   const noLabel = !!getParsedQuery().no?.has("label");
 
   const { data: labels } = useIssueLabelListByNameQuery({
@@ -63,13 +63,14 @@ export function IssueLabelFilterActionList({
       }) => {
         let labelFilters: string[] = [];
 
-        if (name) {
-          if (currentLabels && !currentLabels.includes(name)) {
-            labelFilters = [...currentLabels, name];
-          } else if (currentLabels && currentLabels.includes(name)) {
+        if (name ) {
+          if (currentLabels.includes(name)) {
             labelFilters = currentLabels.filter((label) => label !== name);
+          } else {
+            labelFilters = [...currentLabels, name];
           }
         }
+
 
         return (
           <IssueSearchLink
