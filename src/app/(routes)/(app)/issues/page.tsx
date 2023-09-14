@@ -1,6 +1,5 @@
 import * as React from "react";
 // components
-import Link from "next/link";
 import { Button } from "~/app/(components)/button";
 import { CounterBadge } from "~/app/(components)/counter-badge";
 import { IssuesListHeaderForm } from "~/app/(components)/issues/issues-list-header-form";
@@ -11,15 +10,16 @@ import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 import { LightBulbIcon, MilestoneIcon, TagIcon } from "@primer/octicons-react";
 import { IssueListSkeleton } from "~/app/(components)/issues/issue-list-skeleton";
 import { IssueListServer } from "~/app/(components)/issues/issue-list.server";
+import { IssueSearchLink } from "~/app/(components)/issues/issue-search-link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 import { getAuthedUser } from "~/app/(actions)/auth";
+import { getLabelsCount } from "~/app/(models)/label";
 
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
-import { IssueSearchLink } from "~/app/(components)/issues/issue-search-link";
 
 export const metadata: Metadata = {
   title: "Issues"
@@ -45,6 +45,7 @@ export default function IssuesListPage({
 
 async function IssuesListHeader() {
   const isAuthed = (await getAuthedUser()) !== null;
+  const labelCount = await getLabelsCount();
   return (
     <section
       className="flex flex-col gap-4 px-5 md:flex-row md:px-0"
@@ -64,7 +65,7 @@ async function IssuesListHeader() {
               className="!text-foreground"
               renderLeadingIcon={(cls) => <TagIcon className={cls} />}
             >
-              Labels <CounterBadge count={0} />
+              Labels <CounterBadge count={labelCount} />
             </Button>
           </li>
           <li>

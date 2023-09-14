@@ -7,6 +7,7 @@ import {
   GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
 import { nextCache } from "~/lib/server/rsc-utils.server";
+import { CacheKeys } from "~/lib/server/cache-keys.server";
 
 type RepositoryStatsResponse = {
   repository: {
@@ -182,7 +183,7 @@ export const getGithubRepoData = async function () {
       return data;
     },
     {
-      tags: ["GITHUB_REPO_DATA"],
+      tags: CacheKeys.github(),
       revalidate: THIRTY_MINUTES_IN_SECONDS
     }
   );
