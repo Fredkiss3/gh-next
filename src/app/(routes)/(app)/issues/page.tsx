@@ -94,10 +94,14 @@ async function IssuesListBody(props: {
   if (isNaN(currentPage)) {
     currentPage = 1;
   }
+
   return (
     <section className="flex flex-col gap-4" id="issue-list">
       <React.Suspense fallback={<IssueListSkeleton />} key={props.params?.q}>
-        <IssueListServer currentPage={currentPage} />
+        <IssueListServer
+          currentPage={currentPage}
+          queryString={props.params?.q}
+        />
       </React.Suspense>
 
       <div className="flex items-start justify-center gap-2 px-5 py-12 text-grey md:px-0">

@@ -3,14 +3,20 @@ import { filterIssueAssignees } from "~/app/(actions)/issue";
 
 export function useIssueAssigneeListQuery({
   name = "",
-  enabled
+  enabled,
+  checkFullName
 }: {
   name?: string;
   enabled: boolean;
+  checkFullName?: boolean;
 }) {
   return useQuery({
     queryKey: ["ISSUE_ASSIGNEE_LIST", name],
-    queryFn: () => filterIssueAssignees(name).then((result) => result.promise),
-    enabled
+    queryFn: () =>
+      filterIssueAssignees(name, checkFullName).then(
+        (result) => result.promise
+      ),
+    enabled,
+    keepPreviousData: true
   });
 }

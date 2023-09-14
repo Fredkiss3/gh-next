@@ -15,10 +15,9 @@ import { clsx } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
-import type { Label } from "~/lib/server/db/schema/label.sql";
-import { title } from "process";
 
 // types
+import type { Label } from "~/lib/server/db/schema/label.sql";
 export type IssueLabelFilterActionListProps = {
   children: React.ReactNode;
 };

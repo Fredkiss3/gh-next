@@ -417,11 +417,11 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
       for (const label of value) {
         terms.push(`${key}:"${label}"`);
       }
-    } else if (Array.isArray(value)) {
+    } else if (Array.isArray(value) && value.length > 0) {
       terms.push(key + ":" + value.join(","));
     } else if (typeof value === "string") {
       terms.push(`${key}:${value}`);
-    } else if (value instanceof Set) {
+    } else if (value instanceof Set && value.size > 0) {
       terms.push(key + ":" + [...value].join(","));
     }
   }

@@ -2,8 +2,10 @@
 
 import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
 import { wait } from "~/lib/shared/utils.shared";
+import { getLabelsName } from "~/app/(models)/label";
+
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
-import { getLabelsName } from "../(models)/label";
+import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 
 const authorList = [
   {
@@ -76,12 +78,23 @@ export async function filterIssueAuthorsByUsername(name: string) {
 }
 
 // FIXME: Change this to actually query the DB in production
-export async function filterIssueAssignees(name: string) {
+export async function filterIssueAssignees(
+  name: string,
+  checkFullName?: boolean
+) {
   return {
     promise: wait(1).then((_) =>
-      authorList.filter((user) =>
-        user.username.toLowerCase().startsWith(name.toLowerCase())
-      )
+      authorList.filter((user) => {
+        let matching = user.username
+          .toLowerCase()
+          .startsWith(name.toLowerCase());
+
+        if (checkFullName) {
+          matching ||= user.name.toLowerCase().startsWith(name.toLowerCase());
+        }
+
+        return matching;
+      })
     )
   };
 }
@@ -233,7 +246,10 @@ const issues = [
   }
 ] satisfies IssueListResult["issues"];
 
-export async function getIssueList(): Promise<IssueListResult> {
+export async function getIssueList(
+  filters: IssueSearchFilters,
+  page: number
+): Promise<IssueListResult> {
   return {
     issues,
     noOfIssuesOpen: 115,
