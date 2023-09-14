@@ -38,7 +38,7 @@ export function IssueLabelFilterActionList({
   });
 
   const labelList: Array<ActionListItem<Label | Partial<Label>>> = [
-    { name: "Unlabelled", selected: noLabel },
+    { name: "Unlabeled", selected: noLabel },
     ...(labels ?? []).map((label) => ({
       ...label,
       selected: currentLabels?.includes(label.name)
@@ -63,14 +63,13 @@ export function IssueLabelFilterActionList({
       }) => {
         let labelFilters: string[] = [];
 
-        if (name ) {
+        if (name) {
           if (currentLabels.includes(name)) {
             labelFilters = currentLabels.filter((label) => label !== name);
           } else {
             labelFilters = [...currentLabels, name];
           }
         }
-
 
         return (
           <IssueSearchLink
@@ -85,26 +84,28 @@ export function IssueLabelFilterActionList({
             }
             className={clsx(
               className,
-              "flex items-center gap-4 hover:bg-neutral/50"
+              "inline-flex items-start gap-4 hover:bg-neutral/50 whitespace-nowrap w-full"
             )}
             onClick={onCloseList}
           >
-            <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
+            <div className="flex h-6 w-6 flex-shrink-0 items-start justify-center px-2">
               {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
             </div>
 
-            <div className="flex items-baseline gap-2">
-              {color && (
-                <div
-                  className="h-4 w-4 rounded-full"
-                  style={{ backgroundColor: color }}
-                />
-              )}
+            {color && (
+              <div
+                className="h-4 w-4 rounded-full flex-shrink-0"
+                style={{ backgroundColor: color }}
+              />
+            )}
 
-              <div className="flex flex-col gap-2">
-                <strong className="font-semibold">{name}</strong>
-                {description && <p className="text-grey">{description}</p>}
-              </div>
+            <div className="min-w-0 box-border">
+              <strong className="font-semibold truncate mb-2">{name}</strong>
+              {description && (
+                <div className="text-grey truncate font-medium">
+                  {description}
+                </div>
+              )}
             </div>
           </IssueSearchLink>
         );

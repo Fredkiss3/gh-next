@@ -149,7 +149,8 @@ export function ActionList<TItem>({
                                 "border-neutral/70 px-4 py-4",
                                 "sm:py-2",
                                 {
-                                  "min-w-[250px] w-full": !group.horizontal,
+                                  "min-w-[250px] w-full sm:max-w-[300px]":
+                                    !group.horizontal,
                                   "border-b":
                                     itemIndex < group.items.length - 1 &&
                                     !noItemBorders &&
