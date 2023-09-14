@@ -64,7 +64,7 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
     <ActionList
       items={sortItems}
       renderItem={({ className, text, id, onCloseList, emoji }) => {
-        const selected = id === sortFilter;
+        const selected = id === (sortFilter ?? "created-desc"); // Select "created-desc" (Newest) by default
         return (
           <IssueSearchLink
             filters={{
