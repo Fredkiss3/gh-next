@@ -40,9 +40,13 @@ export function IssueListClient({
       {/* Header */}
       <div className="flex items-center gap-4 px-5  md:hidden md:px-0">
         <IssueSearchLink
+          filters={{
+            is: "open"
+          }}
           className={clsx(
             "flex items-center gap-2 font-semibold text-foreground"
           )}
+          conserveCurrentFilters
         >
           <IssueOpenedIcon className="h-5 w-5" />
           <p>
@@ -57,6 +61,7 @@ export function IssueListClient({
           filters={{
             is: "closed"
           }}
+          conserveCurrentFilters
           className={clsx("flex items-center gap-2 text-grey")}
         >
           <CheckIcon className="h-5 w-5" />
@@ -84,6 +89,10 @@ export function IssueListClient({
                 className={clsx(
                   "flex items-center gap-2 font-semibold text-foreground"
                 )}
+                filters={{
+                  is: "open"
+                }}
+                conserveCurrentFilters
               >
                 <IssueOpenedIcon className="h-5 w-5" />
                 <p>
@@ -100,6 +109,7 @@ export function IssueListClient({
                 filters={{
                   is: "closed"
                 }}
+                conserveCurrentFilters
                 className={clsx("flex items-center gap-2 text-grey")}
               >
                 <CheckIcon className="h-5 w-5" />

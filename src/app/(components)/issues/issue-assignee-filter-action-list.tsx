@@ -25,21 +25,38 @@ export function IssueAssigneeFilterActionList({
   const [inputQuery, setInputQuery] = React.useState("");
 
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  const currentAssignees = getParsedQuery().assignee ?? [];
+  let allFilters = getParsedQuery();
+  const currentAssignees = allFilters.assignee ?? [];
+  const noAssignee = !!allFilters.no?.has("assignee");
+
   const { data: filteredDataList } = useIssueAssigneeListQuery({
     name: inputQuery,
     enabled: true,
     checkFullName: true
   });
 
+  const assigneeList = React.useMemo(() => {
+    return [
+      {
+        name: "nobody",
+        username: null,
+        avatar: null,
+        selected: noAssignee
+      },
+      ...(filteredDataList ?? []).map((assignee) => {
+        return {
+          ...assignee,
+          selected: allFilters.assignee?.includes(assignee.username)
+        };
+      })
+    ];
+  }, [noAssignee, allFilters.assignee, filteredDataList]);
+
   return (
     <ActionList
       items={[
         {
-          items: (filteredDataList ?? []).map((assignee) => ({
-            ...assignee,
-            selected: currentAssignees?.includes(assignee.username)
-          }))
+          items: assigneeList
         }
       ]}
       renderItem={({
@@ -50,28 +67,29 @@ export function IssueAssigneeFilterActionList({
         avatar,
         onCloseList
       }) => {
-        let assigneeFilters: string[] = [];
+        const newFilters = { ...allFilters };
 
-        if (name) {
-          if (currentAssignees.includes(username)) {
-            assigneeFilters = currentAssignees.filter(
-              (assignee) => assignee !== username
-            );
-          } else {
-            assigneeFilters = [...currentAssignees, username];
+        if (!username && !selected) {
+          newFilters.no = new Set(["assignee"]);
+          newFilters.assignee = null;
+        } else {
+          newFilters.no?.delete("assignee"); // don't keep the 'no:assignee' filter
+
+          if (username) {
+            // remove the filters
+            if (currentAssignees.includes(username)) {
+              newFilters.assignee = currentAssignees.filter(
+                (assignee) => assignee !== username
+              );
+            } else {
+              newFilters.assignee = [...currentAssignees, username];
+            }
           }
         }
+
         return (
           <IssueSearchLink
-            filters={
-              username
-                ? {
-                    assignee: assigneeFilters
-                  }
-                : {
-                    no: new Set(["assignee"])
-                  }
-            }
+            filters={newFilters}
             className={clsx(
               className,
               "flex items-center gap-4 hover:bg-neutral/50"

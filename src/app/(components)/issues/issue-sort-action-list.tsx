@@ -6,7 +6,6 @@ import {
   type ActionListGroup
 } from "~/app/(components)/action-list";
 import { CheckIcon } from "@primer/octicons-react";
-import Link from "next/link";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
@@ -58,18 +57,20 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
   const alignRight = useMediaQuery(`(min-width: 768px)`);
 
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  const sortFilter = getParsedQuery().sort;
+  let allFilters = getParsedQuery();
+  const sortFilter = allFilters.sort;
 
   return (
     <ActionList
       items={sortItems}
       renderItem={({ className, text, id, onCloseList, emoji }) => {
+        const newFilters = { ...allFilters };
         const selected = id === (sortFilter ?? "created-desc"); // Select "created-desc" (Newest) by default
+
+        newFilters.sort = selected ? null : id;
         return (
           <IssueSearchLink
-            filters={{
-              sort: selected ? null : id
-            }}
+            filters={newFilters}
             className={clsx(className, "flex items-center gap-4", {
               "hover:bg-neutral/50": !emoji,
               "justify-center rounded-md p-2 hover:bg-accent border border-transparent":

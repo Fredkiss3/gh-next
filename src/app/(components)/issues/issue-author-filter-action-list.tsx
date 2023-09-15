@@ -25,7 +25,8 @@ export function IssueAuthorFilterActionList({
   const [inputQuery, setInputQuery] = React.useState("");
 
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  const currentAuthor = getParsedQuery().author;
+  let allFilters = getParsedQuery();
+  const currentAuthor = allFilters.author;
   const { data: filteredDataList } = useIssueAuthorListByNameQuery({
     name: inputQuery
   });
@@ -47,27 +48,29 @@ export function IssueAuthorFilterActionList({
         name,
         avatar,
         onCloseList
-      }) => (
-        <IssueSearchLink
-          filters={{
-            author: username !== currentAuthor ? username : null
-          }}
-          className={clsx(
-            className,
-            "flex items-center gap-4 hover:bg-neutral/50"
-          )}
-          onClick={onCloseList}
-        >
-          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
-            {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
-          </div>
-          <Avatar src={avatar} username={username} size="small" />
-          <div>
-            <strong className="font-semibold">{username}</strong>&nbsp;
-            <span className="text-grey">{name}</span>
-          </div>
-        </IssueSearchLink>
-      )}
+      }) => {
+        const newFilters = { ...allFilters };
+        newFilters.author = username !== currentAuthor ? username : null;
+        return (
+          <IssueSearchLink
+            filters={newFilters}
+            className={clsx(
+              className,
+              "flex items-center gap-4 hover:bg-neutral/50"
+            )}
+            onClick={onCloseList}
+          >
+            <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
+              {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
+            </div>
+            <Avatar src={avatar} username={username} size="small" />
+            <div>
+              <strong className="font-semibold">{username}</strong>&nbsp;
+              <span className="text-grey">{name}</span>
+            </div>
+          </IssueSearchLink>
+        );
+      }}
       align={alignRight ? "right" : "left"}
       title="Filter by author"
       header={

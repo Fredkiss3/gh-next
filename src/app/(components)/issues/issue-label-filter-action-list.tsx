@@ -29,20 +29,24 @@ export function IssueLabelFilterActionList({
   const alignRight = useMediaQuery(`(min-width: 768px)`);
 
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  const currentLabels = getParsedQuery().label ?? [];
-  const noLabel = !!getParsedQuery().no?.has("label");
+  let allFilters = getParsedQuery();
+  const currentLabels = allFilters.label ?? [];
+  const noLabel = !!allFilters.no?.has("label");
 
   const { data: labels } = useIssueLabelListByNameQuery({
     name: inputQuery
   });
 
-  const labelList: Array<ActionListItem<Label | Partial<Label>>> = [
-    { name: "Unlabeled", selected: noLabel },
-    ...(labels ?? []).map((label) => ({
-      ...label,
-      selected: currentLabels?.includes(label.name)
-    }))
-  ];
+  const labelList: Array<ActionListItem<Label | Partial<Label>>> =
+    React.useMemo(() => {
+      return [
+        { name: "Unlabeled", selected: noLabel },
+        ...(labels ?? []).map((label) => ({
+          ...label,
+          selected: allFilters.label?.includes(label.name)
+        }))
+      ];
+    }, [allFilters.label, labels, noLabel]);
 
   return (
     <ActionList
@@ -60,27 +64,27 @@ export function IssueLabelFilterActionList({
         id,
         onCloseList
       }) => {
-        let labelFilters: string[] = [];
+        const newFilters = { ...allFilters };
+        if (!id && !selected) {
+          newFilters.no = new Set(["label"]);
+          newFilters.label = null; // remove label filter
+        } else {
+          newFilters.no?.delete("label"); // don't keep the 'no:label' filter
 
-        if (name) {
-          if (currentLabels.includes(name)) {
-            labelFilters = currentLabels.filter((label) => label !== name);
-          } else {
-            labelFilters = [...currentLabels, name];
+          if (name) {
+            if (currentLabels.includes(name)) {
+              newFilters.label = currentLabels.filter(
+                (label) => label !== name
+              );
+            } else {
+              newFilters.label = [...currentLabels, name];
+            }
           }
         }
 
         return (
           <IssueSearchLink
-            filters={
-              id
-                ? {
-                    label: labelFilters
-                  }
-                : {
-                    no: new Set(["label"])
-                  }
-            }
+            filters={newFilters}
             className={clsx(
               className,
               "inline-flex items-start gap-4 hover:bg-neutral/50 whitespace-nowrap w-full"

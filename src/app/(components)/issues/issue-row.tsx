@@ -117,6 +117,7 @@ export function IssueRow({
                         filters={{
                           label: [name]
                         }}
+                        conserveCurrentFilters
                       >
                         <LabelBadge color={color} title={name} />
                       </IssueSearchLink>
