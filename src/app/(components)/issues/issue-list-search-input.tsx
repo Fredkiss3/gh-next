@@ -22,7 +22,6 @@ import {
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
 import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
-import { useIssueMentionListQuery } from "~/lib/client/hooks/use-issue-mention-list-query";
 import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
 
 export type IssueListSearchInputProps = {
@@ -51,7 +50,6 @@ export function IssueListSearchInput({
   // regexes for async filters, they can contain `@` characters
   const authorRegex = /^(-)?author:(\@)?/;
   const assigneeRegex = /^(-)?assignee:(\@)?/;
-  const mentionsRegex = /^(-)?mentions:(\@)?/;
   const labelListRegex = /^(-)?label:/;
 
   const { data: authorList, isInitialLoading: isLoadingAuthor } =
@@ -70,14 +68,6 @@ export function IssueListSearchInput({
       enabled: !!currentWord.match(assigneeRegex)
     });
 
-  const { data: mentionList, isInitialLoading: isLoadingMentions } =
-    useIssueMentionListQuery({
-      name: currentWord.match(mentionsRegex)
-        ? currentWord.replace(mentionsRegex, "")
-        : "",
-      enabled: !!currentWord.match(mentionsRegex)
-    });
-
   const { data: labelList, isInitialLoading: isLoadingLabels } =
     useIssueLabelListByNameQuery({
       name: currentWord.match(labelListRegex)
@@ -86,11 +76,7 @@ export function IssueListSearchInput({
       enabled: !!currentWord.match(labelListRegex)
     });
 
-  const isLoading =
-    isLoadingAuthor ||
-    isLoadingAssignee ||
-    isLoadingMentions ||
-    isLoadingLabels;
+  const isLoading = isLoadingAuthor || isLoadingAssignee || isLoadingLabels;
 
   const search = {
     sort: {
@@ -136,18 +122,6 @@ export function IssueListSearchInput({
         : (assigneeList ?? []).map((user) => user.username),
       getPlaceholder: () => "[Issues without assignees]"
     },
-    mentions: {
-      values: currentWord.startsWith("-")
-        ? []
-        : (mentionList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues mentionning users]"
-    },
-    "-mentions": {
-      values: !currentWord.startsWith("-")
-        ? []
-        : (mentionList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues not mentionning users]"
-    },
     label: {
       values: currentWord.startsWith("-")
         ? []
@@ -173,8 +147,6 @@ export function IssueListSearchInput({
             return value.match(authorRegex) ? 1 : 0;
           } else if (currentWord.match(assigneeRegex)) {
             return value.match(assigneeRegex) ? 1 : 0;
-          } else if (currentWord.match(mentionsRegex)) {
-            return value.match(mentionsRegex) ? 1 : 0;
           } else if (value.includes(currentWord.toLowerCase())) {
             return 1;
           }

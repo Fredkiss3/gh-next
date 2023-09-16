@@ -13,44 +13,6 @@ import {
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 
-const authorList = [
-  {
-    username: "Fredkiss3",
-    name: "Adrien KISSIE",
-    avatar: "https://avatars.githubusercontent.com/u/38298743?v=4"
-  },
-  {
-    username: "balazsorban45",
-    name: "Balázs Orbán",
-    avatar: "https://avatars.githubusercontent.com/u/18369201?v=4"
-  },
-  {
-    username: "shadcn",
-    name: "shadcn",
-    avatar: "https://avatars.githubusercontent.com/u/124599?v=4"
-  },
-  {
-    username: "QuiiBz",
-    name: "Tom Lienard",
-    avatar: "https://avatars.githubusercontent.com/u/43268759?v=4"
-  },
-  {
-    username: "AndrewIngram",
-    name: "Andy Ingram",
-    avatar: "https://avatars.githubusercontent.com/u/35227?v=4"
-  },
-  {
-    username: "duongductrong",
-    name: "Trong Duong",
-    avatar: "https://avatars.githubusercontent.com/u/39333905?v=4"
-  },
-  {
-    username: "karlhorky",
-    name: "Karl Horky",
-    avatar: "https://avatars.githubusercontent.com/u/1935696?v=4"
-  }
-];
-
 /**
  * We use `promise` because server actions are not batched,
  * if a server action is running, the others will have to wait
@@ -76,17 +38,6 @@ export async function filterIssueAssignees(
     promise: checkFullName
       ? getIssueAssigneesByUsernameOrName(name)
       : getIssueAssigneesByUsername(name)
-  };
-}
-
-// FIXME: Change this to actually query the DB in production
-export async function filterIssueMentions(name: string) {
-  return {
-    promise: wait(1).then((_) =>
-      authorList.filter((user) =>
-        user.username.toLowerCase().startsWith(name.toLowerCase())
-      )
-    )
   };
 }
 

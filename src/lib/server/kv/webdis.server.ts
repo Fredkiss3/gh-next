@@ -17,8 +17,6 @@ export class WebdisKV implements KVStore {
         .map((arg) => (typeof arg === "string" ? encodeURIComponent(arg) : arg))
         .join("/");
 
-    const dateNow = Date.now();
-    console.time(`[${dateNow}] ${command} ${args[0]}`);
     return await fetch(fullURL, {
       method: command === "GET" ? "GET" : "PUT",
       cache: "no-store",
@@ -26,7 +24,6 @@ export class WebdisKV implements KVStore {
         Authorization: `Basic ${btoa(authString)}`
       }
     }).then(async (r) => {
-      console.timeEnd(`[${dateNow}] ${command} ${args[0]}`);
       return r.json() as T;
     });
   }
