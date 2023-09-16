@@ -2,7 +2,13 @@
 
 import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
 import { wait } from "~/lib/shared/utils.shared";
-import { getLabelsName } from "~/app/(models)/label";
+import { getLabelsByName } from "~/app/(models)/label";
+import {
+  getIssueAssigneesByUsername,
+  getIssueAssigneesByUsernameOrName,
+  getIssueAuthorsByName,
+  getIssueAuthorsByUsername
+} from "~/app/(models)/issue";
 
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
@@ -45,57 +51,31 @@ const authorList = [
   }
 ];
 
-// FIXME: Change this to actually query the DB in production
+/**
+ * We use `promise` because server actions are not batched,
+ * if a server action is running, the others will have to wait
+ * this hack prevents that => because returning promise objects ared returned automatically
+ */
 export async function filterIssueAuthorsByName(name: string) {
   return {
-    promise: wait(1).then(
-      () =>
-        authorList.filter(
-          (user) =>
-            user.username.toLowerCase().startsWith(name.toLowerCase()) ||
-            user.name.toLowerCase().includes(name.toLowerCase())
-        ) as Array<{
-          username: string;
-          name: string;
-          avatar: string;
-        }>
-    )
+    promise: getIssueAuthorsByName(name)
   };
 }
 
-// FIXME: Change this to actually query the DB in production
-export async function filterIssueAuthorsByUsername(name: string) {
+export async function filterIssueAuthorsByUsername(username: string) {
   return {
-    // We use `promise` because server actions are not batched,
-    // if a server action is running, the others will have to wait
-    // this hack prevents that => because returning promise objects ared returned automatically
-    promise: wait(1).then((_) =>
-      authorList.filter((user) =>
-        user.username.toLowerCase().startsWith(name.toLowerCase())
-      )
-    )
+    promise: getIssueAuthorsByUsername(username)
   };
 }
 
-// FIXME: Change this to actually query the DB in production
 export async function filterIssueAssignees(
   name: string,
   checkFullName?: boolean
 ) {
   return {
-    promise: wait(1).then((_) =>
-      authorList.filter((user) => {
-        let matching = user.username
-          .toLowerCase()
-          .startsWith(name.toLowerCase());
-
-        if (checkFullName) {
-          matching ||= user.name.toLowerCase().startsWith(name.toLowerCase());
-        }
-
-        return matching;
-      })
-    )
+    promise: checkFullName
+      ? getIssueAssigneesByUsernameOrName(name)
+      : getIssueAssigneesByUsername(name)
   };
 }
 
@@ -258,8 +238,8 @@ export async function getIssueList(
   };
 }
 
-export async function getLabelsByName(name: string) {
+export async function filterLabelsByName(name: string) {
   return {
-    promise: getLabelsName(name)
+    promise: getLabelsByName(name)
   };
 }
