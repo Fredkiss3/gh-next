@@ -51,7 +51,9 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
             is: "open"
           }}
           className={clsx(
-            "flex items-center gap-2 font-semibold text-foreground"
+            "flex items-center gap-2 font-semibold text-foreground",
+            "transition duration-150",
+            "focus:ring-2 ring-accent focus:outline-none rounded-md"
           )}
           conserveCurrentFilters
         >
@@ -69,7 +71,11 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
             is: "closed"
           }}
           conserveCurrentFilters
-          className={clsx("flex items-center gap-2 text-grey")}
+          className={clsx(
+            "flex items-center gap-2 text-grey",
+            "transition duration-150",
+            "focus:ring-2 ring-accent focus:outline-none rounded-md"
+          )}
         >
           <CheckIcon className="h-5 w-5" />
           <span>
@@ -94,7 +100,9 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
             <li>
               <IssueSearchLink
                 className={clsx(
-                  "flex items-center gap-2 font-semibold text-foreground"
+                  "flex items-center gap-2 font-semibold text-foreground",
+                  "transition duration-150",
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
                 )}
                 filters={{
                   is: "open"
@@ -117,7 +125,11 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
                   is: "closed"
                 }}
                 conserveCurrentFilters
-                className={clsx("flex items-center gap-2 text-grey")}
+                className={clsx(
+                  "flex items-center gap-2 text-grey",
+                  "transition duration-150",
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                )}
               >
                 <CheckIcon className="h-5 w-5" />
                 <span>

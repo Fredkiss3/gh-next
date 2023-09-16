@@ -12,7 +12,7 @@ import type { LinkProps } from "next/link";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 
 export type IssueSearchLinkProps = Omit<LinkProps, "href" | "prefetch"> & {
-  filters?: IssueSearchFilters;
+  filters: IssueSearchFilters;
   children?: React.ReactNode;
   className?: string;
   conserveCurrentFilters?: boolean;

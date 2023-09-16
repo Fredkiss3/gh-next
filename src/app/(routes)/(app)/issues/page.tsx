@@ -111,7 +111,11 @@ async function IssuesListBody(props: {
             filters={{
               mentions: "@me"
             }}
-            className="text-accent"
+            className={clsx(
+              "text-accent",
+              "transition duration-150",
+              "focus:ring-2 ring-accent focus:outline-none rounded-md"
+            )}
           >
             mentions:@me
           </IssueSearchLink>

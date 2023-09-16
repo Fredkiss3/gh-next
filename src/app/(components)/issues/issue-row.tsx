@@ -87,7 +87,9 @@ export function IssueRow({
                   href={`/issues/${id}`}
                   className={clsx(
                     "inline break-words text-lg font-semibold text-foreground",
-                    "hover:text-accent"
+                    "hover:text-accent",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
                   )}
                 >
                   {title}
@@ -114,6 +116,10 @@ export function IssueRow({
                   >
                     <ReactAriaLink>
                       <IssueSearchLink
+                        className={clsx(
+                          "transition duration-150",
+                          "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                        )}
                         filters={{
                           label: [name]
                         }}
@@ -149,7 +155,11 @@ export function IssueRow({
                 filters={{
                   author: author.username
                 }}
-                className="hover:text-accent"
+                className={clsx(
+                  "hover:text-accent",
+                  "transition duration-150",
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                )}
               >
                 {author.username}
               </IssueSearchLink>
@@ -175,7 +185,11 @@ export function IssueRow({
         {noOfComments > 0 && (
           <Link
             href={`/issues/${id}`}
-            className="flex items-center gap-1 text-grey hover:text-accent"
+            className={clsx(
+              "flex items-center gap-1 text-grey hover:text-accent",
+              "transition duration-150",
+              "focus:ring-2 ring-accent focus:outline-none rounded-md"
+            )}
           >
             <CommentIcon className="h-4 w-4 flex-shrink-0" />
             <span>{noOfComments}</span>
