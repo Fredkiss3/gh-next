@@ -48,8 +48,8 @@ export function IssueListSearchInput({
   const [currentWord, setCurrentWord] = React.useState("");
 
   // regexes for async filters, they can contain `@` characters
-  const authorRegex = /^(-)?author:(\@)?/;
-  const assigneeRegex = /^(-)?assignee:(\@)?/;
+  const authorRegex = /^(-)?author:/;
+  const assigneeRegex = /^(-)?assignee:/;
   const labelListRegex = /^(-)?label:/;
 
   const { data: authorList, isInitialLoading: isLoadingAuthor } =
