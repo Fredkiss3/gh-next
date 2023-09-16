@@ -27,7 +27,7 @@ export function IssueAssigneeFilterActionList({
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
   let allFilters = getParsedQuery();
   const currentAssignees = allFilters.assignee ?? [];
-  const noAssignee = !!allFilters.no?.has("assignee");
+  const noAssignee = !!allFilters.no?.includes("assignee");
 
   const { data: filteredDataList } = useIssueAssigneeListQuery({
     name: inputQuery,
@@ -67,22 +67,35 @@ export function IssueAssigneeFilterActionList({
         avatar,
         onCloseList
       }) => {
-        const newFilters = { ...allFilters };
+        let newFilters = { ...allFilters };
 
         if (!username && !selected) {
-          newFilters.no = new Set(["assignee"]);
+          if (newFilters.no) {
+            newFilters.no = [...newFilters.no, "assignee"];
+          } else {
+            newFilters.no = ["assignee"];
+          }
+
           newFilters.assignee = null;
         } else {
-          newFilters.no?.delete("assignee"); // don't keep the 'no:assignee' filter
+          newFilters.no = (newFilters.no ?? [])?.filter(
+            (item) => item !== "assignee"
+          ); // don't keep the 'no:assignee' filter
 
           if (username) {
             // remove the filters
             if (currentAssignees.includes(username)) {
-              newFilters.assignee = currentAssignees.filter(
-                (assignee) => assignee !== username
-              );
+              newFilters = {
+                ...newFilters,
+                assignee: currentAssignees.filter(
+                  (assignee) => assignee !== username
+                )
+              };
             } else {
-              newFilters.assignee = [...currentAssignees, username];
+              newFilters = {
+                ...newFilters,
+                assignee: [...currentAssignees, username]
+              };
             }
           }
         }

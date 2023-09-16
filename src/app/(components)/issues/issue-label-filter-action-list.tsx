@@ -31,22 +31,26 @@ export function IssueLabelFilterActionList({
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
   let allFilters = getParsedQuery();
   const currentLabels = allFilters.label ?? [];
-  const noLabel = !!allFilters.no?.has("label");
+  const noLabel = !!allFilters.no?.includes("label");
 
   const { data: labels } = useIssueLabelListByNameQuery({
     name: inputQuery
   });
 
-  const labelList: Array<ActionListItem<Label | Partial<Label>>> =
-    React.useMemo(() => {
-      return [
-        { name: "Unlabeled", selected: noLabel },
-        ...(labels ?? []).map((label) => ({
-          ...label,
-          selected: allFilters.label?.includes(label.name)
-        }))
-      ];
-    }, [allFilters.label, labels, noLabel]);
+  const labelList = React.useMemo(() => {
+    return [
+      {
+        name: "Unlabeled",
+        selected: noLabel,
+        color: undefined,
+        description: undefined
+      },
+      ...(labels ?? []).map((label) => ({
+        ...label,
+        selected: allFilters.label?.includes(label.name)
+      }))
+    ];
+  }, [allFilters.label, labels, noLabel]);
 
   return (
     <ActionList
@@ -66,12 +70,18 @@ export function IssueLabelFilterActionList({
       }) => {
         const newFilters = { ...allFilters };
         if (!id && !selected) {
-          newFilters.no = new Set(["label"]);
+          if (newFilters.no) {
+            newFilters.no = [...newFilters.no, "label"];
+          } else {
+            newFilters.no = ["label"];
+          }
           newFilters.label = null; // remove label filter
         } else {
-          newFilters.no?.delete("label"); // don't keep the 'no:label' filter
+          newFilters.no = (newFilters.no ?? [])?.filter(
+            (item) => item !== "label"
+          ); // don't keep the 'no:label' filter
 
-          if (name) {
+          if (id) {
             if (currentLabels.includes(name)) {
               newFilters.label = currentLabels.filter(
                 (label) => label !== name
