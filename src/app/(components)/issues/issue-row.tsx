@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 // components
 import {
@@ -8,7 +7,7 @@ import {
   SkipIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { AvatarStack } from "~/app/(components)/avatar-stack";
+import { IssueRowAvatarStack } from "~/app/(components)/issues/issue-row-avatar-stack";
 import { LabelBadge } from "~/app/(components)/label-badge";
 import { HoverCard } from "~/app/(components)/hovercard";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
@@ -18,12 +17,7 @@ import { Tooltip } from "~/app/(components)/tooltip";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import {
-  clsx,
-  formatDate,
-  issueSearchFilterToString
-} from "~/lib/shared/utils.shared";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
@@ -41,9 +35,6 @@ export function IssueRow({
   created_at,
   description
 }: IssueRowProps) {
-  const assignTooltipLabel = assigned_to.map((u) => u.username).join(" and ");
-  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
-
   return (
     <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
       {status === "OPEN" && (
@@ -169,19 +160,7 @@ export function IssueRow({
       </div>
 
       <div className="hidden w-[30%] items-center justify-end gap-4 sm:flex">
-        <AvatarStack
-          tooltipLabel={`assigned to ${assignTooltipLabel}`}
-          users={assigned_to}
-          onAvatarLinkClick={(username) =>
-            setSearchQuery(
-              issueSearchFilterToString({
-                is: "open",
-                assignee: [username]
-              })
-            )
-          }
-          getUserUrl={(username) => `/issues?q=is:open+assignee:${username}`}
-        />
+        <IssueRowAvatarStack users={assigned_to} />
         {noOfComments > 0 && (
           <Link
             href={`/issues/${id}`}
