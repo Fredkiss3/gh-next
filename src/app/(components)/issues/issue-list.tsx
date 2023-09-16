@@ -1,4 +1,4 @@
-"use client";
+import "server-only";
 import * as React from "react";
 
 // components
@@ -17,23 +17,30 @@ import { IssueRow } from "./issue-row";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import { useSearchParams } from "next/navigation";
-import { clsx, pluralize } from "~/lib/shared/utils.shared";
+import {
+  clsx,
+  parseIssueSearchString,
+  pluralize
+} from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
+import { BASE_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
+import { getIssueList } from "~/app/(actions)/issue";
 
-export type IssueListClientProps = IssueListResult & { currentPage: number };
+export type IssueListProps = {
+  currentPage: number;
+  searchQuery?: string;
+};
 
-export function IssueListClient({
-  currentPage,
-  issues,
-  totalCount,
-  noOfIssuesClosed,
-  noOfIssuesOpen
-}: IssueListClientProps) {
-  const sp = useSearchParams();
-  const baseURL = sp.get("q") ? `?q=${sp.get("q")}&page=` : `?page=`;
+export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
+  const baseURL = searchQuery ? `?q=${searchQuery}&page=` : `?page=`;
+
+  const filters = parseIssueSearchString(
+    searchQuery ?? BASE_ISSUE_SEARCH_QUERY
+  );
+
+  const { issues, totalCount, noOfIssuesClosed, noOfIssuesOpen } =
+    await getIssueList(filters, currentPage);
 
   return (
     <>
@@ -133,28 +140,52 @@ export function IssueListClient({
           >
             <li>
               <IssueAuthorFilterActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Author</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueAuthorFilterActionList>
             </li>
             <li>
               <IssueLabelFilterActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Label</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueLabelFilterActionList>
             </li>
             <li>
               <IssueAssigneeFilterActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Assignee</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueAssigneeFilterActionList>
             </li>
             <li>
               <IssueSortActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Sort</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueSortActionList>

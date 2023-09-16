@@ -9,8 +9,8 @@ import { ClearSearchButtonSection } from "~/app/(components)/issues/clear-search
 import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 import { LightBulbIcon, MilestoneIcon, TagIcon } from "@primer/octicons-react";
 import { IssueListSkeleton } from "~/app/(components)/issues/issue-list-skeleton";
-import { IssueListServer } from "~/app/(components)/issues/issue-list.server";
 import { IssueSearchLink } from "~/app/(components)/issues/issue-search-link";
+import { IssueList } from "~/app/(components)/issues/issue-list";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -99,10 +99,7 @@ async function IssuesListBody(props: {
   return (
     <section className="flex flex-col gap-4" id="issue-list">
       <React.Suspense fallback={<IssueListSkeleton />} key={props.params?.q}>
-        <IssueListServer
-          currentPage={currentPage}
-          queryString={props.params?.q}
-        />
+        <IssueList currentPage={currentPage} searchQuery={props.params?.q} />
       </React.Suspense>
 
       <div className="flex items-start justify-center gap-2 px-5 py-12 text-grey md:px-0">
