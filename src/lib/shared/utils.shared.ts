@@ -8,6 +8,7 @@ import {
   SORT_FILTERS,
   STATUS_FILTERS
 } from "./constants";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Petit utilitaire pour chainer les classes css en react tout en évitant
@@ -48,7 +49,7 @@ export function clsx(
         break;
     }
   }
-  return classes.join(" ");
+  return twMerge(classes.join(" "));
 }
 
 /**
@@ -289,15 +290,11 @@ const issueSearchFiltersSchema = z.object({
   no: preprocess(
     (arg) => {
       if (Array.isArray(arg)) {
-        return new Set(arg);
+        return [...new Set(arg)];
       }
       return arg;
     },
-    z
-      .set(z.enum(NO_METADATA_FILTERS))
-      .catch(new Set(NO_METADATA_FILTERS))
-      .default(new Set(NO_METADATA_FILTERS))
-      .nullish()
+    z.array(z.enum(NO_METADATA_FILTERS)).catch([]).default([]).nullish()
   ),
   label: z.array(z.string()).catch([]).default([]).nullish(),
   "-label": z.array(z.string()).catch([]).default([]).nullish(),
@@ -412,6 +409,11 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
     if (key === "query") {
       continue;
     }
+    if (key === "no" && Array.isArray(value)) {
+      // @ts-expect-error this is fine, typescript adds another infer string[] wich is not what we want
+      value = new Set(value);
+    }
+
     // For labels, wrap them inside quotes
     if ((key === "label" || key === "-label") && Array.isArray(value)) {
       for (const label of value) {
