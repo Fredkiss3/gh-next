@@ -6,7 +6,8 @@ import {
   pgEnum,
   integer,
   boolean,
-  primaryKey
+  primaryKey,
+  index
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { users } from "./user.sql";
@@ -40,21 +41,27 @@ export const issueLockReasonEnum = pgEnum("issue_lock_reason", [
 export type IssueLockReason =
   (typeof issueLockReasonEnum)["enumValues"][number];
 
-export const issues = pgTable("issues", {
-  id: serial("id").primaryKey(),
-  number: integer("number").notNull().unique(),
-  title: varchar("title", { length: 255 }).notNull(),
-  body: text("body").default("").notNull(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  status: issueStatusEnum("status").default(IssueStatuses.OPEN).notNull(),
-  author_id: integer("author_id").references(() => users.id, {
-    onDelete: "set null"
-  }),
-  author_username: varchar("author_username", { length: 255 }).notNull(),
-  author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
-  is_locked: boolean("is_locked").default(false).notNull(),
-  lock_reason: issueLockReasonEnum("lock_reason")
-});
+export const issues = pgTable(
+  "issues",
+  {
+    id: serial("id").primaryKey(),
+    number: integer("number").notNull().unique(),
+    title: varchar("title", { length: 255 }).notNull(),
+    body: text("body").default("").notNull(),
+    created_at: timestamp("created_at").defaultNow().notNull(),
+    status: issueStatusEnum("status").default(IssueStatuses.OPEN).notNull(),
+    author_id: integer("author_id").references(() => users.id, {
+      onDelete: "set null"
+    }),
+    author_username: varchar("author_username", { length: 255 }).notNull(),
+    author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
+    is_locked: boolean("is_locked").default(false).notNull(),
+    lock_reason: issueLockReasonEnum("lock_reason")
+  },
+  (table) => ({
+    titleIdx: index("title_idx").on(table.title)
+  })
+);
 
 export const issuesRelations = relations(issues, ({ one, many }) => ({
   author: one(users, {
