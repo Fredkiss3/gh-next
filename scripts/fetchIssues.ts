@@ -98,7 +98,7 @@ type IssueReponse = {
         number: number;
         createdAt: string;
         updatedAt: string;
-        closedAt: string;
+        closedAt: string | null;
         state: "OPEN" | "CLOSED";
         locked: boolean;
         stateReason: "REOPENED" | "NOT_PLANNED" | "COMPLETED";
@@ -459,6 +459,7 @@ do {
       title: issue.title,
       number: issue.number,
       body: issue.body,
+      status_updated_at: new Date(issue.closedAt ?? issue.createdAt),
       author_id: currentUser ? currentUser.id : null,
       author_username: currentUser
         ? currentUser.username
