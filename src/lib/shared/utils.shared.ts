@@ -280,11 +280,7 @@ const issueSearchFiltersSchema = z.object({
       }
       return arg;
     },
-    z
-      .set(z.enum(IN_FILTERS))
-      .catch(new Set(IN_FILTERS))
-      .default(new Set(IN_FILTERS))
-      .nullish()
+    z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).nullish()
   ),
   is: z.enum(STATUS_FILTERS).default("open").nullish().catch(null),
   no: preprocess(

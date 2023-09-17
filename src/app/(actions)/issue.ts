@@ -1,13 +1,13 @@
 "use server";
 
 import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
-import { wait } from "~/lib/shared/utils.shared";
 import { getLabelsByName } from "~/app/(models)/label";
 import {
   getIssueAssigneesByUsername,
   getIssueAssigneesByUsernameOrName,
   getIssueAuthorsByName,
-  getIssueAuthorsByUsername
+  getIssueAuthorsByUsername,
+  getIssues
 } from "~/app/(models)/issue";
 
 import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
@@ -181,6 +181,14 @@ export async function getIssueList(
   filters: IssueSearchFilters,
   page: number
 ): Promise<IssueListResult> {
+  const result = await getIssues(filters, page);
+  console.dir(
+    {
+      length: result.length,
+      result
+    },
+    { depth: null }
+  );
   return {
     issues,
     noOfIssuesOpen: 115,

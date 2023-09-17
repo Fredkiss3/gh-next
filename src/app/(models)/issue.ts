@@ -1,10 +1,18 @@
 import "server-only";
-import { eq, ilike, or, sql } from "drizzle-orm";
+import { SQL, and, eq, ilike, or, sql } from "drizzle-orm";
 import { CacheKeys } from "~/lib/server/cache-keys.server";
 import { db } from "~/lib/server/db/index.server";
-import { issueToAssignees, issues } from "~/lib/server/db/schema/issue.sql";
+import {
+  IssueStatuses,
+  issueToAssignees,
+  issues
+} from "~/lib/server/db/schema/issue.sql";
 import { nextCache } from "~/lib/server/rsc-utils.server";
 import { users } from "~/lib/server/db/schema/user.sql";
+import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
+import { comments } from "~/lib/server/db/schema/comment.sql";
+import { IN_FILTERS } from "~/lib/shared/constants";
+import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
 
 export async function getOpenIssuesCount() {
   const fn = nextCache(
@@ -106,4 +114,73 @@ export async function getIssueAssigneesByUsernameOrName(name: string) {
   return await issueAssigneesByUsernameOrNamePrepared.execute({
     name: name + "%"
   });
+}
+
+export async function getIssues(
+  filters: IssueSearchFilters,
+  currentPage: number
+) {
+  let issuesQuery = db
+    .selectDistinct({
+      id: issues.id,
+      title: issues.title,
+      status: issues.status,
+      author: {
+        username: issues.author_username,
+        avatar: issues.author_avatar_url,
+        name: users.name,
+        bio: users.bio,
+        location: users.location
+      },
+      label: {
+        id: labels.id,
+        color: labels.color,
+        name: labels.name,
+        description: labels.description
+      }
+    })
+    .from(issues)
+    .leftJoin(users, eq(users.id, issues.author_id))
+    .leftJoin(comments, eq(comments.issue_id, issues.id))
+    .leftJoin(labelToIssues, eq(labelToIssues.issue_id, issues.id))
+    .leftJoin(labels, eq(labelToIssues.label_id, labels.id));
+  const query = filters.query;
+  let queryFilters: SQL<unknown> | undefined = undefined;
+
+  if (!filters.in) {
+    filters.in = new Set(IN_FILTERS);
+  }
+
+  if (filters.in) {
+    const inFilters = [];
+    if (filters.in.has("title")) {
+      inFilters.push(ilike(issues.title, `%${query ?? ""}%`));
+    }
+    if (filters.in.has("body")) {
+      inFilters.push(ilike(issues.body, `%${query ?? ""}%`));
+    }
+    if (filters.in.has("body")) {
+      inFilters.push(ilike(comments.content, `%${query ?? ""}%`));
+    }
+    queryFilters = or(...inFilters);
+  }
+
+  if (filters.is) {
+    const status = filters.is;
+    queryFilters = and(
+      queryFilters,
+      status === "open"
+        ? eq(issues.status, IssueStatuses.OPEN)
+        : or(
+            eq(issues.status, IssueStatuses.CLOSED),
+            eq(issues.status, IssueStatuses.NOT_PLANNED)
+          )
+    );
+  }
+
+  issuesQuery = issuesQuery.where(queryFilters);
+
+  issuesQuery = issuesQuery.limit(25).offset((currentPage - 1) * 25);
+  console.dir({ filters, sql: issuesQuery.toSQL().sql }, { depth: null });
+  return await issuesQuery;
 }
