@@ -524,6 +524,11 @@ do {
     /**
      * INSERTING LABELS
      */
+    // wipe out any label associated to this issue
+    // Because we don't have any way to handle conflicts for this table
+    await db
+      .delete(labelToIssues)
+      .where(eq(labelToIssues.issue_id, issueInsertQueryResult.issue_id));
     for (const label of issue.labels.nodes) {
       const labelPayload = {
         name: label.name,
@@ -545,11 +550,6 @@ do {
       /**
        * INSERTING LABEL RELATIONS TO ISSUES
        */
-      // wipe out any label associated to this issue
-      // Because we don't have any way to handle conflicts for this table
-      await db
-        .delete(labelToIssues)
-        .where(eq(labelToIssues.issue_id, issueInsertQueryResult.issue_id));
 
       await db.insert(labelToIssues).values({
         issue_id: issueInsertQueryResult.issue_id,
