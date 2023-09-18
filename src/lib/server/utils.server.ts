@@ -1,4 +1,3 @@
-import "server-only";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { GITHUB_AUTHOR_USERNAME } from "~/lib/shared/constants";

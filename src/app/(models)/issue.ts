@@ -14,7 +14,6 @@ import { IN_FILTERS, MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
 import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
-import type { Prettify } from "~/lib/types";
 
 export async function getOpenIssuesCount() {
   const fn = nextCache(
@@ -232,6 +231,7 @@ function issueSearchfiltersToSQLQuery(
   const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
 
+  // FIXME : remove
   console.log({
     filters
   });
