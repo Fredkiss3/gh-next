@@ -118,7 +118,7 @@ export async function getIssueAssigneesByUsernameOrName(name: string) {
   });
 }
 
-export async function getIssues(
+export async function searchIssues(
   filters: IssueSearchFilters,
   currentPage: number
 ) {
@@ -133,7 +133,7 @@ export async function getIssues(
     .groupBy(comments.issue_id)
     .as("comments_count");
 
-  const issueList = await db
+  const issueQuery = db
     .selectDistinctOn([issues.id], {
       id: issues.id,
       title: issues.title,
@@ -169,30 +169,37 @@ export async function getIssues(
     .limit(MAX_ITEMS_PER_PAGE)
     .offset((currentPage - 1) * MAX_ITEMS_PER_PAGE);
 
+  const issueList = await issueQuery;
   const id_list = issueList.map((issue) => issue.id);
 
   // get labels
-  const labelList = await db
-    .selectDistinct({
-      issue_id: labelToIssues.issue_id,
-      id: labels.id,
-      color: labels.color,
-      name: labels.name,
-      description: labels.description
-    })
-    .from(labels)
-    .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
-    .where(sql`${labelToIssues.issue_id} in ${id_list}`);
+  const labelList =
+    id_list.length === 0
+      ? []
+      : await db
+          .selectDistinct({
+            issue_id: labelToIssues.issue_id,
+            id: labels.id,
+            color: labels.color,
+            name: labels.name,
+            description: labels.description
+          })
+          .from(labels)
+          .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
+          .where(sql`${labelToIssues.issue_id} in ${id_list}`);
 
   // get assignees
-  const assigneeList = await db
-    .selectDistinct({
-      issue_id: issueToAssignees.issue_id,
-      username: issueToAssignees.assignee_username,
-      avatar_url: issueToAssignees.assignee_avatar_url
-    })
-    .from(issueToAssignees)
-    .where(sql`${issueToAssignees.issue_id} in ${id_list}`);
+  const assigneeList =
+    id_list.length === 0
+      ? []
+      : await db
+          .selectDistinct({
+            issue_id: issueToAssignees.issue_id,
+            username: issueToAssignees.assignee_username,
+            avatar_url: issueToAssignees.assignee_avatar_url
+          })
+          .from(issueToAssignees)
+          .where(sql`${issueToAssignees.issue_id} in ${id_list}`);
 
   // Group issue by labels & assignees
   const issueResult = issueList.map((issue) => {
@@ -225,20 +232,25 @@ function issueSearchfiltersToSQLQuery(
   const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
 
+  console.log({
+    filters
+  });
+
   if (!filters.in) {
     filters.in = new Set(IN_FILTERS);
   }
 
   if (filters.in) {
     const inFilters = [];
+    const searchQuery = `%${query ?? ""}%`;
     if (filters.in.has("title")) {
-      inFilters.push(ilike(issues.title, `%${query ?? ""}%`));
+      inFilters.push(ilike(issues.title, searchQuery));
     }
     if (filters.in.has("body")) {
-      inFilters.push(ilike(issues.body, `%${query ?? ""}%`));
+      inFilters.push(ilike(issues.body, searchQuery));
     }
     if (filters.in.has("body")) {
-      inFilters.push(ilike(comments.content, `%${query ?? ""}%`));
+      inFilters.push(ilike(comments.content, searchQuery));
     }
     queryFilters = or(...inFilters);
   }
@@ -309,4 +321,4 @@ async function getStatsForIssueSearch(filters: IssueSearchFilters) {
   return stats;
 }
 
-export type IssueResult = Awaited<ReturnType<typeof getIssues>>["issues"];
+export type IssueResult = Awaited<ReturnType<typeof searchIssues>>["issues"];

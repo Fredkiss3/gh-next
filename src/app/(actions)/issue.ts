@@ -6,7 +6,7 @@ import {
   getIssueAssigneesByUsernameOrName,
   getIssueAuthorsByName,
   getIssueAuthorsByUsername,
-  getIssues
+  searchIssues
 } from "~/app/(models)/issue";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
@@ -46,7 +46,7 @@ export async function getIssueList(filters: IssueSearchFilters, page: number) {
     not_planned_count,
     total_count,
     open_count
-  } = await getIssues(filters, page);
+  } = await searchIssues(filters, page);
 
   let noOfIssuesClosed = completed_count + not_planned_count;
   if (filters.is === "closed" && filters.reason) {
