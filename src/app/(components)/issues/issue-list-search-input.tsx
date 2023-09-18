@@ -16,6 +16,7 @@ import {
 import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
+  REASON_FILTERS,
   SORT_FILTERS,
   STATUS_FILTERS
 } from "~/lib/shared/constants";
@@ -90,6 +91,10 @@ export function IssueListSearchInput({
     is: {
       values: STATUS_FILTERS,
       getPlaceholder: () => STATUS_FILTERS.map((str) => `[${str}]`).join(" ")
+    },
+    reason: {
+      values: REASON_FILTERS,
+      getPlaceholder: () => REASON_FILTERS.map((str) => `[${str}]`).join(" ")
     },
     no: {
       values: NO_METADATA_FILTERS,

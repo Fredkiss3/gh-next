@@ -31,5 +31,8 @@ export const SORT_FILTERS = [
 
 export const IN_FILTERS = ["title", "body", "comments"] as const;
 export const STATUS_FILTERS = ["open", "closed"] as const;
+export const REASON_FILTERS = ["completed", "not-planned"] as const;
 export const NO_METADATA_FILTERS = ["label", "assignee"] as const;
 export const BASE_ISSUE_SEARCH_QUERY = "is:open";
+
+export const MAX_ITEMS_PER_PAGE = 25;

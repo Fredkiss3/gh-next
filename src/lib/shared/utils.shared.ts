@@ -5,6 +5,7 @@ import { preprocess, z } from "zod";
 import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
+  REASON_FILTERS,
   SORT_FILTERS,
   STATUS_FILTERS
 } from "./constants";
@@ -234,8 +235,8 @@ export function getRandomHexColor(): string {
  * formatDate(new Date('2023-07-29T00:00:00Z')); // "1 day ago"
  * formatDate(new Date('2023-07-23T00:00:00Z')); // "1 week ago"
  * formatDate(new Date('2023-06-15T00:00:00Z')); // "6 weeks ago"
- * formatDate(new Date('2023-05-01T00:00:00Z')); // "May 1"
- * formatDate(new Date('2022-05-01T00:00:00Z')); // "May 1, 2022"
+ * formatDate(new Date('2023-05-01T00:00:00Z')); // "on May 1"
+ * formatDate(new Date('2022-05-01T00:00:00Z')); // "on May 1, 2022"
  */
 export function formatDate(date: Date): string {
   dayjs.extend(relativeTime);
@@ -249,7 +250,7 @@ export function formatDate(date: Date): string {
   } else {
     const formatString =
       now.year() === date.getFullYear() ? "MMM D" : "MMM D, YYYY";
-    return dayjs(date).format(formatString);
+    return "on " + dayjs(date).format(formatString);
   }
 }
 
@@ -283,6 +284,7 @@ const issueSearchFiltersSchema = z.object({
     z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).nullish()
   ),
   is: z.enum(STATUS_FILTERS).default("open").nullish().catch(null),
+  reason: z.enum(REASON_FILTERS).nullish().catch(null),
   no: preprocess(
     (arg) => {
       if (Array.isArray(arg)) {
@@ -375,6 +377,7 @@ export function parseIssueSearchString(input: string): IssueSearchFilters {
 
       // Single filters
       case "is":
+      case "reason":
       case "author":
       case "-author":
       case "mentions":
