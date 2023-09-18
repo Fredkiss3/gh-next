@@ -1,5 +1,5 @@
 import "server-only";
-import { SQL, and, eq, ilike, or, sql } from "drizzle-orm";
+import { SQL, and, eq, ilike, not, or, sql } from "drizzle-orm";
 import { CacheKeys } from "~/lib/server/cache-keys.server";
 import { db } from "~/lib/server/db/index.server";
 import {
@@ -9,10 +9,11 @@ import {
 } from "~/lib/server/db/schema/issue.sql";
 import { nextCache } from "~/lib/server/rsc-utils.server";
 import { users } from "~/lib/server/db/schema/user.sql";
-import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 import { comments } from "~/lib/server/db/schema/comment.sql";
-import { IN_FILTERS } from "~/lib/shared/constants";
+import { IN_FILTERS, MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
 import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
+
+import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 import type { Prettify } from "~/lib/types";
 
 export async function getOpenIssuesCount() {
@@ -132,8 +133,8 @@ export async function getIssues(
     .groupBy(comments.issue_id)
     .as("comments_count");
 
-  let issuesQuery = db
-    .selectDistinct({
+  const issueList = await db
+    .selectDistinctOn([issues.id], {
       id: issues.id,
       title: issues.title,
       status: issues.status,
@@ -149,16 +150,6 @@ export async function getIssues(
         id: users.id,
         location: users.location
       },
-      label: {
-        id: labels.id,
-        color: labels.color,
-        name: labels.name,
-        description: labels.description
-      },
-      assignee: {
-        username: issueToAssignees.assignee_username,
-        avatar_url: issueToAssignees.assignee_avatar_url
-      },
       noOfComments:
         sql<number>`coalesce(${commentsCountSubQuery.comment_count}, 0) AS "comment_count"`.mapWith(
           Number
@@ -173,11 +164,66 @@ export async function getIssues(
     .leftJoin(
       commentsCountSubQuery,
       eq(commentsCountSubQuery.issue_id, issues.id)
-    );
-  const query = filters.query;
+    )
+    .where(issueSearchfiltersToSQLQuery(filters))
+    .limit(MAX_ITEMS_PER_PAGE)
+    .offset((currentPage - 1) * MAX_ITEMS_PER_PAGE);
 
+  const id_list = issueList.map((issue) => issue.id);
+
+  // get labels
+  const labelList = await db
+    .selectDistinct({
+      issue_id: labelToIssues.issue_id,
+      id: labels.id,
+      color: labels.color,
+      name: labels.name,
+      description: labels.description
+    })
+    .from(labels)
+    .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
+    .where(sql`${labelToIssues.issue_id} in ${id_list}`);
+
+  // get assignees
+  const assigneeList = await db
+    .selectDistinct({
+      issue_id: issueToAssignees.issue_id,
+      username: issueToAssignees.assignee_username,
+      avatar_url: issueToAssignees.assignee_avatar_url
+    })
+    .from(issueToAssignees)
+    .where(sql`${issueToAssignees.issue_id} in ${id_list}`);
+
+  // Group issue by labels & assignees
+  const issueResult = issueList.map((issue) => {
+    const labelsForIssue = labelList.filter(
+      (label) => label.issue_id === issue.id
+    );
+    const assigneesForIssue = assigneeList.filter(
+      (assignee) => assignee.issue_id === issue.id
+    );
+    return { ...issue, labels: labelsForIssue, assigned_to: assigneesForIssue };
+  });
+
+  // Get other statistics
+  const { total_count, open_count, completed_count, not_planned_count } =
+    await getStatsForIssueSearch(filters);
+
+  return {
+    issues: Object.values(issueResult),
+    total_count,
+    open_count,
+    completed_count,
+    not_planned_count
+  };
+}
+
+function issueSearchfiltersToSQLQuery(
+  filters: IssueSearchFilters,
+  includeStatusFilter: boolean = true
+) {
+  const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
-  let queryFiltersWithoutStatusFilter: SQL<unknown> | undefined = undefined;
 
   if (!filters.in) {
     filters.in = new Set(IN_FILTERS);
@@ -197,76 +243,34 @@ export async function getIssues(
     queryFilters = or(...inFilters);
   }
 
-  queryFiltersWithoutStatusFilter = queryFilters;
-  if (filters.is) {
+  // TODO : handle the rest of filters
+  // ...
+
+  if (filters.is && includeStatusFilter) {
     const status = filters.is;
+    let closedCondition = not(eq(issues.status, IssueStatuses.OPEN));
+
+    if (filters.reason) {
+      closedCondition =
+        filters.reason === "completed"
+          ? eq(issues.status, IssueStatuses.CLOSED)
+          : eq(issues.status, IssueStatuses.NOT_PLANNED);
+    }
+
     queryFilters = and(
       queryFilters,
       status === "open"
         ? eq(issues.status, IssueStatuses.OPEN)
-        : or(
-            eq(issues.status, IssueStatuses.CLOSED),
-            eq(issues.status, IssueStatuses.NOT_PLANNED)
-          )
+        : closedCondition
     );
   }
 
-  issuesQuery = issuesQuery.where(queryFilters);
+  return queryFilters;
+}
 
-  // TODO : handle the rest of filters
-  // ...
+async function getStatsForIssueSearch(filters: IssueSearchFilters) {
+  const queryFilters = issueSearchfiltersToSQLQuery(filters, false);
 
-  // apply pagination
-  issuesQuery = issuesQuery.limit(25).offset((currentPage - 1) * 25);
-
-  console.dir({ filters, sql: issuesQuery.toSQL().sql }, { depth: null });
-  // execute the query
-  const issueList = await issuesQuery;
-
-  type IssueResult = (typeof issueList)[number];
-  type IssueResultList = Omit<IssueResult, "label" | "assignee"> & {
-    labels: Array<Exclude<IssueResult["label"], null>>;
-    assigned_to: Array<Exclude<IssueResult["assignee"], null>>;
-  };
-
-  // Group issue by labels & assignees
-  const issueResult = issueList.reduce(
-    (acc, current) => {
-      const id = current.id;
-
-      if (acc[id]) {
-        const labelIncluded = Boolean(
-          acc[id].labels.find((label) => label?.id === current.label?.id)
-        );
-        const assigneeIncluded = Boolean(
-          acc[id].assigned_to.find(
-            (assignee) => assignee?.username === current.assignee?.username
-          )
-        );
-
-        if (!labelIncluded && current.label) {
-          acc[id].labels.push(current.label);
-        }
-        if (!assigneeIncluded && current.assignee) {
-          acc[id].assigned_to.push(current.assignee);
-        }
-      } else {
-        const { label, assignee, ...rest } = current;
-        acc[id] = {
-          ...rest,
-          // @ts-expect-error
-          labels: [label].filter(Boolean),
-          // @ts-expect-error
-          assigned_to: [assignee].filter(Boolean)
-        };
-      }
-
-      return acc;
-    },
-    {} as Record<number, Prettify<IssueResultList>>
-  );
-
-  // Get other status
   const statsQuery = db
     .selectDistinctOn([issues.id], {
       number: issues.number,
@@ -279,32 +283,30 @@ export async function getIssues(
     .leftJoin(labelToIssues, eq(labelToIssues.issue_id, issues.id))
     .leftJoin(labels, eq(labelToIssues.label_id, labels.id))
     .leftJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
-    .where(queryFiltersWithoutStatusFilter)
+    .where(queryFilters)
     .groupBy(issues.id)
     .as("stats");
 
-  const [{ total_count, open_count, closed_count }] = await db
+  const [stats] = await db
     .select({
       total_count: sql<number>`count(${issues.id})`
         .mapWith(Number)
         .as("total_count"),
       open_count:
-        sql<number>`SUM(CASE WHEN ${issues.status} = 'OPEN' THEN 1 ELSE 0 END) AS open_issue_count`.mapWith(
-          Number
-        ),
-      closed_count:
-        sql<number>`SUM(CASE WHEN ${issues.status} IN ('CLOSED', 'NOT_PLANNED')  THEN 1 ELSE 0 END) AS closed_issue_count`.mapWith(
-          Number
-        )
+        sql<number>`SUM(CASE WHEN ${issues.status} = 'OPEN' THEN 1 ELSE 0 END)`
+          .mapWith(Number)
+          .as("open_issue_count"),
+      completed_count:
+        sql<number>`SUM(CASE WHEN ${issues.status} = 'CLOSED'  THEN 1 ELSE 0 END)`
+          .mapWith(Number)
+          .as("completed_issue_count"),
+      not_planned_count:
+        sql<number>`SUM(CASE WHEN ${issues.status} = 'NOT_PLANNED'  THEN 1 ELSE 0 END)`
+          .mapWith(Number)
+          .as("not_planned_issue_count")
     })
     .from(statsQuery);
-
-  return {
-    issues: Object.values(issueResult),
-    total_count,
-    open_count,
-    closed_count
-  };
+  return stats;
 }
 
 export type IssueResult = Awaited<ReturnType<typeof getIssues>>["issues"];
