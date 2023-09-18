@@ -142,7 +142,7 @@ export function IssuesListHeaderForm({
             <Button
               type="button"
               variant="subtle"
-              className="rounded-r-none !border-r-0"
+              className="rounded-r-none border-r-0"
               renderTrailingIcon={(cls) => <TriangleDownIcon className={cls} />}
             >
               Filters

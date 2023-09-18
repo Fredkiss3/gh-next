@@ -69,7 +69,6 @@ export const Button = React.forwardRef<
     ("aria-disabled" in restProps && restProps["aria-disabled"] === true);
 
   const commonClasses = clsx(
-    className,
     "items-center justify-center gap-2 ",
     "rounded-md border-2 font-medium outline-accent border-gray-900/10",
     "transition duration-150",
@@ -83,18 +82,17 @@ export const Button = React.forwardRef<
       "bg-subtle text-danger border-neutral": variant === "danger",
       "hover:bg-danger hover:text-white hover:border-danger aria-[current]:bg-danger aria-[current]:text-white aria-[current]:border-danger":
         variant === "danger" && !isDisabled,
-      "bg-transparent text-grey border-neutral !border":
-        variant === "invisible",
+      "bg-transparent text-grey border-neutral border": variant === "invisible",
       "hover:bg-subtle hover:border-grey aria-[current]:bg-subtle aria-[current]:border-grey focus-visible:ring-2 focus-visible:ring-accent focus:ring-2 focus:ring-accent":
         variant === "invisible" && !isDisabled,
-      "bg-ghost text-foreground/70 border-neutral !border shadow-sm":
+      "bg-ghost text-foreground/70 border-neutral border shadow-sm":
         variant === "subtle",
       "hover:border-grey aria-[current]:border-grey":
         variant === "subtle" && !isDisabled,
       "bg-subtle text-accent border-neutral": variant === "secondary",
       "hover:bg-accent hover:text-white hover:border-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
         variant === "secondary" && !isDisabled,
-      "text-accent border-transparent !border": variant === "accent-ghost",
+      "text-accent border-transparent border": variant === "accent-ghost",
       "text-grey": variant === "accent-ghost" && isDisabled,
       " hover:border-grey focus:border-transparent focus-visible:border-transparent focus:!ring-2 focus:ring-accent focus-visible:ring-accent aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
         variant === "accent-ghost" && !isDisabled,
@@ -103,7 +101,8 @@ export const Button = React.forwardRef<
         variant === "ghost" && !isDisabled,
       "aria-[current]:bg-accent aria-[current]:text-white aria-[current]:border-accent":
         variant === "ghost" && !isDisabled
-    }
+    },
+    className
   );
 
   if (isLink(restProps)) {

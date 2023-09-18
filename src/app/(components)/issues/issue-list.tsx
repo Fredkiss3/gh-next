@@ -42,18 +42,27 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
   const { issues, totalCount, noOfIssuesClosed, noOfIssuesOpen } =
     await getIssueList(filters, currentPage);
 
+  let paginationCount = totalCount;
+  if (filters.is) {
+    paginationCount = filters.is === "open" ? noOfIssuesOpen : noOfIssuesClosed;
+  }
+
   return (
     <>
-      {/* Header */}
+      {/* Header on Mobile */}
       <div className="flex items-center gap-4 px-5  md:hidden md:px-0">
         <IssueSearchLink
           filters={{
             is: "open"
           }}
           className={clsx(
-            "flex items-center gap-2 font-semibold text-foreground",
+            "flex items-center gap-2",
             "transition duration-150",
-            "focus:ring-2 ring-accent focus:outline-none rounded-md"
+            "focus:ring-2 ring-accent focus:outline-none rounded-md",
+            {
+              "font-semibold text-foreground": filters.is === "open",
+              "text-grey": filters.is !== "open"
+            }
           )}
           conserveCurrentFilters
         >
@@ -72,9 +81,13 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
           }}
           conserveCurrentFilters
           className={clsx(
-            "flex items-center gap-2 text-grey",
+            "flex items-center gap-2",
             "transition duration-150",
-            "focus:ring-2 ring-accent focus:outline-none rounded-md"
+            "focus:ring-2 ring-accent focus:outline-none rounded-md",
+            {
+              "font-semibold text-foreground": filters.is === "closed",
+              "text-grey": filters.is !== "closed"
+            }
           )}
         >
           <CheckIcon className="h-5 w-5" />
@@ -89,7 +102,7 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
       </div>
 
       <div className={clsx("border border-neutral", "sm:rounded-md")}>
-        {/* Issue content table - header */}
+        {/* Issue content table - header on desktop */}
         <div
           className={clsx(
             "flex items-center justify-between gap-8",
@@ -100,9 +113,12 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
             <li>
               <IssueSearchLink
                 className={clsx(
-                  "flex items-center gap-2 font-semibold text-foreground",
+                  "flex items-center gap-2",
                   "transition duration-150",
-                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md",
+                  {
+                    "font-semibold text-foreground": filters.is === "open"
+                  }
                 )}
                 filters={{
                   is: "open"
@@ -126,9 +142,12 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
                 }}
                 conserveCurrentFilters
                 className={clsx(
-                  "flex items-center gap-2 text-grey",
+                  "flex items-center gap-2",
                   "transition duration-150",
-                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md",
+                  {
+                    "font-semibold text-foreground": filters.is === "closed"
+                  }
                 )}
               >
                 <CheckIcon className="h-5 w-5" />
@@ -226,7 +245,7 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
         <Pagination
           currentPage={currentPage}
           perPage={25}
-          totalCount={totalCount}
+          totalCount={paginationCount}
           baseURL={`/issues${baseURL}`}
         />
       )}

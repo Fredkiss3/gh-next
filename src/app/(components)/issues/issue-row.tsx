@@ -1,3 +1,4 @@
+import "server-only";
 import * as React from "react";
 // components
 import {
@@ -20,20 +21,20 @@ import { IssueSearchLink } from "./issue-search-link";
 import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
-export type IssueRowProps = IssueListResult["issues"][number];
+import type { IssueResult } from "~/app/(models)/issue";
+export type IssueRowProps = IssueResult[number];
 
 export function IssueRow({
   status,
   title,
-  id,
+  number,
   author,
   status_updated_at,
   noOfComments,
   labels,
   assigned_to,
   created_at,
-  description
+  excerpt
 }: IssueRowProps) {
   return (
     <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
@@ -48,10 +49,10 @@ export function IssueRow({
       )}
 
       <Link
-        href={`/issues/${id}`}
+        href={`/issues/${number}`}
         className="after:absolute after:inset-0 sm:hidden"
       >
-        <span className="sr-only">Link to issue #{id}</span>
+        <span className="sr-only">Link to issue #{number}</span>
       </Link>
 
       <div
@@ -64,10 +65,10 @@ export function IssueRow({
             <HoverCard
               content={
                 <IssueHoverCardContents
-                  id={id}
+                  id={number}
                   status={status}
                   title={title}
-                  description={description}
+                  description={excerpt}
                   created_at={created_at}
                   labels={labels}
                 />
@@ -75,7 +76,7 @@ export function IssueRow({
             >
               <ReactAriaLink>
                 <Link
-                  href={`/issues/${id}`}
+                  href={`/issues/${number}`}
                   className={clsx(
                     "inline break-words text-lg font-semibold text-foreground",
                     "hover:text-accent",
@@ -127,35 +128,50 @@ export function IssueRow({
         </div>
 
         <small className="text-grey">
-          #{id} opened {formatDate(status_updated_at)} by&nbsp;
-          <HoverCard
-            placement="top start"
-            delayInMs={700}
-            content={
-              <UserHoverCardContents
-                avatar_url={author.avatar_url}
-                bio={author.bio}
-                location={author.location}
-                name={author.name}
-                username={author.username}
-              />
-            }
-          >
-            <ReactAriaLink>
-              <IssueSearchLink
-                filters={{
-                  author: author.username
-                }}
-                className={clsx(
-                  "hover:text-accent",
-                  "transition duration-150",
-                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
-                )}
-              >
-                {author.username}
-              </IssueSearchLink>
-            </ReactAriaLink>
-          </HoverCard>
+          #{number} opened {formatDate(status_updated_at)} by&nbsp;
+          {author.id ? (
+            <HoverCard
+              placement="top start"
+              delayInMs={700}
+              content={
+                <UserHoverCardContents
+                  avatar_url={author.avatar_url}
+                  bio={author.bio}
+                  location={author.location}
+                  name={author.name}
+                  username={author.username}
+                />
+              }
+            >
+              <ReactAriaLink>
+                <IssueSearchLink
+                  filters={{
+                    author: author.username
+                  }}
+                  className={clsx(
+                    "hover:text-accent",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
+                  {author.username}
+                </IssueSearchLink>
+              </ReactAriaLink>
+            </HoverCard>
+          ) : (
+            <IssueSearchLink
+              filters={{
+                author: author.username
+              }}
+              className={clsx(
+                "hover:text-accent",
+                "transition duration-150",
+                "focus:ring-2 ring-accent focus:outline-none rounded-md"
+              )}
+            >
+              {author.username}
+            </IssueSearchLink>
+          )}
         </small>
       </div>
 
@@ -163,7 +179,7 @@ export function IssueRow({
         <IssueRowAvatarStack users={assigned_to} />
         {noOfComments > 0 && (
           <Link
-            href={`/issues/${id}`}
+            href={`/issues/${number}`}
             className={clsx(
               "flex items-center gap-1 text-grey hover:text-accent",
               "transition duration-150",
