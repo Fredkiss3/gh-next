@@ -879,41 +879,33 @@ do {
  */
 console.log(`\nInserting mentions events`);
 
+let noOfMentionEventsInserted = 0;
 for (const [issue_id_str, event] of Object.entries(mentionsEvents)) {
   if (event.source.__typename !== "Issue") {
     continue;
   }
 
   let currentUser: User | null | undefined = null;
-  console.dir({
-    event,
-    issue_id_str
-  });
 
   if (event.actor) {
     // Faker seed so that it generates the same login for the same user
     faker.seed(stringToNumber(event.actor.login));
     // if the user is in our DB, use that instead of a generated username & avatar url
-    console.log("BEFORE CURRENT USER");
     const dbUser = await db
       .select()
       .from(users)
       .where(sql`${users.username} ILIKE ${event.actor.login}`);
     currentUser = dbUser[0];
-    console.log("AFTER CURRENT USER");
   }
 
-  console.log("BEFORE DB ISSUES");
   const dbIssues = await db
     .select()
     .from(issues)
     .where(eq(issues.number, event.source.number));
 
   const mentionnedIssueId = dbIssues[0];
-  console.log("AFTER DB ISSUES");
 
   if (mentionnedIssueId) {
-    console.log("BEFORE INSERTION");
     const payload = {
       issue_id: Number(issue_id_str),
       initiator_id: currentUser ? currentUser.id : null,
@@ -928,17 +920,13 @@ for (const [issue_id_str, event] of Object.entries(mentionsEvents)) {
       mentionned_issue_id: mentionnedIssueId.id
     } satisfies IssueEventInsert;
 
-    console.dir(
-      {
-        payload
-      },
-      { depth: null }
-    );
+    noOfMentionEventsInserted++;
     await db.insert(issueEvents).values(payload);
-    console.log("AFTER INSERTION");
   }
 }
 
-console.log(`\nMention events inserted successfully ✅`);
+console.log(
+  `\n${noOfMentionEventsInserted} Mention events inserted successfully ✅`
+);
 
 process.exit();
