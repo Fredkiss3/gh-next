@@ -11,7 +11,6 @@ export const issueSearchListOutputValidator = z.object({
   issues: z.array(
     z
       .object({
-        id: z.number(),
         number: z.number(),
         title: z.string(),
         excerpt: z.string().optional(),

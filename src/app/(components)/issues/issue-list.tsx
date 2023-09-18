@@ -240,7 +240,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
         ) : (
           <ul>
             {issues.map((issue) => (
-              <li key={issue.id}>
+              <li key={issue.number}>
                 <IssueRow {...issue} />
               </li>
             ))}
