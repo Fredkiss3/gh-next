@@ -13,7 +13,7 @@ import { IssueListSearchInput } from "./issue-list-search-input";
 
 // utils
 import { usePathname, useRouter } from "next/navigation";
-import { clsx } from "~/lib/shared/utils.shared";
+import { clsx, debounce } from "~/lib/shared/utils.shared";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 import { IssueSearchLink } from "./issue-search-link";
 import { BASE_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
@@ -37,6 +37,11 @@ export function IssuesListHeaderForm({
   const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
   const filters = getParsedQuery();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onSearch = React.useCallback(
+    debounce(() => formRef.current?.requestSubmit()),
+    []
+  );
   return (
     <>
       <form
@@ -151,7 +156,7 @@ export function IssuesListHeaderForm({
         )}
         <IssueListSearchInput
           squaredInputBorder={showActionList}
-          onSearch={() => formRef.current?.requestSubmit()}
+          onSearch={onSearch}
         />
       </form>
     </>

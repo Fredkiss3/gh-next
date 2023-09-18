@@ -36,8 +36,6 @@ export function IssueListSearchInput({
   squaredInputBorder
 }: IssueListSearchInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onSearchDebounced = React.useCallback(debounce(onSearch), [onSearch]);
 
   const [isMenuOpen, setMenuOpen] = React.useState(false);
   const {
@@ -183,7 +181,7 @@ export function IssueListSearchInput({
             value={inputValue}
             onValueChange={(value) => {
               setInputValue(value);
-              onSearchDebounced();
+              onSearch();
             }}
             onKeyDown={(e) => {
               if (e.key === "Escape") inputRef?.current?.blur();
@@ -307,7 +305,7 @@ export function IssueListSearchInput({
                                 const filters =
                                   parseIssueSearchString(inputWithNewValue);
 
-                                onSearchDebounced();
+                                onSearch();
                                 return issueSearchFilterToString(filters) + " ";
                               });
 
