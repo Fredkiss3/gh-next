@@ -286,9 +286,14 @@ type EventsResponse = {
 };
 
 const eventsQuery = /* GraphQL */ `
-  query events($cursor: String, $repoName: String!, $repoOwner: String!) {
+  query events(
+    $cursor: String
+    $issue_number: Int!
+    $repoName: String!
+    $repoOwner: String!
+  ) {
     repository(name: $repoName, owner: $repoOwner) {
-      issue(number: 42991) {
+      issue(number: $issue_number) {
         timelineItems(
           after: $cursor
           first: 100
@@ -352,6 +357,7 @@ const eventsQuery = /* GraphQL */ `
                 __typename
                 ... on User {
                   login
+                  avatarUrl
                 }
               }
             }
