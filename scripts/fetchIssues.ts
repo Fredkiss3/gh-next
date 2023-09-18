@@ -36,6 +36,7 @@ import {
   type IssueEventInsert,
   type EventType
 } from "~/lib/server/db/schema/event.sql";
+import { MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -43,7 +44,7 @@ const GITHUB_REPO_SOURCE = {
   owner: "vercel",
   name: "next.js"
 } as const;
-const MAX_ISSUES_TO_FETCH = 5 * 25; // 5 pages of issues
+const MAX_ISSUES_TO_FETCH = 5 * MAX_ITEMS_PER_PAGE; // 5 pages of issues
 
 type Actor = {
   login: string;
@@ -214,6 +215,7 @@ type AssignedEvent = {
   assignee: {
     __typename: "User";
     login: string;
+    avatarUrl: string;
   };
 };
 
@@ -343,6 +345,7 @@ const eventsQuery = /* GraphQL */ `
             ... on AssignedEvent {
               actor {
                 login
+                avatarUrl
               }
               createdAt
               assignee {
@@ -562,7 +565,7 @@ do {
      * INSERTING ASSIGNEES
      */
     for (const assignee of issue.assignees.nodes) {
-      faker.seed(stringToNumber(assignee.login));
+      // faker.seed(stringToNumber(assignee.login));
       // wipe out any assignee existing for the issue
       // Because we don't have any way to handle conflicts for this table
       await db
@@ -579,12 +582,10 @@ do {
 
       const issueToAssigneePayload = {
         issue_id: issueInsertQueryResult.issue_id,
-        assignee_username: currentUser
-          ? currentUser.username
-          : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+        assignee_username: currentUser ? currentUser.username : assignee.login,
         assignee_avatar_url: currentUser
           ? currentUser.avatar_url
-          : faker.image.avatarGitHub()
+          : assignee.avatarUrl
       } satisfies IssueToAssigneeInsert;
 
       await db.insert(issueToAssignees).values(issueToAssigneePayload);
@@ -796,8 +797,6 @@ do {
             }
           }
         } else if (event.__typename === "AssignedEvent") {
-          // Faker seed so that it generates the same login for the same user
-          faker.seed(stringToNumber(event.assignee.login));
           // if the user is in our DB, use that instead of a generated username & avatar url
           const dbUser = await db
             .select()
@@ -809,10 +808,10 @@ do {
             ...eventPayload,
             assignee_username: currentUser
               ? currentUser.username
-              : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+              : event.assignee.login,
             assignee_avatar_url: currentUser
               ? currentUser.avatar_url
-              : faker.image.avatarGitHub()
+              : event.assignee.avatarUrl
           };
         } else if (event.__typename === "ClosedEvent") {
           eventPayload.status =
