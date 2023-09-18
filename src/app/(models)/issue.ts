@@ -150,7 +150,7 @@ export async function searchIssues(
         location: users.location
       },
       no_of_comments:
-        sql<number>`coalesce(${commentsCountSubQuery.comment_count}, 0) AS "comment_count"`.mapWith(
+        sql<number>`COALESCE(${commentsCountSubQuery.comment_count}, 0) AS "comment_count"`.mapWith(
           Number
         )
     })
@@ -255,6 +255,21 @@ function issueSearchfiltersToSQLQuery(
     queryFilters = or(...inFilters);
   }
 
+  if (filters.author || filters["-author"]) {
+    if (filters["-author"]) {
+      queryFilters = and(
+        queryFilters,
+        not(
+          ilike(issues.author_username, filters["-author"].replaceAll("%", "")) // don't filter authors with `%`
+        )
+      );
+    } else if (filters.author) {
+      queryFilters = and(
+        queryFilters,
+        ilike(issues.author_username, filters.author.replaceAll("%", "")) // don't filter authors with `%`
+      );
+    }
+  }
   // TODO : handle the rest of filters
   // ...
 
@@ -301,19 +316,19 @@ async function getStatsForIssueSearch(filters: IssueSearchFilters) {
 
   const [stats] = await db
     .select({
-      total_count: sql<number>`count(${issues.id})`
+      total_count: sql<number>`COALESCE(count(${issues.id}), 0)`
         .mapWith(Number)
         .as("total_count"),
       open_count:
-        sql<number>`SUM(CASE WHEN ${issues.status} = 'OPEN' THEN 1 ELSE 0 END)`
+        sql<number>`COALESCE(SUM(CASE WHEN ${issues.status} = 'OPEN' THEN 1 ELSE 0 END), 0)`
           .mapWith(Number)
           .as("open_issue_count"),
       completed_count:
-        sql<number>`SUM(CASE WHEN ${issues.status} = 'CLOSED'  THEN 1 ELSE 0 END)`
+        sql<number>`COALESCE(SUM(CASE WHEN ${issues.status} = 'CLOSED'  THEN 1 ELSE 0 END), 0)`
           .mapWith(Number)
           .as("completed_issue_count"),
       not_planned_count:
-        sql<number>`SUM(CASE WHEN ${issues.status} = 'NOT_PLANNED'  THEN 1 ELSE 0 END)`
+        sql<number>`COALESCE(SUM(CASE WHEN ${issues.status} = 'NOT_PLANNED'  THEN 1 ELSE 0 END), 0)`
           .mapWith(Number)
           .as("not_planned_issue_count")
     })
