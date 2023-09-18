@@ -41,7 +41,10 @@ export const IssueSearchLink = React.forwardRef<
     ...computedFilters,
     ...filters
   });
-  const href = `/issues?q=` + encodeURIComponent(searchStr);
+
+  const sp = new URLSearchParams();
+  sp.append("q", searchStr);
+  const href = `/issues?` + sp.toString();
 
   return (
     <Link

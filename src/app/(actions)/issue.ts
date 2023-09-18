@@ -40,14 +40,24 @@ export async function filterIssueAssignees(
 }
 
 export async function getIssueList(filters: IssueSearchFilters, page: number) {
-  const { issues, closed_count, total_count, open_count } = await getIssues(
-    filters,
-    page
-  );
+  const {
+    issues,
+    completed_count,
+    not_planned_count,
+    total_count,
+    open_count
+  } = await getIssues(filters, page);
+
+  let noOfIssuesClosed = completed_count + not_planned_count;
+  if (filters.is === "closed" && filters.reason) {
+    noOfIssuesClosed =
+      filters.reason === "completed" ? completed_count : not_planned_count;
+  }
+
   return {
     issues,
     noOfIssuesOpen: open_count,
-    noOfIssuesClosed: closed_count,
+    noOfIssuesClosed,
     totalCount: total_count
   };
 }

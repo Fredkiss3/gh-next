@@ -22,22 +22,31 @@ import {
   parseIssueSearchString,
   pluralize
 } from "~/lib/shared/utils.shared";
+import { preprocess, z } from "zod";
+import { getIssueList } from "~/app/(actions)/issue";
+import {
+  BASE_ISSUE_SEARCH_QUERY,
+  MAX_ITEMS_PER_PAGE
+} from "~/lib/shared/constants";
 
 // types
-import { BASE_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
-import { getIssueList } from "~/app/(actions)/issue";
-
 export type IssueListProps = {
-  currentPage: number;
+  page?: string;
   searchQuery?: string;
 };
 
-export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
-  const baseURL = searchQuery ? `?q=${searchQuery}&page=` : `?page=`;
+export async function IssueList({ page, searchQuery }: IssueListProps) {
+  const pageSchema = preprocess(
+    (arg) => Number(arg),
+    z.number().int().min(1).catch(1)
+  );
+  let currentPage = pageSchema.parse(page);
 
   const filters = parseIssueSearchString(
     searchQuery ?? BASE_ISSUE_SEARCH_QUERY
   );
+
+  const baseURL = `?q=${searchQuery}&page=`;
 
   const { issues, totalCount, noOfIssuesClosed, noOfIssuesOpen } =
     await getIssueList(filters, currentPage);
@@ -241,10 +250,10 @@ export async function IssueList({ currentPage, searchQuery }: IssueListProps) {
         {/* END Issue content table - list */}
       </div>
 
-      {totalCount > 25 && (
+      {totalCount > MAX_ITEMS_PER_PAGE && (
         <Pagination
           currentPage={currentPage}
-          perPage={25}
+          perPage={MAX_ITEMS_PER_PAGE}
           totalCount={paginationCount}
           baseURL={`/issues${baseURL}`}
         />

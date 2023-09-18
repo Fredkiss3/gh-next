@@ -20,7 +20,6 @@ import { getLabelsCount } from "~/app/(models)/label";
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
-
 export const metadata: Metadata = {
   title: "Issues"
 };
@@ -91,15 +90,10 @@ async function IssuesListHeader() {
 async function IssuesListBody(props: {
   params: PageProps<{}, { page?: string; q?: string }>["searchParams"];
 }) {
-  let currentPage = Number(props.params?.page);
-  if (isNaN(currentPage)) {
-    currentPage = 1;
-  }
-
   return (
     <section className="flex flex-col gap-4" id="issue-list">
       <React.Suspense fallback={<IssueListSkeleton />} key={props.params?.q}>
-        <IssueList currentPage={currentPage} searchQuery={props.params?.q} />
+        <IssueList page={props.params?.page} searchQuery={props.params?.q} />
       </React.Suspense>
 
       <div className="flex items-start justify-center gap-2 px-5 py-12 text-grey md:px-0">

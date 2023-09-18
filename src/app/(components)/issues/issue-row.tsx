@@ -24,6 +24,16 @@ import { clsx, formatDate } from "~/lib/shared/utils.shared";
 import type { IssueResult } from "~/app/(models)/issue";
 export type IssueRowProps = IssueResult[number];
 
+function formatIssueRowSubtext({
+  number,
+  status,
+  status_updated_at
+}: Pick<IssueRowProps, "number" | "status" | "status_updated_at">) {
+  return `#${number} ${status === "OPEN" ? "opened" : "closed"} ${formatDate(
+    status_updated_at
+  )} by `;
+}
+
 export function IssueRow({
   status,
   title,
@@ -128,7 +138,11 @@ export function IssueRow({
         </div>
 
         <small className="text-grey">
-          #{number} opened {formatDate(status_updated_at)} by&nbsp;
+          {formatIssueRowSubtext({
+            number,
+            status_updated_at,
+            status
+          })}
           {author.id ? (
             <HoverCard
               placement="top start"
