@@ -1,4 +1,4 @@
-import { env } from "~/env.mjs";
+import "server-only";
 import { WebdisKV } from "./webdis.server";
 
 export interface KVStore {
