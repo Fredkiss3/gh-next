@@ -40,7 +40,7 @@ export function IssueRow({
   number,
   author,
   status_updated_at,
-  noOfComments,
+  no_of_comments,
   labels,
   assigned_to,
   created_at,
@@ -191,7 +191,7 @@ export function IssueRow({
 
       <div className="hidden w-[30%] items-center justify-end gap-4 sm:flex">
         <IssueRowAvatarStack users={assigned_to} />
-        {noOfComments > 0 && (
+        {no_of_comments > 0 && (
           <Link
             href={`/issues/${number}`}
             className={clsx(
@@ -201,7 +201,7 @@ export function IssueRow({
             )}
           >
             <CommentIcon className="h-4 w-4 flex-shrink-0" />
-            <span>{noOfComments}</span>
+            <span>{no_of_comments}</span>
           </Link>
         )}
       </div>

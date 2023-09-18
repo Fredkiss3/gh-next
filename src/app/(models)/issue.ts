@@ -150,7 +150,7 @@ export async function searchIssues(
         id: users.id,
         location: users.location
       },
-      noOfComments:
+      no_of_comments:
         sql<number>`coalesce(${commentsCountSubQuery.comment_count}, 0) AS "comment_count"`.mapWith(
           Number
         )
