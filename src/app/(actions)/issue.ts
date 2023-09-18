@@ -10,6 +10,7 @@ import {
 } from "~/app/(models)/issue";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
+import { issueSearchListOutputValidator } from "../(models)/dto/issue-search";
 
 /**
  * We use `promise` because server actions are not batched,
@@ -54,12 +55,12 @@ export async function getIssueList(filters: IssueSearchFilters, page: number) {
       filters.reason === "completed" ? completed_count : not_planned_count;
   }
 
-  return {
+  return issueSearchListOutputValidator.parse({
     issues,
     noOfIssuesOpen: open_count,
     noOfIssuesClosed,
     totalCount: total_count
-  };
+  });
 }
 
 export async function filterLabelsByName(name: string) {

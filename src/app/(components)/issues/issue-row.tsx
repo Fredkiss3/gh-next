@@ -21,8 +21,9 @@ import { IssueSearchLink } from "./issue-search-link";
 import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueResult } from "~/app/(models)/issue";
-export type IssueRowProps = IssueResult[number];
+import type { IssueSearchListResult } from "~/app/(models)/dto/issue-search";
+
+export type IssueRowProps = IssueSearchListResult["issues"][number];
 
 function formatIssueRowSubtext({
   number,

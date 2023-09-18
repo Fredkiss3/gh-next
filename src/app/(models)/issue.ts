@@ -320,5 +320,3 @@ async function getStatsForIssueSearch(filters: IssueSearchFilters) {
     .from(statsQuery);
   return stats;
 }
-
-export type IssueResult = Awaited<ReturnType<typeof searchIssues>>["issues"];

@@ -1,0 +1,54 @@
+import "server-only";
+
+import { z } from "zod";
+import { createSelectSchema } from "drizzle-zod";
+import { issues } from "~/lib/server/db/schema/issue.sql";
+
+export const issueSearchListOutputValidator = z.object({
+  noOfIssuesOpen: z.number(),
+  noOfIssuesClosed: z.number(),
+  totalCount: z.number(),
+  issues: z.array(
+    z
+      .object({
+        id: z.number(),
+        number: z.number(),
+        title: z.string(),
+        excerpt: z.string().optional(),
+        assigned_to: z.array(
+          z.object({
+            username: z.string(),
+            avatar_url: z.string().url()
+          })
+        ),
+        author: z.object({
+          id: z.number().nullable(),
+          username: z.string(),
+          avatar_url: z.string(),
+          bio: z.string().nullable(),
+          location: z.string().nullable(),
+          name: z.string().nullable()
+        }),
+        no_of_comments: z.number(),
+        created_at: z.date(),
+        status_updated_at: z.date(),
+        labels: z.array(
+          z.object({
+            id: z.number(),
+            color: z.string(),
+            name: z.string(),
+            description: z.string().optional()
+          })
+        )
+      })
+      .merge(
+        createSelectSchema(issues).pick({
+          status: true
+        })
+      )
+  )
+});
+
+export type IssueSearchListResult = z.TypeOf<
+  typeof issueSearchListOutputValidator
+>;
