@@ -414,16 +414,25 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
     }
 
     // For labels, wrap them inside quotes
-    if ((key === "label" || key === "-label") && Array.isArray(value)) {
-      for (const label of value) {
-        terms.push(`${key}:"${label}"`);
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (key === "label" || key === "-label") {
+          terms.push(`${key}:"${item}"`);
+        } else {
+          terms.push(`${key}:${item}`);
+        }
       }
-    } else if (Array.isArray(value) && value.length > 0) {
-      terms.push(key + ":" + value.join(","));
-    } else if (typeof value === "string") {
+    }
+    //  else if (Array.isArray(value) && value.length > 0) {
+    //   terms.push(key + ":" + value.join(","));
+    // }
+    else if (typeof value === "string") {
       terms.push(`${key}:${value}`);
     } else if (value instanceof Set && value.size > 0) {
-      terms.push(key + ":" + [...value].join(","));
+      for (const item of value) {
+        terms.push(`${key}:${item}`);
+      }
+      // terms.push(key + ":" + [...value].join(","));
     }
   }
 
