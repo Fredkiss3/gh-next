@@ -35,34 +35,6 @@ export async function searchIssues(
   filters: IssueSearchFilters,
   currentPage: number
 ) {
-  //   let labelFilters: SQL<unknown> | undefined = undefined;
-
-  //   if (filters.label && filters.label.length > 0) {
-  //     labelFilters = or(...filters.label.map((label) => eq(labels.name, label))); // sql`${labels.name} in ${filters.label}`;
-  //     //     .where(sql`${labels.name} in ${filters.label}`);
-
-  //     //   queryFilters = and(sql`${issues.id} in ${labelSubQuery}`, queryFilters);
-  //   } else if (filters["-label"] && filters["-label"].length > 0) {
-  //     labelFilters = sql`${labels.name} not in ${filters["-label"]}`;
-  //     //   const labelSubQuery = db
-  //     //     .selectDistinct({
-  //     //       issue_id: labelToIssues.issue_id
-  //     //     })
-  //     //     .from(labelToIssues)
-  //     //     .innerJoin(labels, eq(labelToIssues.label_id, labels.id))
-  //     //     .where(sql`${labels.name} not in ${filters["-label"]}`);
-
-  //     //   queryFilters = and(sql`${issues.id} not in ${labelSubQuery}`, queryFilters);
-  //   }
-
-  //   const labelSubQuery = db
-  //     .selectDistinct({
-  //       issue_id: labelToIssues.issue_id
-  //     })
-  //     .from(labelToIssues)
-  //     .innerJoin(labels, eq(labelToIssues.label_id, labels.id))
-  //     .where(labelFilters)
-  //     .as("label_sub_queries");
   let issueQuery = db
     .selectDistinctOn([issues.id], {
       id: issues.id,
@@ -95,15 +67,7 @@ export async function searchIssues(
     )
     .where(issueSearchfiltersToSQLConditions(filters));
 
-  //   if (filters.label && filters.label.length > 0) {
-  //     issueQuery = issueQuery.innerJoin(
-  //       labelSubQuery,
-  //       eq(issues.id, labelSubQuery.issue_id)
-  //     );
-  //   } else if (filters["-label"] && filters["-label"].length > 0) {
-  //     // issueQuery = issueQuery.leftJoin(labelSubQuery, not(eq(labelSubQuery.issue_id,issues.id )))
-  //   }
-
+  // FIXME: to remove
   console.log({
     sql: issueQuery.toSQL()
   });
@@ -180,7 +144,7 @@ function issueSearchfiltersToSQLConditions(
   const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
 
-  // FIXME : remove
+  // FIXME : to remove
   console.log({
     filters
   });
