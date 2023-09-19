@@ -23,7 +23,7 @@ import {
 import { getSession } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared/utils.shared";
 import { PageTitle } from "./page-title";
-import { getOpenIssuesCount } from "~/app/(models)/issue";
+import { getOpenIssuesCount } from "~/app/(models)/issues";
 
 // types
 export type HeaderProps = {

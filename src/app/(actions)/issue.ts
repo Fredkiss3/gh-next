@@ -5,12 +5,13 @@ import {
   getIssueAssigneesByUsername,
   getIssueAssigneesByUsernameOrName,
   getIssueAuthorsByName,
-  getIssueAuthorsByUsername,
-  searchIssues
-} from "~/app/(models)/issue";
+  getIssueAuthorsByUsername
+} from "~/app/(models)/issues";
+
+import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search";
+import { searchIssues } from "~/app/(models)/issues/search";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
-import { issueSearchListOutputValidator } from "../(models)/dto/issue-search";
 
 /**
  * We use `promise` because server actions are not batched,

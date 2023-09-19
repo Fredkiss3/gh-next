@@ -1,138 +1,69 @@
 import "server-only";
-import { SQL, and, eq, ilike, not, or, sql } from "drizzle-orm";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { sql, eq, ilike, or, and, not } from "drizzle-orm";
 import { db } from "~/lib/server/db/index.server";
-import {
-  IssueStatuses,
-  issueToAssignees,
-  issues
-} from "~/lib/server/db/schema/issue.sql";
-import { nextCache } from "~/lib/server/rsc-utils.server";
-import { users } from "~/lib/server/db/schema/user.sql";
 import { comments } from "~/lib/server/db/schema/comment.sql";
-import { IN_FILTERS, MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
+import {
+  issues,
+  issueToAssignees,
+  IssueStatuses
+} from "~/lib/server/db/schema/issue.sql";
 import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
+import { users } from "~/lib/server/db/schema/user.sql";
+import { MAX_ITEMS_PER_PAGE, IN_FILTERS } from "~/lib/shared/constants";
 
+import type { SQL } from "drizzle-orm";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 
-export async function getOpenIssuesCount() {
-  const fn = nextCache(
-    async () => {
-      const [count] = await db
-        .select({
-          count: sql<number>`count(*)`.mapWith(Number)
-        })
-        .from(issues)
-        .where(eq(issues.status, "OPEN"));
-      return count.count;
-    },
-    {
-      tags: CacheKeys.openIssuesCount()
-    }
-  );
-
-  return fn();
-}
-
-const issueAuthorsByNamePrepared = db
-  .selectDistinct({
-    username: issues.author_username,
-    avatar: issues.author_avatar_url,
-    name: users.name
+const commentsCountPerIssueSubQuery = db
+  .select({
+    issue_id: comments.issue_id,
+    comment_count: sql<number>`count(${comments.id})`
+      .mapWith(Number)
+      .as("comment_count")
   })
-  .from(issues)
-  .leftJoin(users, eq(users.id, issues.author_id))
-  .where(
-    or(
-      ilike(issues.author_username, sql.placeholder("name")),
-      ilike(users.name, sql.placeholder("name"))
-    )
-  )
-  .prepare("issue_authors_by_name");
+  .from(comments)
+  .groupBy(comments.issue_id)
+  .as("comments_count_per_issue");
 
-export async function getIssueAuthorsByName(name: string) {
-  return await issueAuthorsByNamePrepared.execute({
-    name: "%" + name + "%"
-  });
-}
-
-const issueAuthorsByUsernamePrepared = db
-  .selectDistinct({
-    username: issues.author_username,
-    avatar: issues.author_avatar_url,
-    name: users.name
-  })
-  .from(issues)
-  .leftJoin(users, eq(users.id, issues.author_id))
-  .where(ilike(issues.author_username, sql.placeholder("username")))
-  .limit(20)
-  .prepare("issue_authors_by_username");
-
-export async function getIssueAuthorsByUsername(username: string) {
-  return await issueAuthorsByUsernamePrepared.execute({
-    username: username + "%"
-  });
-}
-
-const issueAssigneesByUsernamePrepared = db
-  .selectDistinct({
-    username: issueToAssignees.assignee_username,
-    avatar: issueToAssignees.assignee_avatar_url,
-    name: users.name
-  })
-  .from(issues)
-  .rightJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
-  .leftJoin(users, eq(users.id, issueToAssignees.assignee_id))
-  .where(ilike(issueToAssignees.assignee_username, sql.placeholder("username")))
-  .limit(20)
-  .prepare("issue_assignees_by_username");
-
-export async function getIssueAssigneesByUsername(username: string) {
-  return await issueAssigneesByUsernamePrepared.execute({
-    username: username + "%"
-  });
-}
-
-const issueAssigneesByUsernameOrNamePrepared = db
-  .selectDistinct({
-    username: issueToAssignees.assignee_username,
-    avatar: issueToAssignees.assignee_avatar_url,
-    name: users.name
-  })
-  .from(issues)
-  .rightJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
-  .leftJoin(users, eq(users.id, issueToAssignees.assignee_id))
-  .where(
-    or(
-      ilike(issueToAssignees.assignee_username, sql.placeholder("name")),
-      ilike(users.name, sql.placeholder("name"))
-    )
-  )
-  .limit(20)
-  .prepare("issue_assignees_by_username_or_name");
-
-export async function getIssueAssigneesByUsernameOrName(name: string) {
-  return await issueAssigneesByUsernameOrNamePrepared.execute({
-    name: name + "%"
-  });
-}
-
+/**
+ * Main function to search for issues
+ * @param filters
+ * @param currentPage
+ * @returns
+ */
 export async function searchIssues(
   filters: IssueSearchFilters,
   currentPage: number
 ) {
-  const commentsCountSubQuery = db
-    .select({
-      issue_id: comments.issue_id,
-      comment_count: sql<number>`count(${comments.id})`
-        .mapWith(Number)
-        .as("comment_count")
-    })
-    .from(comments)
-    .groupBy(comments.issue_id)
-    .as("comments_count");
+  //   let labelFilters: SQL<unknown> | undefined = undefined;
 
-  const issueQuery = db
+  //   if (filters.label && filters.label.length > 0) {
+  //     labelFilters = or(...filters.label.map((label) => eq(labels.name, label))); // sql`${labels.name} in ${filters.label}`;
+  //     //     .where(sql`${labels.name} in ${filters.label}`);
+
+  //     //   queryFilters = and(sql`${issues.id} in ${labelSubQuery}`, queryFilters);
+  //   } else if (filters["-label"] && filters["-label"].length > 0) {
+  //     labelFilters = sql`${labels.name} not in ${filters["-label"]}`;
+  //     //   const labelSubQuery = db
+  //     //     .selectDistinct({
+  //     //       issue_id: labelToIssues.issue_id
+  //     //     })
+  //     //     .from(labelToIssues)
+  //     //     .innerJoin(labels, eq(labelToIssues.label_id, labels.id))
+  //     //     .where(sql`${labels.name} not in ${filters["-label"]}`);
+
+  //     //   queryFilters = and(sql`${issues.id} not in ${labelSubQuery}`, queryFilters);
+  //   }
+
+  //   const labelSubQuery = db
+  //     .selectDistinct({
+  //       issue_id: labelToIssues.issue_id
+  //     })
+  //     .from(labelToIssues)
+  //     .innerJoin(labels, eq(labelToIssues.label_id, labels.id))
+  //     .where(labelFilters)
+  //     .as("label_sub_queries");
+  let issueQuery = db
     .selectDistinctOn([issues.id], {
       id: issues.id,
       title: issues.title,
@@ -150,25 +81,37 @@ export async function searchIssues(
         location: users.location
       },
       no_of_comments:
-        sql<number>`COALESCE(${commentsCountSubQuery.comment_count}, 0) AS "comment_count"`.mapWith(
-          Number
-        )
+        sql<number>`COALESCE(${commentsCountPerIssueSubQuery.comment_count}, 0)`
+          .mapWith(Number)
+          .as("comment_count")
     })
     .from(issues)
     .leftJoin(users, eq(users.id, issues.author_id))
     .leftJoin(comments, eq(comments.issue_id, issues.id))
-    .leftJoin(labelToIssues, eq(labelToIssues.issue_id, issues.id))
-    .leftJoin(labels, eq(labelToIssues.label_id, labels.id))
     .leftJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
     .leftJoin(
-      commentsCountSubQuery,
-      eq(commentsCountSubQuery.issue_id, issues.id)
+      commentsCountPerIssueSubQuery,
+      eq(commentsCountPerIssueSubQuery.issue_id, issues.id)
     )
-    .where(issueSearchfiltersToSQLQuery(filters))
+    .where(issueSearchfiltersToSQLConditions(filters));
+
+  //   if (filters.label && filters.label.length > 0) {
+  //     issueQuery = issueQuery.innerJoin(
+  //       labelSubQuery,
+  //       eq(issues.id, labelSubQuery.issue_id)
+  //     );
+  //   } else if (filters["-label"] && filters["-label"].length > 0) {
+  //     // issueQuery = issueQuery.leftJoin(labelSubQuery, not(eq(labelSubQuery.issue_id,issues.id )))
+  //   }
+
+  console.log({
+    sql: issueQuery.toSQL()
+  });
+
+  const issueList = await issueQuery
+
     .limit(MAX_ITEMS_PER_PAGE)
     .offset((currentPage - 1) * MAX_ITEMS_PER_PAGE);
-
-  const issueList = await issueQuery;
   const id_list = issueList.map((issue) => issue.id);
 
   // get labels
@@ -224,7 +167,13 @@ export async function searchIssues(
   };
 }
 
-function issueSearchfiltersToSQLQuery(
+/**
+ * Transform search filters to conditions to be passed in `db.where(...)`
+ * @param filters
+ * @param includeStatusFilter should we also count the status filter ? (filter.is)
+ * @returns
+ */
+function issueSearchfiltersToSQLConditions(
   filters: IssueSearchFilters,
   includeStatusFilter: boolean = true
 ) {
@@ -271,7 +220,75 @@ function issueSearchfiltersToSQLQuery(
     }
   }
   // TODO : handle the rest of filters
-  // ...
+  // * labels,
+  // -labels,
+  // * assignees
+  // -assignees
+  // * mentions
+  // -mentions
+  // * sort
+  // * no
+
+  if (filters.label && filters.label.length > 0) {
+    const labelSubQuery = db
+      .select({
+        issue_id: labelToIssues.issue_id,
+        label_count: sql`COUNT(DISTINCT ${labelToIssues.label_id})`
+          .mapWith(Number)
+          .as("label_count")
+      })
+      .from(labelToIssues)
+      .innerJoin(
+        labels,
+        and(
+          eq(labelToIssues.label_id, labels.id),
+          sql`${labels.name} in ${filters.label}`
+        )
+      )
+      .groupBy(labelToIssues.issue_id)
+      .having(
+        sql`COUNT(DISTINCT ${labelToIssues.label_id}) = ${filters.label.length}`
+      )
+      .as("label_sub_query");
+
+    const labelSubQueryWithOnlyID = db
+      .select({ issue_id: labelSubQuery.issue_id })
+      .from(labelSubQuery);
+
+    queryFilters = and(
+      sql`${issues.id} in ${labelSubQueryWithOnlyID}`,
+      queryFilters
+    );
+  } else if (filters["-label"] && filters["-label"].length > 0) {
+    const labelSubQuery = db
+      .select({
+        issue_id: labelToIssues.issue_id,
+        label_count: sql`COUNT(DISTINCT ${labelToIssues.label_id})`
+          .mapWith(Number)
+          .as("label_count")
+      })
+      .from(labelToIssues)
+      .innerJoin(
+        labels,
+        and(
+          eq(labelToIssues.label_id, labels.id),
+          sql`${labels.name} in ${filters["-label"]}`
+        )
+      )
+      .groupBy(labelToIssues.issue_id)
+      .having(
+        sql`COUNT(DISTINCT ${labelToIssues.label_id}) = ${filters["-label"].length}`
+      )
+      .as("label_sub_query");
+    const labelSubQueryWithOnlyID = db
+      .select({ issue_id: labelSubQuery.issue_id })
+      .from(labelSubQuery);
+
+    queryFilters = and(
+      sql`${issues.id} not in ${labelSubQueryWithOnlyID}`,
+      queryFilters
+    );
+  }
 
   if (filters.is && includeStatusFilter) {
     const status = filters.is;
@@ -285,18 +302,23 @@ function issueSearchfiltersToSQLQuery(
     }
 
     queryFilters = and(
-      queryFilters,
       status === "open"
         ? eq(issues.status, IssueStatuses.OPEN)
-        : closedCondition
+        : closedCondition,
+      queryFilters
     );
   }
 
   return queryFilters;
 }
 
+/**
+ * Get the statistics of the search query : the # of open/closed issues
+ * @param filters
+ * @returns
+ */
 async function getStatsForIssueSearch(filters: IssueSearchFilters) {
-  const queryFilters = issueSearchfiltersToSQLQuery(filters, false);
+  const queryFilters = issueSearchfiltersToSQLConditions(filters, false);
 
   const statsQuery = db
     .selectDistinctOn([issues.id], {
