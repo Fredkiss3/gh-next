@@ -60,7 +60,6 @@ export async function searchIssues(
     .from(issues)
     .leftJoin(users, eq(users.id, issues.author_id))
     .leftJoin(comments, eq(comments.issue_id, issues.id))
-    .leftJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
     .leftJoin(
       commentsCountPerIssueSubQuery,
       eq(commentsCountPerIssueSubQuery.issue_id, issues.id)
@@ -184,8 +183,6 @@ function issueSearchfiltersToSQLConditions(
     }
   }
   // TODO : handle the rest of filters
-  // * labels,
-  // -labels,
   // * assignees
   // -assignees
   // * mentions
@@ -223,7 +220,8 @@ function issueSearchfiltersToSQLConditions(
       sql`${issues.id} in ${labelSubQueryWithOnlyID}`,
       queryFilters
     );
-  } else if (filters["-label"] && filters["-label"].length > 0) {
+  }
+  if (filters["-label"] && filters["-label"].length > 0) {
     const labelSubQuery = db
       .select({
         issue_id: labelToIssues.issue_id,
@@ -253,6 +251,63 @@ function issueSearchfiltersToSQLConditions(
       queryFilters
     );
   }
+
+  if (filters.assignee && filters.assignee.length > 0) {
+    const assigneeSubQuery = db
+      .select({
+        issue_id: issueToAssignees.issue_id,
+        assignee_count:
+          sql`COUNT(DISTINCT ${issueToAssignees.assignee_username})`
+            .mapWith(Number)
+            .as("assignee_count")
+      })
+      .from(issueToAssignees)
+      .where(sql`${issueToAssignees.assignee_username} in ${filters.assignee}`)
+      .groupBy(issueToAssignees.issue_id)
+      .having(
+        sql`COUNT(DISTINCT ${issueToAssignees.assignee_username}) = ${filters.assignee.length}`
+      )
+      .as("assignee_sub_query");
+
+    const assigneeSubQueryWithOnlyID = db
+      .select({ issue_id: assigneeSubQuery.issue_id })
+      .from(assigneeSubQuery);
+
+    queryFilters = and(
+      sql`${issues.id} in ${assigneeSubQueryWithOnlyID}`,
+      queryFilters
+    );
+  }
+  if (filters["-assignee"] && filters["-assignee"].length > 0) {
+    const assigneeSubQuery = db
+      .select({
+        issue_id: issueToAssignees.issue_id,
+        assignee_count:
+          sql`COUNT(DISTINCT ${issueToAssignees.assignee_username})`
+            .mapWith(Number)
+            .as("assignee_count")
+      })
+      .from(issueToAssignees)
+      .where(
+        sql`${issueToAssignees.assignee_username} in ${filters["-assignee"]}`
+      )
+      .groupBy(issueToAssignees.issue_id)
+      .having(
+        sql`COUNT(DISTINCT ${issueToAssignees.assignee_username}) = ${filters["-assignee"].length}`
+      )
+      .as("assignee_sub_query");
+
+    const assigneeSubQueryWithOnlyID = db
+      .select({ issue_id: assigneeSubQuery.issue_id })
+      .from(assigneeSubQuery);
+
+    queryFilters = and(
+      sql`${issues.id} not in ${assigneeSubQueryWithOnlyID}`,
+      queryFilters
+    );
+  }
+
+  // .leftJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
 
   if (filters.is && includeStatusFilter) {
     const status = filters.is;

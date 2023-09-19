@@ -42,6 +42,8 @@ export async function filterIssueAssignees(
 }
 
 export async function getIssueList(filters: IssueSearchFilters, page: number) {
+  const date = Date.now();
+  console.time(`[${date}] get Issue List`);
   const {
     issues,
     completed_count,
@@ -49,6 +51,7 @@ export async function getIssueList(filters: IssueSearchFilters, page: number) {
     total_count,
     open_count
   } = await searchIssues(filters, page);
+  console.timeEnd(`[${date}] get Issue List`);
 
   let noOfIssuesClosed = completed_count + not_planned_count;
   if (filters.is === "closed" && filters.reason) {
