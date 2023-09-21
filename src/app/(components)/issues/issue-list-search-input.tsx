@@ -161,7 +161,7 @@ export function IssueListSearchInput({
           className={clsx(
             "flex flex-1 items-center gap-1.5",
             "rounded-r-md border border-neutral px-3 py-1.5",
-            "w-full bg-header shadow-sm outline-none ring-accent",
+            "w-full bg-header shadow-sm outline-none ring-accent font-medium",
             "text-grey",
             "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
             {
