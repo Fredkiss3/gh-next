@@ -8,7 +8,7 @@ import {
   IssueStatuses
 } from "~/lib/server/db/schema/issue.sql";
 import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
-import { users } from "~/lib/server/db/schema/user.sql";
+import { users, type User } from "~/lib/server/db/schema/user.sql";
 import { MAX_ITEMS_PER_PAGE, IN_FILTERS } from "~/lib/shared/constants";
 
 import type { SQL } from "drizzle-orm";
@@ -33,7 +33,8 @@ const commentsCountPerIssueSubQuery = db
  */
 export async function searchIssues(
   filters: IssueSearchFilters,
-  currentPage: number
+  currentPage: number,
+  currentUser?: User | null
 ) {
   let issueQuery = db
     .selectDistinctOn([issues.id], {
@@ -64,7 +65,7 @@ export async function searchIssues(
       commentsCountPerIssueSubQuery,
       eq(commentsCountPerIssueSubQuery.issue_id, issues.id)
     )
-    .where(issueSearchfiltersToSQLConditions(filters));
+    .where(issueSearchfiltersToSQLConditions(filters, true, currentUser));
 
   // FIXME: to remove
   console.log({
@@ -119,7 +120,7 @@ export async function searchIssues(
 
   // Get other statistics
   const { total_count, open_count, completed_count, not_planned_count } =
-    await getStatsForIssueSearch(filters);
+    await getStatsForIssueSearch(filters, currentUser);
 
   return {
     issues: Object.values(issueResult),
@@ -138,7 +139,8 @@ export async function searchIssues(
  */
 function issueSearchfiltersToSQLConditions(
   filters: IssueSearchFilters,
-  includeStatusFilter: boolean = true
+  includeStatusFilter: boolean = true,
+  currentUser?: User | null
 ) {
   const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
@@ -182,31 +184,18 @@ function issueSearchfiltersToSQLConditions(
       );
     }
   }
-  // TODO : handle the rest of filters
-  // * mentions
-  // -mentions
-  // * sort
 
   if (filters.no?.includes("label")) {
     // select all issues with labels
     const labelSubQuery = db
-      .select({
+      .selectDistinctOn([labelToIssues.issue_id], {
         issue_id: labelToIssues.issue_id
       })
       .from(labelToIssues)
-      .innerJoin(labels, eq(labelToIssues.label_id, labels.id))
-      .groupBy(labelToIssues.issue_id)
-      .as("label_sub_query");
-
-    const labelSubQueryWithOnlyID = db
-      .select({ issue_id: labelSubQuery.issue_id })
-      .from(labelSubQuery);
+      .innerJoin(labels, eq(labelToIssues.label_id, labels.id));
 
     // then filter out them from the query
-    queryFilters = and(
-      sql`${issues.id} not in ${labelSubQueryWithOnlyID}`,
-      queryFilters
-    );
+    queryFilters = and(sql`${issues.id} not in ${labelSubQuery}`, queryFilters);
   } else {
     if (filters.label && filters.label.length > 0) {
       const labelSubQuery = db
@@ -347,6 +336,79 @@ function issueSearchfiltersToSQLConditions(
     }
   }
 
+  // TODO : handle the rest of filters
+  // * sort
+
+  if (filters.mentions) {
+    // Handle `@me` mention and replace it with the current authenticated user
+    let mentionnedUser: string | undefined = filters.mentions;
+    if (filters.mentions === "@me") {
+      mentionnedUser = currentUser?.username;
+    } else {
+      mentionnedUser = filters.mentions.replaceAll(`@`, "");
+    }
+
+    // mentionnedUser will be `undefined` if the user is not authenticated but searched for `@me`
+    if (mentionnedUser) {
+      const mentionRegex = `(^|[^a-zA-Z0-9])@${mentionnedUser}([^a-zA-Z0-9]|$)`;
+      const mentionSubQuery = db
+        .selectDistinctOn([issues.id], {
+          issue_id: issues.id
+        })
+        .from(comments)
+        .leftJoin(issues, eq(comments.issue_id, issues.id))
+        .where(
+          or(
+            sql`${comments.content} ~* ${mentionRegex}`,
+            sql`${issues.body} ~* ${mentionRegex}`
+          )
+        )
+        .as("mentionSubQuery");
+      const mentionSubQueryOnlyID = db
+        .select({ issue_id: mentionSubQuery.issue_id })
+        .from(mentionSubQuery);
+
+      queryFilters = and(
+        sql`${issues.id} in ${mentionSubQueryOnlyID}`,
+        queryFilters
+      );
+    }
+  } else if (filters["-mentions"]) {
+    // Handle `@me` mention and replace it with the current authenticated user
+    let mentionnedUser: string | undefined = filters["-mentions"];
+    if (filters.mentions === "@me") {
+      mentionnedUser = currentUser?.username;
+    } else {
+      mentionnedUser = filters["-mentions"].replaceAll(`@`, "");
+    }
+
+    // mentionnedUser will be `undefined` if the user is not authenticated but searched for `@me`
+    if (mentionnedUser) {
+      const mentionRegex = `(^|[^a-zA-Z0-9])@${mentionnedUser}([^a-zA-Z0-9]|$)`;
+      const mentionSubQuery = db
+        .selectDistinctOn([issues.id], {
+          issue_id: issues.id
+        })
+        .from(comments)
+        .leftJoin(issues, eq(comments.issue_id, issues.id))
+        .where(
+          or(
+            sql`${comments.content} ~* ${mentionRegex}`,
+            sql`${issues.body} ~* ${mentionRegex}`
+          )
+        )
+        .as("mentionSubQuery");
+      const mentionSubQueryOnlyID = db
+        .select({ issue_id: mentionSubQuery.issue_id })
+        .from(mentionSubQuery);
+
+      queryFilters = and(
+        sql`${issues.id} not in ${mentionSubQueryOnlyID}`,
+        queryFilters
+      );
+    }
+  }
+
   if (filters.is && includeStatusFilter) {
     const status = filters.is;
     let closedCondition = not(eq(issues.status, IssueStatuses.OPEN));
@@ -374,8 +436,15 @@ function issueSearchfiltersToSQLConditions(
  * @param filters
  * @returns
  */
-async function getStatsForIssueSearch(filters: IssueSearchFilters) {
-  const queryFilters = issueSearchfiltersToSQLConditions(filters, false);
+async function getStatsForIssueSearch(
+  filters: IssueSearchFilters,
+  currentUser?: User | null
+) {
+  const queryFilters = issueSearchfiltersToSQLConditions(
+    filters,
+    false,
+    currentUser
+  );
 
   const statsQuery = db
     .selectDistinctOn([issues.id], {
@@ -387,8 +456,6 @@ async function getStatsForIssueSearch(filters: IssueSearchFilters) {
     .leftJoin(users, eq(users.id, issues.author_id))
     .leftJoin(comments, eq(comments.issue_id, issues.id))
     .leftJoin(labelToIssues, eq(labelToIssues.issue_id, issues.id))
-    .leftJoin(labels, eq(labelToIssues.label_id, labels.id))
-    .leftJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
     .where(queryFilters)
     .groupBy(issues.id)
     .as("stats");

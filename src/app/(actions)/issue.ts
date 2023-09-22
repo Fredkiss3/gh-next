@@ -12,6 +12,7 @@ import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search"
 import { searchIssues } from "~/app/(models)/issues/search";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
+import { getAuthedUser } from "./auth";
 
 /**
  * We use `promise` because server actions are not batched,
@@ -50,7 +51,7 @@ export async function getIssueList(filters: IssueSearchFilters, page: number) {
     not_planned_count,
     total_count,
     open_count
-  } = await searchIssues(filters, page);
+  } = await searchIssues(filters, page, await getAuthedUser());
   console.timeEnd(`[${date}] get Issue List`);
 
   let noOfIssuesClosed = completed_count + not_planned_count;
