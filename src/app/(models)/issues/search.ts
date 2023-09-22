@@ -1,5 +1,5 @@
 import "server-only";
-import { sql, eq, ilike, or, and, not } from "drizzle-orm";
+import { sql, eq, ilike, or, and, not, desc, asc } from "drizzle-orm";
 import { db } from "~/lib/server/db/index.server";
 import { comments } from "~/lib/server/db/schema/comment.sql";
 import {
@@ -37,7 +37,7 @@ export async function searchIssues(
   currentUser?: User | null
 ) {
   let issueQuery = db
-    .selectDistinctOn([issues.id], {
+    .selectDistinct({
       id: issues.id,
       title: issues.title,
       status: issues.status,
@@ -67,8 +67,32 @@ export async function searchIssues(
     )
     .where(issueSearchfiltersToSQLConditions(filters, true, currentUser));
 
+  let orderBy: SQL<unknown>;
+  switch (filters.sort) {
+    case "created-asc":
+      orderBy = asc(issues.created_at);
+      break;
+    case "updated-asc":
+      orderBy = asc(issues.updated_at);
+      break;
+    case "updated-desc":
+      orderBy = desc(issues.updated_at);
+      break;
+    case "comments-asc":
+      orderBy = asc(commentsCountPerIssueSubQuery.comment_count);
+      break;
+    case "comments-desc":
+      orderBy = desc(commentsCountPerIssueSubQuery.comment_count);
+      break;
+    default:
+      orderBy = desc(issues.created_at);
+      break;
+  }
+  issueQuery = issueQuery.orderBy(orderBy);
+
   // FIXME: to remove
   console.log({
+    filters,
     sql: issueQuery.toSQL()
   });
 
@@ -144,11 +168,6 @@ function issueSearchfiltersToSQLConditions(
 ) {
   const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
-
-  // FIXME : to remove
-  console.log({
-    filters
-  });
 
   if (!filters.in) {
     filters.in = new Set(IN_FILTERS);
@@ -335,9 +354,6 @@ function issueSearchfiltersToSQLConditions(
       );
     }
   }
-
-  // TODO : handle the rest of filters
-  // * sort
 
   if (filters.mentions) {
     // Handle `@me` mention and replace it with the current authenticated user

@@ -304,9 +304,9 @@ const issueSearchFiltersSchema = z.object({
   "-mentions": z.string().nullish(),
   sort: z
     .enum(SORT_FILTERS)
-    .catch("created-asc")
-    .default("created-asc")
-    .nullish(),
+    .default("created-desc")
+    .nullish()
+    .catch("created-desc"),
   query: z.string().nullish()
 });
 
