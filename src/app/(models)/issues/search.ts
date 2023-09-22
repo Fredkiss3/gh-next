@@ -183,118 +183,101 @@ function issueSearchfiltersToSQLConditions(
     }
   }
   // TODO : handle the rest of filters
-  // * assignees
-  // -assignees
   // * mentions
   // -mentions
   // * sort
-  // * no
 
-  if (filters.label && filters.label.length > 0) {
+  if (filters.no?.includes("label")) {
+    // select all issues with labels
     const labelSubQuery = db
       .select({
-        issue_id: labelToIssues.issue_id,
-        label_count: sql`COUNT(DISTINCT ${labelToIssues.label_id})`
-          .mapWith(Number)
-          .as("label_count")
+        issue_id: labelToIssues.issue_id
       })
       .from(labelToIssues)
-      .innerJoin(
-        labels,
-        and(
-          eq(labelToIssues.label_id, labels.id),
-          sql`${labels.name} in ${filters.label}`
-        )
-      )
+      .innerJoin(labels, eq(labelToIssues.label_id, labels.id))
       .groupBy(labelToIssues.issue_id)
-      .having(
-        sql`COUNT(DISTINCT ${labelToIssues.label_id}) = ${filters.label.length}`
-      )
       .as("label_sub_query");
 
     const labelSubQueryWithOnlyID = db
       .select({ issue_id: labelSubQuery.issue_id })
       .from(labelSubQuery);
 
-    queryFilters = and(
-      sql`${issues.id} in ${labelSubQueryWithOnlyID}`,
-      queryFilters
-    );
-  }
-  if (filters["-label"] && filters["-label"].length > 0) {
-    const labelSubQuery = db
-      .select({
-        issue_id: labelToIssues.issue_id,
-        label_count: sql`COUNT(DISTINCT ${labelToIssues.label_id})`
-          .mapWith(Number)
-          .as("label_count")
-      })
-      .from(labelToIssues)
-      .innerJoin(
-        labels,
-        and(
-          eq(labelToIssues.label_id, labels.id),
-          sql`${labels.name} in ${filters["-label"]}`
-        )
-      )
-      .groupBy(labelToIssues.issue_id)
-      .having(
-        sql`COUNT(DISTINCT ${labelToIssues.label_id}) = ${filters["-label"].length}`
-      )
-      .as("label_sub_query");
-    const labelSubQueryWithOnlyID = db
-      .select({ issue_id: labelSubQuery.issue_id })
-      .from(labelSubQuery);
-
+    // then filter out them from the query
     queryFilters = and(
       sql`${issues.id} not in ${labelSubQueryWithOnlyID}`,
       queryFilters
     );
+  } else {
+    if (filters.label && filters.label.length > 0) {
+      const labelSubQuery = db
+        .select({
+          issue_id: labelToIssues.issue_id,
+          label_count: sql`COUNT(DISTINCT ${labelToIssues.label_id})`
+            .mapWith(Number)
+            .as("label_count")
+        })
+        .from(labelToIssues)
+        .innerJoin(
+          labels,
+          and(
+            eq(labelToIssues.label_id, labels.id),
+            sql`${labels.name} in ${filters.label}`
+          )
+        )
+        .groupBy(labelToIssues.issue_id)
+        .having(
+          sql`COUNT(DISTINCT ${labelToIssues.label_id}) = ${filters.label.length}`
+        )
+        .as("label_sub_query");
+
+      const labelSubQueryWithOnlyID = db
+        .select({ issue_id: labelSubQuery.issue_id })
+        .from(labelSubQuery);
+
+      queryFilters = and(
+        sql`${issues.id} in ${labelSubQueryWithOnlyID}`,
+        queryFilters
+      );
+    }
+    if (filters["-label"] && filters["-label"].length > 0) {
+      const labelSubQuery = db
+        .select({
+          issue_id: labelToIssues.issue_id,
+          label_count: sql`COUNT(DISTINCT ${labelToIssues.label_id})`
+            .mapWith(Number)
+            .as("label_count")
+        })
+        .from(labelToIssues)
+        .innerJoin(
+          labels,
+          and(
+            eq(labelToIssues.label_id, labels.id),
+            sql`${labels.name} in ${filters["-label"]}`
+          )
+        )
+        .groupBy(labelToIssues.issue_id)
+        .having(
+          sql`COUNT(DISTINCT ${labelToIssues.label_id}) = ${filters["-label"].length}`
+        )
+        .as("label_sub_query");
+      const labelSubQueryWithOnlyID = db
+        .select({ issue_id: labelSubQuery.issue_id })
+        .from(labelSubQuery);
+
+      queryFilters = and(
+        sql`${issues.id} not in ${labelSubQueryWithOnlyID}`,
+        queryFilters
+      );
+    }
   }
 
-  if (filters.assignee && filters.assignee.length > 0) {
+  if (filters.no?.includes("assignee")) {
     const assigneeSubQuery = db
       .select({
-        issue_id: issueToAssignees.issue_id,
-        assignee_count:
-          sql`COUNT(DISTINCT ${issueToAssignees.assignee_username})`
-            .mapWith(Number)
-            .as("assignee_count")
+        issue_id: issueToAssignees.issue_id
       })
       .from(issueToAssignees)
-      .where(sql`${issueToAssignees.assignee_username} in ${filters.assignee}`)
       .groupBy(issueToAssignees.issue_id)
-      .having(
-        sql`COUNT(DISTINCT ${issueToAssignees.assignee_username}) = ${filters.assignee.length}`
-      )
-      .as("assignee_sub_query");
-
-    const assigneeSubQueryWithOnlyID = db
-      .select({ issue_id: assigneeSubQuery.issue_id })
-      .from(assigneeSubQuery);
-
-    queryFilters = and(
-      sql`${issues.id} in ${assigneeSubQueryWithOnlyID}`,
-      queryFilters
-    );
-  }
-  if (filters["-assignee"] && filters["-assignee"].length > 0) {
-    const assigneeSubQuery = db
-      .select({
-        issue_id: issueToAssignees.issue_id,
-        assignee_count:
-          sql`COUNT(DISTINCT ${issueToAssignees.assignee_username})`
-            .mapWith(Number)
-            .as("assignee_count")
-      })
-      .from(issueToAssignees)
-      .where(
-        sql`${issueToAssignees.assignee_username} in ${filters["-assignee"]}`
-      )
-      .groupBy(issueToAssignees.issue_id)
-      .having(
-        sql`COUNT(DISTINCT ${issueToAssignees.assignee_username}) = ${filters["-assignee"].length}`
-      )
       .as("assignee_sub_query");
 
     const assigneeSubQueryWithOnlyID = db
@@ -305,9 +288,64 @@ function issueSearchfiltersToSQLConditions(
       sql`${issues.id} not in ${assigneeSubQueryWithOnlyID}`,
       queryFilters
     );
-  }
+  } else {
+    if (filters.assignee && filters.assignee.length > 0) {
+      const assigneeSubQuery = db
+        .select({
+          issue_id: issueToAssignees.issue_id,
+          assignee_count:
+            sql`COUNT(DISTINCT ${issueToAssignees.assignee_username})`
+              .mapWith(Number)
+              .as("assignee_count")
+        })
+        .from(issueToAssignees)
+        .where(
+          sql`${issueToAssignees.assignee_username} in ${filters.assignee}`
+        )
+        .groupBy(issueToAssignees.issue_id)
+        .having(
+          sql`COUNT(DISTINCT ${issueToAssignees.assignee_username}) = ${filters.assignee.length}`
+        )
+        .as("assignee_sub_query");
 
-  // .leftJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
+      const assigneeSubQueryWithOnlyID = db
+        .select({ issue_id: assigneeSubQuery.issue_id })
+        .from(assigneeSubQuery);
+
+      queryFilters = and(
+        sql`${issues.id} in ${assigneeSubQueryWithOnlyID}`,
+        queryFilters
+      );
+    }
+    if (filters["-assignee"] && filters["-assignee"].length > 0) {
+      const assigneeSubQuery = db
+        .select({
+          issue_id: issueToAssignees.issue_id,
+          assignee_count:
+            sql`COUNT(DISTINCT ${issueToAssignees.assignee_username})`
+              .mapWith(Number)
+              .as("assignee_count")
+        })
+        .from(issueToAssignees)
+        .where(
+          sql`${issueToAssignees.assignee_username} in ${filters["-assignee"]}`
+        )
+        .groupBy(issueToAssignees.issue_id)
+        .having(
+          sql`COUNT(DISTINCT ${issueToAssignees.assignee_username}) = ${filters["-assignee"].length}`
+        )
+        .as("assignee_sub_query");
+
+      const assigneeSubQueryWithOnlyID = db
+        .select({ issue_id: assigneeSubQuery.issue_id })
+        .from(assigneeSubQuery);
+
+      queryFilters = and(
+        sql`${issues.id} not in ${assigneeSubQueryWithOnlyID}`,
+        queryFilters
+      );
+    }
+  }
 
   if (filters.is && includeStatusFilter) {
     const status = filters.is;
