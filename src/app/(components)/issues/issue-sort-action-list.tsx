@@ -28,11 +28,10 @@ const sortItems: ActionListGroup<{
     items: [
       { text: "Newest", id: "created-desc" },
       { text: "Oldest", id: "created-asc" },
-      { text: "Most commented", id: "comments-asc" },
-      { text: "Least commented", id: "comments-desc" },
+      { text: "Most commented", id: "comments-desc" },
+      { text: "Least commented", id: "comments-asc" },
       { text: "Recently updated", id: "updated-desc" },
-      { text: "Least recently updated", id: "updated-asc" },
-      { text: "Best match", id: "relevance-desc" }
+      { text: "Least recently updated", id: "updated-asc" }
     ]
   },
   {

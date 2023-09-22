@@ -18,7 +18,6 @@ export const SORT_FILTERS = [
   "comments-desc",
   "updated-asc",
   "updated-desc",
-  "relevance-desc",
   "reactions-+1-desc",
   "reactions--1-desc",
   "reactions-smile-desc",
