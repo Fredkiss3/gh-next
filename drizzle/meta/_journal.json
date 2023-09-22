@@ -155,6 +155,13 @@
       "when": 1694916566446,
       "tag": "0021_curly_captain_universe",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "5",
+      "when": 1695412983396,
+      "tag": "0022_early_rick_jones",
+      "breakpoints": true
     }
   ]
 }
