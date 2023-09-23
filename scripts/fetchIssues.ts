@@ -597,16 +597,16 @@ do {
       await db.insert(issueToAssignees).values(issueToAssigneePayload);
     }
 
+    // wipe out any reaction associated to this issue
+    // Because we don't have any way to handle conflicts for this table
+    await db
+      .delete(reactions)
+      .where(eq(reactions.issue_id, issueInsertQueryResult.issue_id));
+
     /**
      * INSERTING REACTIONS
      */
     for (const reactionGroup of issue.reactionGroups) {
-      // wipe out any reaction associated to this issue
-      // Because we don't have any way to handle conflicts for this table
-      await db
-        .delete(reactions)
-        .where(eq(reactions.issue_id, issueInsertQueryResult.issue_id));
-
       const reactionTypeMapping = {
         THUMBS_UP: "PLUS_ONE",
         THUMBS_DOWN: "MINUS_ONE",
@@ -773,17 +773,17 @@ do {
             await db.insert(commentRevisions).values(revisionPayload);
           }
 
+          // wipe out any reaction associated to this comment
+          await db
+            .delete(reactions)
+            .where(
+              eq(reactions.comment_id, commentInsertQueryResult.comment_id)
+            );
+
           /**
            * INSERTING COMMENT REACTIONS
            */
           for (const reactionGroup of comment.reactionGroups) {
-            // wipe out any reaction associated to this comment
-            await db
-              .delete(reactions)
-              .where(
-                eq(reactions.comment_id, commentInsertQueryResult.comment_id)
-              );
-
             const reactionTypeMapping = {
               THUMBS_UP: "PLUS_ONE",
               THUMBS_DOWN: "MINUS_ONE",
