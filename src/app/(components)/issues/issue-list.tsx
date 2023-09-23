@@ -30,6 +30,8 @@ import {
 } from "~/lib/shared/constants";
 
 // types
+import type { EmojiSortKey } from "./issue-row";
+
 export type IssueListProps = {
   page?: string;
   searchQuery?: string;
@@ -54,6 +56,11 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
   let paginationCount = totalCount;
   if (filters.is) {
     paginationCount = filters.is === "open" ? noOfIssuesOpen : noOfIssuesClosed;
+  }
+
+  let emojiSort: EmojiSortKey | null = null;
+  if (filters.sort?.startsWith("reactions-")) {
+    emojiSort = filters.sort as EmojiSortKey;
   }
 
   return (
@@ -241,7 +248,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
           <ul>
             {issues.map((issue) => (
               <li key={issue.number}>
-                <IssueRow {...issue} />
+                <IssueRow {...issue} emojiSort={emojiSort} />
               </li>
             ))}
           </ul>

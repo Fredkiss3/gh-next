@@ -1,4 +1,3 @@
-import "server-only";
 import * as React from "react";
 // components
 import {
@@ -23,17 +22,21 @@ import { clsx, formatDate } from "~/lib/shared/utils.shared";
 // types
 import type { IssueSearchListResult } from "~/app/(models)/dto/issue-search";
 
-export type IssueRowProps = IssueSearchListResult["issues"][number];
+export const emojiSortMap = {
+  "reactions-+1-desc": "👍",
+  "reactions--1-desc": "👎",
+  "reactions-smile-desc": "😄",
+  "reactions-tada-desc": "🎉",
+  "reactions-thinking_face-desc": "😕",
+  "reactions-heart-desc": "❤️",
+  "reactions-rocket-desc": "🚀",
+  "reactions-eyes-desc": "👀"
+} as const;
+export type EmojiSortKey = keyof typeof emojiSortMap;
 
-function formatIssueRowSubtext({
-  number,
-  status,
-  status_updated_at
-}: Pick<IssueRowProps, "number" | "status" | "status_updated_at">) {
-  return `#${number} ${status === "OPEN" ? "opened" : "closed"} ${formatDate(
-    status_updated_at
-  )} by `;
-}
+export type IssueRowProps = IssueSearchListResult["issues"][number] & {
+  emojiSort?: EmojiSortKey | null;
+};
 
 export function IssueRow({
   status,
@@ -45,8 +48,38 @@ export function IssueRow({
   labels,
   assigned_to,
   created_at,
-  excerpt
+  excerpt,
+  emojiSort,
+  ...reactionCounts
 }: IssueRowProps) {
+  let emojiCount: number = 0;
+  switch (emojiSort) {
+    case "reactions-+1-desc":
+      emojiCount = reactionCounts.plus_one_count;
+      break;
+    case "reactions--1-desc":
+      emojiCount = reactionCounts.minus_one_count;
+      break;
+    case "reactions-eyes-desc":
+      emojiCount = reactionCounts.eyes_count;
+      break;
+    case "reactions-heart-desc":
+      emojiCount = reactionCounts.heart_count;
+      break;
+    case "reactions-rocket-desc":
+      emojiCount = reactionCounts.rocket_count;
+      break;
+    case "reactions-smile-desc":
+      emojiCount = reactionCounts.laugh_count;
+      break;
+    case "reactions-tada-desc":
+      emojiCount = reactionCounts.hooray_count;
+      break;
+    case "reactions-thinking_face-desc":
+      emojiCount = reactionCounts.confused_count;
+      break;
+  }
+
   return (
     <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
       {status === "OPEN" && (
@@ -190,7 +223,7 @@ export function IssueRow({
         </small>
       </div>
 
-      <div className="hidden w-[30%] items-center justify-end gap-4 sm:flex">
+      <div className="hidden w-[30%] items-center justify-end gap-8 sm:flex">
         <IssueRowAvatarStack users={assigned_to} />
         {no_of_comments > 0 && (
           <Link
@@ -205,7 +238,31 @@ export function IssueRow({
             <span>{no_of_comments}</span>
           </Link>
         )}
+
+        {emojiSort && (
+          <Link
+            href={`/issues/${number}`}
+            className={clsx(
+              "flex items-center gap-1 text-grey hover:text-accent",
+              "transition duration-150",
+              "focus:ring-2 ring-accent focus:outline-none rounded-md"
+            )}
+          >
+            {emojiSortMap[emojiSort]}
+            <span>{emojiCount}</span>
+          </Link>
+        )}
       </div>
     </div>
   );
+}
+
+function formatIssueRowSubtext({
+  number,
+  status,
+  status_updated_at
+}: Pick<IssueRowProps, "number" | "status" | "status_updated_at">) {
+  return `#${number} ${status === "OPEN" ? "opened" : "closed"} ${formatDate(
+    status_updated_at
+  )} by `;
 }

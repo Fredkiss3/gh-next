@@ -11,10 +11,10 @@ import { IssueSearchLink } from "./issue-search-link";
 // utils
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 import { clsx } from "~/lib/shared/utils.shared";
+import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 
 // types
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 export type IssueSortActionListProps = {
   children: React.ReactNode;
 };

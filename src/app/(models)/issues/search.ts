@@ -137,31 +137,31 @@ export async function searchIssues(
       orderBy = desc(commentsCountPerIssueSubQuery.comment_count);
       break;
     case "reactions-+1-desc":
-      orderBy = desc(reactionCountQuery.plus_one_count);
+      orderBy = sql`${reactionCountQuery.plus_one_count} DESC NULLS LAST`;
       break;
     case "reactions--1-desc":
-      orderBy = desc(reactionCountQuery.minus_one_count);
+      orderBy = sql`${reactionCountQuery.minus_one_count} DESC NULLS LAST`;
       break;
     case "reactions-eyes-desc":
-      orderBy = desc(reactionCountQuery.eyes_count);
+      orderBy = sql`${reactionCountQuery.eyes_count} DESC NULLS LAST`;
       break;
     case "reactions-heart-desc":
-      orderBy = desc(reactionCountQuery.heart_count);
+      orderBy = sql`${reactionCountQuery.heart_count} DESC NULLS LAST`;
       break;
     case "reactions-rocket-desc":
-      orderBy = desc(reactionCountQuery.rocket_count);
+      orderBy = sql`${reactionCountQuery.rocket_count} DESC NULLS LAST`;
       break;
     case "reactions-tada-desc":
-      orderBy = desc(reactionCountQuery.hooray_count);
+      orderBy = sql`${reactionCountQuery.hooray_count} DESC NULLS LAST`;
       break;
     case "reactions-thinking_face-desc":
-      orderBy = desc(reactionCountQuery.confused_count);
+      orderBy = sql`${reactionCountQuery.confused_count} DESC NULLS LAST`;
       break;
     case "reactions-smile-desc":
-      orderBy = desc(reactionCountQuery.laugh_count);
+      orderBy = sql`${reactionCountQuery.laugh_count} DESC NULLS LAST`;
       break;
     default:
-      orderBy = desc(issues.created_at);
+      orderBy = sql`${issues.created_at} DESC NULLS LAST`;
       break;
   }
   issueQuery = issueQuery.orderBy(orderBy);
