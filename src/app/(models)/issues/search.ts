@@ -43,7 +43,6 @@ export async function searchIssues(
       status: issues.status,
       number: issues.number,
       created_at: issues.created_at,
-      updated_at: issues.updated_at,
       excerpt: sql<string>`SUBSTRING(${issues.body} FROM 1 FOR 85) AS excerpt`,
       status_updated_at: issues.status_updated_at,
       author: {
