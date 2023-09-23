@@ -166,12 +166,6 @@ export async function searchIssues(
   }
   issueQuery = issueQuery.orderBy(orderBy);
 
-  // FIXME: to remove
-  console.log({
-    filters,
-    sql: issueQuery.toSQL()
-  });
-
   const issueList = await issueQuery
 
     .limit(MAX_ITEMS_PER_PAGE)
