@@ -11,6 +11,14 @@ export const issueSearchListOutputValidator = z.object({
   issues: z.array(
     z
       .object({
+        plus_one_count: z.number().catch(0),
+        minus_one_count: z.number().catch(0),
+        confused_count: z.number().catch(0),
+        eyes_count: z.number().catch(0),
+        heart_count: z.number().catch(0),
+        hooray_count: z.number().catch(0),
+        laugh_count: z.number().catch(0),
+        rocket_count: z.number().catch(0),
         number: z.number(),
         title: z.string(),
         excerpt: z.string().optional(),
