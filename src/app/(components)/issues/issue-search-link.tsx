@@ -12,22 +12,39 @@ import type { LinkProps } from "next/link";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 
 export type IssueSearchLinkProps = Omit<LinkProps, "href" | "prefetch"> & {
-  filters?: IssueSearchFilters;
+  filters: IssueSearchFilters;
   children?: React.ReactNode;
   className?: string;
+  conserveCurrentFilters?: boolean;
 };
 
 export const IssueSearchLink = React.forwardRef<
   React.ElementRef<typeof Link>,
   IssueSearchLinkProps
->(function IssueSearchLink({ filters, ...props }, ref) {
-  const { setQuery: setSearchQuery } = useSearchQueryStore();
+>(function IssueSearchLink(
+  { filters, conserveCurrentFilters = false, ...props },
+  ref
+) {
+  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
+  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
+  const allFilters = getParsedQuery();
+
+  let computedFilters: IssueSearchFilters = {
+    is: "open"
+  };
+
+  if (conserveCurrentFilters) {
+    computedFilters = { ...computedFilters, ...allFilters };
+  }
 
   const searchStr = issueSearchFilterToString({
-    is: "open",
+    ...computedFilters,
     ...filters
   });
-  const href = `/issues?q=` + encodeURIComponent(searchStr);
+
+  const sp = new URLSearchParams();
+  sp.append("q", searchStr);
+  const href = `/issues?` + sp.toString();
 
   return (
     <Link

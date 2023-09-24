@@ -11,7 +11,7 @@ export function CounterBadge({ count }: CounterBadgeProps) {
         className="rounded-full bg-neutral px-2 text-sm text-foreground"
         aria-hidden="true"
       >
-        {count
+        {count !== undefined
           ? new Intl.NumberFormat("en-US", { notation: "compact" }).format(
               count
             )

@@ -1,16 +1,17 @@
 "use client";
 import * as React from "react";
 // components
-import { Input } from "../input";
-import { ActionList } from "../action-list";
-import { Avatar } from "../avatar";
+import { Input } from "~/app/(components)/input";
+import { ActionList } from "~/app/(components)/action-list";
+import { Avatar } from "~/app/(components)/avatar";
 import { CheckIcon } from "@primer/octicons-react";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
-import { filterIssueAssignees } from "~/app/(actions)/issue";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
+import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
 
 // types
 export type IssueAssigneeFilterActionProps = {
@@ -22,22 +23,40 @@ export function IssueAssigneeFilterActionList({
 }: IssueAssigneeFilterActionProps) {
   const alignRight = useMediaQuery(`(min-width: 768px)`);
   const [inputQuery, setInputQuery] = React.useState("");
-  const [_, startTransition] = React.useTransition();
-  const [filteredDataList, setFilteredDataList] = React.useState<
-    Awaited<Awaited<ReturnType<typeof filterIssueAssignees>>["promise"]>
-  >([]);
 
-  React.useEffect(() => {
-    filterIssueAssignees("")
-      .then((r) => r.promise)
-      .then(setFilteredDataList);
-  }, []);
+  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
+  let allFilters = getParsedQuery();
+  const currentAssignees = allFilters.assignee ?? [];
+  const noAssignee = !!allFilters.no?.includes("assignee");
+
+  const { data: filteredDataList } = useIssueAssigneeListQuery({
+    name: inputQuery,
+    enabled: true,
+    checkFullName: true
+  });
+
+  const assigneeList = React.useMemo(() => {
+    return [
+      {
+        name: "nobody",
+        username: null,
+        avatar: null,
+        selected: noAssignee
+      },
+      ...(filteredDataList ?? []).map((assignee) => {
+        return {
+          ...assignee,
+          selected: allFilters.assignee?.includes(assignee.username)
+        };
+      })
+    ];
+  }, [noAssignee, allFilters.assignee, filteredDataList]);
 
   return (
     <ActionList
       items={[
         {
-          items: filteredDataList
+          items: assigneeList
         }
       ]}
       renderItem={({
@@ -47,54 +66,74 @@ export function IssueAssigneeFilterActionList({
         name,
         avatar,
         onCloseList
-      }) => (
-        <IssueSearchLink
-          filters={
-            username
-              ? {
-                  assignee: [username]
-                }
-              : {
-                  no: new Set(["assignee"])
-                }
+      }) => {
+        let newFilters = { ...allFilters };
+
+        if (!username && !selected) {
+          if (newFilters.no) {
+            newFilters.no = [...newFilters.no, "assignee"];
+          } else {
+            newFilters.no = ["assignee"];
           }
-          className={clsx(
-            className,
-            "flex items-center gap-4 hover:bg-neutral/50"
-          )}
-          onClick={onCloseList}
-        >
-          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
-            {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
-          </div>
-          {username && avatar && (
-            <Avatar src={avatar} username={username} size="small" />
-          )}
-          <div>
-            {!username ? (
-              <strong className="font-semibold">Assigned to nobody</strong>
-            ) : (
-              <>
-                <strong className="font-semibold">{username}</strong>&nbsp;
-                <span className="text-grey">{name}</span>
-              </>
+
+          newFilters.assignee = null;
+        } else {
+          newFilters.no = (newFilters.no ?? [])?.filter(
+            (item) => item !== "assignee"
+          ); // don't keep the 'no:assignee' filter
+
+          if (username) {
+            // remove the filters
+            if (currentAssignees.includes(username)) {
+              newFilters = {
+                ...newFilters,
+                assignee: currentAssignees.filter(
+                  (assignee) => assignee !== username
+                )
+              };
+            } else {
+              newFilters = {
+                ...newFilters,
+                assignee: [...currentAssignees, username]
+              };
+            }
+          }
+        }
+
+        return (
+          <IssueSearchLink
+            filters={newFilters}
+            className={clsx(
+              className,
+              "flex items-center gap-4 hover:bg-neutral/50"
             )}
-          </div>
-        </IssueSearchLink>
-      )}
+            onClick={onCloseList}
+          >
+            <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
+              {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
+            </div>
+            {username && avatar && (
+              <Avatar src={avatar} username={username} size="small" />
+            )}
+            <div>
+              {!username ? (
+                <strong className="font-semibold">Assigned to nobody</strong>
+              ) : (
+                <>
+                  <strong className="font-semibold">{username}</strong>&nbsp;
+                  <span className="text-grey">{name}</span>
+                </>
+              )}
+            </div>
+          </IssueSearchLink>
+        );
+      }}
       align={alignRight ? "right" : "left"}
       title="Filter by who’s assigned"
       header={
         <Input
           value={inputQuery}
-          onChange={(e) => {
-            setInputQuery(e.target.value);
-            startTransition(async () => {
-              await filterIssueAssignees(e.target.value)
-                .then((r) => r.promise)
-                .then(setFilteredDataList);
-            });
-          }}
+          onChange={(e) => setInputQuery(e.target.value)}
           label="name or username"
           hideLabel
           autoFocus

@@ -9,31 +9,57 @@ Expect stuff to break.
 ## Roadmap
 
 - [x] Login/Logout
+
 - [x] HomePage (README content)
+
 - [x] Responsive Layout
+
 - [x] Settings page for toggling theme
+
 - [x] See Profile informations
+
   - [x] Update username
+
   - [ ] User detail page
-- [ ] Issues List page
-  - [ ] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
+
+- [x] Issues List page
+
+  - [x] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
+
 - [ ] New issue page
+
   - [ ] Issue CRUD (by the author only)
+
   - [ ] Comments CRUD
+
   - [ ] Mentions
+
   - [ ] Issue Popovers (for previewing issues)
+
   - [ ] Linking between issues
+
   - [ ] Assign & self assign issues
+
 - [ ] OpenGraph
+
   - [ ] landing (inspiration: https://github.com/trpc/trpc/blob/main/www/og-image/pages/api/landing.tsx)
+
   - [ ] Per Issue (inspiration: https://opengraph.githubassets.com/101e5bdeef8e959c800fab2aef88eef0b01b15d883e3e17c990bde8dfd67d6b3/trpc/trpc/issues/4306)
+
 - [ ] Labels CRUD (can only add or update labels, no deleting)
+
 - [ ] Notifications page
+
   - [ ] Notifications badge (Inspiration: https://gist.github.com/Fredkiss3/ab918aee3977d681f0508537a44838c0, https://github.com/Fredkiss3/bunrest)
+
   - [ ] Notifications for issues subscriptions
+
   - [ ] Notifications for mentions
+
   - [ ] Notifications for issue statuses
+
   - [ ] Filter notifications by status, title, closed, etc.
+
   - [ ] Mark as done, unsubscribe
 
 # Stack
@@ -45,8 +71,8 @@ Expect stuff to break.
 
 # Requirements
 
-- Node >= v16.6.2
-- [PNPM](https://pnpm.io/installation) >= v6.22.2
+- Node &gt;= v18.x
+- [Bun](https://bun.sh/docs/installation) &gt;= v1.0
 - [docker](https://docs.docker.com/engine/install/) installed for local development
 - A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
@@ -67,7 +93,7 @@ Expect stuff to break.
 3. **Install the dependencies :**
 
    ```bash
-   pnpm install
+   bun install
    ```
 
 4. Rename `.env.example` to `.env.local` And change the file to your needs,
@@ -75,10 +101,10 @@ Expect stuff to break.
 5. **And launch the project :**
 
    ```bash
-   pnpm run dev
+   bun run dev
    ```
 
-   The app will show at [http://localhost:3000](http://localhost:3000).
+   The app will show at <http://localhost:3000>.
 
 6. **Open the source code and start rocking ! 😎**
 
@@ -86,46 +112,48 @@ Expect stuff to break.
 
 A quick look at the top-level files and directories you will see in this project.
 
-      .
-      ├── src/
-      │    ├── app/
-      │    │   ├── (actions)
-      │    │   ├── (components)
-      │    │   ├── (models)
-      │    │   └── (routes)
-      │    └──lib/
-      │        ├── db/schema
-      │        └── hooks
-      ├── .prettierrc
-      ├── pnpm-lock.yaml
-      └── tsconfig.json
+```
+  .
+  ├── src/
+  │    ├── app/
+  │    │   ├── (actions)
+  │    │   ├── (components)
+  │    │   ├── (models)
+  │    │   └── (routes)
+  │    └──lib/
+  │        ├── db/schema
+  │        └── hooks
+  ├── .prettierrc
+  ├── pnpm-lock.yaml
+  └── tsconfig.json
+```
 
-1. **`src/app/`**: this folder contains the source code to our app :
+1. `src/app/`: this folder contains the source code to our app :
 
-   1. **`(actions)`** : this folder contains all the logic of our app.
+   1. `(actions)` : this folder contains all the logic of our app.
 
-   2. **`(components)`** : this folder contains all the components of our app.
+   2. `(components)` : this folder contains all the components of our app.
 
-   3. **`(models)`** : this folder contains all the DB models of our app.
+   3. `(models)` : this folder contains all the DB models of our app.
 
-   4. **`(routes)`** : this folder contains all the routes & pages of our app.
+   4. `(routes)` : this folder contains all the routes & pages of our app.
 
-1. **`src/lib/`**: this folder contains utils & helpers used throughout our app :
+2. `src/lib/`: this folder contains utils & helpers used throughout our app :
 
-   1. **`db/schema`** : this folder contains all the drizzle sqlite schema for our DB.
+   1. `db/schema` : this folder contains all the drizzle sqlite schema for our DB.
 
-   2. **`hooks`** : this folder contains all the react custom hooks used in the app.
+   2. `hooks` : this folder contains all the react custom hooks used in the app.
 
-1. **`.prettierrc`**: this file contains the configuration for prettier to enable autoformatting.
+3. `.prettierrc`: this file contains the configuration for prettier to enable autoformatting.
 
-1. **`pnpm-lock.yaml`**: this file contains the dependencies lock for the repo.
+4. `pnpm-lock.yaml`: this file contains the dependencies lock for the repo.
 
-1. **`tsconfig.json`**: this file contains the configuration for typescript, that are used by the all the underlying packages
+5. `tsconfig.json`: this file contains the configuration for typescript, that are used by the all the underlying packages
 
 ## 🍳 ENV VARIABLES USED
 
 | Nom                            | role                                                                             |
-| :----------------------------- | :------------------------------------------------------------------------------- |
+| ------------------------------ | -------------------------------------------------------------------------------- |
 | `SESSION_SECRET`               | random 32 chars length string used to encode the session id                      |
 | `REDIS_HTTP_URL`               | The URL to the connect to redis HTTP for a key/value store                       |
 | `DATABASE_URL`                 | The URL to the connect to the Postres Database                                   |

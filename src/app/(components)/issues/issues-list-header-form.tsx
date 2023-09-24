@@ -9,15 +9,17 @@ import {
   LinkExternalIcon,
   TriangleDownIcon
 } from "@primer/octicons-react";
-import Link from "next/link";
 import { IssueListSearchInput } from "./issue-list-search-input";
 
 // utils
 import { usePathname, useRouter } from "next/navigation";
-import { clsx } from "~/lib/shared/utils.shared";
+import { clsx, debounce } from "~/lib/shared/utils.shared";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { IssueSearchLink } from "./issue-search-link";
+import { BASE_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 // types
+import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 export type IssuesListHeaderFormProps = {
   className?: string;
   showActionList?: boolean;
@@ -31,8 +33,15 @@ export function IssuesListHeaderForm({
   const router = useRouter();
   const path = usePathname();
 
-  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
+  const searchQuery = useSearchQueryStore((store) => store.query);
+  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
+  const filters = getParsedQuery();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onSearch = React.useCallback(
+    debounce(() => formRef.current?.requestSubmit()),
+    []
+  );
   return (
     <>
       <form
@@ -50,44 +59,63 @@ export function IssuesListHeaderForm({
         className={clsx(className, "flex w-full items-center")}
       >
         {showActionList && (
-          <ActionList
+          <ActionList<{
+            text: string;
+            filters: IssueSearchFilters;
+          }>
             items={[
               {
                 items: [
                   {
-                    href: "/issues?q=is:open" as const,
-                    text: "Open issues"
+                    filters: {
+                      is: "open"
+                    },
+                    text: "Open issues",
+                    selected: searchQuery.trim() === BASE_ISSUE_SEARCH_QUERY
                   },
                   {
-                    href: "/issues?q=is:open+author:@me" as const,
-                    text: "Your issues"
+                    filters: {
+                      is: "open",
+                      author: "@me"
+                    },
+                    text: "Your issues",
+                    selected:
+                      filters.author === "@me" || filters.author === "me"
                   },
                   {
-                    href: "/issues?q=is:open+assignee:@me" as const,
-                    text: "Everything assigned to you"
+                    filters: {
+                      is: "open",
+                      assignee: ["@me"]
+                    },
+                    text: "Issues assigned to you",
+                    selected:
+                      !!filters.assignee &&
+                      filters.assignee.length > 0 &&
+                      (filters.assignee.includes("me") ||
+                        filters.assignee.includes("@me"))
                   },
                   {
-                    href: "/issues?q=is:open+mention:@me" as const,
-                    text: "Everything mentionning you"
+                    filters: {
+                      is: "open",
+                      mentions: "@me"
+                    },
+                    text: "Issues mentionning you",
+                    selected:
+                      filters.mentions === "@me" || filters.mentions === "me"
                   }
                 ]
               }
             ]}
-            renderItem={({ text, selected, onCloseList, href, className }) => (
-              <Link
-                prefetch={false}
-                onClick={() => {
-                  const url = new URL(
-                    href,
-                    window.location.protocol + "//" + window.location.host
-                  );
-                  const query =
-                    url.searchParams.get("q")?.toString() ?? "is:open";
-
-                  setSearchQuery(query);
-                  onCloseList();
-                }}
-                href={href}
+            renderItem={({
+              text,
+              onCloseList,
+              filters,
+              className,
+              selected
+            }) => (
+              <IssueSearchLink
+                filters={filters}
+                onClick={onCloseList}
                 className={clsx(
                   className,
                   "flex items-center gap-2 hover:bg-neutral/50"
@@ -97,7 +125,7 @@ export function IssuesListHeaderForm({
                   {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
                 </div>
                 <span>{text}</span>
-              </Link>
+              </IssueSearchLink>
             )}
             align="left"
             title="Filter issues"
@@ -119,7 +147,7 @@ export function IssuesListHeaderForm({
             <Button
               type="button"
               variant="subtle"
-              className="rounded-r-none !border-r-0"
+              className="rounded-r-none border-r-0"
               renderTrailingIcon={(cls) => <TriangleDownIcon className={cls} />}
             >
               Filters
@@ -128,7 +156,7 @@ export function IssuesListHeaderForm({
         )}
         <IssueListSearchInput
           squaredInputBorder={showActionList}
-          onSearch={() => formRef.current?.requestSubmit()}
+          onSearch={onSearch}
         />
       </form>
     </>

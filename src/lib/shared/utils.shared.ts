@@ -5,9 +5,11 @@ import { preprocess, z } from "zod";
 import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
+  REASON_FILTERS,
   SORT_FILTERS,
   STATUS_FILTERS
 } from "./constants";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Petit utilitaire pour chainer les classes css en react tout en évitant
@@ -48,7 +50,7 @@ export function clsx(
         break;
     }
   }
-  return classes.join(" ");
+  return twMerge(classes.join(" "));
 }
 
 /**
@@ -233,8 +235,8 @@ export function getRandomHexColor(): string {
  * formatDate(new Date('2023-07-29T00:00:00Z')); // "1 day ago"
  * formatDate(new Date('2023-07-23T00:00:00Z')); // "1 week ago"
  * formatDate(new Date('2023-06-15T00:00:00Z')); // "6 weeks ago"
- * formatDate(new Date('2023-05-01T00:00:00Z')); // "May 1"
- * formatDate(new Date('2022-05-01T00:00:00Z')); // "May 1, 2022"
+ * formatDate(new Date('2023-05-01T00:00:00Z')); // "on May 1"
+ * formatDate(new Date('2022-05-01T00:00:00Z')); // "on May 1, 2022"
  */
 export function formatDate(date: Date): string {
   dayjs.extend(relativeTime);
@@ -248,7 +250,7 @@ export function formatDate(date: Date): string {
   } else {
     const formatString =
       now.year() === date.getFullYear() ? "MMM D" : "MMM D, YYYY";
-    return dayjs(date).format(formatString);
+    return "on " + dayjs(date).format(formatString);
   }
 }
 
@@ -279,25 +281,18 @@ const issueSearchFiltersSchema = z.object({
       }
       return arg;
     },
-    z
-      .set(z.enum(IN_FILTERS))
-      .catch(new Set(IN_FILTERS))
-      .default(new Set(IN_FILTERS))
-      .nullish()
+    z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).nullish()
   ),
   is: z.enum(STATUS_FILTERS).default("open").nullish().catch(null),
+  reason: z.enum(REASON_FILTERS).nullish().catch(null),
   no: preprocess(
     (arg) => {
       if (Array.isArray(arg)) {
-        return new Set(arg);
+        return [...new Set(arg)];
       }
       return arg;
     },
-    z
-      .set(z.enum(NO_METADATA_FILTERS))
-      .catch(new Set(NO_METADATA_FILTERS))
-      .default(new Set(NO_METADATA_FILTERS))
-      .nullish()
+    z.array(z.enum(NO_METADATA_FILTERS)).catch([]).default([]).nullish()
   ),
   label: z.array(z.string()).catch([]).default([]).nullish(),
   "-label": z.array(z.string()).catch([]).default([]).nullish(),
@@ -309,9 +304,9 @@ const issueSearchFiltersSchema = z.object({
   "-mentions": z.string().nullish(),
   sort: z
     .enum(SORT_FILTERS)
-    .catch("created-asc")
-    .default("created-asc")
-    .nullish(),
+    .default("created-desc")
+    .nullish()
+    .catch("created-desc"),
   query: z.string().nullish()
 });
 
@@ -382,6 +377,7 @@ export function parseIssueSearchString(input: string): IssueSearchFilters {
 
       // Single filters
       case "is":
+      case "reason":
       case "author":
       case "-author":
       case "mentions":
@@ -412,16 +408,31 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
     if (key === "query") {
       continue;
     }
-    if (key === "label" && Array.isArray(value)) {
-      for (const label of value) {
-        terms.push(`${key}:"${label}"`);
+    if (key === "no" && Array.isArray(value)) {
+      // @ts-expect-error this is fine, typescript adds another infer string[] wich is not what we want
+      value = new Set(value);
+    }
+
+    // For labels, wrap them inside quotes
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (key === "label" || key === "-label") {
+          terms.push(`${key}:"${item}"`);
+        } else {
+          terms.push(`${key}:${item}`);
+        }
       }
-    } else if (Array.isArray(value)) {
-      terms.push(key + ":" + value.join(","));
-    } else if (typeof value === "string") {
+    }
+    //  else if (Array.isArray(value) && value.length > 0) {
+    //   terms.push(key + ":" + value.join(","));
+    // }
+    else if (typeof value === "string") {
       terms.push(`${key}:${value}`);
-    } else if (value instanceof Set) {
-      terms.push(key + ":" + [...value].join(","));
+    } else if (value instanceof Set && value.size > 0) {
+      for (const item of value) {
+        terms.push(`${key}:${item}`);
+      }
+      // terms.push(key + ":" + [...value].join(","));
     }
   }
 

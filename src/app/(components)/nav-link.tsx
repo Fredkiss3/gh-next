@@ -27,7 +27,7 @@ export function NavLink({
   return (
     <Link
       {...props}
-      className={clsx("group relative py-3", {
+      className={clsx("group relative py-3", "focus:outline-none", {
         "font-medium after:absolute after:-bottom-0.5 after:left-0 after:right-0":
           isActive,
         "after:z-20 after:h-1 after:rounded-md after:bg-severe-border": isActive
@@ -37,7 +37,8 @@ export function NavLink({
       <div
         className={clsx(
           "inline-flex items-center gap-3 rounded-md px-1.5 py-1",
-          "transition duration-150 group-hover:bg-neutral/50"
+          "transition duration-150",
+          "group-hover:bg-neutral/50 group-focus:ring-2 ring-accent"
         )}
       >
         <Icon className="h-4 w-4 text-grey" />

@@ -1,4 +1,4 @@
-"use client";
+import "server-only";
 import * as React from "react";
 
 // components
@@ -17,32 +17,70 @@ import { IssueRow } from "./issue-row";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import { useSearchParams } from "next/navigation";
-import { clsx, pluralize } from "~/lib/shared/utils.shared";
+import {
+  clsx,
+  parseIssueSearchString,
+  pluralize
+} from "~/lib/shared/utils.shared";
+import { preprocess, z } from "zod";
+import { getIssueList } from "~/app/(actions)/issue";
+import {
+  BASE_ISSUE_SEARCH_QUERY,
+  MAX_ITEMS_PER_PAGE
+} from "~/lib/shared/constants";
 
 // types
-import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
+import type { EmojiSortKey } from "./issue-row";
 
-export type IssueListClientProps = IssueListResult & { currentPage: number };
+export type IssueListProps = {
+  page?: string;
+  searchQuery?: string;
+};
 
-export function IssueListClient({
-  currentPage,
-  issues,
-  totalCount,
-  noOfIssuesClosed,
-  noOfIssuesOpen
-}: IssueListClientProps) {
-  const sp = useSearchParams();
-  const baseURL = sp.get("q") ? `?q=${sp.get("q")}&page=` : `?page=`;
+export async function IssueList({ page, searchQuery }: IssueListProps) {
+  const pageSchema = preprocess(
+    (arg) => Number(arg),
+    z.number().int().min(1).catch(1)
+  );
+  let currentPage = pageSchema.parse(page);
+
+  const filters = parseIssueSearchString(
+    searchQuery ?? BASE_ISSUE_SEARCH_QUERY
+  );
+
+  const baseURL = `?q=${searchQuery}&page=`;
+
+  const { issues, totalCount, noOfIssuesClosed, noOfIssuesOpen } =
+    await getIssueList(filters, currentPage);
+
+  let paginationCount = totalCount;
+  if (filters.is) {
+    paginationCount = filters.is === "open" ? noOfIssuesOpen : noOfIssuesClosed;
+  }
+
+  let emojiSort: EmojiSortKey | null = null;
+  if (filters.sort?.startsWith("reactions-")) {
+    emojiSort = filters.sort as EmojiSortKey;
+  }
 
   return (
     <>
-      {/* Header */}
+      {/* Header on Mobile */}
       <div className="flex items-center gap-4 px-5  md:hidden md:px-0">
         <IssueSearchLink
+          filters={{
+            is: "open"
+          }}
           className={clsx(
-            "flex items-center gap-2 font-semibold text-foreground"
+            "flex items-center gap-2",
+            "transition duration-150",
+            "focus:ring-2 ring-accent focus:outline-none rounded-md",
+            {
+              "font-semibold text-foreground": filters.is === "open",
+              "text-grey": filters.is !== "open"
+            }
           )}
+          conserveCurrentFilters
         >
           <IssueOpenedIcon className="h-5 w-5" />
           <p>
@@ -57,7 +95,16 @@ export function IssueListClient({
           filters={{
             is: "closed"
           }}
-          className={clsx("flex items-center gap-2 text-grey")}
+          conserveCurrentFilters
+          className={clsx(
+            "flex items-center gap-2",
+            "transition duration-150",
+            "focus:ring-2 ring-accent focus:outline-none rounded-md",
+            {
+              "font-semibold text-foreground": filters.is === "closed",
+              "text-grey": filters.is !== "closed"
+            }
+          )}
         >
           <CheckIcon className="h-5 w-5" />
           <span>
@@ -71,7 +118,7 @@ export function IssueListClient({
       </div>
 
       <div className={clsx("border border-neutral", "sm:rounded-md")}>
-        {/* Issue content table - header */}
+        {/* Issue content table - header on desktop */}
         <div
           className={clsx(
             "flex items-center justify-between gap-8",
@@ -82,8 +129,17 @@ export function IssueListClient({
             <li>
               <IssueSearchLink
                 className={clsx(
-                  "flex items-center gap-2 font-semibold text-foreground"
+                  "flex items-center gap-2",
+                  "transition duration-150",
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md",
+                  {
+                    "font-semibold text-foreground": filters.is === "open"
+                  }
                 )}
+                filters={{
+                  is: "open"
+                }}
+                conserveCurrentFilters
               >
                 <IssueOpenedIcon className="h-5 w-5" />
                 <p>
@@ -100,7 +156,15 @@ export function IssueListClient({
                 filters={{
                   is: "closed"
                 }}
-                className={clsx("flex items-center gap-2 text-grey")}
+                conserveCurrentFilters
+                className={clsx(
+                  "flex items-center gap-2",
+                  "transition duration-150",
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md",
+                  {
+                    "font-semibold text-foreground": filters.is === "closed"
+                  }
+                )}
               >
                 <CheckIcon className="h-5 w-5" />
                 <span>
@@ -123,28 +187,52 @@ export function IssueListClient({
           >
             <li>
               <IssueAuthorFilterActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Author</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueAuthorFilterActionList>
             </li>
             <li>
               <IssueLabelFilterActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Label</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueLabelFilterActionList>
             </li>
             <li>
               <IssueAssigneeFilterActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Assignee</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueAssigneeFilterActionList>
             </li>
             <li>
               <IssueSortActionList>
-                <button className="flex items-center gap-2">
+                <button
+                  className={clsx(
+                    "flex items-center gap-2",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
                   <span>Sort</span> <TriangleDownIcon className="h-5 w-5" />
                 </button>
               </IssueSortActionList>
@@ -159,8 +247,8 @@ export function IssueListClient({
         ) : (
           <ul>
             {issues.map((issue) => (
-              <li key={issue.id}>
-                <IssueRow {...issue} />
+              <li key={issue.number}>
+                <IssueRow {...issue} emojiSort={emojiSort} />
               </li>
             ))}
           </ul>
@@ -169,11 +257,11 @@ export function IssueListClient({
         {/* END Issue content table - list */}
       </div>
 
-      {totalCount > 25 && (
+      {totalCount > MAX_ITEMS_PER_PAGE && (
         <Pagination
           currentPage={currentPage}
-          perPage={25}
-          totalCount={totalCount}
+          perPage={MAX_ITEMS_PER_PAGE}
+          totalCount={paginationCount}
           baseURL={`/issues${baseURL}`}
         />
       )}

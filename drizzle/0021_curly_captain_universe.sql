@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_issues" ADD COLUMN "status_updated_at" timestamp DEFAULT now() NOT NULL;

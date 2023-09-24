@@ -16,13 +16,14 @@ import {
 import {
   IN_FILTERS,
   NO_METADATA_FILTERS,
+  REASON_FILTERS,
   SORT_FILTERS,
   STATUS_FILTERS
 } from "~/lib/shared/constants";
 import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
 import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
-import { useIssueMentionListQuery } from "~/lib/client/hooks/use-issue-mention-list-query";
+import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
@@ -35,8 +36,6 @@ export function IssueListSearchInput({
   squaredInputBorder
 }: IssueListSearchInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onSearchDebounced = React.useCallback(debounce(onSearch), [onSearch]);
 
   const [isMenuOpen, setMenuOpen] = React.useState(false);
   const {
@@ -48,9 +47,9 @@ export function IssueListSearchInput({
   const [currentWord, setCurrentWord] = React.useState("");
 
   // regexes for async filters, they can contain `@` characters
-  const authorRegex = /^(-)?author:(\@)?/;
-  const assigneeRegex = /^(-)?assignee:(\@)?/;
-  const mentionsRegex = /^(-)?mentions:(\@)?/;
+  const authorRegex = /^(-)?author:/;
+  const assigneeRegex = /^(-)?assignee:/;
+  const labelListRegex = /^(-)?label:/;
 
   const { data: authorList, isInitialLoading: isLoadingAuthor } =
     useIssueAuthorListQuery({
@@ -68,15 +67,15 @@ export function IssueListSearchInput({
       enabled: !!currentWord.match(assigneeRegex)
     });
 
-  const { data: mentionList, isInitialLoading: isLoadingMentions } =
-    useIssueMentionListQuery({
-      name: currentWord.match(mentionsRegex)
-        ? currentWord.replace(mentionsRegex, "")
+  const { data: labelList, isInitialLoading: isLoadingLabels } =
+    useIssueLabelListByNameQuery({
+      name: currentWord.match(labelListRegex)
+        ? currentWord.replace(labelListRegex, "")
         : "",
-      enabled: !!currentWord.match(mentionsRegex)
+      enabled: !!currentWord.match(labelListRegex)
     });
 
-  const isLoading = isLoadingAuthor || isLoadingAssignee || isLoadingMentions;
+  const isLoading = isLoadingAuthor || isLoadingAssignee || isLoadingLabels;
 
   const search = {
     sort: {
@@ -90,6 +89,10 @@ export function IssueListSearchInput({
     is: {
       values: STATUS_FILTERS,
       getPlaceholder: () => STATUS_FILTERS.map((str) => `[${str}]`).join(" ")
+    },
+    reason: {
+      values: REASON_FILTERS,
+      getPlaceholder: () => REASON_FILTERS.map((str) => `[${str}]`).join(" ")
     },
     no: {
       values: NO_METADATA_FILTERS,
@@ -122,17 +125,17 @@ export function IssueListSearchInput({
         : (assigneeList ?? []).map((user) => user.username),
       getPlaceholder: () => "[Issues without assignees]"
     },
-    mentions: {
+    label: {
       values: currentWord.startsWith("-")
         ? []
-        : (mentionList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues mentionning users]"
+        : (labelList ?? []).map((label) => label.name),
+      getPlaceholder: () => "[Issues with labels]"
     },
-    "-mentions": {
+    "-label": {
       values: !currentWord.startsWith("-")
         ? []
-        : (mentionList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues not mentionning users]"
+        : (labelList ?? []).map((label) => label.name),
+      getPlaceholder: () => "[Issues without labels]"
     }
   };
   type SearchKey = keyof typeof search;
@@ -147,8 +150,6 @@ export function IssueListSearchInput({
             return value.match(authorRegex) ? 1 : 0;
           } else if (currentWord.match(assigneeRegex)) {
             return value.match(assigneeRegex) ? 1 : 0;
-          } else if (currentWord.match(mentionsRegex)) {
-            return value.match(mentionsRegex) ? 1 : 0;
           } else if (value.includes(currentWord.toLowerCase())) {
             return 1;
           }
@@ -160,7 +161,7 @@ export function IssueListSearchInput({
           className={clsx(
             "flex flex-1 items-center gap-1.5",
             "rounded-r-md border border-neutral px-3 py-1.5",
-            "w-full bg-header shadow-sm outline-none ring-accent",
+            "w-full bg-header shadow-sm outline-none ring-accent font-medium",
             "text-grey",
             "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
             {
@@ -180,7 +181,7 @@ export function IssueListSearchInput({
             value={inputValue}
             onValueChange={(value) => {
               setInputValue(value);
-              onSearchDebounced();
+              onSearch();
             }}
             onKeyDown={(e) => {
               if (e.key === "Escape") inputRef?.current?.blur();
@@ -268,10 +269,15 @@ export function IssueListSearchInput({
                         </span>
                       </CommandItem>
                       {search[key as SearchKey].values.map((option) => {
+                        let value = `${key}:${option}`;
+                        // labels should be wrapped inside of quotes
+                        if (key === "label" || key === "-label") {
+                          value = `${key}:"${option}"`;
+                        }
                         return (
                           <SubItem
                             key={option}
-                            value={`${key}:${option}`}
+                            value={value}
                             onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -299,7 +305,7 @@ export function IssueListSearchInput({
                                 const filters =
                                   parseIssueSearchString(inputWithNewValue);
 
-                                onSearchDebounced();
+                                onSearch();
                                 return issueSearchFilterToString(filters) + " ";
                               });
 

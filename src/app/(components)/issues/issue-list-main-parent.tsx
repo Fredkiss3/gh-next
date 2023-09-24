@@ -16,8 +16,9 @@ export function IssueListMainParent({
   // and that one time is either in SSR or page navigation
   // which is exactly when we want to run this
   const [] = React.useState(() => {
+    // FIXME ??
     useSearchQueryStore.setState({
-      query: initialQuery ?? BASE_ISSUE_SEARCH_QUERY
+      query: initialQuery ?? BASE_ISSUE_SEARCH_QUERY + " "
     });
   });
 

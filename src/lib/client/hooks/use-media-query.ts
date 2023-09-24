@@ -35,11 +35,11 @@ export function useMediaQuery(query: string): boolean {
    * a value on the client, we do not want to have hydration errors and let first render
    * finish, then we can show the modal.
    */
-  const [hasHydrationFinished, setHasHydrationFinished] = React.useState(false);
+  const [isFirstRender, setIsFirstRender] = React.useState(true);
 
   React.useEffect(() => {
-    setHasHydrationFinished(true);
+    setIsFirstRender(false);
   }, []);
 
-  return hasHydrationFinished && matches;
+  return !isFirstRender && matches;
 }

@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 // components
 import {
@@ -8,7 +7,7 @@ import {
   SkipIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { AvatarStack } from "~/app/(components)/avatar-stack";
+import { IssueRowAvatarStack } from "~/app/(components)/issues/issue-row-avatar-stack";
 import { LabelBadge } from "~/app/(components)/label-badge";
 import { HoverCard } from "~/app/(components)/hovercard";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
@@ -18,31 +17,68 @@ import { Tooltip } from "~/app/(components)/tooltip";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import {
-  clsx,
-  formatDate,
-  issueSearchFilterToString
-} from "~/lib/shared/utils.shared";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueListResult } from "~/lib/server/dto/issue-list.server";
-export type IssueRowProps = IssueListResult["issues"][number];
+import type { IssueSearchListResult } from "~/app/(models)/dto/issue-search";
+
+export const emojiSortMap = {
+  "reactions-+1-desc": "👍",
+  "reactions--1-desc": "👎",
+  "reactions-smile-desc": "😄",
+  "reactions-tada-desc": "🎉",
+  "reactions-thinking_face-desc": "😕",
+  "reactions-heart-desc": "❤️",
+  "reactions-rocket-desc": "🚀",
+  "reactions-eyes-desc": "👀"
+} as const;
+export type EmojiSortKey = keyof typeof emojiSortMap;
+
+export type IssueRowProps = IssueSearchListResult["issues"][number] & {
+  emojiSort?: EmojiSortKey | null;
+};
 
 export function IssueRow({
   status,
   title,
-  id,
+  number,
   author,
   status_updated_at,
-  noOfComments,
+  no_of_comments,
   labels,
   assigned_to,
   created_at,
-  description
+  excerpt,
+  emojiSort,
+  ...reactionCounts
 }: IssueRowProps) {
-  const assignTooltipLabel = assigned_to.map((u) => u.username).join(" and ");
-  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
+  let emojiCount: number = 0;
+  switch (emojiSort) {
+    case "reactions-+1-desc":
+      emojiCount = reactionCounts.plus_one_count;
+      break;
+    case "reactions--1-desc":
+      emojiCount = reactionCounts.minus_one_count;
+      break;
+    case "reactions-eyes-desc":
+      emojiCount = reactionCounts.eyes_count;
+      break;
+    case "reactions-heart-desc":
+      emojiCount = reactionCounts.heart_count;
+      break;
+    case "reactions-rocket-desc":
+      emojiCount = reactionCounts.rocket_count;
+      break;
+    case "reactions-smile-desc":
+      emojiCount = reactionCounts.laugh_count;
+      break;
+    case "reactions-tada-desc":
+      emojiCount = reactionCounts.hooray_count;
+      break;
+    case "reactions-thinking_face-desc":
+      emojiCount = reactionCounts.confused_count;
+      break;
+  }
 
   return (
     <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
@@ -57,10 +93,10 @@ export function IssueRow({
       )}
 
       <Link
-        href={`/issues/${id}`}
+        href={`/issues/${number}`}
         className="after:absolute after:inset-0 sm:hidden"
       >
-        <span className="sr-only">Link to issue #{id}</span>
+        <span className="sr-only">Link to issue #{number}</span>
       </Link>
 
       <div
@@ -73,10 +109,10 @@ export function IssueRow({
             <HoverCard
               content={
                 <IssueHoverCardContents
-                  id={id}
+                  id={number}
                   status={status}
                   title={title}
-                  description={description}
+                  description={excerpt}
                   created_at={created_at}
                   labels={labels}
                 />
@@ -84,10 +120,12 @@ export function IssueRow({
             >
               <ReactAriaLink>
                 <Link
-                  href={`/issues/${id}`}
+                  href={`/issues/${number}`}
                   className={clsx(
                     "inline break-words text-lg font-semibold text-foreground",
-                    "hover:text-accent"
+                    "hover:text-accent",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
                   )}
                 >
                   {title}
@@ -114,9 +152,14 @@ export function IssueRow({
                   >
                     <ReactAriaLink>
                       <IssueSearchLink
+                        className={clsx(
+                          "transition duration-150",
+                          "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                        )}
                         filters={{
                           label: [name]
                         }}
+                        conserveCurrentFilters
                       >
                         <LabelBadge color={color} title={name} />
                       </IssueSearchLink>
@@ -129,58 +172,97 @@ export function IssueRow({
         </div>
 
         <small className="text-grey">
-          #{id} opened {formatDate(status_updated_at)} by&nbsp;
-          <HoverCard
-            placement="top start"
-            delayInMs={700}
-            content={
-              <UserHoverCardContents
-                avatar_url={author.avatar_url}
-                bio={author.bio}
-                location={author.location}
-                name={author.name}
-                username={author.username}
-              />
-            }
-          >
-            <ReactAriaLink>
-              <IssueSearchLink
-                filters={{
-                  author: author.username
-                }}
-                className="hover:text-accent"
-              >
-                {author.username}
-              </IssueSearchLink>
-            </ReactAriaLink>
-          </HoverCard>
+          {formatIssueRowSubtext({
+            number,
+            status_updated_at,
+            status
+          })}
+          {author.id ? (
+            <HoverCard
+              placement="top start"
+              delayInMs={700}
+              content={
+                <UserHoverCardContents
+                  avatar_url={author.avatar_url}
+                  bio={author.bio}
+                  location={author.location}
+                  name={author.name}
+                  username={author.username}
+                />
+              }
+            >
+              <ReactAriaLink>
+                <IssueSearchLink
+                  filters={{
+                    author: author.username
+                  }}
+                  className={clsx(
+                    "hover:text-accent",
+                    "transition duration-150",
+                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                  )}
+                >
+                  {author.username}
+                </IssueSearchLink>
+              </ReactAriaLink>
+            </HoverCard>
+          ) : (
+            <IssueSearchLink
+              filters={{
+                author: author.username
+              }}
+              className={clsx(
+                "hover:text-accent",
+                "transition duration-150",
+                "focus:ring-2 ring-accent focus:outline-none rounded-md"
+              )}
+            >
+              {author.username}
+            </IssueSearchLink>
+          )}
         </small>
       </div>
 
-      <div className="hidden w-[30%] items-center justify-end gap-4 sm:flex">
-        <AvatarStack
-          tooltipLabel={`assigned to ${assignTooltipLabel}`}
-          users={assigned_to}
-          onAvatarLinkClick={(username) =>
-            setSearchQuery(
-              issueSearchFilterToString({
-                is: "open",
-                assignee: [username]
-              })
-            )
-          }
-          getUserUrl={(username) => `/issues?q=is:open+assignee:${username}`}
-        />
-        {noOfComments > 0 && (
+      <div className="hidden w-[30%] items-center justify-end gap-8 sm:flex">
+        <IssueRowAvatarStack users={assigned_to} />
+        {no_of_comments > 0 && (
           <Link
-            href={`/issues/${id}`}
-            className="flex items-center gap-1 text-grey hover:text-accent"
+            href={`/issues/${number}`}
+            className={clsx(
+              "flex items-center gap-1 text-grey hover:text-accent",
+              "transition duration-150",
+              "focus:ring-2 ring-accent focus:outline-none rounded-md"
+            )}
           >
             <CommentIcon className="h-4 w-4 flex-shrink-0" />
-            <span>{noOfComments}</span>
+            <span>{no_of_comments}</span>
+          </Link>
+        )}
+
+        {emojiSort && (
+          <Link
+            href={`/issues/${number}`}
+            className={clsx(
+              "flex items-center gap-1 text-grey hover:text-accent",
+              "transition duration-150",
+              "focus:ring-2 ring-accent focus:outline-none rounded-md"
+            )}
+          >
+            {emojiSortMap[emojiSort]}
+            <span>{emojiCount}</span>
           </Link>
         )}
       </div>
     </div>
   );
+}
+
+function formatIssueRowSubtext({
+  number,
+  status,
+  status_updated_at
+}: Pick<IssueRowProps, "number" | "status" | "status_updated_at">) {
+  return `#${number} ${status === "OPEN" ? "opened" : "closed"} ${formatDate(
+    status_updated_at
+  )} by `;
 }

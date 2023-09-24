@@ -36,6 +36,7 @@ import {
   type IssueEventInsert,
   type EventType
 } from "~/lib/server/db/schema/event.sql";
+import { MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -43,7 +44,7 @@ const GITHUB_REPO_SOURCE = {
   owner: "vercel",
   name: "next.js"
 } as const;
-const MAX_ISSUES_TO_FETCH = 5 * 25; // 5 pages of issues
+const MAX_ISSUES_TO_FETCH = 5 * MAX_ITEMS_PER_PAGE; // 5 pages of issues
 
 type Actor = {
   login: string;
@@ -98,7 +99,7 @@ type IssueReponse = {
         number: number;
         createdAt: string;
         updatedAt: string;
-        closedAt: string;
+        closedAt: string | null;
         state: "OPEN" | "CLOSED";
         locked: boolean;
         stateReason: "REOPENED" | "NOT_PLANNED" | "COMPLETED";
@@ -214,6 +215,7 @@ type AssignedEvent = {
   assignee: {
     __typename: "User";
     login: string;
+    avatarUrl: string;
   };
 };
 
@@ -284,9 +286,14 @@ type EventsResponse = {
 };
 
 const eventsQuery = /* GraphQL */ `
-  query events($cursor: String, $repoName: String!, $repoOwner: String!) {
+  query events(
+    $cursor: String
+    $issue_number: Int!
+    $repoName: String!
+    $repoOwner: String!
+  ) {
     repository(name: $repoName, owner: $repoOwner) {
-      issue(number: 42991) {
+      issue(number: $issue_number) {
         timelineItems(
           after: $cursor
           first: 100
@@ -343,12 +350,14 @@ const eventsQuery = /* GraphQL */ `
             ... on AssignedEvent {
               actor {
                 login
+                avatarUrl
               }
               createdAt
               assignee {
                 __typename
                 ... on User {
                   login
+                  avatarUrl
                 }
               }
             }
@@ -459,6 +468,7 @@ do {
       title: issue.title,
       number: issue.number,
       body: issue.body,
+      status_updated_at: new Date(issue.closedAt ?? issue.createdAt),
       author_id: currentUser ? currentUser.id : null,
       author_username: currentUser
         ? currentUser.username
@@ -524,6 +534,11 @@ do {
     /**
      * INSERTING LABELS
      */
+    // wipe out any label associated to this issue
+    // Because we don't have any way to handle conflicts for this table
+    await db
+      .delete(labelToIssues)
+      .where(eq(labelToIssues.issue_id, issueInsertQueryResult.issue_id));
     for (const label of issue.labels.nodes) {
       const labelPayload = {
         name: label.name,
@@ -545,11 +560,6 @@ do {
       /**
        * INSERTING LABEL RELATIONS TO ISSUES
        */
-      // wipe out any label associated to this issue
-      // Because we don't have any way to handle conflicts for this table
-      await db
-        .delete(labelToIssues)
-        .where(eq(labelToIssues.issue_id, issueInsertQueryResult.issue_id));
 
       await db.insert(labelToIssues).values({
         issue_id: issueInsertQueryResult.issue_id,
@@ -561,7 +571,7 @@ do {
      * INSERTING ASSIGNEES
      */
     for (const assignee of issue.assignees.nodes) {
-      faker.seed(stringToNumber(assignee.login));
+      // faker.seed(stringToNumber(assignee.login));
       // wipe out any assignee existing for the issue
       // Because we don't have any way to handle conflicts for this table
       await db
@@ -578,27 +588,25 @@ do {
 
       const issueToAssigneePayload = {
         issue_id: issueInsertQueryResult.issue_id,
-        assignee_username: currentUser
-          ? currentUser.username
-          : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+        assignee_username: currentUser ? currentUser.username : assignee.login,
         assignee_avatar_url: currentUser
           ? currentUser.avatar_url
-          : faker.image.avatarGitHub()
+          : assignee.avatarUrl
       } satisfies IssueToAssigneeInsert;
 
       await db.insert(issueToAssignees).values(issueToAssigneePayload);
     }
 
+    // wipe out any reaction associated to this issue
+    // Because we don't have any way to handle conflicts for this table
+    await db
+      .delete(reactions)
+      .where(eq(reactions.issue_id, issueInsertQueryResult.issue_id));
+
     /**
      * INSERTING REACTIONS
      */
     for (const reactionGroup of issue.reactionGroups) {
-      // wipe out any reaction associated to this issue
-      // Because we don't have any way to handle conflicts for this table
-      await db
-        .delete(reactions)
-        .where(eq(reactions.issue_id, issueInsertQueryResult.issue_id));
-
       const reactionTypeMapping = {
         THUMBS_UP: "PLUS_ONE",
         THUMBS_DOWN: "MINUS_ONE",
@@ -765,17 +773,17 @@ do {
             await db.insert(commentRevisions).values(revisionPayload);
           }
 
+          // wipe out any reaction associated to this comment
+          await db
+            .delete(reactions)
+            .where(
+              eq(reactions.comment_id, commentInsertQueryResult.comment_id)
+            );
+
           /**
            * INSERTING COMMENT REACTIONS
            */
           for (const reactionGroup of comment.reactionGroups) {
-            // wipe out any reaction associated to this comment
-            await db
-              .delete(reactions)
-              .where(
-                eq(reactions.comment_id, commentInsertQueryResult.comment_id)
-              );
-
             const reactionTypeMapping = {
               THUMBS_UP: "PLUS_ONE",
               THUMBS_DOWN: "MINUS_ONE",
@@ -795,8 +803,6 @@ do {
             }
           }
         } else if (event.__typename === "AssignedEvent") {
-          // Faker seed so that it generates the same login for the same user
-          faker.seed(stringToNumber(event.assignee.login));
           // if the user is in our DB, use that instead of a generated username & avatar url
           const dbUser = await db
             .select()
@@ -808,10 +814,10 @@ do {
             ...eventPayload,
             assignee_username: currentUser
               ? currentUser.username
-              : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+              : event.assignee.login,
             assignee_avatar_url: currentUser
               ? currentUser.avatar_url
-              : faker.image.avatarGitHub()
+              : event.assignee.avatarUrl
           };
         } else if (event.__typename === "ClosedEvent") {
           eventPayload.status =
@@ -873,41 +879,33 @@ do {
  */
 console.log(`\nInserting mentions events`);
 
+let noOfMentionEventsInserted = 0;
 for (const [issue_id_str, event] of Object.entries(mentionsEvents)) {
   if (event.source.__typename !== "Issue") {
     continue;
   }
 
   let currentUser: User | null | undefined = null;
-  console.dir({
-    event,
-    issue_id_str
-  });
 
   if (event.actor) {
     // Faker seed so that it generates the same login for the same user
     faker.seed(stringToNumber(event.actor.login));
     // if the user is in our DB, use that instead of a generated username & avatar url
-    console.log("BEFORE CURRENT USER");
     const dbUser = await db
       .select()
       .from(users)
       .where(sql`${users.username} ILIKE ${event.actor.login}`);
     currentUser = dbUser[0];
-    console.log("AFTER CURRENT USER");
   }
 
-  console.log("BEFORE DB ISSUES");
   const dbIssues = await db
     .select()
     .from(issues)
     .where(eq(issues.number, event.source.number));
 
   const mentionnedIssueId = dbIssues[0];
-  console.log("AFTER DB ISSUES");
 
   if (mentionnedIssueId) {
-    console.log("BEFORE INSERTION");
     const payload = {
       issue_id: Number(issue_id_str),
       initiator_id: currentUser ? currentUser.id : null,
@@ -922,17 +920,13 @@ for (const [issue_id_str, event] of Object.entries(mentionsEvents)) {
       mentionned_issue_id: mentionnedIssueId.id
     } satisfies IssueEventInsert;
 
-    console.dir(
-      {
-        payload
-      },
-      { depth: null }
-    );
+    noOfMentionEventsInserted++;
     await db.insert(issueEvents).values(payload);
-    console.log("AFTER INSERTION");
   }
 }
 
-console.log(`\nMention events inserted successfully ✅`);
+console.log(
+  `\n${noOfMentionEventsInserted} Mention events inserted successfully ✅`
+);
 
 process.exit();
