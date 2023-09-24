@@ -48,7 +48,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
     searchQuery ?? BASE_ISSUE_SEARCH_QUERY
   );
 
-  const baseURL = `?q=${searchQuery}&page=`;
+  const baseURL = searchQuery ? `q=${searchQuery ?? ""}&page=` : `page=`;
 
   const { issues, totalCount, noOfIssuesClosed, noOfIssuesOpen } =
     await getIssueList(filters, currentPage);
@@ -262,7 +262,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
           currentPage={currentPage}
           perPage={MAX_ITEMS_PER_PAGE}
           totalCount={paginationCount}
-          baseURL={`/issues${baseURL}`}
+          baseURL={`/issues?${baseURL}`}
         />
       )}
     </>
