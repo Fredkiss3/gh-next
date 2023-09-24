@@ -47,7 +47,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const helpId = React.useId();
 
     return (
-      <div className={clsx(className, "flex w-full flex-col gap-1")}>
+      <div className={clsx("flex w-full flex-col gap-1", className)}>
         <label
           htmlFor={defaultId ?? id}
           className={clsx("font-semibold", {

@@ -38,6 +38,7 @@ type StargazersResponse = {
         endCursor: string;
       };
       edges: Array<{
+        starredAt: string;
         node: {
           databaseId: number;
           login: string;
@@ -92,6 +93,7 @@ export const getGithubRepoData = async function () {
                 endCursor
               }
               edges {
+                starredAt
                 node {
                   databaseId
                   login
@@ -121,9 +123,9 @@ export const getGithubRepoData = async function () {
       });
 
       let allStargazers: GithubRepositoryData["stargazers"] =
-        allStargazersData.edges.map(({ node }) => {
+        allStargazersData.edges.map(({ node, starredAt }) => {
           const { databaseId, ...rest } = node;
-          return { ...rest, id: databaseId };
+          return { ...rest, id: databaseId, starredAt };
         });
       let nextCursor = allStargazersData.pageInfo.endCursor;
       let hasNextPage = allStargazersData.pageInfo.hasNextPage;
@@ -142,9 +144,9 @@ export const getGithubRepoData = async function () {
         nextCursor = pageInfo.endCursor;
         hasNextPage = pageInfo.hasNextPage;
         allStargazers = allStargazers.concat(
-          edges.map(({ node }) => {
+          edges.map(({ node, starredAt }) => {
             const { databaseId, ...rest } = node;
-            return { ...rest, id: databaseId };
+            return { ...rest, id: databaseId, starredAt };
           })
         );
       }

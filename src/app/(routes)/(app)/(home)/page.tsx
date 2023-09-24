@@ -165,9 +165,9 @@ export default async function Page() {
 
         <ul className="flex flex-wrap items-center gap-4">
           <li>
-            <a
+            <Link
               className="group flex items-center gap-2 text-grey hover:text-accent"
-              href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/stargazers`}
+              href="/stargazers"
             >
               <StarIcon className="h-4 w-4" />
               <div>
@@ -177,7 +177,7 @@ export default async function Page() {
                 &nbsp;
                 <span>stars</span>
               </div>
-            </a>
+            </Link>
           </li>
           <li>
             <a
@@ -276,8 +276,8 @@ export default async function Page() {
               </li>
 
               <li>
-                <a
-                  href={`https://github.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/stargazers`}
+                <Link
+                  href="/stargazers"
                   className="flex items-center gap-3 text-grey hover:text-accent"
                 >
                   <StarIcon className="h-4 w-4" />
@@ -287,7 +287,7 @@ export default async function Page() {
                     &nbsp;
                     <span>stars</span>
                   </div>
-                </a>
+                </Link>
               </li>
 
               <li className="flex items-center gap-3 text-grey">

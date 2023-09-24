@@ -238,7 +238,8 @@ export function getRandomHexColor(): string {
  * formatDate(new Date('2023-05-01T00:00:00Z')); // "on May 1"
  * formatDate(new Date('2022-05-01T00:00:00Z')); // "on May 1, 2022"
  */
-export function formatDate(date: Date): string {
+export function formatDate(date: Date | string): string {
+  date = new Date(date);
   dayjs.extend(relativeTime);
   dayjs.extend(advancedFormat);
 
@@ -481,4 +482,39 @@ export function debounce(callback: Function, delay: number = 500) {
  */
 export function pluralize(str: string, count: number) {
   return str + (count > 1 ? "s" : "");
+}
+
+/**
+ * Paginates an array in reverse order.
+ *
+ * @param arr - The array to paginate.
+ * @param page - The page number (1-based index).
+ * @param pageSize - The number of items per page.
+ * @returns - A new array containing the paginated items in reverse order.
+ *
+ * @example
+ * const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+ * const page = 1;
+ * const pageSize = 3;
+ * const paginatedArr = reversePaginate(arr, page, pageSize);
+ * console.log(paginatedArr);  // Output should be [10, 9, 8]
+ */
+export function reversePaginate<T>(
+  arr: T[],
+  page: number,
+  pageSize: number
+): T[] {
+  const totalItems = arr.length;
+
+  // Calculate the start and end indices for slicing
+  let endIdx = totalItems - (page - 1) * pageSize;
+  const startIdx = endIdx - pageSize > 0 ? endIdx - pageSize : 0;
+
+  // Don't paginate outside of the array
+  if (endIdx < 0) {
+    endIdx = 0;
+  }
+
+  // Slice the array from end towards the beginning
+  return arr.slice(startIdx, endIdx).reverse();
 }

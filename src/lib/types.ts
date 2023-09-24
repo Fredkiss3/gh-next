@@ -30,6 +30,7 @@ export type GithubRepositoryData = {
     avatarUrl: string;
     location: string | null;
     company: string | null;
+    starredAt: string;
   }>;
   readmeContent: string;
   description: string;

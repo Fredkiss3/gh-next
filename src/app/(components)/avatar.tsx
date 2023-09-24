@@ -19,11 +19,15 @@ export function Avatar({
     <Image
       src={src}
       alt={`@${username}`}
-      className={clsx(className, "flex-shrink-0 rounded-full", {
-        "h-6 w-6": size === "small",
-        "h-16 w-16": size === "large",
-        "h-10 w-10": size === "medium"
-      })}
+      className={clsx(
+        "flex-shrink-0 rounded-full",
+        {
+          "h-6 w-6": size === "small",
+          "h-16 w-16": size === "large",
+          "h-10 w-10": size === "medium"
+        },
+        className
+      )}
       width={size === "small" ? 64 : 128}
       height={size === "small" ? 64 : 128}
     />
