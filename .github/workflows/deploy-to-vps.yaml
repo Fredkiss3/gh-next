@@ -61,13 +61,12 @@ jobs:
           git pull origin ${GITHUB_REF##*/}
 
           echo Building packages...
-          # pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
           bun install
 
           # Return to root dir
           cd $DEPLOY_DIR
-          pnpm run db:migrate
-          pnpm run build
+          bun run db:migrate
+          bun run build
           echo build success ✅
 
           # Copy standalone static files
