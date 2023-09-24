@@ -19,9 +19,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    template: "%s - Fredkiss3/gh-next",
+    template: "%s · Fredkiss3/gh-next",
     default:
-      "Fredkiss3/gh-next - A minimal Github clone built on nextjs app router"
+      "Fredkiss3/gh-next · A minimal Github clone built on nextjs app router"
   },
   description: "This is an issue management app"
 };
