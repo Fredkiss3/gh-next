@@ -260,17 +260,42 @@ function issueSearchfiltersToSQLConditions(
 
   if (filters.author || filters["-author"]) {
     if (filters["-author"]) {
-      queryFilters = and(
-        queryFilters,
-        not(
-          ilike(issues.author_username, filters["-author"].replaceAll("%", "")) // don't filter authors with `%`
-        )
-      );
+      // Handle `@me` author and replace it with the current authenticated user
+      let searchingAuthor: string | undefined = filters["-author"];
+      if (filters.author === "@me") {
+        searchingAuthor = currentUser?.username;
+      } else {
+        searchingAuthor = filters["-author"];
+      }
+
+      if (searchingAuthor) {
+        queryFilters = and(
+          queryFilters,
+          not(
+            ilike(
+              issues.author_username,
+              searchingAuthor.replaceAll("%", "").replaceAll(`@`, "")
+            ) // don't filter authors with `%`
+          )
+        );
+      }
     } else if (filters.author) {
-      queryFilters = and(
-        queryFilters,
-        ilike(issues.author_username, filters.author.replaceAll("%", "")) // don't filter authors with `%`
-      );
+      // Handle `@me` author and replace it with the current authenticated user
+      let searchingAuthor: string | undefined = filters.author;
+      if (filters.author === "@me") {
+        searchingAuthor = currentUser?.username;
+      } else {
+        searchingAuthor = filters.author;
+      }
+      if (searchingAuthor) {
+        queryFilters = and(
+          queryFilters,
+          ilike(
+            issues.author_username,
+            searchingAuthor.replaceAll("%", "").replaceAll(`@`, "")
+          ) // don't filter authors with `%`
+        );
+      }
     }
   }
 
@@ -378,7 +403,14 @@ function issueSearchfiltersToSQLConditions(
         })
         .from(issueToAssignees)
         .where(
-          sql`${issueToAssignees.assignee_username} in ${filters.assignee}`
+          sql`${issueToAssignees.assignee_username} in ${filters.assignee
+            .map((assignee) =>
+              assignee
+                .replaceAll("@", "")
+                .replaceAll("%", "")
+                .replaceAll("@me", currentUser?.username ?? "")
+            )
+            .filter(Boolean)}`
         )
         .groupBy(issueToAssignees.issue_id)
         .having(
@@ -406,7 +438,14 @@ function issueSearchfiltersToSQLConditions(
         })
         .from(issueToAssignees)
         .where(
-          sql`${issueToAssignees.assignee_username} in ${filters["-assignee"]}`
+          sql`${issueToAssignees.assignee_username} in ${filters["-assignee"]
+            .map((assignee) =>
+              assignee
+                .replaceAll("@", "")
+                .replaceAll("%", "")
+                .replaceAll("@me", currentUser?.username ?? "")
+            )
+            .filter(Boolean)}`
         )
         .groupBy(issueToAssignees.issue_id)
         .having(
@@ -431,7 +470,7 @@ function issueSearchfiltersToSQLConditions(
     if (filters.mentions === "@me") {
       mentionnedUser = currentUser?.username;
     } else {
-      mentionnedUser = filters.mentions.replaceAll(`@`, "");
+      mentionnedUser = filters.mentions.replaceAll(`@`, "").replaceAll("%", "");
     }
 
     // mentionnedUser will be `undefined` if the user is not authenticated but searched for `@me`
@@ -465,7 +504,9 @@ function issueSearchfiltersToSQLConditions(
     if (filters.mentions === "@me") {
       mentionnedUser = currentUser?.username;
     } else {
-      mentionnedUser = filters["-mentions"].replaceAll(`@`, "");
+      mentionnedUser = filters["-mentions"]
+        .replaceAll(`@`, "")
+        .replaceAll("%", "");
     }
 
     // mentionnedUser will be `undefined` if the user is not authenticated but searched for `@me`
