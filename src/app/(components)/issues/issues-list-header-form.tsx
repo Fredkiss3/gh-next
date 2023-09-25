@@ -39,7 +39,7 @@ export function IssuesListHeaderForm({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSearch = React.useCallback(
-    debounce(() => formRef.current?.requestSubmit()),
+    () => formRef.current?.requestSubmit(),
     []
   );
   return (

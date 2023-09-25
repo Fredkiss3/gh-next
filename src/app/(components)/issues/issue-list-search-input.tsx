@@ -79,63 +79,51 @@ export function IssueListSearchInput({
 
   const search = {
     sort: {
-      values: SORT_FILTERS,
-      getPlaceholder: () => SORT_FILTERS.map((str) => `[${str}]`).join(" ")
+      values: SORT_FILTERS
     },
     in: {
-      values: IN_FILTERS,
-      getPlaceholder: () => IN_FILTERS.map((str) => `[${str}]`).join(" ")
+      values: IN_FILTERS
     },
     is: {
-      values: STATUS_FILTERS,
-      getPlaceholder: () => STATUS_FILTERS.map((str) => `[${str}]`).join(" ")
+      values: STATUS_FILTERS
     },
     reason: {
-      values: REASON_FILTERS,
-      getPlaceholder: () => REASON_FILTERS.map((str) => `[${str}]`).join(" ")
+      values: REASON_FILTERS
     },
     no: {
-      values: NO_METADATA_FILTERS,
-      getPlaceholder: () =>
-        NO_METADATA_FILTERS.map((str) => `[${str}]`).join(" ")
+      values: NO_METADATA_FILTERS
     },
     author: {
       // this is to fix a bug where results of `-author` also appears for `author`
       values: currentWord.startsWith("-")
         ? []
-        : (authorList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues with author]"
+        : (authorList ?? []).map((user) => user.username)
     },
     "-author": {
       // this is to fix a bug where results of `author` also appears for `-author`
       values: !currentWord.startsWith("-")
         ? []
-        : (authorList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues without author]"
+        : (authorList ?? []).map((user) => user.username)
     },
     assignee: {
       values: currentWord.startsWith("-")
         ? []
-        : (assigneeList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues with assignees]"
+        : (assigneeList ?? []).map((user) => user.username)
     },
     "-assignee": {
       values: !currentWord.startsWith("-")
         ? []
-        : (assigneeList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues without assignees]"
+        : (assigneeList ?? []).map((user) => user.username)
     },
     label: {
       values: currentWord.startsWith("-")
         ? []
-        : (labelList ?? []).map((label) => label.name),
-      getPlaceholder: () => "[Issues with labels]"
+        : (labelList ?? []).map((label) => label.name)
     },
     "-label": {
       values: !currentWord.startsWith("-")
         ? []
-        : (labelList ?? []).map((label) => label.name),
-      getPlaceholder: () => "[Issues without labels]"
+        : (labelList ?? []).map((label) => label.name)
     }
   };
   type SearchKey = keyof typeof search;
@@ -145,12 +133,17 @@ export function IssueListSearchInput({
       <Command
         // This is to filter sub items
         filter={(value) => {
+          if (value === "search:submit") {
+            return 1; // always show the `search` command item
+          }
+
           // Special cases for author, mentions & assignee because they can contain `@`
           if (currentWord.match(authorRegex)) {
             return value.match(authorRegex) ? 1 : 0;
           } else if (currentWord.match(assigneeRegex)) {
             return value.match(assigneeRegex) ? 1 : 0;
           } else if (value.includes(currentWord.toLowerCase())) {
+            // in case of subcommands
             return 1;
           }
           return 0;
@@ -181,7 +174,6 @@ export function IssueListSearchInput({
             value={inputValue}
             onValueChange={(value) => {
               setInputValue(value);
-              onSearch();
             }}
             onKeyDown={(e) => {
               if (e.key === "Escape") inputRef?.current?.blur();
@@ -212,132 +204,184 @@ export function IssueListSearchInput({
         </div>
 
         <div className="relative">
-          {isMenuOpen ? (
-            <ItemGroupWrapper>
-              <CommandGroup className="max-h-64 !overflow-scroll">
-                {Object.keys(search).map((key) => {
-                  // this is to filter items
-                  // only show the item if :
-                  // if the input does not contain a query at the end :
-                  //  - it not is already in the input
-                  //  - or is in the current value
-                  // else:
-                  //  - the key is in the current value
-                  //    ⮑ this is bcose we don't want to show filters if the user is writing a query
-                  //       they will still see the filtered values when they manually enter the filters
-                  const filters = parseIssueSearchString(inputValue.trim());
-                  const queryIsInLastPosition =
-                    !!filters.query &&
-                    inputValue.trim().endsWith(filters.query.trim());
+          {isMenuOpen && (
+            <ItemGroupWrapper className="">
+              <CommandPrimitive.List>
+                <CommandGroup heading="Search">
+                  <CommandItem
+                    className="flex justify-between items-baseline"
+                    value="search:submit"
+                    key="search:submit"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onSelect={() => {
+                      onSearch();
+                      // close the command list after the input
+                      inputRef?.current?.blur();
+                    }}
+                  >
+                    <span className="inline-flex items-baseline gap-2">
+                      <SearchIcon className="text-grey h-5 w-5 flex-shrink-0 relative top-1.5" />
+                      <span>{inputValue}</span>
+                    </span>
+                    <span className="text-grey text-sm whitespace-nowrap">
+                      Submit search
+                    </span>
+                  </CommandItem>
+                </CommandGroup>
 
-                  const showItem = queryIsInLastPosition
-                    ? currentWord.includes(`${key}:`)
-                    : !inputValue.includes(`${key}:`) ||
-                      currentWord.includes(`${key}:`);
+                <CommandGroup
+                  className="max-h-64 !overflow-scroll border-t border-neutral"
+                  heading="Suggested filters"
+                >
+                  {Object.keys(search).map((key) => {
+                    // this is to filter items
+                    // only show the item if :
+                    // if the input does not contain a query at the end :
+                    //  - it not is already in the input
+                    //  - or is in the current value
+                    // else:
+                    //  - the key is in the current value
+                    //    ⮑ this is bcose we don't want to show filters if the user is writing a query
+                    //       they will still see the filtered values when they manually enter the filters
+                    const filters = parseIssueSearchString(inputValue.trim());
+                    const queryIsInLastPosition =
+                      !!filters.query &&
+                      inputValue.trim().endsWith(filters.query.trim());
 
-                  return !showItem ? null : (
-                    <React.Fragment key={key}>
-                      <CommandItem
-                        value={key}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onSelect={(value) => {
-                          setInputValueFromPrevious((prev) => {
-                            // ✨ MAGIC ✨
-                            if (currentWord.trim() === "") {
-                              const input = `${prev}${value}`;
-                              return `${input}:`;
-                            }
-                            // lots of cheat
-                            const isStarting = currentWord === prev;
-                            const prefix = isStarting ? "" : " ";
-                            const input = prev.replace(
-                              `${prefix}${currentWord}`,
-                              `${prefix}${value}`
-                            );
-                            return `${input}:`;
-                          });
-                          setCurrentWord(`${value}:`);
-                        }}
-                        className="group"
-                      >
-                        {key}
-                        <span className="ml-1 hidden truncate text-white/50 group-aria-[selected=true]:block">
-                          {search[key as SearchKey].getPlaceholder()}
-                        </span>
-                      </CommandItem>
-                      {search[key as SearchKey].values.map((option) => {
-                        let value = `${key}:${option}`;
-                        // labels should be wrapped inside of quotes
-                        if (key === "label" || key === "-label") {
-                          value = `${key}:"${option}"`;
-                        }
-                        return (
-                          <SubItem
-                            key={option}
-                            value={value}
+                    const showItem = queryIsInLastPosition
+                      ? currentWord.includes(`${key}:`)
+                      : !inputValue.includes(`${key}:`) ||
+                        currentWord.includes(`${key}:`);
+
+                    return (
+                      showItem && (
+                        <React.Fragment key={key}>
+                          <CommandItem
+                            value={key}
                             onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                             }}
                             onSelect={(value) => {
                               setInputValueFromPrevious((prev) => {
-                                /**
-                                 * @example
-                                 * // We add the new value to the input string and remove astray commands so that :
-                                 * if (prev === `in:title no:`) {
-                                 *     // when we do this
-                                 *     (prev + " " + value) = `in:title no: no:label`
-                                 *     // and remove the empty `no:` in the middle of the string with the
-                                 *     inputWithNewValue = `in:title no:label`
-                                 * }
-                                 */
-                                const inputWithNewValue = (prev + " " + value)
-                                  .replace(
-                                    new RegExp(`${currentWord}(?=\\s|$)`, "g"),
-                                    ""
-                                  )
-                                  .trim();
-
-                                // We parse then stringify the string to make it valid
-                                const filters =
-                                  parseIssueSearchString(inputWithNewValue);
-
-                                onSearch();
-                                return issueSearchFilterToString(filters) + " ";
+                                // ✨ MAGIC ✨
+                                if (currentWord.trim() === "") {
+                                  const input = `${prev}${value}`;
+                                  return `${input}:`;
+                                }
+                                // lots of cheat
+                                const isStarting = currentWord === prev;
+                                const prefix = isStarting ? "" : " ";
+                                const input = prev.replace(
+                                  `${prefix}${currentWord}`,
+                                  `${prefix}${value}`
+                                );
+                                return `${input}:`;
                               });
-
-                              setCurrentWord("");
+                              setCurrentWord(`${value}:`);
                             }}
-                            currentWord={currentWord}
+                            className="group justify-between"
                           >
-                            {option}
-                          </SubItem>
-                        );
-                      })}
-                    </React.Fragment>
-                  );
-                })}
-              </CommandGroup>
+                            <span>{key}:</span>
+                            <span className="text-grey text-sm">
+                              Autocomplete
+                            </span>
+                          </CommandItem>
+
+                          {search[key as SearchKey].values.map((option) => {
+                            let value = `${key}:${option}`;
+                            // labels should be wrapped inside of quotes
+                            if (key === "label" || key === "-label") {
+                              value = `${key}:"${option}"`;
+                            }
+                            return (
+                              <SubItem
+                                key={option}
+                                value={value}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                onSelect={(value) => {
+                                  setInputValueFromPrevious((prev) => {
+                                    /**
+                                     * @example
+                                     * // We add the new value to the input string and remove astray commands so that :
+                                     * if (prev === `in:title no:`) {
+                                     *     // when we do this
+                                     *     (prev + " " + value) = `in:title no: no:label`
+                                     *     // and remove the empty `no:` in the middle of the string with the
+                                     *     inputWithNewValue = `in:title no:label`
+                                     * }
+                                     */
+                                    const inputWithNewValue = (
+                                      prev +
+                                      " " +
+                                      value
+                                    )
+                                      .replace(
+                                        new RegExp(
+                                          `${currentWord}(?=\\s|$)`,
+                                          "g"
+                                        ),
+                                        ""
+                                      )
+                                      .trim();
+
+                                    // We parse then stringify the string to make it valid
+                                    const filters =
+                                      parseIssueSearchString(inputWithNewValue);
+
+                                    return (
+                                      issueSearchFilterToString(filters) + " "
+                                    );
+                                  });
+
+                                  setCurrentWord("");
+                                }}
+                                currentWord={currentWord}
+                                className="justify-between"
+                              >
+                                <span>{option}</span>
+                                <span className="text-grey text-sm">
+                                  Autocomplete
+                                </span>
+                              </SubItem>
+                            );
+                          })}
+                        </React.Fragment>
+                      )
+                    );
+                  })}
+                </CommandGroup>
+              </CommandPrimitive.List>
             </ItemGroupWrapper>
-          ) : null}
+          )}
         </div>
       </Command>
     </>
   );
 }
 
-function ItemGroupWrapper({ children }: { children: React.ReactNode }) {
+function ItemGroupWrapper({
+  children,
+  className
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   const filteredCount = useCommandState((state) => state.filtered.count);
   return (
     <div
       className={clsx(
-        "absolute top-2 z-10 w-full rounded-md border-neutral bg-subtle text-foreground shadow-md outline-none",
+        "absolute top-2 z-10 w-full rounded-xl border-neutral bg-subtle text-foreground shadow-md outline-none",
         {
           border: filteredCount > 0
-        }
+        },
+        className
       )}
     >
       {children}
@@ -384,7 +428,8 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={clsx(
-      "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-foreground/50",
+      "overflow-hidden text-foreground py-3 px-2.5",
+      "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-grey",
       className
     )}
     {...props}
@@ -400,7 +445,11 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={clsx(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-base outline-none aria-selected:bg-accent aria-selected:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-base outline-none",
+      "aria-selected:bg-neutral/40 aria-selected:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "aria-selected:before:absolute aria-selected:before:-left-1",
+      "aria-selected:before:h-6 aria-selected:before:w-1 aria-selected:before:rounded-md aria-selected:before:bg-accent",
+      "aria-selected:before:top-[53%] aria-selected:before:translate-y-[-55%]",
       className
     )}
     {...props}
