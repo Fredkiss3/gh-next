@@ -150,11 +150,15 @@ export function IssueListSearchInput({
   };
   type SearchKey = keyof typeof searchFilters;
 
+  let groupHeadingTitle = "Suggested filters";
   // get the current selected key derived from the current word
-  const key = currentWord.replace(/(\:[a-zA-Z0-9 ]*)/, "");
-
-  const groupHeadingTitle =
-    searchFilters[key as SearchKey]?.groupTitle ?? "Suggested filters";
+  if (currentWord.includes(":")) {
+    const key = currentWord.replace(/(\:[a-zA-Z0-9 ]*)/, "");
+    const groupTitle = searchFilters[key as SearchKey]?.groupTitle;
+    if (groupTitle) {
+      groupHeadingTitle = groupTitle;
+    }
+  }
 
   return (
     <>
