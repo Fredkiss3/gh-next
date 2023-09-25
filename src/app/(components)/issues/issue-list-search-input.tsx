@@ -90,7 +90,7 @@ export function IssueListSearchInput({
 
   const searchFilters = {
     sort: {
-      groupTitle: "Sort criteria",
+      groupTitle: "Sorting criteria",
       values: SORT_FILTERS
     },
     in: {
