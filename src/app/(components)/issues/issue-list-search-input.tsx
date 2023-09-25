@@ -9,7 +9,6 @@ import { LoadingIndicator } from "~/app/(components)/loading-indicator";
 import { useCommandState } from "cmdk";
 import {
   clsx,
-  debounce,
   issueSearchFilterToString,
   parseIssueSearchString
 } from "~/lib/shared/utils.shared";
@@ -20,29 +19,41 @@ import {
   SORT_FILTERS,
   STATUS_FILTERS
 } from "~/lib/shared/constants";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
 import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
 import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
+  searchQuery: string | null;
   squaredInputBorder?: boolean;
 };
 
 // Inspired by : https://github.com/openstatusHQ/openstatus/blob/main/apps/web/src/app/_components/input-search.tsx
 export function IssueListSearchInput({
   onSearch,
-  squaredInputBorder
+  squaredInputBorder,
+  searchQuery
 }: IssueListSearchInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [isMenuOpen, setMenuOpen] = React.useState(false);
-  const {
-    query: inputValue,
-    setQuery: setInputValue,
-    setQueryFromPrevious: setInputValueFromPrevious
-  } = useSearchQueryStore();
+
+  const [inputValue, setInputValue] = React.useState(() => {
+    let defaultSearch = "is:open ";
+
+    if (searchQuery !== null) {
+      // add a space at the end of the input so that
+      // autocomplete for search filters does not pick up the value from the input
+      if (!searchQuery.endsWith(" ")) {
+        defaultSearch = searchQuery + " ";
+      } else {
+        defaultSearch = searchQuery;
+      }
+    }
+
+    return defaultSearch;
+  });
 
   const [currentWord, setCurrentWord] = React.useState("");
 
@@ -154,13 +165,21 @@ export function IssueListSearchInput({
             return 1; // always show the `search` command item
           }
 
+          // this is to match the case of keys like `-label` or `-assignee`
+          // we strip the `-` and check if it matches the current word,
+          // if so, then we want to show the filter
+          const negativeKey = value.substring(1);
+
           // Special cases for author, mentions & assignee because they can contain `@`
           if (currentWord.match(authorRegex)) {
             return value.match(authorRegex) ? 1 : 0;
           } else if (currentWord.match(assigneeRegex)) {
             return value.match(assigneeRegex) ? 1 : 0;
-          } else if (value.includes(currentWord.toLowerCase())) {
-            // in case of subcommands
+          } else if (
+            value.startsWith(currentWord.toLowerCase()) ||
+            (negativeKey in searchFilters &&
+              negativeKey.startsWith(currentWord.toLowerCase()))
+          ) {
             return 1;
           }
           return 0;
@@ -224,54 +243,42 @@ export function IssueListSearchInput({
           {isMenuOpen && (
             <ItemGroupWrapper className="">
               <CommandPrimitive.List>
-                <CommandGroup heading="Search">
-                  <CommandItem
-                    className="flex justify-between items-baseline"
-                    value="search:submit"
-                    key="search:submit"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onSelect={() => {
-                      onSearch();
-                      // close the command list after the input
-                      inputRef?.current?.blur();
-                    }}
-                  >
-                    <span className="inline-flex items-baseline gap-2">
-                      <SearchIcon className="text-grey h-5 w-5 flex-shrink-0 relative top-1.5" />
-                      <span>{inputValue}</span>
-                    </span>
-                    <span className="text-grey text-sm whitespace-nowrap">
-                      Submit search
-                    </span>
-                  </CommandItem>
-                </CommandGroup>
+                {/* Don't show the current search values if the input is empty */}
+                {inputValue.trim().length > 0 && (
+                  <CommandGroup heading="Search">
+                    <CommandItem
+                      className="flex justify-between items-baseline"
+                      value="search:submit"
+                      key="search:submit"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onSelect={() => {
+                        onSearch();
+                      }}
+                    >
+                      <span className="inline-flex items-baseline gap-2">
+                        <SearchIcon className="text-grey h-5 w-5 flex-shrink-0 relative top-1.5" />
+                        <span>{inputValue}</span>
+                      </span>
+                      <span className="text-grey text-sm whitespace-nowrap">
+                        Submit search
+                      </span>
+                    </CommandItem>
+                  </CommandGroup>
+                )}
 
                 <CommandGroup
                   className="max-h-64 !overflow-scroll border-t border-neutral"
                   heading={groupHeadingTitle}
                 >
                   {Object.keys(searchFilters).map((key) => {
-                    // this is to filter items
-                    // only show the item if :
-                    // if the input does not contain a query at the end :
-                    //  - it not is already in the input
-                    //  - or is in the current value
-                    // else:
-                    //  - the key is in the current value
-                    //    ⮑ this is bcose we don't want to show filters if the user is writing a query
-                    //       they will still see the filtered values when they manually enter the filters
-                    const filters = parseIssueSearchString(inputValue.trim());
-                    const queryIsInLastPosition =
-                      !!filters.query &&
-                      inputValue.trim().endsWith(filters.query.trim());
-
-                    const showItem = queryIsInLastPosition
-                      ? currentWord.includes(`${key}:`)
-                      : !inputValue.includes(`${key}:`) ||
-                        currentWord.includes(`${key}:`);
+                    // this is to filter search filters
+                    // only show the item if the key is in the current value
+                    const showItem =
+                      !inputValue.includes(`${key}:`) ||
+                      currentWord.includes(`${key}:`);
 
                     return (
                       showItem && (
@@ -283,7 +290,7 @@ export function IssueListSearchInput({
                               e.stopPropagation();
                             }}
                             onSelect={(value) => {
-                              setInputValueFromPrevious((prev) => {
+                              setInputValue((prev) => {
                                 // ✨ MAGIC ✨
                                 if (currentWord.trim() === "") {
                                   const input = `${prev}${value}`;
@@ -324,7 +331,7 @@ export function IssueListSearchInput({
                                     e.stopPropagation();
                                   }}
                                   onSelect={(value) => {
-                                    setInputValueFromPrevious((prev) => {
+                                    setInputValue((prev) => {
                                       /**
                                        * @example
                                        * // We add the new value to the input string and remove astray commands so that :

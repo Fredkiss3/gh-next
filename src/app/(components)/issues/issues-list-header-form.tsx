@@ -12,11 +12,10 @@ import {
 import { IssueListSearchInput } from "./issue-list-search-input";
 
 // utils
-import { usePathname, useRouter } from "next/navigation";
-import { clsx, debounce } from "~/lib/shared/utils.shared";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { clsx, parseIssueSearchString } from "~/lib/shared/utils.shared";
 import { IssueSearchLink } from "./issue-search-link";
-import { BASE_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
+import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 // types
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
@@ -29,15 +28,16 @@ export function IssuesListHeaderForm({
   className,
   showActionList
 }: IssuesListHeaderFormProps) {
-  const formRef = React.useRef<HTMLFormElement>(null);
+  const formRef = React.useRef<React.ElementRef<"form">>(null);
   const router = useRouter();
   const path = usePathname();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q");
 
-  const searchQuery = useSearchQueryStore((store) => store.query);
-  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  const filters = getParsedQuery();
+  const filters = parseIssueSearchString(
+    searchQuery ?? DEFAULT_ISSUE_SEARCH_QUERY
+  );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSearch = React.useCallback(
     () => formRef.current?.requestSubmit(),
     []
@@ -71,7 +71,9 @@ export function IssuesListHeaderForm({
                       is: "open"
                     },
                     text: "Open issues",
-                    selected: searchQuery.trim() === BASE_ISSUE_SEARCH_QUERY
+                    selected:
+                      searchQuery === null ||
+                      searchQuery.trim() === DEFAULT_ISSUE_SEARCH_QUERY
                   },
                   {
                     filters: {
@@ -155,6 +157,8 @@ export function IssuesListHeaderForm({
           </ActionList>
         )}
         <IssueListSearchInput
+          key={searchQuery}
+          searchQuery={searchQuery}
           squaredInputBorder={showActionList}
           onSearch={onSearch}
         />
