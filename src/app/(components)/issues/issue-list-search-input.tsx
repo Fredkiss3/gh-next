@@ -77,56 +77,73 @@ export function IssueListSearchInput({
 
   const isLoading = isLoadingAuthor || isLoadingAssignee || isLoadingLabels;
 
-  const search = {
+  const searchFilters = {
     sort: {
+      groupTitle: "Sort items",
       values: SORT_FILTERS
     },
     in: {
+      groupTitle: "Search in",
       values: IN_FILTERS
     },
     is: {
+      groupTitle: "States",
       values: STATUS_FILTERS
     },
     reason: {
+      groupTitle: "Closing reasons",
       values: REASON_FILTERS
     },
     no: {
+      groupTitle: "Values",
       values: NO_METADATA_FILTERS
     },
     author: {
       // this is to fix a bug where results of `-author` also appears for `author`
+      groupTitle: "Included author",
       values: currentWord.startsWith("-")
         ? []
         : (authorList ?? []).map((user) => user.username)
     },
     "-author": {
       // this is to fix a bug where results of `author` also appears for `-author`
+      groupTitle: "Excluded author",
       values: !currentWord.startsWith("-")
         ? []
         : (authorList ?? []).map((user) => user.username)
     },
     assignee: {
+      groupTitle: "Included assignees",
       values: currentWord.startsWith("-")
         ? []
         : (assigneeList ?? []).map((user) => user.username)
     },
     "-assignee": {
+      groupTitle: "Excluded assignees",
       values: !currentWord.startsWith("-")
         ? []
         : (assigneeList ?? []).map((user) => user.username)
     },
     label: {
+      groupTitle: "Included labels",
       values: currentWord.startsWith("-")
         ? []
         : (labelList ?? []).map((label) => label.name)
     },
     "-label": {
+      groupTitle: "Excluded labels",
       values: !currentWord.startsWith("-")
         ? []
         : (labelList ?? []).map((label) => label.name)
     }
   };
-  type SearchKey = keyof typeof search;
+  type SearchKey = keyof typeof searchFilters;
+
+  // get the current selected key derived from the current word
+  const key = currentWord.replace(/(\:[a-zA-Z0-9 ]*)/, "");
+
+  const groupHeadingTitle =
+    searchFilters[key as SearchKey]?.groupTitle ?? "Suggested filters";
 
   return (
     <>
@@ -234,9 +251,9 @@ export function IssueListSearchInput({
 
                 <CommandGroup
                   className="max-h-64 !overflow-scroll border-t border-neutral"
-                  heading="Suggested filters"
+                  heading={groupHeadingTitle}
                 >
-                  {Object.keys(search).map((key) => {
+                  {Object.keys(searchFilters).map((key) => {
                     // this is to filter items
                     // only show the item if :
                     // if the input does not contain a query at the end :
@@ -291,67 +308,71 @@ export function IssueListSearchInput({
                             </span>
                           </CommandItem>
 
-                          {search[key as SearchKey].values.map((option) => {
-                            let value = `${key}:${option}`;
-                            // labels should be wrapped inside of quotes
-                            if (key === "label" || key === "-label") {
-                              value = `${key}:"${option}"`;
-                            }
-                            return (
-                              <SubItem
-                                key={option}
-                                value={value}
-                                onMouseDown={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }}
-                                onSelect={(value) => {
-                                  setInputValueFromPrevious((prev) => {
-                                    /**
-                                     * @example
-                                     * // We add the new value to the input string and remove astray commands so that :
-                                     * if (prev === `in:title no:`) {
-                                     *     // when we do this
-                                     *     (prev + " " + value) = `in:title no: no:label`
-                                     *     // and remove the empty `no:` in the middle of the string with the
-                                     *     inputWithNewValue = `in:title no:label`
-                                     * }
-                                     */
-                                    const inputWithNewValue = (
-                                      prev +
-                                      " " +
-                                      value
-                                    )
-                                      .replace(
-                                        new RegExp(
-                                          `${currentWord}(?=\\s|$)`,
-                                          "g"
-                                        ),
-                                        ""
+                          {searchFilters[key as SearchKey].values.map(
+                            (option) => {
+                              let value = `${key}:${option}`;
+                              // labels should be wrapped inside of quotes
+                              if (key === "label" || key === "-label") {
+                                value = `${key}:"${option}"`;
+                              }
+                              return (
+                                <SubItem
+                                  key={option}
+                                  value={value}
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }}
+                                  onSelect={(value) => {
+                                    setInputValueFromPrevious((prev) => {
+                                      /**
+                                       * @example
+                                       * // We add the new value to the input string and remove astray commands so that :
+                                       * if (prev === `in:title no:`) {
+                                       *     // when we do this
+                                       *     (prev + " " + value) = `in:title no: no:label`
+                                       *     // and remove the empty `no:` in the middle of the string with the
+                                       *     inputWithNewValue = `in:title no:label`
+                                       * }
+                                       */
+                                      const inputWithNewValue = (
+                                        prev +
+                                        " " +
+                                        value
                                       )
-                                      .trim();
+                                        .replace(
+                                          new RegExp(
+                                            `${currentWord}(?=\\s|$)`,
+                                            "g"
+                                          ),
+                                          ""
+                                        )
+                                        .trim();
 
-                                    // We parse then stringify the string to make it valid
-                                    const filters =
-                                      parseIssueSearchString(inputWithNewValue);
+                                      // We parse then stringify the string to make it valid
+                                      const filters =
+                                        parseIssueSearchString(
+                                          inputWithNewValue
+                                        );
 
-                                    return (
-                                      issueSearchFilterToString(filters) + " "
-                                    );
-                                  });
+                                      return (
+                                        issueSearchFilterToString(filters) + " "
+                                      );
+                                    });
 
-                                  setCurrentWord("");
-                                }}
-                                currentWord={currentWord}
-                                className="justify-between"
-                              >
-                                <span>{option}</span>
-                                <span className="text-grey text-sm">
-                                  Autocomplete
-                                </span>
-                              </SubItem>
-                            );
-                          })}
+                                    setCurrentWord("");
+                                  }}
+                                  currentWord={currentWord}
+                                  className="justify-between"
+                                >
+                                  <span>{option}</span>
+                                  <span className="text-grey text-sm">
+                                    Autocomplete
+                                  </span>
+                                </SubItem>
+                              );
+                            }
+                          )}
                         </React.Fragment>
                       )
                     );
