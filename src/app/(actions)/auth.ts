@@ -32,10 +32,6 @@ export async function authenticateWithGithub(formData: FormData) {
     });
   }
 
-  console.log({
-    ACTION_GITHUB_REDIRECT_URI: env.GITHUB_REDIRECT_URI
-  });
-
   redirect(
     `https://github.com/login/oauth/authorize?${searchParams.toString()}`
   );
