@@ -143,8 +143,8 @@ export type RGBHSLColor = {
 /**
  * Converts a hex color to an object with RGB and HSL values.
  *
- * @param {string} hex The hexadecimal color to convert.
- * @returns {RGBHSLColor | null} An object with the r, g, b, h, s, l values or null if the input is invalid.
+ * @param hex The hexadecimal color to convert.
+ * @returns An object with the r, g, b, h, s, l values or null if the input is invalid.
  *
  * @example
  * console.log(hexToRGBHSL('#0033ff')); // { r: 0, g: 51, b: 255, h: 240, s: 100, l: 50 }
@@ -213,7 +213,7 @@ export function hexToRGBHSL(hex: string): RGBHSLColor | null {
 /**
  * Generates a random hexadecimal color.
  *
- * @returns {string} A string representing a hexadecimal color.
+ * @returns A string representing a hexadecimal color.
  * @example
  *  console.log(getRandomHexColor());  // Example output: "#3e4f5c"
  */
@@ -227,8 +227,8 @@ export function getRandomHexColor(): string {
  * is less or equal than a month ago, returns the date relative to now. Otherwise,
  * returns the date in the format "MMM d".
  *
- * @param {Date} date The date to format.
- * @returns {string} The formatted date.
+ * @param date The date to format.
+ * @returns The formatted date.
  *
  * @example
  * // Assuming today's date is July 30, 2023
@@ -259,9 +259,9 @@ export function formatDate(date: Date | string): string {
  * Returns an excerpt of the input string. If the string is longer than `maxChars`,
  * it's cut off and '...' is appended to it.
  *
- * @param {string} str - The string to excerpt.
- * @param {number} maxChars - The maximum number of characters in the excerpt.
- * @returns {string} The excerpted string.
+ * @param str - The string to excerpt.
+ * @param maxChars - The maximum number of characters in the excerpt.
+ * @returns The excerpted string.
  *
  * @example
  * excerpt("Hello world!", 5); // "Hello..."
@@ -314,35 +314,35 @@ const issueSearchFiltersSchema = z.object({
 export type IssueSearchFilters = z.infer<typeof issueSearchFiltersSchema>;
 
 /**
- * This function has been generated with the help of CHATGPT,
- * I did not spend enough time to inspect how the regex works, but it works as expected.
+ * Parses a search query string and extracts issue filter tokens.
+ *
+ * Given a string with tokens separated by spaces, this function identifies
+ * and extracts issue-related filters such as 'is', 'in', 'label', 'assignee',
+ * 'mentions', 'query', and 'sort'. The extracted filters are then returned
+ * as an `IssueSearchFilters` object.
+ *
+ * This function was designed with assistance from CHATGPT. While the underlying
+ * regex has been tested to work as expected, it may be beneficial to review
+ * its logic for comprehensive understanding.
+ *
+ * @param input A string containing issue search tokens and criteria.
+ * @returns An `IssueSearchFilters` object representing the extracted filters.
  *
  * @example
- *  const testString = 'is:open is:closed in:title in:body label:"area: app" label:"linear: next" assignee:fredkiss3,sebmarkbage mentions:@me,@fredkiss3 hello world how you doing ? sort:comments-asc,comments-desc';
- *  const result = parseIssueSearchString(testString);
- *  result =  {
- *   "is": "closed",
- *   "in": [
- *     "title",
- *     "body"
- *   ],
- *   "label": [
- *     "area: app",
- *     "linear: next"
- *   ],
- *   "assignee": [
- *     "fredkiss3",
- *     "sebmarkbage"
- *   ],
- *   "mentions": "@fredkiss3",
- *   "query": "hello world how you doing ?",
- *   "sort": "comments-desc"
- *  }
- *
- * @param input a string of tokens separated by spaces
- * @returns the search filters derived from it
- * */
-export function parseIssueSearchString(input: string): IssueSearchFilters {
+ * const testString = 'is:open is:closed in:title in:body label:"area: app" label:"linear: next" assignee:fredkiss3,sebmarkbage mentions:@me,@fredkiss3 hello world how you doing ? sort:comments-asc,comments-desc';
+ * const result = parseIssueFilterTokens(testString);
+ * // Expected output:
+ * // {
+ * //   "is": "closed",
+ * //   "in": ["title", "body"],
+ * //   "label": ["area: app", "linear: next"],
+ * //   "assignee": ["fredkiss3", "sebmarkbage"],
+ * //   "mentions": "fredkiss3",
+ * //   "query": "hello world how you doing ?",
+ * //   "sort": "comments-desc"
+ * // }
+ */
+export function parseIssueFilterTokens(input: string): IssueSearchFilters {
   const result: Record<string, string[] | string> = {};
 
   // Splitting while considering quotes
@@ -398,11 +398,34 @@ export function parseIssueSearchString(input: string): IssueSearchFilters {
 }
 
 /**
- * function to convert back the search filters to string
- * @param filters the filters
- * @returns
+ * Formats an `IssueSearchFilters` object into a string representation.
+ *
+ * This function takes an `IssueSearchFilters` object, representing various
+ * search criteria, and converts it into a string format suitable for
+ * display and transmission to the server. The resulting string is composed
+ * of tokens and values that represent the different filters and their specified
+ * criteria.
+ *
+ * @param filters An `IssueSearchFilters` object containing search criteria.
+ * @returns A string representation of the provided search filters.
+ *
+ * @example
+ * const filters = {
+ *   "is": "closed",
+ *   "in": ["title", "body"],
+ *   "label": ["area: app", "linear: next"],
+ *   "assignee": ["fredkiss3", "sebmarkbage"],
+ *   "mentions": "@fredkiss3",
+ *   "query": "hello world how you doing ?",
+ *   "sort": "comments-desc"
+ * };
+ * const resultString = formatSearchFiltersToString(filters);
+ * // Expected output:
+ * // 'is:closed in:title in:body label:"area: app" label:"linear: next" assignee:fredkiss3 assignee:sebmarkbage mentions:@fredkiss3 sort:comments-desc hello world how you doing ?'
  */
-export function issueSearchFilterToString(filters: IssueSearchFilters): string {
+export function formatSearchFiltersToString(
+  filters: IssueSearchFilters
+): string {
   let terms: string[] = [];
   for (const key in filters) {
     let value = filters[key as keyof IssueSearchFilters];
@@ -410,7 +433,8 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
       continue;
     }
     if (key === "no" && Array.isArray(value)) {
-      // @ts-expect-error this is fine, typescript adds another infer string[] wich is not what we want
+      // @ts-expect-error this is fine, typescript infer this as string[] | ("label" | "assignee")[]
+      // but this value can only be "label" | "assignee"
       value = new Set(value);
     }
 
@@ -424,6 +448,7 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
         }
       }
     }
+    // TODO : handle "or" conditions
     //  else if (Array.isArray(value) && value.length > 0) {
     //   terms.push(key + ":" + value.join(","));
     // }
@@ -433,6 +458,7 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
       for (const item of value) {
         terms.push(`${key}:${item}`);
       }
+      // TODO : handle "or" conditions
       // terms.push(key + ":" + [...value].join(","));
     }
   }
@@ -449,10 +475,10 @@ export function issueSearchFilterToString(filters: IssueSearchFilters): string {
  * of the original function until after a specified number of milliseconds have elapsed since the last time
  * the debounced function was invoked.
  *
- * @param {Function} callback - The function to debounce.
- * @param {number} [delay=500] - The number of milliseconds to delay the invocation. Defaults to 500ms.
+ * @param callback - The function to debounce.
+ * @param delay - The number of milliseconds to delay the invocation. **Defaults to 500ms**.
  *
- * @returns {Function} Returns the debounced version of the passed function.
+ * @returns Returns the debounced version of the passed function.
  *
  * @example
  *    const debouncedLog = debounce(() => console.log("LOGGED"))
