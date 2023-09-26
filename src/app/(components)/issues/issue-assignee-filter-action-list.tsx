@@ -8,7 +8,7 @@ import { CheckIcon } from "@primer/octicons-react";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import { clsx, parseIssueSearchString } from "~/lib/shared/utils.shared";
+import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
 import { useSearchParams } from "next/navigation";
@@ -26,7 +26,7 @@ export function IssueAssigneeFilterActionList({
   const [inputQuery, setInputQuery] = React.useState("");
 
   const searchParams = useSearchParams();
-  const allFilters = parseIssueSearchString(
+  const allFilters = parseIssueFilterTokens(
     searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
   );
 

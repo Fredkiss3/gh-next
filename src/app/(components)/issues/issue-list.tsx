@@ -19,7 +19,7 @@ import { IssueSearchLink } from "./issue-search-link";
 // utils
 import {
   clsx,
-  parseIssueSearchString,
+  parseIssueFilterTokens,
   pluralize
 } from "~/lib/shared/utils.shared";
 import { preprocess, z } from "zod";
@@ -44,7 +44,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
   );
   let currentPage = pageSchema.parse(page);
 
-  const filters = parseIssueSearchString(
+  const filters = parseIssueFilterTokens(
     searchQuery ?? DEFAULT_ISSUE_SEARCH_QUERY
   );
 

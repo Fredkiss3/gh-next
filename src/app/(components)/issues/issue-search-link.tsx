@@ -5,8 +5,8 @@ import Link from "next/link";
 
 // utils
 import {
-  issueSearchFilterToString,
-  parseIssueSearchString
+  formatSearchFiltersToString,
+  parseIssueFilterTokens
 } from "~/lib/shared/utils.shared";
 import { useSearchParams } from "next/navigation";
 import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
@@ -30,7 +30,7 @@ export const IssueSearchLink = React.forwardRef<
   ref
 ) {
   const searchParams = useSearchParams();
-  const allFilters = parseIssueSearchString(
+  const allFilters = parseIssueFilterTokens(
     searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
   );
 
@@ -42,7 +42,7 @@ export const IssueSearchLink = React.forwardRef<
     computedFilters = { ...computedFilters, ...allFilters };
   }
 
-  const searchStr = issueSearchFilterToString({
+  const searchStr = formatSearchFiltersToString({
     ...computedFilters,
     ...filters
   });

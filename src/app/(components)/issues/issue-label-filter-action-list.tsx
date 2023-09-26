@@ -7,7 +7,7 @@ import { CheckIcon } from "@primer/octicons-react";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import { clsx, parseIssueSearchString } from "~/lib/shared/utils.shared";
+import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
 import { useSearchParams } from "next/navigation";
@@ -25,7 +25,7 @@ export function IssueLabelFilterActionList({
   const alignRight = useMediaQuery(`(min-width: 768px)`);
 
   const searchParams = useSearchParams();
-  const allFilters = parseIssueSearchString(
+  const allFilters = parseIssueFilterTokens(
     searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
   );
 

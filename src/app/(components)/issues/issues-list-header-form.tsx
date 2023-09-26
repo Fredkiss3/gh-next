@@ -13,7 +13,7 @@ import { IssueListSearchInput } from "./issue-list-search-input";
 
 // utils
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { clsx, parseIssueSearchString } from "~/lib/shared/utils.shared";
+import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
 import { IssueSearchLink } from "./issue-search-link";
 import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
@@ -34,7 +34,7 @@ export function IssuesListHeaderForm({
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q");
 
-  const filters = parseIssueSearchString(
+  const filters = parseIssueFilterTokens(
     searchQuery ?? DEFAULT_ISSUE_SEARCH_QUERY
   );
 

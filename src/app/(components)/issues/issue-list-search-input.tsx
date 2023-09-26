@@ -9,8 +9,8 @@ import { LoadingIndicator } from "~/app/(components)/loading-indicator";
 import { useCommandState } from "cmdk";
 import {
   clsx,
-  issueSearchFilterToString,
-  parseIssueSearchString
+  formatSearchFiltersToString,
+  parseIssueFilterTokens
 } from "~/lib/shared/utils.shared";
 import {
   IN_FILTERS,
@@ -22,6 +22,7 @@ import {
 import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
 import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
 import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
+import { useSearchInputTokens } from "~/lib/client/hooks/use-search-input-tokens";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
@@ -35,10 +36,15 @@ export function IssueListSearchInput({
   squaredInputBorder,
   searchQuery
 }: IssueListSearchInputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<React.ElementRef<"input">>(null);
+  const inputTokensRef = React.useRef<React.ElementRef<"div">>(null);
+
+  const [isFirstRender, setIsFirstRender] = React.useState(true);
+  React.useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
 
   const [isMenuOpen, setMenuOpen] = React.useState(false);
-
   const [inputValue, setInputValue] = React.useState(() => {
     let defaultSearch = "is:open ";
 
@@ -54,8 +60,10 @@ export function IssueListSearchInput({
 
     return defaultSearch;
   });
-
   const [currentWord, setCurrentWord] = React.useState("");
+
+  const searchTokens = useSearchInputTokens(inputValue);
+  const searchTokensInInput = useSearchInputTokens(inputValue, true);
 
   // regexes for async filters, they can contain `@` characters
   const authorRegex = /^(-)?author:/;
@@ -195,7 +203,7 @@ export function IssueListSearchInput({
             "flex flex-1 items-center gap-1.5",
             "rounded-r-md border border-neutral px-3 py-1.5",
             "w-full bg-header shadow-sm outline-none ring-accent font-medium",
-            "text-grey",
+            "text-foreground",
             "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
             {
               "rounded-l-none": squaredInputBorder,
@@ -204,43 +212,98 @@ export function IssueListSearchInput({
           )}
         >
           {isLoading ? (
-            <LoadingIndicator className="h-5 w-5 flex-shrink-0" />
+            <LoadingIndicator className="h-5 w-5 flex-shrink-0 text-grey" />
           ) : (
-            <SearchIcon className="h-5 w-5 flex-shrink-0" />
+            <SearchIcon className="h-5 w-5 flex-shrink-0 text-grey" />
           )}
-          <CommandPrimitive.Input
-            ref={inputRef}
-            name="q"
-            value={inputValue}
-            onValueChange={(value) => {
-              setInputValue(value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") inputRef?.current?.blur();
-            }}
-            onBlur={() => setMenuOpen(false)}
-            onFocus={() => setMenuOpen(true)}
-            onInput={(e) => {
-              // ✨ MAGIC ✨
-              const caretPositionStart = e.currentTarget?.selectionStart || -1;
-              const inputValue = e.currentTarget?.value || "";
+          <div className="flex-grow w-full inline-flex relative">
+            <div
+              ref={inputTokensRef}
+              className={clsx(
+                "absolute select-none whitespace-pre break-words flex-grow w-full p-0 overflow-y-hidden overflow-x-auto min-w-full",
+                "left-0 right-0 hide-scrollbars",
+                {
+                  hidden: isFirstRender
+                }
+              )}
+              aria-hidden="true"
+            >
+              {searchTokensInInput}
+            </div>
+            <CommandPrimitive.Input
+              ref={inputRef}
+              name="q"
+              value={inputValue}
+              onValueChange={(value) => {
+                setInputValue(value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  inputRef?.current?.blur();
+                } else if (e.key === "Backspace") {
+                  if (inputTokensRef.current) {
+                    inputTokensRef.current.scrollLeft =
+                      e.currentTarget.selectionStart ?? 0;
+                  }
+                }
+              }}
+              onScroll={(e) => {
+                // e.currentTarget.
+                if (inputTokensRef.current) {
+                  inputTokensRef.current.scrollLeft =
+                    e.currentTarget.scrollLeft;
+                }
+                console.log("[Scroll event]", e.currentTarget.scrollLeft);
+              }}
+              onBlur={() => setMenuOpen(false)}
+              onFocus={() => setMenuOpen(true)}
+              onInput={(e) => {
+                // ✨ MAGIC ✨
+                const caretPositionStart =
+                  e.currentTarget?.selectionStart || -1;
+                const inputValue = e.currentTarget?.value || "";
 
-              let start = caretPositionStart;
-              let end = caretPositionStart;
+                let start = caretPositionStart;
+                let end = caretPositionStart;
 
-              while (start > 0 && inputValue[start - 1] !== " ") {
-                start--;
-              }
-              while (end < inputValue.length && inputValue[end] !== " ") {
-                end++;
-              }
+                while (start > 0 && inputValue[start - 1] !== " ") {
+                  start--;
+                }
+                while (end < inputValue.length && inputValue[end] !== " ") {
+                  end++;
+                }
 
-              const word = inputValue.substring(start, end);
-              setCurrentWord(word);
-            }}
-            placeholder="Search all issues"
-            className={clsx("flex-grow bg-transparent outline-none")}
-          />
+                const word = inputValue.substring(start, end);
+                setCurrentWord(word);
+
+                console.log("[Input event]", e.currentTarget.value);
+                if (
+                  e.currentTarget.selectionEnd &&
+                  inputTokensRef.current &&
+                  e.currentTarget.selectionEnd >= e.currentTarget.value.length
+                ) {
+                  console.log("Input at the end ?");
+                  inputTokensRef.current.scrollLeft =
+                    inputTokensRef.current.scrollWidth + 1;
+                }
+
+                if (
+                  e.currentTarget.selectionStart === 0 &&
+                  inputTokensRef.current
+                ) {
+                  inputTokensRef.current.scrollLeft = 0;
+                }
+              }}
+              placeholder="Search all issues"
+              className={clsx(
+                "flex-grow bg-transparent outline-none min-w-full",
+                "relative z-10 caret-foreground",
+                {
+                  "text-transparent": !isFirstRender
+                }
+              )}
+            />
+          </div>
         </div>
 
         <div className="relative">
@@ -262,10 +325,10 @@ export function IssueListSearchInput({
                         onSearch();
                       }}
                     >
-                      <span className="inline-flex items-baseline gap-2">
+                      <div className="inline-flex items-baseline gap-2">
                         <SearchIcon className="text-grey h-5 w-5 flex-shrink-0 relative top-1.5" />
-                        <span>{inputValue}</span>
-                      </span>
+                        <p>{searchTokens}</p>
+                      </div>
                       <span className="text-grey text-sm whitespace-nowrap">
                         Submit search
                       </span>
@@ -310,6 +373,10 @@ export function IssueListSearchInput({
                                 return `${input}:`;
                               });
                               setCurrentWord(`${value}:`);
+                              if (inputTokensRef.current) {
+                                inputTokensRef.current.scrollLeft =
+                                  inputTokensRef.current.scrollWidth;
+                              }
                             }}
                             className="group justify-between"
                           >
@@ -362,16 +429,21 @@ export function IssueListSearchInput({
 
                                       // We parse then stringify the string to make it valid
                                       const filters =
-                                        parseIssueSearchString(
+                                        parseIssueFilterTokens(
                                           inputWithNewValue
                                         );
 
                                       return (
-                                        issueSearchFilterToString(filters) + " "
+                                        formatSearchFiltersToString(filters) +
+                                        " "
                                       );
                                     });
 
                                     setCurrentWord("");
+                                    if (inputTokensRef.current) {
+                                      inputTokensRef.current.scrollLeft =
+                                        inputTokensRef.current.scrollWidth;
+                                    }
                                   }}
                                   currentWord={currentWord}
                                   className="justify-between"
@@ -478,7 +550,7 @@ const CommandItem = React.forwardRef<
     ref={ref}
     className={clsx(
       "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-base outline-none",
-      "aria-selected:bg-neutral/40 aria-selected:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "aria-selected:bg-neutral/40 aria-selected:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       "aria-selected:before:absolute aria-selected:before:-left-1",
       "aria-selected:before:h-6 aria-selected:before:w-1 aria-selected:before:rounded-md aria-selected:before:bg-accent",
       "aria-selected:before:top-[53%] aria-selected:before:translate-y-[-55%]",
