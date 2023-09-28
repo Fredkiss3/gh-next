@@ -1,5 +1,4 @@
 import * as React from "react";
-import Image from "next/image";
 import { clsx } from "~/lib/shared/utils.shared";
 
 export type AvatarProps = {
@@ -16,11 +15,13 @@ export function Avatar({
   size = "medium"
 }: AvatarProps) {
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={src}
+      loading="lazy"
       alt={`@${username}`}
       className={clsx(
-        "flex-shrink-0 rounded-full",
+        "flex-shrink-0 rounded-full bg-grey/60",
         {
           "h-6 w-6": size === "small",
           "h-16 w-16": size === "large",
