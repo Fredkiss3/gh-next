@@ -42,7 +42,7 @@ async function IssuesListHeader() {
   const labelCount = await getLabelsCount();
   return (
     <section
-      className="flex flex-col gap-4 px-5 md:flex-row md:px-0"
+      className="flex flex-col gap-4 px-5 md:flex-row md:px-0 max-w-full"
       id="search-bar"
     >
       <IssuesListHeaderForm
@@ -50,7 +50,7 @@ async function IssuesListHeader() {
         showActionList={isAuthed}
       />
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 flex-shrink-0">
         <SegmentedLayout>
           <li>
             <Button

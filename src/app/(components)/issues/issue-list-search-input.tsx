@@ -37,12 +37,10 @@ export function IssueListSearchInput({
   searchQuery
 }: IssueListSearchInputProps) {
   const inputRef = React.useRef<React.ElementRef<"input">>(null);
+  const sizerRef = React.useRef<React.ElementRef<"div">>(null);
   const inputTokensRef = React.useRef<React.ElementRef<"div">>(null);
 
   const [isFirstRender, setIsFirstRender] = React.useState(true);
-  React.useEffect(() => {
-    setIsFirstRender(false);
-  }, []);
 
   const [isMenuOpen, setMenuOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(() => {
@@ -168,9 +166,53 @@ export function IssueListSearchInput({
     }
   }
 
+  React.useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
+
+  React.useEffect(() => {
+    if (!isFirstRender && sizerRef.current && inputRef.current) {
+      /**
+       * // TODO do this for moving the input & selection
+       *  const cursor = this.sizer.querySelector("span");
+
+      if (cursor) {
+        // make sure the cursor is visible
+        if (cursor.offsetLeft < this.styledInputContainer.scrollLeft) {
+          this.styledInputContainer.scrollLeft = cursor.offsetLeft - minWidth;
+        } else if (
+          cursor.offsetLeft >
+          this.styledInputContainer.scrollLeft +
+            this.styledInputContainer.clientWidth
+        ) {
+          this.styledInputContainer.scrollLeft =
+            cursor.offsetLeft -
+            this.styledInputContainer.clientWidth +
+            minWidth;
+        }
+      }
+
+      const currentSizerScrollWidth = this.sizer.scrollWidth;
+      const newInputWidth = Math.max(
+        currentSizerScrollWidth + 2,
+        this.input.value === "" ? 2 : 0,
+        minWidth
+      );
+
+      this.input.style.width = `${newInputWidth}px`;
+       */
+      inputRef.current.style.setProperty(
+        "width",
+        // why +2 ? no idea 🤷‍♂️
+        sizerRef.current.clientWidth + 2 + "px"
+      );
+    }
+  }, [isFirstRender, inputValue]);
+
   return (
     <>
       <Command
+        label="Search all issues"
         // This is to filter sub items
         filter={(value) => {
           if (value === "search:submit") {
@@ -196,13 +238,13 @@ export function IssueListSearchInput({
           }
           return 0;
         }}
-        className="relative"
+        className="relative min-w-0"
       >
         <div
           className={clsx(
-            "flex flex-1 items-center gap-1.5",
+            "flex items-center gap-1.5 overflow-x-auto hide-scrollbars min-w-0",
             "rounded-r-md border border-neutral px-3 py-1.5",
-            "w-full bg-header shadow-sm outline-none ring-accent font-medium",
+            "w-full bg-header shadow-sm outline-none ring-accent font-medium max-w-full",
             "text-foreground",
             "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
             {
@@ -216,12 +258,22 @@ export function IssueListSearchInput({
           ) : (
             <SearchIcon className="h-5 w-5 flex-shrink-0 text-grey" />
           )}
-          <div className="flex-grow w-full inline-flex relative">
+          <div className="self-stretch w-full inline-flex relative overflow-x-auto max-w-full">
+            <div
+              id="sizer"
+              className="absolute top-0 left-0 h-0 overflow-scroll whitespace-pre invisible hide-scrollbars"
+              aria-hidden="true"
+              ref={sizerRef}
+            >
+              {inputValue}
+              <span></span>
+            </div>
+            {/* Search Tokens  */}
             <div
               ref={inputTokensRef}
               className={clsx(
-                "absolute select-none whitespace-pre break-words flex-grow w-full p-0 overflow-y-hidden overflow-x-auto min-w-full",
-                "left-0 right-0 hide-scrollbars",
+                "absolute select-none whitespace-pre break-words p-0 overflow-y-clip overflow-x-auto hide-scrollbars",
+                "inline-flex",
                 {
                   hidden: isFirstRender
                 }
@@ -230,6 +282,8 @@ export function IssueListSearchInput({
             >
               {searchTokensInInput}
             </div>
+
+            {/* Rendered input */}
             <CommandPrimitive.Input
               ref={inputRef}
               name="q"
@@ -237,23 +291,31 @@ export function IssueListSearchInput({
               onValueChange={(value) => {
                 setInputValue(value);
               }}
+              className={clsx(
+                "flex p-0 bg-transparent outline-none min-w-full overflow-y-hidden overflow-x-auto",
+                "relative z-10 caret-foreground",
+                {
+                  "text-transparent": !isFirstRender
+                }
+              )}
               onKeyDown={(e) => {
                 if (e.key === "Escape") {
                   inputRef?.current?.blur();
-                } else if (e.key === "Backspace") {
-                  if (inputTokensRef.current) {
-                    inputTokensRef.current.scrollLeft =
-                      e.currentTarget.selectionStart ?? 0;
-                  }
                 }
+                // else if (e.key === "Backspace") {
+                //   if (inputTokensRef.current) {
+                //     inputTokensRef.current.scrollLeft =
+                //       e.currentTarget.selectionStart ?? 0;
+                //   }
+                // }
               }}
               onScroll={(e) => {
                 // e.currentTarget.
-                if (inputTokensRef.current) {
-                  inputTokensRef.current.scrollLeft =
-                    e.currentTarget.scrollLeft;
-                }
-                console.log("[Scroll event]", e.currentTarget.scrollLeft);
+                // if (inputTokensRef.current) {
+                //   inputTokensRef.current.scrollLeft =
+                //     e.currentTarget.scrollLeft;
+                // }
+                // console.log("[Scroll event]", e.currentTarget.scrollLeft);
               }}
               onBlur={() => setMenuOpen(false)}
               onFocus={() => setMenuOpen(true)}
@@ -276,32 +338,25 @@ export function IssueListSearchInput({
                 const word = inputValue.substring(start, end);
                 setCurrentWord(word);
 
-                console.log("[Input event]", e.currentTarget.value);
-                if (
-                  e.currentTarget.selectionEnd &&
-                  inputTokensRef.current &&
-                  e.currentTarget.selectionEnd >= e.currentTarget.value.length
-                ) {
-                  console.log("Input at the end ?");
-                  inputTokensRef.current.scrollLeft =
-                    inputTokensRef.current.scrollWidth + 1;
-                }
+                // console.log("[Input event]", e.currentTarget.value);
+                // if (
+                //   e.currentTarget.selectionEnd &&
+                //   inputTokensRef.current &&
+                //   e.currentTarget.selectionEnd >= e.currentTarget.value.length
+                // ) {
+                //   console.log("Input at the end ?");
+                //   inputTokensRef.current.scrollLeft =
+                //     inputTokensRef.current.scrollWidth + 1;
+                // }
 
-                if (
-                  e.currentTarget.selectionStart === 0 &&
-                  inputTokensRef.current
-                ) {
-                  inputTokensRef.current.scrollLeft = 0;
-                }
+                // if (
+                //   e.currentTarget.selectionStart === 0 &&
+                //   inputTokensRef.current
+                // ) {
+                //   inputTokensRef.current.scrollLeft = 0;
+                // }
               }}
               placeholder="Search all issues"
-              className={clsx(
-                "flex-grow bg-transparent outline-none min-w-full",
-                "relative z-10 caret-foreground",
-                {
-                  "text-transparent": !isFirstRender
-                }
-              )}
             />
           </div>
         </div>

@@ -56,7 +56,7 @@ export function IssuesListHeaderForm({
           );
           router.push(path + "?" + searchParams.toString());
         }}
-        className={clsx(className, "flex w-full items-center")}
+        className={clsx(className, "flex w-full items-center min-w-0")}
       >
         {showActionList && (
           <ActionList<{
@@ -149,7 +149,7 @@ export function IssuesListHeaderForm({
             <Button
               type="button"
               variant="subtle"
-              className="rounded-r-none border-r-0"
+              className="rounded-r-none border-r-0 flex-shrink-0"
               renderTrailingIcon={(cls) => <TriangleDownIcon className={cls} />}
             >
               Filters
