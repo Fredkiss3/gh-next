@@ -63,7 +63,6 @@ export function IssueListSearchInput({
   const searchTokens = useSearchInputTokens(inputValue);
   const searchTokensInInput = useSearchInputTokens(inputValue, true);
 
-  // regexes for async filters, they can contain `@` characters
   const authorRegex = /^(-)?author:/;
   const assigneeRegex = /^(-)?assignee:/;
   const labelListRegex = /^(-)?label:/;
@@ -170,44 +169,63 @@ export function IssueListSearchInput({
     setIsFirstRender(false);
   }, []);
 
-  React.useEffect(() => {
-    if (!isFirstRender && sizerRef.current && inputRef.current) {
-      /**
-       * // TODO do this for moving the input & selection
-       *  const cursor = this.sizer.querySelector("span");
+  const resizeAndScrollTokenInputs = React.useCallback((inputValue: string) => {
+    if (sizerRef.current && inputRef.current && inputTokensRef.current) {
+      // set the content of the sizer
+      sizerRef.current.textContent = "";
+
+      if (
+        inputRef.current.selectionStart !== null &&
+        inputRef.current.selectionStart === inputRef.current.selectionEnd
+      ) {
+        // insert an element where the cursor should be so we can find it
+        const index = inputRef.current.selectionStart;
+        const cursor = document.createElement("span");
+
+        sizerRef.current.append(inputValue.substring(0, index));
+        sizerRef.current.appendChild(cursor);
+        sizerRef.current.append(inputValue.substring(index));
+      } else {
+        sizerRef.current.textContent = inputValue;
+      }
+
+      const minWidth = 0;
+      const cursor = sizerRef.current.querySelector("span");
+      const inputContainer = inputTokensRef.current.parentElement!;
 
       if (cursor) {
         // make sure the cursor is visible
-        if (cursor.offsetLeft < this.styledInputContainer.scrollLeft) {
-          this.styledInputContainer.scrollLeft = cursor.offsetLeft - minWidth;
+        if (cursor.offsetLeft < inputContainer.scrollLeft) {
+          console.log("overflowing on the left");
+          inputContainer.scrollLeft = cursor.offsetLeft - minWidth;
         } else if (
-          cursor.offsetLeft >
-          this.styledInputContainer.scrollLeft +
-            this.styledInputContainer.clientWidth
+          cursor.offsetLeft >=
+          inputContainer.scrollLeft + inputContainer.clientWidth
         ) {
-          this.styledInputContainer.scrollLeft =
-            cursor.offsetLeft -
-            this.styledInputContainer.clientWidth +
-            minWidth;
+          console.log("overflowing on the right ?");
+          inputContainer.scrollLeft =
+            cursor.offsetLeft - inputContainer.clientWidth + minWidth;
+          console.log({
+            newScrollLeft: inputContainer.scrollLeft,
+            minWidth
+          });
         }
       }
 
-      const currentSizerScrollWidth = this.sizer.scrollWidth;
+      const currentSizerScrollWidth = sizerRef.current.scrollWidth;
       const newInputWidth = Math.max(
         currentSizerScrollWidth + 2,
-        this.input.value === "" ? 2 : 0,
+        inputValue === "" ? 2 : 0,
         minWidth
       );
 
-      this.input.style.width = `${newInputWidth}px`;
-       */
-      inputRef.current.style.setProperty(
-        "width",
-        // why +2 ? no idea 🤷‍♂️
-        sizerRef.current.clientWidth + 2 + "px"
-      );
+      inputRef.current.style.width = `${newInputWidth}px`;
     }
-  }, [isFirstRender, inputValue]);
+  }, []);
+
+  React.useEffect(() => {
+    resizeAndScrollTokenInputs(inputValue);
+  }, [inputValue, resizeAndScrollTokenInputs]);
 
   return (
     <>
@@ -258,21 +276,15 @@ export function IssueListSearchInput({
           ) : (
             <SearchIcon className="h-5 w-5 flex-shrink-0 text-grey" />
           )}
-          <div className="self-stretch w-full inline-flex relative overflow-x-auto max-w-full">
-            <div
-              id="sizer"
-              className="absolute top-0 left-0 h-0 overflow-scroll whitespace-pre invisible hide-scrollbars"
-              aria-hidden="true"
-              ref={sizerRef}
-            >
-              {inputValue}
-              <span></span>
-            </div>
+          <div
+            className="flex w-full relative overflow-x-auto max-w-full hide-scrollbars"
+            onClick={() => inputRef.current?.focus()}
+          >
             {/* Search Tokens  */}
             <div
               ref={inputTokensRef}
               className={clsx(
-                "absolute select-none whitespace-pre break-words p-0 overflow-y-clip overflow-x-auto hide-scrollbars",
+                "absolute select-none whitespace-pre break-words p-0 overflow-y-hidden overflow-x-auto hide-scrollbars",
                 "inline-flex",
                 {
                   hidden: isFirstRender
@@ -283,81 +295,59 @@ export function IssueListSearchInput({
               {searchTokensInInput}
             </div>
 
-            {/* Rendered input */}
-            <CommandPrimitive.Input
-              ref={inputRef}
-              name="q"
-              value={inputValue}
-              onValueChange={(value) => {
-                setInputValue(value);
-              }}
-              className={clsx(
-                "flex p-0 bg-transparent outline-none min-w-full overflow-y-hidden overflow-x-auto",
-                "relative z-10 caret-foreground",
-                {
-                  "text-transparent": !isFirstRender
-                }
-              )}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  inputRef?.current?.blur();
-                }
-                // else if (e.key === "Backspace") {
-                //   if (inputTokensRef.current) {
-                //     inputTokensRef.current.scrollLeft =
-                //       e.currentTarget.selectionStart ?? 0;
-                //   }
-                // }
-              }}
-              onScroll={(e) => {
-                // e.currentTarget.
-                // if (inputTokensRef.current) {
-                //   inputTokensRef.current.scrollLeft =
-                //     e.currentTarget.scrollLeft;
-                // }
-                // console.log("[Scroll event]", e.currentTarget.scrollLeft);
-              }}
-              onBlur={() => setMenuOpen(false)}
-              onFocus={() => setMenuOpen(true)}
-              onInput={(e) => {
-                // ✨ MAGIC ✨
-                const caretPositionStart =
-                  e.currentTarget?.selectionStart || -1;
-                const inputValue = e.currentTarget?.value || "";
+            <div className="w-full self-stretch">
+              {/* Sizer to get the size of the tokens */}
+              <div
+                id="sizer"
+                className="absolute top-0 left-0 h-0 overflow-scroll whitespace-pre invisible hide-scrollbars"
+                aria-hidden="true"
+                ref={sizerRef}
+              />
 
-                let start = caretPositionStart;
-                let end = caretPositionStart;
+              {/* Rendered input */}
+              <CommandPrimitive.Input
+                ref={inputRef}
+                name="q"
+                value={inputValue}
+                onValueChange={(value) => {
+                  setInputValue(value);
+                }}
+                className={clsx(
+                  "p-0 bg-transparent outline-none min-w-full overflow-y-hidden overflow-x-auto",
+                  "relative z-10 caret-foreground hide-scrollbars resize-none",
+                  {
+                    "text-transparent": !isFirstRender
+                  }
+                )}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    inputRef?.current?.blur();
+                  }
+                }}
+                onBlur={() => setMenuOpen(false)}
+                onFocus={() => setMenuOpen(true)}
+                onInput={(e) => {
+                  // ✨ MAGIC ✨
+                  const caretPositionStart =
+                    e.currentTarget?.selectionStart || -1;
+                  const inputValue = e.currentTarget?.value || "";
 
-                while (start > 0 && inputValue[start - 1] !== " ") {
-                  start--;
-                }
-                while (end < inputValue.length && inputValue[end] !== " ") {
-                  end++;
-                }
+                  let start = caretPositionStart;
+                  let end = caretPositionStart;
 
-                const word = inputValue.substring(start, end);
-                setCurrentWord(word);
+                  while (start > 0 && inputValue[start - 1] !== " ") {
+                    start--;
+                  }
+                  while (end < inputValue.length && inputValue[end] !== " ") {
+                    end++;
+                  }
 
-                // console.log("[Input event]", e.currentTarget.value);
-                // if (
-                //   e.currentTarget.selectionEnd &&
-                //   inputTokensRef.current &&
-                //   e.currentTarget.selectionEnd >= e.currentTarget.value.length
-                // ) {
-                //   console.log("Input at the end ?");
-                //   inputTokensRef.current.scrollLeft =
-                //     inputTokensRef.current.scrollWidth + 1;
-                // }
-
-                // if (
-                //   e.currentTarget.selectionStart === 0 &&
-                //   inputTokensRef.current
-                // ) {
-                //   inputTokensRef.current.scrollLeft = 0;
-                // }
-              }}
-              placeholder="Search all issues"
-            />
+                  const word = inputValue.substring(start, end);
+                  setCurrentWord(word);
+                }}
+                placeholder="Search all issues"
+              />
+            </div>
           </div>
         </div>
 
@@ -428,10 +418,6 @@ export function IssueListSearchInput({
                                 return `${input}:`;
                               });
                               setCurrentWord(`${value}:`);
-                              if (inputTokensRef.current) {
-                                inputTokensRef.current.scrollLeft =
-                                  inputTokensRef.current.scrollWidth;
-                              }
                             }}
                             className="group justify-between"
                           >
@@ -493,12 +479,7 @@ export function IssueListSearchInput({
                                         " "
                                       );
                                     });
-
                                     setCurrentWord("");
-                                    if (inputTokensRef.current) {
-                                      inputTokensRef.current.scrollLeft =
-                                        inputTokensRef.current.scrollWidth;
-                                    }
                                   }}
                                   currentWord={currentWord}
                                   className="justify-between"
