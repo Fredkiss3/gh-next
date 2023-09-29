@@ -61,8 +61,7 @@ jobs:
           git pull origin ${GITHUB_REF##*/}
 
           echo Building packages...
-          # pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
-          bun install
+          pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
 
           # Return to root dir
           cd $DEPLOY_DIR
