@@ -39,7 +39,7 @@ export function HeaderUnderlineNavbar({
       <nav
         className={clsx(
           "border-b border-neutral",
-          "relative z-20 overflow-x-auto overflow-y-clip px-5",
+          "relative z-20 overflow-x-auto overflow-y-clip px-5 hide-scrollbars",
           "md:px-8",
           "h-[52px]",
           className
