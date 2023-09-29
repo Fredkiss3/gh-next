@@ -351,7 +351,12 @@ export function parseIssueFilterTokens(input: string): IssueSearchFilters {
   for (const part of parts) {
     // Splitting on the first colon only
     let [key, ...valueParts] = part.split(":");
-    const value = valueParts.join(":").trim(); //.replace(/"/g, "");
+    let value = valueParts.join(":").trim(); //.replace(/"/g, "");
+
+    // replace starting & ending quotes with empty
+    if (value.startsWith('"') && value.endsWith('"')) {
+      value = value.substring(1, value.length - 1);
+    }
 
     // we want to consider lone `key:` as in the query
     // so that people can search for them

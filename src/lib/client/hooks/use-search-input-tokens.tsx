@@ -42,17 +42,22 @@ export function useSearchInputTokens(
         isValidFilterValue = key in parsed;
         if (isValidFilterValue) {
           const filterValue = parsed[key as keyof IssueSearchFilters]!;
+          let valueToSearch = value;
+          if (valueToSearch.startsWith('"') && valueToSearch.endsWith('"')) {
+            valueToSearch = valueToSearch.substring(1, value.length - 1);
+          }
 
           if (typeof filterValue === "string") {
-            isValidFilterValue = value.trim() === filterValue;
+            isValidFilterValue = valueToSearch.trim() === filterValue;
           } else if (Array.isArray(filterValue)) {
+            // replace starting & ending quotes with empty
             isValidFilterValue = filterValue.includes(
               // @ts-expect-error
-              value
+              valueToSearch
             );
           } else if (filterValue instanceof Set) {
             // @ts-expect-error
-            isValidFilterValue = filterValue.has(value);
+            isValidFilterValue = filterValue.has(valueToSearch);
           } else if (filterValue === null || filterValue === undefined) {
             isValidFilterValue = false;
           }
