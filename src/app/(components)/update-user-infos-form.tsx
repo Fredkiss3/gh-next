@@ -78,7 +78,7 @@ export function UpdateUserInfosForm({
       <Textarea
         name="bio"
         label="Bio"
-        placeholder="ex: Sha-dcn"
+        placeholder="ex: I am a code monkey 🙈👨🏾‍💻"
         defaultValue={defaultValues.bio}
         validationStatus={!!errors?.bio ? "error" : undefined}
         validationText={errors?.bio}

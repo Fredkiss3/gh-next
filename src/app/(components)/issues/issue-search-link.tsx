@@ -4,8 +4,12 @@ import * as React from "react";
 import Link from "next/link";
 
 // utils
-import { issueSearchFilterToString } from "~/lib/shared/utils.shared";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import {
+  formatSearchFiltersToString,
+  parseIssueFilterTokens
+} from "~/lib/shared/utils.shared";
+import { useSearchParams } from "next/navigation";
+import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 // types
 import type { LinkProps } from "next/link";
@@ -25,9 +29,10 @@ export const IssueSearchLink = React.forwardRef<
   { filters, conserveCurrentFilters = false, ...props },
   ref
 ) {
-  const setSearchQuery = useSearchQueryStore((store) => store.setQuery);
-  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  const allFilters = getParsedQuery();
+  const searchParams = useSearchParams();
+  const allFilters = parseIssueFilterTokens(
+    searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
+  );
 
   let computedFilters: IssueSearchFilters = {
     is: "open"
@@ -37,7 +42,7 @@ export const IssueSearchLink = React.forwardRef<
     computedFilters = { ...computedFilters, ...allFilters };
   }
 
-  const searchStr = issueSearchFilterToString({
+  const searchStr = formatSearchFiltersToString({
     ...computedFilters,
     ...filters
   });
@@ -46,15 +51,5 @@ export const IssueSearchLink = React.forwardRef<
   sp.append("q", searchStr);
   const href = `/issues?` + sp.toString();
 
-  return (
-    <Link
-      {...props}
-      ref={ref}
-      href={href}
-      prefetch={false}
-      onClick={() => {
-        setSearchQuery(searchStr);
-      }}
-    />
-  );
+  return <Link {...props} ref={ref} href={href} prefetch={false} />;
 });

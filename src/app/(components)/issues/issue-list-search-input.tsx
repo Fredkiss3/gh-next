@@ -9,9 +9,8 @@ import { LoadingIndicator } from "~/app/(components)/loading-indicator";
 import { useCommandState } from "cmdk";
 import {
   clsx,
-  debounce,
-  issueSearchFilterToString,
-  parseIssueSearchString
+  formatSearchFiltersToString,
+  parseIssueFilterTokens
 } from "~/lib/shared/utils.shared";
 import {
   IN_FILTERS,
@@ -20,33 +19,50 @@ import {
   SORT_FILTERS,
   STATUS_FILTERS
 } from "~/lib/shared/constants";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
 import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
 import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
 import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
+import { useSearchInputTokens } from "~/lib/client/hooks/use-search-input-tokens";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
+  searchQuery: string | null;
   squaredInputBorder?: boolean;
 };
 
 // Inspired by : https://github.com/openstatusHQ/openstatus/blob/main/apps/web/src/app/_components/input-search.tsx
 export function IssueListSearchInput({
   onSearch,
-  squaredInputBorder
+  squaredInputBorder,
+  searchQuery
 }: IssueListSearchInputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<React.ElementRef<"input">>(null);
+  const sizerRef = React.useRef<React.ElementRef<"div">>(null);
+  const inputTokensRef = React.useRef<React.ElementRef<"div">>(null);
+
+  const [isFirstRender, setIsFirstRender] = React.useState(true);
 
   const [isMenuOpen, setMenuOpen] = React.useState(false);
-  const {
-    query: inputValue,
-    setQuery: setInputValue,
-    setQueryFromPrevious: setInputValueFromPrevious
-  } = useSearchQueryStore();
+  const [inputValue, setInputValue] = React.useState(() => {
+    let defaultSearch = "is:open ";
 
+    if (searchQuery !== null) {
+      // add a space at the end of the input so that
+      // autocomplete for search filters does not pick up the value from the input
+      if (!searchQuery.endsWith(" ")) {
+        defaultSearch = searchQuery + " ";
+      } else {
+        defaultSearch = searchQuery;
+      }
+    }
+
+    return defaultSearch;
+  });
   const [currentWord, setCurrentWord] = React.useState("");
 
-  // regexes for async filters, they can contain `@` characters
+  const searchTokens = useSearchInputTokens(inputValue);
+  const searchTokensInInput = useSearchInputTokens(inputValue, true);
+
   const authorRegex = /^(-)?author:/;
   const assigneeRegex = /^(-)?assignee:/;
   const labelListRegex = /^(-)?label:/;
@@ -77,92 +93,173 @@ export function IssueListSearchInput({
 
   const isLoading = isLoadingAuthor || isLoadingAssignee || isLoadingLabels;
 
-  const search = {
+  const searchFilters = {
     sort: {
-      values: SORT_FILTERS,
-      getPlaceholder: () => SORT_FILTERS.map((str) => `[${str}]`).join(" ")
+      groupTitle: "Sorting criteria",
+      values: SORT_FILTERS
     },
     in: {
-      values: IN_FILTERS,
-      getPlaceholder: () => IN_FILTERS.map((str) => `[${str}]`).join(" ")
+      groupTitle: "Search in",
+      values: IN_FILTERS
     },
     is: {
-      values: STATUS_FILTERS,
-      getPlaceholder: () => STATUS_FILTERS.map((str) => `[${str}]`).join(" ")
+      groupTitle: "States",
+      values: STATUS_FILTERS
     },
     reason: {
-      values: REASON_FILTERS,
-      getPlaceholder: () => REASON_FILTERS.map((str) => `[${str}]`).join(" ")
+      groupTitle: "Closing reasons",
+      values: REASON_FILTERS
     },
     no: {
-      values: NO_METADATA_FILTERS,
-      getPlaceholder: () =>
-        NO_METADATA_FILTERS.map((str) => `[${str}]`).join(" ")
+      groupTitle: "Values",
+      values: NO_METADATA_FILTERS
     },
     author: {
       // this is to fix a bug where results of `-author` also appears for `author`
+      groupTitle: "Included author",
       values: currentWord.startsWith("-")
         ? []
-        : (authorList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues with author]"
+        : (authorList ?? []).map((user) => user.username)
     },
     "-author": {
       // this is to fix a bug where results of `author` also appears for `-author`
+      groupTitle: "Excluded author",
       values: !currentWord.startsWith("-")
         ? []
-        : (authorList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues without author]"
+        : (authorList ?? []).map((user) => user.username)
     },
     assignee: {
+      groupTitle: "Included assignees",
       values: currentWord.startsWith("-")
         ? []
-        : (assigneeList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues with assignees]"
+        : (assigneeList ?? []).map((user) => user.username)
     },
     "-assignee": {
+      groupTitle: "Excluded assignees",
       values: !currentWord.startsWith("-")
         ? []
-        : (assigneeList ?? []).map((user) => user.username),
-      getPlaceholder: () => "[Issues without assignees]"
+        : (assigneeList ?? []).map((user) => user.username)
     },
     label: {
+      groupTitle: "Included labels",
       values: currentWord.startsWith("-")
         ? []
-        : (labelList ?? []).map((label) => label.name),
-      getPlaceholder: () => "[Issues with labels]"
+        : (labelList ?? []).map((label) => label.name)
     },
     "-label": {
+      groupTitle: "Excluded labels",
       values: !currentWord.startsWith("-")
         ? []
-        : (labelList ?? []).map((label) => label.name),
-      getPlaceholder: () => "[Issues without labels]"
+        : (labelList ?? []).map((label) => label.name)
     }
   };
-  type SearchKey = keyof typeof search;
+  type SearchKey = keyof typeof searchFilters;
+
+  let groupHeadingTitle = "Suggested filters";
+  // get the current selected key derived from the current word
+  if (currentWord.includes(":")) {
+    const key = currentWord.replace(/(\:[a-zA-Z0-9 ]*)/, "");
+    const groupTitle = searchFilters[key as SearchKey]?.groupTitle;
+    if (groupTitle) {
+      groupHeadingTitle = groupTitle;
+    }
+  }
+
+  React.useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
+
+  const resizeAndScrollTokenInputs = React.useCallback((inputValue: string) => {
+    if (sizerRef.current && inputRef.current && inputTokensRef.current) {
+      // set the content of the sizer
+      sizerRef.current.textContent = "";
+
+      if (
+        inputRef.current.selectionStart !== null &&
+        inputRef.current.selectionStart === inputRef.current.selectionEnd
+      ) {
+        // insert an element where the cursor should be so we can find it
+        const index = inputRef.current.selectionStart;
+        const cursor = document.createElement("span");
+
+        sizerRef.current.append(inputValue.substring(0, index));
+        sizerRef.current.appendChild(cursor);
+        sizerRef.current.append(inputValue.substring(index));
+      } else {
+        sizerRef.current.textContent = inputValue;
+      }
+
+      const minWidth = 0;
+      const cursor = sizerRef.current.querySelector("span");
+      const inputContainer = inputTokensRef.current.parentElement!;
+
+      if (cursor) {
+        // make sure the cursor is visible
+        if (cursor.offsetLeft < inputContainer.scrollLeft) {
+          // overflow left
+          inputContainer.scrollLeft = cursor.offsetLeft - minWidth;
+        } else if (
+          cursor.offsetLeft >=
+          inputContainer.scrollLeft + inputContainer.clientWidth
+        ) {
+          // overflow right
+          inputContainer.scrollLeft =
+            cursor.offsetLeft - inputContainer.clientWidth + minWidth;
+        }
+      }
+
+      const currentSizerScrollWidth = sizerRef.current.scrollWidth;
+      const newInputWidth = Math.max(
+        currentSizerScrollWidth + 2,
+        inputValue === "" ? 2 : 0,
+        minWidth
+      );
+
+      inputRef.current.style.width = `${newInputWidth}px`;
+    }
+  }, []);
+
+  React.useEffect(() => {
+    resizeAndScrollTokenInputs(inputValue);
+  }, [inputValue, resizeAndScrollTokenInputs]);
 
   return (
     <>
       <Command
+        label="Search all issues"
         // This is to filter sub items
         filter={(value) => {
+          if (value === "search:submit") {
+            return 1; // always show the `search` command item
+          }
+
+          // this is to match the case of keys like `-label` or `-assignee`
+          // we strip the `-` and check if it matches the current word,
+          // if so, then we want to show the filter
+          const negativeKey = value.substring(1);
+
           // Special cases for author, mentions & assignee because they can contain `@`
           if (currentWord.match(authorRegex)) {
             return value.match(authorRegex) ? 1 : 0;
           } else if (currentWord.match(assigneeRegex)) {
             return value.match(assigneeRegex) ? 1 : 0;
-          } else if (value.includes(currentWord.toLowerCase())) {
+          } else if (
+            value.startsWith(currentWord.toLowerCase()) ||
+            (negativeKey in searchFilters &&
+              negativeKey.startsWith(currentWord.toLowerCase()))
+          ) {
             return 1;
           }
           return 0;
         }}
-        className="relative"
+        className="relative min-w-0"
       >
         <div
           className={clsx(
-            "flex flex-1 items-center gap-1.5",
+            "flex items-center gap-1.5 overflow-x-auto hide-scrollbars min-w-0",
             "rounded-r-md border border-neutral px-3 py-1.5",
-            "w-full bg-header shadow-sm outline-none ring-accent font-medium",
-            "text-grey",
+            "w-full bg-header shadow-sm outline-none ring-accent font-medium max-w-full",
+            "text-foreground",
             "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
             {
               "rounded-l-none": squaredInputBorder,
@@ -171,173 +268,256 @@ export function IssueListSearchInput({
           )}
         >
           {isLoading ? (
-            <LoadingIndicator className="h-5 w-5 flex-shrink-0" />
+            <LoadingIndicator className="h-5 w-5 flex-shrink-0 text-grey" />
           ) : (
-            <SearchIcon className="h-5 w-5 flex-shrink-0" />
+            <SearchIcon className="h-5 w-5 flex-shrink-0 text-grey" />
           )}
-          <CommandPrimitive.Input
-            ref={inputRef}
-            name="q"
-            value={inputValue}
-            onValueChange={(value) => {
-              setInputValue(value);
-              onSearch();
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") inputRef?.current?.blur();
-            }}
-            onBlur={() => setMenuOpen(false)}
-            onFocus={() => setMenuOpen(true)}
-            onInput={(e) => {
-              // ✨ MAGIC ✨
-              const caretPositionStart = e.currentTarget?.selectionStart || -1;
-              const inputValue = e.currentTarget?.value || "";
+          <div
+            className="flex w-full relative overflow-x-auto max-w-full hide-scrollbars"
+            onClick={() => inputRef.current?.focus()}
+          >
+            {/* Search Tokens  */}
+            <div
+              ref={inputTokensRef}
+              className={clsx(
+                "absolute select-none whitespace-pre break-words p-0 overflow-y-hidden overflow-x-auto hide-scrollbars",
+                "inline-flex",
+                {
+                  hidden: isFirstRender
+                }
+              )}
+              aria-hidden="true"
+            >
+              {searchTokensInInput}
+            </div>
 
-              let start = caretPositionStart;
-              let end = caretPositionStart;
+            <div className="w-full self-stretch">
+              {/* Sizer to get the size of the tokens */}
+              <div
+                id="sizer"
+                className="absolute top-0 left-0 h-0 overflow-scroll whitespace-pre invisible hide-scrollbars"
+                aria-hidden="true"
+                ref={sizerRef}
+              />
 
-              while (start > 0 && inputValue[start - 1] !== " ") {
-                start--;
-              }
-              while (end < inputValue.length && inputValue[end] !== " ") {
-                end++;
-              }
+              {/* Rendered input */}
+              <CommandPrimitive.Input
+                ref={inputRef}
+                name="q"
+                value={inputValue}
+                onValueChange={(value) => {
+                  setInputValue(value);
+                }}
+                className={clsx(
+                  "p-0 bg-transparent outline-none min-w-full overflow-y-hidden overflow-x-auto",
+                  "relative z-10 caret-foreground hide-scrollbars resize-none",
+                  {
+                    "text-transparent": !isFirstRender
+                  }
+                )}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    inputRef?.current?.blur();
+                  }
+                }}
+                onBlur={() => setMenuOpen(false)}
+                onFocus={() => setMenuOpen(true)}
+                onInput={(e) => {
+                  // ✨ MAGIC ✨
+                  const caretPositionStart =
+                    e.currentTarget?.selectionStart || -1;
+                  const inputValue = e.currentTarget?.value || "";
 
-              const word = inputValue.substring(start, end);
-              setCurrentWord(word);
-            }}
-            placeholder="Search all issues"
-            className={clsx("flex-grow bg-transparent outline-none")}
-          />
+                  let start = caretPositionStart;
+                  let end = caretPositionStart;
+
+                  while (start > 0 && inputValue[start - 1] !== " ") {
+                    start--;
+                  }
+                  while (end < inputValue.length && inputValue[end] !== " ") {
+                    end++;
+                  }
+
+                  const word = inputValue.substring(start, end);
+                  setCurrentWord(word);
+                }}
+                placeholder="Search all issues"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="relative">
-          {isMenuOpen ? (
-            <ItemGroupWrapper>
-              <CommandGroup className="max-h-64 !overflow-scroll">
-                {Object.keys(search).map((key) => {
-                  // this is to filter items
-                  // only show the item if :
-                  // if the input does not contain a query at the end :
-                  //  - it not is already in the input
-                  //  - or is in the current value
-                  // else:
-                  //  - the key is in the current value
-                  //    ⮑ this is bcose we don't want to show filters if the user is writing a query
-                  //       they will still see the filtered values when they manually enter the filters
-                  const filters = parseIssueSearchString(inputValue.trim());
-                  const queryIsInLastPosition =
-                    !!filters.query &&
-                    inputValue.trim().endsWith(filters.query.trim());
+          {isMenuOpen && (
+            <ItemGroupWrapper className="">
+              <CommandPrimitive.List>
+                {/* Don't show the current search values if the input is empty */}
+                {inputValue.trim().length > 0 && (
+                  <CommandGroup heading="Search">
+                    <CommandItem
+                      className="flex justify-between items-baseline"
+                      value="search:submit"
+                      key="search:submit"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onSelect={() => {
+                        onSearch();
+                      }}
+                    >
+                      <div className="inline-flex items-baseline gap-2">
+                        <SearchIcon className="text-grey h-5 w-5 flex-shrink-0 relative top-1.5" />
+                        <p>{searchTokens}</p>
+                      </div>
+                      <span className="text-grey text-sm whitespace-nowrap">
+                        Submit search
+                      </span>
+                    </CommandItem>
+                  </CommandGroup>
+                )}
 
-                  const showItem = queryIsInLastPosition
-                    ? currentWord.includes(`${key}:`)
-                    : !inputValue.includes(`${key}:`) ||
+                <CommandGroup
+                  className="max-h-64 !overflow-scroll border-t border-neutral"
+                  heading={groupHeadingTitle}
+                >
+                  {Object.keys(searchFilters).map((key) => {
+                    // this is to filter search filters
+                    // only show the item if the key is in the current value
+                    const showItem =
+                      !inputValue.includes(`${key}:`) ||
                       currentWord.includes(`${key}:`);
 
-                  return !showItem ? null : (
-                    <React.Fragment key={key}>
-                      <CommandItem
-                        value={key}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onSelect={(value) => {
-                          setInputValueFromPrevious((prev) => {
-                            // ✨ MAGIC ✨
-                            if (currentWord.trim() === "") {
-                              const input = `${prev}${value}`;
-                              return `${input}:`;
-                            }
-                            // lots of cheat
-                            const isStarting = currentWord === prev;
-                            const prefix = isStarting ? "" : " ";
-                            const input = prev.replace(
-                              `${prefix}${currentWord}`,
-                              `${prefix}${value}`
-                            );
-                            return `${input}:`;
-                          });
-                          setCurrentWord(`${value}:`);
-                        }}
-                        className="group"
-                      >
-                        {key}
-                        <span className="ml-1 hidden truncate text-white/50 group-aria-[selected=true]:block">
-                          {search[key as SearchKey].getPlaceholder()}
-                        </span>
-                      </CommandItem>
-                      {search[key as SearchKey].values.map((option) => {
-                        let value = `${key}:${option}`;
-                        // labels should be wrapped inside of quotes
-                        if (key === "label" || key === "-label") {
-                          value = `${key}:"${option}"`;
-                        }
-                        return (
-                          <SubItem
-                            key={option}
-                            value={value}
+                    return (
+                      showItem && (
+                        <React.Fragment key={key}>
+                          <CommandItem
+                            value={key}
                             onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                             }}
                             onSelect={(value) => {
-                              setInputValueFromPrevious((prev) => {
-                                /**
-                                 * @example
-                                 * // We add the new value to the input string and remove astray commands so that :
-                                 * if (prev === `in:title no:`) {
-                                 *     // when we do this
-                                 *     (prev + " " + value) = `in:title no: no:label`
-                                 *     // and remove the empty `no:` in the middle of the string with the
-                                 *     inputWithNewValue = `in:title no:label`
-                                 * }
-                                 */
-                                const inputWithNewValue = (prev + " " + value)
-                                  .replace(
-                                    new RegExp(`${currentWord}(?=\\s|$)`, "g"),
-                                    ""
-                                  )
-                                  .trim();
-
-                                // We parse then stringify the string to make it valid
-                                const filters =
-                                  parseIssueSearchString(inputWithNewValue);
-
-                                onSearch();
-                                return issueSearchFilterToString(filters) + " ";
+                              setInputValue((prev) => {
+                                // ✨ MAGIC ✨
+                                if (currentWord.trim() === "") {
+                                  const input = `${prev}${value}`;
+                                  return `${input}:`;
+                                }
+                                // lots of cheat
+                                const isStarting = currentWord === prev;
+                                const prefix = isStarting ? "" : " ";
+                                const input = prev.replace(
+                                  `${prefix}${currentWord}`,
+                                  `${prefix}${value}`
+                                );
+                                return `${input}:`;
                               });
-
-                              setCurrentWord("");
+                              setCurrentWord(`${value}:`);
                             }}
-                            currentWord={currentWord}
+                            className="group justify-between"
                           >
-                            {option}
-                          </SubItem>
-                        );
-                      })}
-                    </React.Fragment>
-                  );
-                })}
-              </CommandGroup>
+                            <span>{key}:</span>
+                            <span className="text-grey text-sm">
+                              Autocomplete
+                            </span>
+                          </CommandItem>
+
+                          {searchFilters[key as SearchKey].values.map(
+                            (option) => {
+                              let value = `${key}:${option}`;
+                              // labels should be wrapped inside of quotes
+                              if (key === "label" || key === "-label") {
+                                value = `${key}:"${option}"`;
+                              }
+                              return (
+                                <SubItem
+                                  key={option}
+                                  value={value}
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }}
+                                  onSelect={(value) => {
+                                    setInputValue((prev) => {
+                                      /**
+                                       * @example
+                                       * // We add the new value to the input string and remove astray commands so that :
+                                       * if (prev === `in:title no:`) {
+                                       *     // when we do this
+                                       *     (prev + " " + value) = `in:title no: no:label`
+                                       *     // and remove the empty `no:` in the middle of the string with the
+                                       *     inputWithNewValue = `in:title no:label`
+                                       * }
+                                       */
+                                      const inputWithNewValue = (
+                                        prev +
+                                        " " +
+                                        value
+                                      )
+                                        .replace(
+                                          new RegExp(
+                                            `${currentWord}(?=\\s|$)`,
+                                            "g"
+                                          ),
+                                          ""
+                                        )
+                                        .trim();
+
+                                      // We parse then stringify the string to make it valid
+                                      const filters =
+                                        parseIssueFilterTokens(
+                                          inputWithNewValue
+                                        );
+
+                                      return (
+                                        formatSearchFiltersToString(filters) +
+                                        " "
+                                      );
+                                    });
+                                    setCurrentWord("");
+                                  }}
+                                  currentWord={currentWord}
+                                  className="justify-between"
+                                >
+                                  <span>{option}</span>
+                                  <span className="text-grey text-sm">
+                                    Autocomplete
+                                  </span>
+                                </SubItem>
+                              );
+                            }
+                          )}
+                        </React.Fragment>
+                      )
+                    );
+                  })}
+                </CommandGroup>
+              </CommandPrimitive.List>
             </ItemGroupWrapper>
-          ) : null}
+          )}
         </div>
       </Command>
     </>
   );
 }
 
-function ItemGroupWrapper({ children }: { children: React.ReactNode }) {
+function ItemGroupWrapper({
+  children,
+  className
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   const filteredCount = useCommandState((state) => state.filtered.count);
   return (
     <div
       className={clsx(
-        "absolute top-2 z-10 w-full rounded-md border-neutral bg-subtle text-foreground shadow-md outline-none",
+        "absolute top-2 z-10 w-full rounded-xl border-neutral bg-subtle text-foreground shadow-md outline-none",
         {
           border: filteredCount > 0
-        }
+        },
+        className
       )}
     >
       {children}
@@ -384,7 +564,8 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={clsx(
-      "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-foreground/50",
+      "overflow-hidden text-foreground py-3 px-2.5",
+      "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-grey",
       className
     )}
     {...props}
@@ -400,7 +581,11 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={clsx(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-base outline-none aria-selected:bg-accent aria-selected:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-base outline-none",
+      "aria-selected:bg-neutral/40 aria-selected:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "aria-selected:before:absolute aria-selected:before:-left-1",
+      "aria-selected:before:h-6 aria-selected:before:w-1 aria-selected:before:rounded-md aria-selected:before:bg-accent",
+      "aria-selected:before:top-[53%] aria-selected:before:translate-y-[-55%]",
       className
     )}
     {...props}

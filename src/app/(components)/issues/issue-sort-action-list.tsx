@@ -10,8 +10,9 @@ import { IssueSearchLink } from "./issue-search-link";
 
 // utils
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
-import { clsx } from "~/lib/shared/utils.shared";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
+import { useSearchParams } from "next/navigation";
+import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 // types
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
@@ -55,8 +56,11 @@ const sortItems: ActionListGroup<{
 export function IssueSortActionList({ children }: IssueSortActionListProps) {
   const alignRight = useMediaQuery(`(min-width: 768px)`);
 
-  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  let allFilters = getParsedQuery();
+  const searchParams = useSearchParams();
+  const allFilters = parseIssueFilterTokens(
+    searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
+  );
+
   const sortFilter = allFilters.sort;
 
   return (

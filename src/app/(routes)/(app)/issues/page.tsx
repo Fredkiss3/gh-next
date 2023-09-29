@@ -4,7 +4,6 @@ import { Button } from "~/app/(components)/button";
 import { CounterBadge } from "~/app/(components)/counter-badge";
 import { IssuesListHeaderForm } from "~/app/(components)/issues/issues-list-header-form";
 import { SegmentedLayout } from "~/app/(components)/segmented-layout";
-import { IssueListMainParent } from "~/app/(components)/issues/issue-list-main-parent";
 import { ClearSearchButtonSection } from "~/app/(components)/issues/clear-search-button";
 import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
 import { LightBulbIcon, MilestoneIcon, TagIcon } from "@primer/octicons-react";
@@ -27,16 +26,12 @@ export const metadata: Metadata = {
 export default function IssuesListPage({
   searchParams
 }: PageProps<{}, { q: string; page: string }>) {
-  const initialQuery = searchParams?.q;
-
   return (
     <ReactQueryProvider>
       <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
-        <IssueListMainParent initialQuery={initialQuery}>
-          <IssuesListHeader />
-          <ClearSearchButtonSection />
-          <IssuesListBody params={searchParams} />
-        </IssueListMainParent>
+        <IssuesListHeader />
+        <ClearSearchButtonSection />
+        <IssuesListBody params={searchParams} />
       </div>
     </ReactQueryProvider>
   );
@@ -47,7 +42,7 @@ async function IssuesListHeader() {
   const labelCount = await getLabelsCount();
   return (
     <section
-      className="flex flex-col gap-4 px-5 md:flex-row md:px-0"
+      className="flex flex-col gap-4 px-5 md:flex-row md:px-0 max-w-full"
       id="search-bar"
     >
       <IssuesListHeaderForm
@@ -55,7 +50,7 @@ async function IssuesListHeader() {
         showActionList={isAuthed}
       />
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 flex-shrink-0">
         <SegmentedLayout>
           <li>
             <Button

@@ -166,8 +166,13 @@ export async function searchIssues(
   }
   issueQuery = issueQuery.orderBy(orderBy);
 
-  const issueList = await issueQuery
+  if (process.env.NODE_ENV === "development") {
+    console.log({
+      sql: issueQuery.toSQL()
+    });
+  }
 
+  const issueList = await issueQuery
     .limit(MAX_ITEMS_PER_PAGE)
     .offset((currentPage - 1) * MAX_ITEMS_PER_PAGE);
   const id_list = issueList.map((issue) => issue.id);

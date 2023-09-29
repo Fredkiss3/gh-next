@@ -8,10 +8,11 @@ import { CheckIcon } from "@primer/octicons-react";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import { clsx } from "~/lib/shared/utils.shared";
+import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 import { useIssueAuthorListByNameQuery } from "~/lib/client/hooks/use-issue-author-list-by-name-query";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { useSearchParams } from "next/navigation";
+import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 // types
 export type IssueAuthorFilterActionProps = {
@@ -24,8 +25,11 @@ export function IssueAuthorFilterActionList({
   const alignRight = useMediaQuery(`(min-width: 768px)`);
   const [inputQuery, setInputQuery] = React.useState("");
 
-  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  let allFilters = getParsedQuery();
+  const searchParams = useSearchParams();
+  const allFilters = parseIssueFilterTokens(
+    searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
+  );
+
   const currentAuthor = allFilters.author;
   const { data: filteredDataList } = useIssueAuthorListByNameQuery({
     name: inputQuery

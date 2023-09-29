@@ -1,23 +1,19 @@
 "use client";
 import * as React from "react";
 // components
-import Link from "next/link";
 import { Input } from "~/app/(components)/input";
-import {
-  ActionList,
-  type ActionListItem
-} from "~/app/(components)/action-list";
+import { ActionList } from "~/app/(components)/action-list";
 import { CheckIcon } from "@primer/octicons-react";
 import { IssueSearchLink } from "./issue-search-link";
 
 // utils
-import { clsx } from "~/lib/shared/utils.shared";
+import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
 import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
-import { useSearchQueryStore } from "~/lib/client/hooks/issue-search-query-store";
+import { useSearchParams } from "next/navigation";
+import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 // types
-import type { Label } from "~/lib/server/db/schema/label.sql";
 export type IssueLabelFilterActionListProps = {
   children: React.ReactNode;
 };
@@ -28,8 +24,11 @@ export function IssueLabelFilterActionList({
   const [inputQuery, setInputQuery] = React.useState("");
   const alignRight = useMediaQuery(`(min-width: 768px)`);
 
-  const getParsedQuery = useSearchQueryStore((store) => store.getParsedQuery);
-  let allFilters = getParsedQuery();
+  const searchParams = useSearchParams();
+  const allFilters = parseIssueFilterTokens(
+    searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
+  );
+
   const currentLabels = allFilters.label ?? [];
   const noLabel = !!allFilters.no?.includes("label");
 
