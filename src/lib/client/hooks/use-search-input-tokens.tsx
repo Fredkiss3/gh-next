@@ -19,7 +19,7 @@ export function useSearchInputTokens(
     let index = 0;
 
     // Splitting while considering quotes
-    const parts = input.match(/(?:[^\s"]+|"[^"]*")+|( )/g) || [];
+    const parts = input.match(/(?:[^\s"]+|"[^"]*")+|( )|("[^"]*)/g) || [];
 
     for (const part of parts) {
       index++;
@@ -28,16 +28,19 @@ export function useSearchInputTokens(
       const value = valueParts.join(":");
 
       // don't highlight values that not formatted correctly
-      const isValueValid = !!value.match(/(^"[\w| |:]+"$)|(^[\w-]+$)/);
+      let isValueValid = true;
+
+      if (["author", "assignees", "mentions"].includes(key)) {
+        isValueValid = !!value.match(/(^(\@)?[\w-]+$)/);
+      }
 
       let isValidFilterValue = true;
 
       if (isValueValid) {
         const parsed = parseIssueFilterTokens(part);
 
-        if (!(key in parsed)) {
-          isValidFilterValue = false;
-        } else {
+        isValidFilterValue = key in parsed;
+        if (isValidFilterValue) {
           const filterValue = parsed[key as keyof IssueSearchFilters]!;
 
           if (typeof filterValue === "string") {
@@ -45,11 +48,13 @@ export function useSearchInputTokens(
           } else if (Array.isArray(filterValue)) {
             isValidFilterValue = filterValue.includes(
               // @ts-expect-error
-              value.trim().replace(/"/g, "")
+              value
             );
           } else if (filterValue instanceof Set) {
             // @ts-expect-error
-            isValidFilterValue = filterValue.has(value.trim());
+            isValidFilterValue = filterValue.has(value);
+          } else if (filterValue === null || filterValue === undefined) {
+            isValidFilterValue = false;
           }
         }
       }
@@ -80,10 +85,7 @@ export function useSearchInputTokens(
         }
         default: {
           terms.push(
-            <span
-              key={`${key}-${index}`}
-              className="text-foreground break-words"
-            >
+            <span key={`${key}-${index}`} className="text-foreground break-all">
               {part === " " && useHTMLSpace ? <>&nbsp;</> : part}
             </span>
           );

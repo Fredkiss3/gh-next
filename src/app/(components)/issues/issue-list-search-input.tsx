@@ -196,19 +196,15 @@ export function IssueListSearchInput({
       if (cursor) {
         // make sure the cursor is visible
         if (cursor.offsetLeft < inputContainer.scrollLeft) {
-          console.log("overflowing on the left");
+          // overflow left
           inputContainer.scrollLeft = cursor.offsetLeft - minWidth;
         } else if (
           cursor.offsetLeft >=
           inputContainer.scrollLeft + inputContainer.clientWidth
         ) {
-          console.log("overflowing on the right ?");
+          // overflow right
           inputContainer.scrollLeft =
             cursor.offsetLeft - inputContainer.clientWidth + minWidth;
-          console.log({
-            newScrollLeft: inputContainer.scrollLeft,
-            minWidth
-          });
         }
       }
 

@@ -346,12 +346,12 @@ export function parseIssueFilterTokens(input: string): IssueSearchFilters {
   const result: Record<string, string[] | string> = {};
 
   // Splitting while considering quotes
-  const parts = input.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+  const parts = input.match(/(?:[^\s"]+|"[^"]*")+|("[^"]*)/g) || [];
 
   for (const part of parts) {
     // Splitting on the first colon only
     let [key, ...valueParts] = part.split(":");
-    const value = valueParts.join(":").trim().replace(/"/g, "");
+    const value = valueParts.join(":").trim(); //.replace(/"/g, "");
 
     // we want to consider lone `key:` as in the query
     // so that people can search for them
