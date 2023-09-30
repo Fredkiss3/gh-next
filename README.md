@@ -9,70 +9,49 @@ Expect stuff to break.
 ## Roadmap
 
 - [x] Login/Logout
-
 - [x] HomePage (README content)
-
 - [x] Responsive Layout
-
 - [x] Settings page for toggling theme
-
+- [x] Stargazers Page
 - [x] See Profile informations
-
   - [x] Update username
-
   - [ ] User detail page
 
 - [x] Issues List page
-
   - [x] Search & filter issues by author, label, assignee, closed/open, title, mentions, etc. (Inspiration: https://github.com/openstatusHQ/openstatus, https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests)
 
 - [ ] New issue page
-
   - [ ] Issue CRUD (by the author only)
-
   - [ ] Comments CRUD
-
   - [ ] Mentions
-
   - [ ] Issue Popovers (for previewing issues)
-
   - [ ] Linking between issues
-
   - [ ] Assign & self assign issues
 
 - [ ] OpenGraph
-
   - [ ] landing (inspiration: https://github.com/trpc/trpc/blob/main/www/og-image/pages/api/landing.tsx)
-
   - [ ] Per Issue (inspiration: https://opengraph.githubassets.com/101e5bdeef8e959c800fab2aef88eef0b01b15d883e3e17c990bde8dfd67d6b3/trpc/trpc/issues/4306)
 
 - [ ] Labels CRUD (can only add or update labels, no deleting)
-
 - [ ] Notifications page
-
   - [ ] Notifications badge (Inspiration: https://gist.github.com/Fredkiss3/ab918aee3977d681f0508537a44838c0, https://github.com/Fredkiss3/bunrest)
-
   - [ ] Notifications for issues subscriptions
-
   - [ ] Notifications for mentions
-
   - [ ] Notifications for issue statuses
-
   - [ ] Filter notifications by status, title, closed, etc.
-
   - [ ] Mark as done, unsubscribe
 
-# Stack
+## Stack
 
 - [Next App Router](https://nextjs.org/docs/app)
 - [drizzle](https://orm.drizzle.team/) + local Postgres database
 - Hosted to a custom VPS, see [the CI/CD workflow](./.github/workflows/deploy-to-vps.yaml) for how it is all deployed
 - [tailwindCSS](https://tailwindcss.com/) for the styling
 
-# Requirements
+## Requirements
 
-- Node &gt;= v18.x
-- [Bun](https://bun.sh/docs/installation) &gt;= v1.0
+- Node >= v18.x
+- [pnpm](https://pnpm.io/installation) >= v8.x
 - [docker](https://docs.docker.com/engine/install/) installed for local development
 - A registered [github app](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app) for authenticating users
 
@@ -93,7 +72,7 @@ Expect stuff to break.
 3. **Install the dependencies :**
 
    ```bash
-   bun install
+   pnpm install
    ```
 
 4. Rename `.env.example` to `.env.local` And change the file to your needs,
@@ -101,7 +80,7 @@ Expect stuff to break.
 5. **And launch the project :**
 
    ```bash
-   bun run dev
+   pnpm run dev
    ```
 
    The app will show at <http://localhost:3000>.
@@ -112,7 +91,7 @@ Expect stuff to break.
 
 A quick look at the top-level files and directories you will see in this project.
 
-```
+```plaintext
   .
   ├── src/
   │    ├── app/
