@@ -16,8 +16,6 @@ import { createSelectSchema } from "drizzle-zod";
 import type { User } from "~/lib/server/db/schema/user.sql";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
-const primitiveSchema = z.union([z.string(), z.number(), z.boolean()]);
-
 const sessionSchema = z.object({
   id: z.string(),
   expiry: preprocess((arg) => new Date(arg as any), z.date()),
@@ -31,17 +29,6 @@ const sessionSchema = z.object({
   flashMessages: z
     .record(z.enum(["success", "error", "info", "warning"]), z.string())
     .optional(),
-  formData: z
-    .object({
-      data: z
-        .record(
-          z.string(),
-          z.union([primitiveSchema, z.array(primitiveSchema)]).nullable()
-        )
-        .nullish(),
-      errors: z.record(z.string(), z.array(z.string())).nullish()
-    })
-    .nullish(),
   signature: z.string(),
   additionnalData: z.record(z.string(), z.any()).nullish(),
   bot: z.boolean().optional().default(false)
@@ -205,25 +192,6 @@ export class Session {
 
     await Session.#save(this.#_session);
     return this;
-  }
-
-  public async addFormData(form: DefinedSession["formData"]): Promise<this> {
-    this.#_session.formData = form;
-    await Session.#save(this.#_session);
-    return this;
-  }
-
-  public async getFormData() {
-    const data = this.#_session.formData;
-
-    if (!data) {
-      return null;
-    }
-
-    // delete formData & flashes
-    this.#_session.formData = null;
-    await Session.#save(this.#_session);
-    return data;
   }
 
   public async popAdditionnalData() {

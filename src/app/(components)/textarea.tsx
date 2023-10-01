@@ -4,8 +4,10 @@ import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "size"
+  "size" | "defaultValue" | "value"
 > & {
+  defaultValue?: string | number | ReadonlyArray<string> | undefined | null;
+  value?: string | number | ReadonlyArray<string> | undefined | null;
   label: React.ReactNode;
   name: string;
   inputClassName?: string;

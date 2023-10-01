@@ -45,3 +45,18 @@ export type GithubRepositoryData = {
 export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
+
+export type ServerActionResult =
+  | {
+      type: "success";
+      message: string;
+    }
+  | {
+      type: "error";
+      errors: Record<string, string[] | undefined>;
+      formData: Record<
+        string,
+        string | number | boolean | (string | number | boolean)[] | null
+      >;
+    }
+  | { type: undefined; message: null }; // initial state

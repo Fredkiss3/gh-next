@@ -3,6 +3,7 @@ import { revalidatePath, unstable_cache } from "next/cache";
 import { cache } from "react";
 import { headers } from "next/headers";
 import { getAuthedUser, getSession } from "~/app/(actions)/auth";
+import { redirect } from "next/navigation";
 
 export function withAuth<T extends (...args: any[]) => Promise<any>>(
   action: T
@@ -18,7 +19,7 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
       });
 
       revalidatePath("/");
-      return;
+      return redirect("/login");
     }
     return action(...args);
   }) as T;

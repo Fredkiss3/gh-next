@@ -1,49 +1,40 @@
 "use client";
 import * as React from "react";
+import {
+  // see ./globals.d.ts at the root for the types
+  // this will come in a new versoin of @types/react-dom https://github.com/DefinitelyTyped/DefinitelyTyped/pull/66726
+  experimental_useFormState as useFormState
+} from "react-dom";
 
 // components
-import { Button } from "./button";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
+import { SubmitButton } from "./submit-button";
 
 // utils
-import { updateUserProfile } from "~/app/(actions)/auth";
-import { useRouter } from "next/navigation";
+import { updateUserProfile } from "~/app/(actions)/user";
 
 // types
-import type { FormErrors } from "~/lib/types";
-import type { UpdateUserProfileInfos } from "~/app/(actions)/auth";
+import type { UpdateUserProfileInfosInput } from "~/app/(models)/dto/update-profile-info";
 
 export type UpdateUserInfosProps = {
-  defaultValues: UpdateUserProfileInfos;
-  errors?: FormErrors;
+  defaultValues: UpdateUserProfileInfosInput;
 };
 
-export function UpdateUserInfosForm({
-  defaultValues,
-  errors
-}: UpdateUserInfosProps) {
-  const [isPending, startTransition] = React.useTransition();
+export function UpdateUserInfosForm({ defaultValues }: UpdateUserInfosProps) {
+  const [state, formAction] = useFormState(updateUserProfile, {
+    message: null,
+    type: undefined
+  });
 
-  const router = useRouter();
+  defaultValues = state.type !== "error" ? defaultValues : state.formData;
 
-  React.useEffect(() => {
-    return () => {
-      if (errors) {
-        // Refresh the router because we don't want to keep old values on mount (errors, defaultValue)
-        return React.startTransition(() => router.refresh());
-      }
-    };
-  }, [router, errors]);
+  const errors = state.type !== "error" ? null : state.errors;
 
   return (
     <form
-      action={updateUserProfile}
+      action={formAction}
       className="flex flex-col items-stretch gap-4 md:items-start"
-      onSubmit={(e) => {
-        e.preventDefault();
-        startTransition(() => updateUserProfile(new FormData(e.currentTarget)));
-      }}
     >
       <Input
         name="name"
@@ -86,9 +77,9 @@ export function UpdateUserInfosForm({
         rows={5}
       />
 
-      <Button isLoading={isPending} variant="primary" type="submit">
-        {isPending ? "Updating..." : "Update your profile"}
-      </Button>
+      <SubmitButton loadingMessage="Updating...">
+        Update your profile
+      </SubmitButton>
     </form>
   );
 }
