@@ -2,7 +2,7 @@
 
 \* only some features are implemented : issues CRUD & notifications
 
-## ⚠️ THIS PROJECT IS IN ACTIVE DEVELOPMENT !!
+## ⚠️ THIS PROJECT IS IN ACTIVE DEVELOPMENT ⚠️
 
 Expect stuff to break.
 
