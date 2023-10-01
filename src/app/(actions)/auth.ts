@@ -8,12 +8,9 @@ import { Session } from "~/lib/server/session.server";
 import {
   getUserById,
   getUserFromGithubProfile,
-  githubUserSchema,
-  updateUserInfos
+  githubUserSchema
 } from "~/app/(models)/user";
 
-import { z } from "zod";
-import { zfd } from "zod-form-data";
 import { revalidatePath } from "next/cache";
 import { withAuth } from "~/lib/server/rsc-utils.server";
 
@@ -134,42 +131,4 @@ export const getAuthedUser = cache(async function getUser() {
   }
 
   return null;
-});
-
-const updateUserProfileInfosSchema = zfd.formData({
-  name: zfd.text(z.string().trim().optional()),
-  bio: zfd.text(z.string().trim().optional()),
-  location: zfd.text(z.string().trim().optional()),
-  company: zfd.text(z.string().trim().optional())
-});
-
-export type UpdateUserProfileInfos = z.TypeOf<
-  typeof updateUserProfileInfosSchema
->;
-
-export const updateUserProfile = withAuth(async function (formData: FormData) {
-  const session = await getSession();
-  const currentUser = (await getAuthedUser())!;
-  const result = updateUserProfileInfosSchema.safeParse(formData);
-
-  if (!result.success) {
-    await session.addFormData({
-      data: {
-        username: formData.get("username")?.toString() ?? null
-      },
-      errors: result.error.flatten().fieldErrors
-    });
-    return revalidatePath(`/settings/account`);
-  }
-
-  await updateUserInfos(result.data, currentUser!.id);
-
-  // await session.setUser(user);
-  await session.addFlash({
-    type: "success",
-    message: "Profile updated successfully"
-  });
-
-  revalidatePath(`/`);
-  return redirect("/settings/account");
 });

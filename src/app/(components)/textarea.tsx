@@ -4,8 +4,10 @@ import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "size"
+  "size" | "defaultValue" | "value"
 > & {
+  defaultValue?: string | number | ReadonlyArray<string> | undefined | null;
+  value?: string | number | ReadonlyArray<string> | undefined | null;
   label: React.ReactNode;
   name: string;
   inputClassName?: string;
@@ -76,6 +78,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
         >
           {renderLeadingIcon?.("h-5 w-5 text-gray-500 flex-shrink-0")}
 
+          {/* @ts-expect-error defaultValue & value are overriden */}
           <textarea
             {...otherProps}
             ref={ref}

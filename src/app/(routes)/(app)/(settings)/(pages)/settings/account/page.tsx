@@ -5,15 +5,11 @@ import { UpdateUserInfosForm } from "~/app/(components)/update-user-infos-form";
 import { Button } from "~/app/(components)/button";
 
 // utils
-import {
-  getAuthedUser,
-  getSession,
-  redirectIfNotAuthed
-} from "~/app/(actions)/auth";
+import { getAuthedUser, redirectIfNotAuthed } from "~/app/(actions)/auth";
+import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info-input-validator";
 
 // types
 import type { Metadata } from "next";
-import type { UpdateUserProfileInfos } from "~/app/(actions)/auth";
 
 export const metadata: Metadata = {
   title: "Account settings"
@@ -23,7 +19,6 @@ export default async function Page() {
   await redirectIfNotAuthed("/settings/account");
 
   const user = (await getAuthedUser())!;
-  const formData = await getSession().then((s) => s.getFormData());
   return (
     <div className="flex flex-col gap-24">
       <section className="flex flex-col gap-4 md:gap-8">
@@ -38,16 +33,7 @@ export default async function Page() {
         </p>
 
         <UpdateUserInfosForm
-          errors={formData?.errors}
-          defaultValues={
-            (formData?.data as UpdateUserProfileInfos) ?? {
-              username: user.username,
-              bio: user.bio,
-              company: user.company,
-              location: user.location,
-              name: user.name
-            }
-          }
+          defaultValues={updateUserProfileInfosInputValidator.parse(user)}
         />
       </section>
 

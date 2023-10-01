@@ -45,3 +45,28 @@ export type GithubRepositoryData = {
 export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
+
+export type ServerActionResult =
+  | {
+      type: "success";
+      message: string;
+    }
+  | {
+      type: "error";
+      fieldErrors?: Record<string, string[] | undefined> | null;
+      formErrors?: string[];
+      formData: Record<
+        string,
+        string | number | boolean | (string | number | boolean)[] | null
+      >;
+    }
+  | { type: undefined; message: null }; // initial state
+
+export type AuthedServerActionResult<
+  T extends (...args: any[]) => Promise<any>
+> = (...args: Parameters<T>) => Promise<
+  | Awaited<ReturnType<T>>
+  | {
+      type: "AUTH_ERROR";
+    }
+>;

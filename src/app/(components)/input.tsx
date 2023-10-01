@@ -5,9 +5,11 @@ import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  "size"
+  "size" | "defaultValue" | "value"
 > & {
   label: React.ReactNode;
+  defaultValue?: string | number | ReadonlyArray<string> | undefined | null;
+  value?: string | number | ReadonlyArray<string> | undefined | null;
   inputClassName?: string;
   helpText?: string;
   renderLeadingIcon?: (classNames: string) => JSX.Element;
@@ -86,6 +88,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             })
           )}
 
+          {/* @ts-expect-error defaultValue also works with `null` but TS does not work */}
           <input
             {...otherProps}
             ref={ref}

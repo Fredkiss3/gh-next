@@ -3,7 +3,6 @@ import * as React from "react";
 
 // components
 import { ThemeCard } from "./theme-card";
-import { Button } from "./button";
 
 // utils
 import { updateTheme } from "~/app/(actions)/theme";
@@ -27,7 +26,7 @@ export function ThemeForm({ theme }: ThemeFormProps) {
         <ThemeCard value="dark" defaultSelected={theme === "dark"} />
         <ThemeCard value="system" defaultSelected={theme === "system"} />
       </fieldset>
-      <SubmitButton loadingText="Updating...">Change theme</SubmitButton>
+      <SubmitButton loadingMessage="Updating...">Change theme</SubmitButton>
     </form>
   );
 }
