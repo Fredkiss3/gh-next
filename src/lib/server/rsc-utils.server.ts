@@ -3,12 +3,12 @@ import { revalidatePath, unstable_cache } from "next/cache";
 import { cache } from "react";
 import { headers } from "next/headers";
 import { getAuthedUser, getSession } from "~/app/(actions)/auth";
-import { redirect } from "next/navigation";
+import type { AuthedServerActionResult } from "../types";
 
 export function withAuth<T extends (...args: any[]) => Promise<any>>(
   action: T
-): T {
-  return (async (...args: Parameters<T>) => {
+): AuthedServerActionResult<T> {
+  return async (...args: Parameters<T>) => {
     const user = await getAuthedUser();
 
     if (!user) {
@@ -19,10 +19,12 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
       });
 
       revalidatePath("/");
-      return redirect("/login");
+      return {
+        type: "AUTH_ERROR" as const
+      } satisfies Awaited<ReturnType<AuthedServerActionResult<T>>>;
     }
     return action(...args);
-  }) as T;
+  };
 }
 
 type Callback = (...args: any[]) => Promise<any>;

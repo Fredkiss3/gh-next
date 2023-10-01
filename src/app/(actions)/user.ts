@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { withAuth } from "~/lib/server/rsc-utils.server";
 import { updateUserInfos } from "~/app/(models)/user";
 import { getSession, getAuthedUser } from "./auth";
-import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info";
+import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info-input-validator";
 
 import type { ServerActionResult } from "~/lib/types";
 
@@ -21,7 +21,7 @@ export const updateUserProfile = withAuth(async function (
   if (!result.success) {
     return {
       type: "error" as const,
-      errors: result.error.flatten().fieldErrors,
+      fieldErrors: result.error.flatten().fieldErrors,
       formData: {
         name: formData.get("name")?.toString() ?? null,
         bio: formData.get("bio")?.toString() ?? null,

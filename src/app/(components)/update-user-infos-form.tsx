@@ -15,7 +15,7 @@ import { SubmitButton } from "./submit-button";
 import { updateUserProfile } from "~/app/(actions)/user";
 
 // types
-import type { UpdateUserProfileInfosInput } from "~/app/(models)/dto/update-profile-info";
+import type { UpdateUserProfileInfosInput } from "~/app/(models)/dto/update-profile-info-input-validator";
 
 export type UpdateUserInfosProps = {
   defaultValues: UpdateUserProfileInfosInput;
@@ -29,7 +29,7 @@ export function UpdateUserInfosForm({ defaultValues }: UpdateUserInfosProps) {
 
   defaultValues = state.type !== "error" ? defaultValues : state.formData;
 
-  const errors = state.type !== "error" ? null : state.errors;
+  const errors = state.type !== "error" ? null : state.fieldErrors;
 
   return (
     <form

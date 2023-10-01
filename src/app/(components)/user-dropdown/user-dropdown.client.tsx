@@ -2,7 +2,7 @@
 import * as React from "react";
 // components
 import { DropdownMenu } from "../dropdown-menu";
-import { Avatar } from "../avatar";
+import { Avatar } from "~/app/(components)/avatar";
 import {
   PaintbrushIcon,
   PersonIcon,
@@ -40,7 +40,7 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
           text: "Sign out",
           icon: SignOutIcon,
           onClick: async () => {
-            startTransition(() => logoutUser());
+            startTransition(() => void logoutUser());
           }
         }
       ]}

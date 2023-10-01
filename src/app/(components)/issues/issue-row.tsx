@@ -20,7 +20,7 @@ import { IssueSearchLink } from "./issue-search-link";
 import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueSearchListResult } from "~/app/(models)/dto/issue-search";
+import type { IssueSearchListResult } from "~/app/(models)/dto/issue-search-output-validator";
 
 export const emojiSortMap = {
   "reactions-+1-desc": "👍",

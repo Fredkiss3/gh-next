@@ -53,10 +53,20 @@ export type ServerActionResult =
     }
   | {
       type: "error";
-      errors: Record<string, string[] | undefined>;
+      fieldErrors?: Record<string, string[] | undefined> | null;
+      formErrors?: string[];
       formData: Record<
         string,
         string | number | boolean | (string | number | boolean)[] | null
       >;
     }
   | { type: undefined; message: null }; // initial state
+
+export type AuthedServerActionResult<
+  T extends (...args: any[]) => Promise<any>
+> = (...args: Parameters<T>) => Promise<
+  | Awaited<ReturnType<T>>
+  | {
+      type: "AUTH_ERROR";
+    }
+>;

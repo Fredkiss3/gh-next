@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "~/lib/server/db/index.server";
 import { users } from "~/lib/server/db/schema/user.sql";
 import type { Theme } from "~/lib/server/db/schema/user.sql";
-import type { UpdateUserProfileInfosInput } from "./dto/update-profile-info";
+import type { UpdateUserProfileInfosInput } from "./dto/update-profile-info-input-validator";
 
 /**
  * Find or create the corresponding user in DB from their github profile

@@ -8,7 +8,7 @@ import {
   getIssueAuthorsByUsername
 } from "~/app/(models)/issues";
 
-import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search";
+import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search-output-validator";
 import { searchIssues } from "~/app/(models)/issues/search";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";

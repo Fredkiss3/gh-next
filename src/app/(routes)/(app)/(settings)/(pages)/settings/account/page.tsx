@@ -6,7 +6,7 @@ import { Button } from "~/app/(components)/button";
 
 // utils
 import { getAuthedUser, redirectIfNotAuthed } from "~/app/(actions)/auth";
-import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info";
+import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info-input-validator";
 
 // types
 import type { Metadata } from "next";

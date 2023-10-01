@@ -78,6 +78,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
         >
           {renderLeadingIcon?.("h-5 w-5 text-gray-500 flex-shrink-0")}
 
+          {/* @ts-expect-error defaultValue & value are overriden */}
           <textarea
             {...otherProps}
             ref={ref}
