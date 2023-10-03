@@ -32,7 +32,7 @@
     "eslint-config-next": "13.5.1",
     "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
-    "next": "13.5.4-canary.8",
+    "next": "13.5.4",
     "nextjs-toploader": "^1.4.2",
     "pg": "^8.11.3",
     "postgres": "^3.3.5",
