@@ -11,6 +11,7 @@ import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
 import { users } from "~/lib/server/db/schema/user.sql";
 import { MAX_ITEMS_PER_PAGE, IN_FILTERS } from "~/lib/shared/constants";
 import { ReactionTypes, reactions } from "~/lib/server/db/schema/reaction.sql";
+import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 
 import type { User } from "~/lib/server/db/schema/user.sql";
 import type { SQL } from "drizzle-orm";
@@ -480,19 +481,13 @@ function issueSearchfiltersToSQLConditions(
 
     // mentionnedUser will be `undefined` if the user is not authenticated but searched for `@me`
     if (mentionnedUser) {
-      const mentionRegex = `(^|[^a-zA-Z0-9])@${mentionnedUser}([^a-zA-Z0-9]|$)`;
       const mentionSubQuery = db
         .selectDistinctOn([issues.id], {
           issue_id: issues.id
         })
-        .from(comments)
-        .leftJoin(issues, eq(comments.issue_id, issues.id))
-        .where(
-          or(
-            sql`${comments.content} ~* ${mentionRegex}`,
-            sql`${issues.body} ~* ${mentionRegex}`
-          )
-        )
+        .from(issueUserMentions)
+        .rightJoin(issues, eq(issueUserMentions.issue_id, issues.id))
+        .where(ilike(issueUserMentions.username, mentionnedUser))
         .as("mentionSubQuery");
       const mentionSubQueryOnlyID = db
         .select({ issue_id: mentionSubQuery.issue_id })
@@ -516,20 +511,15 @@ function issueSearchfiltersToSQLConditions(
 
     // mentionnedUser will be `undefined` if the user is not authenticated but searched for `@me`
     if (mentionnedUser) {
-      const mentionRegex = `(^|[^a-zA-Z0-9])@${mentionnedUser}([^a-zA-Z0-9]|$)`;
       const mentionSubQuery = db
         .selectDistinctOn([issues.id], {
           issue_id: issues.id
         })
-        .from(comments)
-        .leftJoin(issues, eq(comments.issue_id, issues.id))
-        .where(
-          or(
-            sql`${comments.content} ~* ${mentionRegex}`,
-            sql`${issues.body} ~* ${mentionRegex}`
-          )
-        )
+        .from(issueUserMentions)
+        .rightJoin(issues, eq(issueUserMentions.issue_id, issues.id))
+        .where(ilike(issueUserMentions.username, mentionnedUser))
         .as("mentionSubQuery");
+
       const mentionSubQueryOnlyID = db
         .select({ issue_id: mentionSubQuery.issue_id })
         .from(mentionSubQuery);

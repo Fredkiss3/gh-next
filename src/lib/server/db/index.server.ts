@@ -1,3 +1,7 @@
+import {
+  issueUserMentions,
+  issueMentionsRelations
+} from "./schema/mention.sql";
 import { users, usersRelations } from "./schema/user.sql";
 import {
   issues,
@@ -44,6 +48,7 @@ export const db = drizzle(pool, {
     commentRevisions,
     issueEvents,
     issueUserSubscriptions,
+    issueMentions: issueUserMentions,
     // relations
     issueUserSubscriptionRelations,
     issueEventsRelations,
@@ -54,6 +59,7 @@ export const db = drizzle(pool, {
     labelRelations,
     labelToIssuesRelations,
     commentsRelations,
-    reactionsRelations
+    reactionsRelations,
+    issueMentionsRelations
   }
 });

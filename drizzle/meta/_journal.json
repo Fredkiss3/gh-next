@@ -162,6 +162,34 @@
       "when": 1695412983396,
       "tag": "0022_early_rick_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1696365219159,
+      "tag": "0023_bored_texas_twister",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1696895074829,
+      "tag": "0024_reflective_zzzax",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1696896160788,
+      "tag": "0025_mute_wilson_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1696896501508,
+      "tag": "0026_first_whizzer",
+      "breakpoints": true
     }
   ]
 }

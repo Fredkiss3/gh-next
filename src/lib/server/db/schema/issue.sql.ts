@@ -6,10 +6,9 @@ import {
   pgEnum,
   integer,
   boolean,
-  primaryKey,
   index
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { users } from "./user.sql";
 import { labelToIssues } from "./label.sql";
 import { comments } from "./comment.sql";
@@ -17,7 +16,7 @@ import { reactions } from "./reaction.sql";
 
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
-import { pgTable } from "./index.sql";
+import { pgTable, tsVector } from "./index.sql";
 import { issueEvents } from "./event.sql";
 
 export const IssueStatuses = {
@@ -48,6 +47,7 @@ export const issues = pgTable(
     number: integer("number").notNull().unique(),
     title: varchar("title", { length: 255 }).notNull(),
     body: text("body").default("").notNull(),
+    // body_search_vector: tsVector("body_search_vector"),
     created_at: timestamp("created_at").defaultNow().notNull(),
     updated_at: timestamp("updated_at").defaultNow().notNull(),
     status_updated_at: timestamp("status_updated_at").defaultNow().notNull(),
@@ -62,6 +62,9 @@ export const issues = pgTable(
   },
   (table) => ({
     titleIdx: index("title_idx").on(table.title)
+    // bodySVIdx: index("body_search_vector_idex")
+    //   .on(table.body_search_vector)
+    //   .using(sql`gin(${table.body_search_vector})`)
   })
 );
 
