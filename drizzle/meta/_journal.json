@@ -183,6 +183,13 @@
       "when": 1696896160788,
       "tag": "0025_mute_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1696896501508,
+      "tag": "0026_first_whizzer",
+      "breakpoints": true
     }
   ]
 }

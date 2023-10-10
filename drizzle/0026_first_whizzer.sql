@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_issue_user_mentions" ADD CONSTRAINT "gh_next_issue_user_mentions_username_issue_id_comment_id_unique" UNIQUE("username","issue_id","comment_id");
