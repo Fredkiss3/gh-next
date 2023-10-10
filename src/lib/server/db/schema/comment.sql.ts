@@ -38,7 +38,7 @@ export const comments = pgTable(
     author_id: integer("author_id").references(() => users.id, {
       onDelete: "set null"
     }),
-    content_search_vector: tsVector("content_search_vector"),
+    // content_search_vector: tsVector("content_search_vector"),
     author_username: varchar("author_username", { length: 255 }).notNull(),
     author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
     issue_id: integer("issue_id")
@@ -48,12 +48,12 @@ export const comments = pgTable(
       .notNull(),
     hidden: boolean("hidden").default(false).notNull(),
     hidden_reason: commentHideReasonEnum("hidden_reason")
-  },
-  (table) => ({
-    contentSVIdx: index("content_search_vector_idex")
-      .on(table.content_search_vector)
-      .using(sql`gin(${table.content_search_vector})`)
-  })
+  }
+  // (table) => ({
+  //   contentSVIdx: index("content_search_vector_idex")
+  //     .on(table.content_search_vector)
+  //     .using(sql`gin(${table.content_search_vector})`)
+  // })
 );
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
