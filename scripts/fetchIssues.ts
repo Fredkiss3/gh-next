@@ -37,6 +37,7 @@ import {
   type EventType
 } from "~/lib/server/db/schema/event.sql";
 import { MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
+import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -464,6 +465,10 @@ do {
       .where(sql`${users.username} ILIKE ${issue.author.login}`);
 
     let currentUser = dbUser[0];
+
+    const mentionRegex =
+      /(?:^|[^a-zA-Z0-9])(@[0-9a-zA-Z]+[0-9a-zA-Z\-])(?:[^a-zA-Z0-9]|$)/gm;
+
     const issuePayload = {
       title: issue.title,
       number: issue.number,
@@ -493,9 +498,35 @@ do {
         issue_id: issues.id
       });
 
-    /**
-     * INSERTING ISSUE REVISIONS
-     */
+    console.log("--- INSERTING ISSUES USER MENTIONS ---");
+    const regexIt = issue.body.matchAll(mentionRegex);
+
+    let noOfMentionsInserted = 0;
+    const found: string[] = [];
+    for (const occurence of regexIt) {
+      const username = occurence[1].replace("@", "");
+
+      if (!found.includes(username)) {
+        noOfMentionsInserted++;
+        found.push(username);
+
+        await db
+          .insert(issueUserMentions)
+          .values({
+            username,
+            issue_id: issueInsertQueryResult.issue_id
+          })
+          .onConflictDoNothing();
+      }
+    }
+
+    console.log(
+      `\n${noOfMentionsInserted} user mention inserted successfully ✅`
+    );
+
+    console.log("--- INSERTING ISSUES REVISIONS ---");
+    let noOfIssueRevisionsInserted = 0;
+
     for (const edition of issue.userContentEdits.nodes) {
       // Skip revisions without a diff
       if (!edition.diff) {
@@ -529,11 +560,15 @@ do {
       } satisfies IssueRevisionInsert;
 
       await db.insert(issueRevisions).values(revisionPayload);
+      noOfIssueRevisionsInserted++;
     }
 
-    /**
-     * INSERTING LABELS
-     */
+    console.log(
+      `\n${noOfIssueRevisionsInserted} issue revisions inserted successfully ✅`
+    );
+
+    console.log("--- INSERTING LABELS ---");
+    let noOfLabelsInserted = 0;
     // wipe out any label associated to this issue
     // Because we don't have any way to handle conflicts for this table
     await db
@@ -560,16 +595,18 @@ do {
       /**
        * INSERTING LABEL RELATIONS TO ISSUES
        */
-
       await db.insert(labelToIssues).values({
         issue_id: issueInsertQueryResult.issue_id,
         label_id: labelInsertResult.label_id
       });
+
+      noOfLabelsInserted++;
     }
 
-    /**
-     * INSERTING ASSIGNEES
-     */
+    console.log(`\n${noOfLabelsInserted} labels inserted successfully ✅`);
+
+    console.log("--- INSERTING ASSIGNEES ---");
+    let noOfAssigneesInserted = 0;
     for (const assignee of issue.assignees.nodes) {
       // faker.seed(stringToNumber(assignee.login));
       // wipe out any assignee existing for the issue
@@ -595,7 +632,11 @@ do {
       } satisfies IssueToAssigneeInsert;
 
       await db.insert(issueToAssignees).values(issueToAssigneePayload);
+      noOfAssigneesInserted++;
     }
+    console.log(
+      `\n${noOfAssigneesInserted} assignees inserted successfully ✅`
+    );
 
     // wipe out any reaction associated to this issue
     // Because we don't have any way to handle conflicts for this table
@@ -603,9 +644,8 @@ do {
       .delete(reactions)
       .where(eq(reactions.issue_id, issueInsertQueryResult.issue_id));
 
-    /**
-     * INSERTING REACTIONS
-     */
+    console.log("--- INSERTING REACTIONS ---");
+    let noOfReactionsInserted = 0;
     for (const reactionGroup of issue.reactionGroups) {
       const reactionTypeMapping = {
         THUMBS_UP: "PLUS_ONE",
@@ -624,7 +664,12 @@ do {
           type: reactionTypeMapping[reactionGroup.content]
         });
       }
+      noOfReactionsInserted++;
     }
+
+    console.log(
+      `\n${noOfReactionsInserted} reactions inserted successfully ✅`
+    );
 
     console.log(`\nInserting events for issue \x1b[34m${issue.number}\x1b[37m`);
 
@@ -800,6 +845,26 @@ do {
                 comment_id: commentInsertQueryResult.comment_id,
                 type: reactionTypeMapping[reactionGroup.content]
               });
+            }
+          }
+
+          const regexIterator = comment.body.matchAll(mentionRegex);
+
+          const found: string[] = [];
+          for (const occurence of regexIterator) {
+            const username = occurence[1].replace("@", "");
+
+            if (!found.includes(username)) {
+              found.push(username);
+
+              await db
+                .insert(issueUserMentions)
+                .values({
+                  username,
+                  issue_id: issueInsertQueryResult.issue_id,
+                  comment_id: commentInsertQueryResult.comment_id
+                })
+                .onConflictDoNothing();
             }
           }
         } else if (event.__typename === "AssignedEvent") {
