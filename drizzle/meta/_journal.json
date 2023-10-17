@@ -190,6 +190,20 @@
       "when": 1696896501508,
       "tag": "0026_first_whizzer",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1697578587931,
+      "tag": "0027_spicy_meltdown",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "5",
+      "when": 1697579168239,
+      "tag": "0028_needy_katie_power",
+      "breakpoints": true
     }
   ]
 }
