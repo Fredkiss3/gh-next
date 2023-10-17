@@ -23,10 +23,7 @@ export function UpdateUserInfosForm({ defaultValues }: UpdateUserInfosProps) {
     type: undefined
   });
 
-  defaultValues =
-    state?.type === "error"
-      ? (state.formData as UpdateUserProfileInfosInput)
-      : defaultValues;
+  defaultValues = state?.type === "error" ? state.formData : defaultValues;
 
   const errors = state.type !== "error" ? null : state.fieldErrors;
 

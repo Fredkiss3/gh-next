@@ -46,7 +46,9 @@ export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
 
-export type ServerActionResult =
+export type ServerActionResult<
+  TFormData extends unknown = Record<string, string | number | boolean | null>
+> =
   | {
       type: "success";
       message: string;
@@ -55,7 +57,7 @@ export type ServerActionResult =
       type: "error";
       fieldErrors?: Record<string, string[] | undefined> | null;
       formErrors?: string[];
-      formData: Record<string, string | number | boolean | null>;
+      formData: TFormData;
     }
   | { type: undefined; message: null }; // initial state
 
