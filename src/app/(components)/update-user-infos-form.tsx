@@ -1,10 +1,6 @@
 "use client";
 import * as React from "react";
-import {
-  // see ./globals.d.ts at the root for the types
-  // this will come in a new versoin of @types/react-dom https://github.com/DefinitelyTyped/DefinitelyTyped/pull/66726
-  experimental_useFormState as useFormState
-} from "react-dom";
+import { useFormState } from "react-dom";
 
 // components
 import { Input } from "./input";
@@ -27,7 +23,10 @@ export function UpdateUserInfosForm({ defaultValues }: UpdateUserInfosProps) {
     type: undefined
   });
 
-  defaultValues = state.type !== "error" ? defaultValues : state.formData;
+  defaultValues =
+    state?.type === "error"
+      ? (state.formData as UpdateUserProfileInfosInput)
+      : defaultValues;
 
   const errors = state.type !== "error" ? null : state.fieldErrors;
 

@@ -6,10 +6,10 @@ import { updateUserInfos } from "~/app/(models)/user";
 import { getSession, getAuthedUser } from "./auth";
 import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info-input-validator";
 
-import type { ServerActionResult } from "~/lib/types";
+import type { AuthError, ServerActionResult } from "~/lib/types";
 
 export const updateUserProfile = withAuth(async function (
-  _: ServerActionResult,
+  _: ServerActionResult | AuthError,
   formData: FormData
 ) {
   const session = await getSession();

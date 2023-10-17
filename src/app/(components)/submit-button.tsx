@@ -5,7 +5,7 @@ import * as React from "react";
 import { Button } from "./button";
 
 // utils
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 // types
 import type { BaseButtonProps, CommonButtonProps } from "./button";
 export type SubmitButtonProps = CommonButtonProps &
