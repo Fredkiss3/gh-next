@@ -22,15 +22,6 @@ export type HoverCardProps = {
   closeDelayInMs?: number;
 } & Pick<ReactAriaTooltipProps, "placement">;
 
-/**
- *  TODO: add footnotes wether :
- *    - the user has opened the issue : "You opened this issue"
- *    - the user has commented the issue : "You commented on this issue"
- *    - the user has been mentionned in the issue : "You were mentionned on this issue"
- *
- * and a combination of the 3 : "You were mentioned on and commented on this issue"
- * and a combination of the comment + open : "You commented and opened this issue"
- */
 export function HoverCard({
   content,
   children,

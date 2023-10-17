@@ -253,8 +253,9 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
                 <IssueRow
                   {...issue}
                   emojiSort={emojiSort}
-                  isAuthor={issue.author.id === authedUser?.id}
-                  userAvatarURL={authedUser?.avatar_url}
+                  authedUserId={authedUser?.id}
+                  authedUserAvatar={authedUser?.avatar_url}
+                  authedUserUsername={authedUser?.username}
                 />
               </li>
             ))}

@@ -79,6 +79,8 @@ export async function searchIssues(
     .groupBy(reactions.issue_id)
     .as("reaction_count_per_issue");
 
+  const UN_MATCHABLE_USERNAME = "<>";
+
   let issueQuery = db
     .selectDistinct({
       id: issues.id,
@@ -108,7 +110,8 @@ export async function searchIssues(
       heart_count: reactionCountQuery.heart_count,
       hooray_count: reactionCountQuery.hooray_count,
       laugh_count: reactionCountQuery.laugh_count,
-      rocket_count: reactionCountQuery.rocket_count
+      rocket_count: reactionCountQuery.rocket_count,
+      mentioned_user: issueUserMentions.username
     })
     .from(issues)
     .leftJoin(users, eq(users.id, issues.author_id))
@@ -118,6 +121,16 @@ export async function searchIssues(
       eq(commentsCountPerIssueSubQuery.issue_id, issues.id)
     )
     .leftJoin(reactionCountQuery, eq(reactionCountQuery.issue_id, issues.id))
+    .leftJoin(
+      issueUserMentions,
+      and(
+        eq(issues.id, issueUserMentions.issue_id),
+        ilike(
+          issueUserMentions.username,
+          currentUser?.username ?? UN_MATCHABLE_USERNAME
+        )
+      )
+    )
     .where(issueSearchfiltersToSQLConditions(filters, true, currentUser));
 
   let orderBy: SQL<unknown>;

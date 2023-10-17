@@ -24,6 +24,8 @@ export type IssueHoverCardContentsProps = {
   createdAt: Date;
   labels: Array<Pick<Label, "name" | "id" | "color">>;
   isAuthor?: boolean;
+  isMentioned?: boolean;
+  hasCommented?: boolean;
   userAvatarURL?: string;
 };
 
@@ -35,10 +37,24 @@ export function IssueHoverCardContents({
   createdAt,
   labels,
   isAuthor,
-  userAvatarURL
+  userAvatarURL,
+  isMentioned,
+  hasCommented
 }: IssueHoverCardContentsProps) {
-  const showFooter = userAvatarURL && (isAuthor || isAuthor);
-  const footerMessage = "You opened this issue";
+  const showFooter = userAvatarURL && (isAuthor || isMentioned);
+  let footerMessage = "";
+  if (hasCommented && isMentioned) {
+    footerMessage = "You were mentioned on and commented on this issue";
+  } else if (hasCommented && isAuthor) {
+    footerMessage = "You commented and opened this issue";
+  } else if (hasCommented) {
+    footerMessage = "You commented on this issue";
+  } else if (isMentioned) {
+    footerMessage = "You were mentionned on this issue";
+  } else if (isAuthor) {
+    footerMessage = "You opened this issue";
+  }
+
   return (
     <div className="w-[350px] flex flex-col">
       <div className="flex flex-col gap-4 p-5">
