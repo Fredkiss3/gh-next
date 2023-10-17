@@ -9,7 +9,6 @@ const nextConfig = {
     isrMemoryCacheSize: 0,
     serverActions: true,
     logging: {
-      // @ts-expect-error this is supposed to be boolean, but the types are wrong
       fullUrl: true,
       level: "verbose"
     }
