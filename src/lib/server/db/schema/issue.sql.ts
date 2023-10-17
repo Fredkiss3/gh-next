@@ -16,7 +16,7 @@ import { reactions } from "./reaction.sql";
 
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
-import { pgTable, tsVector } from "./index.sql";
+import { pgTable } from "./index.sql";
 import { issueEvents } from "./event.sql";
 
 export const IssueStatuses = {
@@ -47,14 +47,6 @@ export const issues = pgTable(
     number: integer("number").notNull().unique(),
     title: varchar("title", { length: 255 }).notNull(),
     body: text("body").default("").notNull(),
-    body_search_vector: tsVector("body_search_vector", {
-      generated: `to_tsvector('english',body)`
-    }),
-    title_search_vector: tsVector("title_search_vector", {
-      generated: `
-      setweight(to_tsvector('simple',title), 'A')  || ' ' || 
-      setweight(to_tsvector('english',title), 'B')`
-    }),
     created_at: timestamp("created_at").defaultNow().notNull(),
     updated_at: timestamp("updated_at").defaultNow().notNull(),
     status_updated_at: timestamp("status_updated_at").defaultNow().notNull(),
@@ -68,13 +60,7 @@ export const issues = pgTable(
     lock_reason: issueLockReasonEnum("lock_reason")
   },
   (table) => ({
-    titleIdx: index("title_idx").on(table.title),
-    bodySVIdx: index("body_search_vector_idx")
-      .on(table.body_search_vector)
-      .using(sql`gin(${table.body_search_vector})`),
-    titleSVIdx: index("title_search_vector_idx")
-      .on(table.title_search_vector)
-      .using(sql`gin(${table.title_search_vector})`)
+    titleIdx: index("title_idx").on(table.title)
   })
 );
 

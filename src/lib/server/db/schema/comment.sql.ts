@@ -16,7 +16,6 @@ import { issues } from "./issue.sql";
 import { reactions } from "./reaction.sql";
 
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import type { table } from "console";
 
 export const commentHideReasonEnum = pgEnum("comment_hide_reason", [
   "ABUSE",
@@ -30,34 +29,23 @@ export const commentHideReasonEnum = pgEnum("comment_hide_reason", [
 export type CommentHideReason =
   (typeof commentHideReasonEnum)["enumValues"][number];
 
-export const comments = pgTable(
-  "comments",
-  {
-    id: serial("id").primaryKey(),
-    content: text("content").notNull(),
-    created_at: timestamp("created_at").defaultNow().notNull(),
-    author_id: integer("author_id").references(() => users.id, {
-      onDelete: "set null"
-    }),
-    content_search_vector: tsVector("content_search_vector", {
-      generated: `to_tsvector('english',content)`
-    }),
-    author_username: varchar("author_username", { length: 255 }).notNull(),
-    author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
-    issue_id: integer("issue_id")
-      .references(() => issues.id, {
-        onDelete: "cascade"
-      })
-      .notNull(),
-    hidden: boolean("hidden").default(false).notNull(),
-    hidden_reason: commentHideReasonEnum("hidden_reason")
-  },
-  (table) => ({
-    contentSVIdx: index("content_search_vector_idex")
-      .on(table.content_search_vector)
-      .using(sql`gin(${table.content_search_vector})`)
-  })
-);
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
+  content: text("content").notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  author_id: integer("author_id").references(() => users.id, {
+    onDelete: "set null"
+  }),
+  author_username: varchar("author_username", { length: 255 }).notNull(),
+  author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
+  issue_id: integer("issue_id")
+    .references(() => issues.id, {
+      onDelete: "cascade"
+    })
+    .notNull(),
+  hidden: boolean("hidden").default(false).notNull(),
+  hidden_reason: commentHideReasonEnum("hidden_reason")
+});
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
   author: one(users, {
