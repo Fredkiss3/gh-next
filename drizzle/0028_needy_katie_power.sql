@@ -1,0 +1,2 @@
+ALTER TABLE "gh_next_comments" ADD COLUMN "content_search_vector" tsvector generated always as (to_tsvector('english',content)) stored;--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "content_search_vector_idex" ON "gh_next_comments" using gin("content_search_vector");

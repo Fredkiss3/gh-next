@@ -4,12 +4,15 @@ import { revalidatePath } from "next/cache";
 import { withAuth } from "~/lib/server/rsc-utils.server";
 import { updateUserInfos } from "~/app/(models)/user";
 import { getSession, getAuthedUser } from "./auth";
-import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info-input-validator";
+import {
+  updateUserProfileInfosInputValidator,
+  type UpdateUserProfileInfosInput
+} from "~/app/(models)/dto/update-profile-info-input-validator";
 
-import type { ServerActionResult } from "~/lib/types";
+import type { AuthError, ServerActionResult } from "~/lib/types";
 
 export const updateUserProfile = withAuth(async function (
-  _: ServerActionResult,
+  _: ServerActionResult<UpdateUserProfileInfosInput> | AuthError,
   formData: FormData
 ) {
   const session = await getSession();
@@ -28,7 +31,7 @@ export const updateUserProfile = withAuth(async function (
         company: formData.get("company")?.toString() ?? null,
         location: formData.get("company")?.toString() ?? null
       }
-    } satisfies ServerActionResult;
+    };
   }
 
   await updateUserInfos(result.data, currentUser!.id);
@@ -42,5 +45,5 @@ export const updateUserProfile = withAuth(async function (
   return {
     type: "success" as const,
     message: "Success"
-  } satisfies ServerActionResult;
+  };
 });
