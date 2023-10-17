@@ -31,6 +31,7 @@ import {
 
 // types
 import type { EmojiSortKey } from "./issue-row";
+import { getAuthedUser } from "~/app/(actions)/auth";
 
 export type IssueListProps = {
   page?: string;
@@ -62,6 +63,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
   if (filters.sort?.startsWith("reactions-")) {
     emojiSort = filters.sort as EmojiSortKey;
   }
+  const authedUser = await getAuthedUser();
 
   return (
     <>
@@ -248,7 +250,12 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
           <ul>
             {issues.map((issue) => (
               <li key={issue.number}>
-                <IssueRow {...issue} emojiSort={emojiSort} />
+                <IssueRow
+                  {...issue}
+                  emojiSort={emojiSort}
+                  isAuthor={issue.author.id === authedUser?.id}
+                  userAvatarURL={authedUser?.avatar_url}
+                />
               </li>
             ))}
           </ul>
