@@ -258,7 +258,7 @@ function issueSearchfiltersToSQLConditions(
     if (filters.in.has("body")) {
       inFilters.push(ilike(issues.body, searchQuery));
     }
-    if (filters.in.has("body")) {
+    if (filters.in.has("comments")) {
       inFilters.push(ilike(comments.content, searchQuery));
     }
     queryFilters = or(...inFilters);
