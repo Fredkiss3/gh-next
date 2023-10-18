@@ -35,6 +35,9 @@ export const emojiSortMap = {
 export type EmojiSortKey = keyof typeof emojiSortMap;
 
 export type IssueRowProps = IssueSearchListResult["issues"][number] & {
+  authedUserId?: number;
+  authedUserAvatar?: string;
+  authedUserUsername?: string;
   emojiSort?: EmojiSortKey | null;
 };
 
@@ -50,6 +53,11 @@ export function IssueRow({
   created_at,
   excerpt,
   emojiSort,
+  authedUserId,
+  authedUserAvatar,
+  authedUserUsername,
+  mentioned_user,
+  commented_user,
   ...reactionCounts
 }: IssueRowProps) {
   let emojiCount: number = 0;
@@ -113,8 +121,12 @@ export function IssueRow({
                   status={status}
                   title={title}
                   description={excerpt}
-                  created_at={created_at}
+                  createdAt={created_at}
                   labels={labels}
+                  isAuthor={authedUserId === author.id}
+                  isMentioned={authedUserUsername === mentioned_user}
+                  hasCommented={authedUserUsername === commented_user}
+                  userAvatarURL={authedUserAvatar}
                 />
               }
             >
