@@ -11,7 +11,7 @@ export function useIssueLabelListByNameQuery({
   return useQuery({
     queryKey: ["ISSUE_LABEL_LIST_BY_NAME", name],
     queryFn: () => filterLabelsByName(name).then((result) => result.promise),
-    keepPreviousData: true,
-    enabled
+    enabled,
+    placeholderData: (previousData) => previousData
   });
 }

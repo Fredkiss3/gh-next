@@ -17,6 +17,6 @@ export function useIssueAssigneeListQuery({
         (result) => result.promise
       ),
     enabled,
-    keepPreviousData: true
+    placeholderData: (previousData) => previousData
   });
 }

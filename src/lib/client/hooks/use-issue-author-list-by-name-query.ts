@@ -10,6 +10,6 @@ export function useIssueAuthorListByNameQuery({
     queryKey: ["ISSUE_AUTHOR_LIST_BY_NAME", name],
     queryFn: () =>
       filterIssueAuthorsByName(name).then((result) => result.promise),
-    keepPreviousData: true
+    placeholderData: (previousData) => previousData
   });
 }
