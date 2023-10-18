@@ -378,7 +378,7 @@ export function IssueListSearchInput({
                 )}
 
                 <CommandGroup
-                  className="max-h-64 !overflow-scroll border-t border-neutral"
+                  className="max-h-64 !overflow-auto border-t border-neutral"
                   heading={groupHeadingTitle}
                 >
                   {Object.keys(searchFilters).map((key) => {
