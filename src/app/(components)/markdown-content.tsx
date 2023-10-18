@@ -118,7 +118,7 @@ export async function MarkdownContent({
             })}
           />
         ),
-        a: (props: any) => <a className="text-accent" {...props} />,
+        a: (props: any) => <a className="text-accent underline" {...props} />,
         code: (
           props:
             | ({ className?: string; children?: React.ReactNode } & Record<
