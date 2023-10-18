@@ -81,6 +81,20 @@ export async function searchIssues(
 
   const UN_MATCHABLE_USERNAME = "<>";
 
+  const issueWhereUserCommentedSubQuery = db
+    .selectDistinct({
+      issue_id: comments.issue_id,
+      author_username: comments.author_username
+    })
+    .from(comments)
+    .where(
+      ilike(
+        comments.author_username,
+        currentUser?.username ?? UN_MATCHABLE_USERNAME
+      )
+    )
+    .as("issue_commented");
+
   let issueQuery = db
     .selectDistinct({
       id: issues.id,
@@ -111,7 +125,8 @@ export async function searchIssues(
       hooray_count: reactionCountQuery.hooray_count,
       laugh_count: reactionCountQuery.laugh_count,
       rocket_count: reactionCountQuery.rocket_count,
-      mentioned_user: issueUserMentions.username
+      mentioned_user: issueUserMentions.username,
+      commented_user: issueWhereUserCommentedSubQuery.author_username
     })
     .from(issues)
     .leftJoin(users, eq(users.id, issues.author_id))
@@ -130,6 +145,10 @@ export async function searchIssues(
           currentUser?.username ?? UN_MATCHABLE_USERNAME
         )
       )
+    )
+    .leftJoin(
+      issueWhereUserCommentedSubQuery,
+      eq(issues.id, issueWhereUserCommentedSubQuery.issue_id)
     )
     .where(issueSearchfiltersToSQLConditions(filters, true, currentUser));
 

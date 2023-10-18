@@ -47,7 +47,8 @@ export const issueSearchListOutputValidator = z.object({
             description: z.string().optional()
           })
         ),
-        mentioned_user: z.string().nullable()
+        mentioned_user: z.string().nullable(),
+        commented_user: z.string().nullable()
       })
       .merge(
         createSelectSchema(issues).pick({

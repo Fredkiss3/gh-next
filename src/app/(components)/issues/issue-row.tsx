@@ -57,6 +57,7 @@ export function IssueRow({
   authedUserAvatar,
   authedUserUsername,
   mentioned_user,
+  commented_user,
   ...reactionCounts
 }: IssueRowProps) {
   let emojiCount: number = 0;
@@ -124,6 +125,7 @@ export function IssueRow({
                   labels={labels}
                   isAuthor={authedUserId === author.id}
                   isMentioned={authedUserUsername === mentioned_user}
+                  hasCommented={authedUserUsername === commented_user}
                   userAvatarURL={authedUserAvatar}
                 />
               }
