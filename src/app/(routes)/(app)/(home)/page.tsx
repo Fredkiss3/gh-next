@@ -16,7 +16,7 @@ import { Avatar } from "~/app/(components)/avatar";
 import { Badge } from "~/app/(components)/badge";
 import { CounterBadge } from "~/app/(components)/counter-badge";
 import { Button } from "~/app/(components)/button";
-import { MarkdownContent } from "~/app/(components)/markdown-content";
+import { MarkdownContent } from "~/app/(components)/markdown/markdown-content";
 import Link from "next/link";
 
 // utils
@@ -29,7 +29,7 @@ import {
 } from "~/lib/shared/constants";
 import { clsx } from "~/lib/shared/utils.shared";
 
-export default async function Page() {
+export default async function HomePage() {
   const { user } = await getSession();
   const repositoryData = await getGithubRepoData();
   const hasStarred = Boolean(

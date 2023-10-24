@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Page not found - Fredkiss3/gh-next"
 };
 
-export default function Page() {
+export default function RootNotFound() {
   return (
     <>
       <section className="flex h-screen flex-col items-center justify-center gap-6 text-foreground">

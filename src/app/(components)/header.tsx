@@ -20,7 +20,7 @@ import {
 } from "./user-dropdown/user-dropdown.server";
 
 // utils
-import { getSession } from "~/app/(actions)/auth";
+import { getAuthedUser, getSession } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared/utils.shared";
 import { PageTitle } from "./page-title";
 import { getOpenIssuesCount } from "~/app/(models)/issues";
@@ -33,6 +33,11 @@ export type HeaderProps = {
 export async function Header({ hideRepoNavbar = false }: HeaderProps) {
   const { user } = await getSession();
   const noOfOpennedIssues = await getOpenIssuesCount();
+
+  if (user) {
+    // preload the user so that it is accessed faster in <UserDropdown />
+    getAuthedUser();
+  }
 
   return (
     <header

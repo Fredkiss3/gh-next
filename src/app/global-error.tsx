@@ -11,7 +11,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Error({
+export default function GlobalError({
   error,
   reset
 }: {
