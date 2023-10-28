@@ -29,7 +29,7 @@ import {
 } from "~/lib/shared/constants";
 import { clsx } from "~/lib/shared/utils.shared";
 
-export default async function Page() {
+export default async function HomePage() {
   const { user } = await getSession();
   const repositoryData = await getGithubRepoData();
   const hasStarred = Boolean(

@@ -6,11 +6,11 @@ const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
   experimental: {
-    isrMemoryCacheSize: 0,
-    serverActions: true,
-    logging: {
-      fullUrl: true,
-      level: "verbose"
+    isrMemoryCacheSize: 0
+  },
+  logging: {
+    fetches: {
+      fullUrl: true
     }
   },
   images: {
