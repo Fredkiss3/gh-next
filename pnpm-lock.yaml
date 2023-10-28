@@ -38,6 +38,9 @@ dependencies:
   eslint-config-next:
     specifier: 14.0.0
     version: 14.0.0(eslint@8.48.0)(typescript@5.2.2)
+  geist:
+    specifier: ^1.0.0
+    version: 1.0.0
   isbot:
     specifier: ^3.6.13
     version: 3.7.0
@@ -572,6 +575,10 @@ packages:
     resolution: {integrity: sha512-Ye37nNI09V3yt7pzuzSQtwlvuJ2CGzFszHXkcTHHZgNr7EhTMFLipn3VSJChy+e5+ahTdNApPphc3qCPUsn10A==}
     dependencies:
       glob: 7.1.7
+    dev: false
+
+  /@next/font@13.5.6:
+    resolution: {integrity: sha512-urmUq05uCVJsBqAAJEV+xK5OTTodrSxdiG+351SOSjlWctywdBM6qX+K9pIe3K48RxjfnxlBbXjGyOJAji+pfw==}
     dev: false
 
   /@next/swc-darwin-arm64@14.0.0:
@@ -3583,6 +3590,12 @@ packages:
 
   /functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
+    dev: false
+
+  /geist@1.0.0:
+    resolution: {integrity: sha512-7hqXZqIdSiFbXjlMZ8Ag0fBAW8RzUjIXPkh160rT4m4ECMtsKdFX+06e0mK28oRCpU+lOB1C5Es8qxzvv7H2Hg==}
+    dependencies:
+      '@next/font': 13.5.6
     dev: false
 
   /get-intrinsic@1.2.1:

@@ -8,14 +8,12 @@ import NextTopLoader from "nextjs-toploader";
 import { IconSwitcher } from "~/app/(components)/icon-switcher";
 
 // utils
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font";
 import { getTheme } from "~/app/(actions)/theme";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
@@ -52,7 +50,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={clsx(inter.className, "bg-backdrop")}
+        className={clsx(GeistSans.className, "bg-backdrop")}
         suppressHydrationWarning
       >
         <IconSwitcher />
