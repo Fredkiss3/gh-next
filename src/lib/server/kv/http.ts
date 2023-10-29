@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { KVStore } from "./index.server";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import { jsonFetch } from "~/lib/shared/utils.shared";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 

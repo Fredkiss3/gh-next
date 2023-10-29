@@ -1,12 +1,13 @@
 // @ts-check
-import "./src/env.mjs";
+import "./src/env-config.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
   experimental: {
-    isrMemoryCacheSize: 0
+    isrMemoryCacheSize: 0,
+    taint: true
   },
   logging: {
     fetches: {

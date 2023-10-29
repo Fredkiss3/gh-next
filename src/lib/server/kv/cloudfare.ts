@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 
 import type { KVStore } from "./index.server";

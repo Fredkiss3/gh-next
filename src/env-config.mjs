@@ -1,8 +1,14 @@
 // @ts-check
+
 import { createEnv } from "@t3-oss/env-nextjs";
 import { preprocess, z } from "zod";
 
-export const env = createEnv({
+/**
+ * BEWARE !!!
+ * This is only intended to be imported in `next.config.mjs`
+ * You should import from `src/.env.mjs`
+ */
+export const _envObject = createEnv({
   server: {
     SESSION_SECRET: z.string().min(32).max(32),
     GITHUB_SECRET: z.string(),
