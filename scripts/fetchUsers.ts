@@ -1,6 +1,6 @@
 import { users } from "~/lib/server/db/schema/user.sql";
 import { fetchFromGithubAPI } from "~/lib/server/utils.server";
-import { env } from "~/env";
+import { _envObject as env } from "~/env-config.mjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { eq } from "drizzle-orm";
