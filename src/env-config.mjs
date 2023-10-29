@@ -6,7 +6,8 @@ import { preprocess, z } from "zod";
 /**
  * BEWARE !!!
  * This is only intended to be imported in `next.config.mjs`
- * You should import from `src/.env.mjs`
+ * You should import from `src/env`.
+ * Modify this file if you want to add more env variables
  */
 export const _envObject = createEnv({
   server: {
