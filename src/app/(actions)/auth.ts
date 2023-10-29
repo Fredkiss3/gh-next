@@ -2,7 +2,7 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
 import { Session } from "~/lib/server/session.server";
 import {
@@ -10,7 +10,7 @@ import {
   getUserFromGithubProfile,
   githubUserSchema
 } from "~/app/(models)/user";
-
+import { experimental_taintObjectReference as taintObjectReference } from "react";
 import { revalidatePath } from "next/cache";
 import { withAuth } from "~/lib/server/rsc-utils.server";
 
@@ -102,6 +102,7 @@ export const getSession = cache(async function getSession(): Promise<Session> {
     );
   }
 
+  taintObjectReference("Do not pass the session object to the client", session);
   return session;
 });
 
@@ -126,7 +127,12 @@ export const getAuthedUser = cache(async function getUser() {
     const dbUsers = await getUserById(user.id);
 
     if (dbUsers !== null && dbUsers.length > 0) {
-      return dbUsers[0];
+      const user = dbUsers[0];
+      taintObjectReference(
+        "Do not pass the whole user object to the client",
+        user
+      );
+      return user;
     }
   }
 

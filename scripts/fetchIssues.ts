@@ -11,7 +11,7 @@ import {
 } from "~/lib/server/db/schema/issue.sql";
 import { fetchFromGithubAPI } from "~/lib/server/utils.server";
 import { faker } from "@faker-js/faker/locale/en_US";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { users, type User } from "~/lib/server/db/schema/user.sql";

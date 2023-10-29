@@ -25,7 +25,7 @@ import {
 } from "./schema/comment.sql";
 import { issueEvents, issueEventsRelations } from "./schema/event.sql";
 import { reactions, reactionsRelations } from "./schema/reaction.sql";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
