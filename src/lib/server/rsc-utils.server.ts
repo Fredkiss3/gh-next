@@ -1,7 +1,6 @@
 import "server-only";
 import { revalidatePath, unstable_cache } from "next/cache";
 import { cache } from "react";
-import { headers } from "next/headers";
 import { getAuthedUser, getSession } from "~/app/(actions)/auth";
 import type { AuthedServerActionResult } from "../types";
 
@@ -36,8 +35,4 @@ export function nextCache<T extends Callback>(
   }
 ) {
   return cache(unstable_cache(cb, options.tags, options));
-}
-
-export function isSSR() {
-  return headers().get("accept")?.includes("text/html");
 }

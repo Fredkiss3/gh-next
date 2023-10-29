@@ -1,4 +1,4 @@
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import type { KVStore } from "./index.server";
 
 type RedisCommand = "GET" | "SET" | "SETEX" | "DEL";

@@ -1,5 +1,5 @@
 // @ts-check
-import "./src/env.mjs";
+import "./src/env-config.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -7,10 +7,11 @@ const nextConfig = {
   output: "standalone",
   experimental: {
     isrMemoryCacheSize: 0,
-    serverActions: true,
-    logging: {
-      fullUrl: true,
-      level: "verbose"
+    taint: true
+  },
+  logging: {
+    fetches: {
+      fullUrl: true
     }
   },
   images: {

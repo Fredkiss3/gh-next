@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { loginUser } from "~/app/(actions)/auth";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import { isValidURLPathname } from "~/lib/shared/utils.shared";
 import type { NextRequest } from "next/server";
 
