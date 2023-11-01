@@ -21,6 +21,7 @@ import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
 import type { IssueSearchItem } from "~/app/(models)/dto/issue-search-output-validator";
+import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 
 export const emojiSortMap = {
   "reactions-+1-desc": "👍",
@@ -140,7 +141,7 @@ export function IssueRow({
                     "ring-accent rounded-md focus:outline-none focus:ring-2"
                   )}
                 >
-                  {title}
+                  <MarkdownTitle title={title} className="font-semibold" />
                 </Link>
               </ReactAriaLink>
             </HoverCard>

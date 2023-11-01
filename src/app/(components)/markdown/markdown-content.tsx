@@ -6,6 +6,7 @@ import { Code } from "bright";
 import { MarkdownCodeBlock } from "./markdown-code-block";
 import { LinkIcon } from "@primer/octicons-react";
 import { MarkdownErrorBoundary } from "~/app/(components)/markdown/markdown-error-boundary";
+import Link from "next/link";
 
 // utils
 import remarkGfm from "remark-gfm";
@@ -13,12 +14,10 @@ import rehypeSlug from "rehype-slug";
 import { clsx } from "~/lib/shared/utils.shared";
 import githubDark from "~/lib/server/themes/github-dark.json";
 import githubLight from "~/lib/server/themes/github-light.json";
-import remarkGithub from "remark-github";
 import rehypeRaw from "rehype-raw";
 import { compile, run } from "@mdx-js/mdx";
 import { VFile } from "vfile";
-
-// TODO : INTEGRATE GITHUB REMARK LINKING : https://github.com/remarkjs/remark-github
+import { env } from "~/env";
 
 // types
 import type { UseMdxComponents } from "@mdx-js/mdx";
@@ -27,9 +26,54 @@ export type MarkdownContentProps = {
   content: string;
   linkHeaders?: boolean;
   className?: string;
+  editableCheckboxes?: boolean;
 };
 
-function getComponents(linkHeaders: boolean) {
+function replaceMarkdownMentions(
+  input: string,
+  // TODO : make this configurable
+  repo: string = "vercel/next.js"
+) {
+  return (
+    input
+      // Replace commit hash with repo specified with a link
+      .replace(
+        /\b([a-zA-Z0-9-_]+)\/([a-zA-Z0-9-_]+)@([a-f0-9]{7,40})\b/g,
+        (_: string, user: string, repo: string, commit: string) =>
+          `[${user}/${repo}@${commit.slice(0, 7)}](${
+            env.NEXT_PUBLIC_VERCEL_URL
+          }/${user}/${repo}/commit/${commit})`
+      )
+      // Replace commit hash with a link
+      .replace(
+        /\b([a-f0-9]{7,40})\b/g,
+        (commit: string) =>
+          `[${commit.slice(0, 7)}](${
+            env.NEXT_PUBLIC_VERCEL_URL
+          }/${repo}/commit/${commit})`
+      )
+      // Replace issue or PR number with a link
+      .replace(
+        /#(\d+)/g,
+        (_: string, issue: string) =>
+          `[#${issue}](${env.NEXT_PUBLIC_VERCEL_URL}/${repo}/issues/${issue})`
+      )
+      // Replace 'GH-' issue number with a link
+      .replace(
+        /GH-(\d+)/g,
+        (_: string, issue: string) =>
+          `[GH-${issue}](${env.NEXT_PUBLIC_VERCEL_URL}/${repo}/issues/${issue})`
+      )
+      // Replace GitHub username mention with a link
+      .replace(
+        /@([a-zA-Z0-9-_]+)/g,
+        (_: string, user: string) =>
+          `<a data-type="mention" href="${env.NEXT_PUBLIC_VERCEL_URL}/u/${user}"><strong>@${user}</strong></a>`
+      )
+  );
+}
+
+function getComponents(linkHeaders: boolean, editableCheckboxes: boolean) {
   Code.theme = {
     dark: githubDark,
     light: githubLight
@@ -38,7 +82,6 @@ function getComponents(linkHeaders: boolean) {
     title: () => null,
     textarea: () => null,
     style: () => null,
-    input: () => null,
     iframe: () => null,
     embed: () => null,
     script: () => null,
@@ -97,7 +140,39 @@ function getComponents(linkHeaders: boolean) {
       />
     ),
     hr: (props) => <hr className="h-1 bg-neutral/50 border-0" {...props} />,
-    a: (props) => <a className="text-accent underline" {...props} />,
+    a: (props) => {
+      let isExternal = true;
+      if (props.href) {
+        try {
+          const url = new URL(props.href, env.NEXT_PUBLIC_VERCEL_URL);
+
+          const baseURL = new URL(env.NEXT_PUBLIC_VERCEL_URL);
+          isExternal = url.hostname !== baseURL.hostname;
+        } catch (error) {
+          // do nothing
+        }
+      }
+
+      // @ts-expect-error data-type can be passed to props
+      const isMention = props["data-type"] === "mention";
+
+      return isExternal ? (
+        <a
+          {...props}
+          className={clsx("underline", {
+            "text-accent": !isMention
+          })}
+        />
+      ) : (
+        // @ts-expect-error the types are fiiiiine !
+        <Link
+          {...props}
+          className={clsx("underline", {
+            "text-accent": !isMention
+          })}
+        />
+      );
+    },
     code: (props) => {
       const lang = props.className?.replace(`language-`, "");
       if (props.children) {
@@ -129,6 +204,14 @@ function getComponents(linkHeaders: boolean) {
         return <></>;
       }
     },
+    input: (props) => {
+      if (props.type !== "checkbox") {
+        return null;
+      }
+      return (
+        <input {...props} type="checkbox" disabled={!editableCheckboxes} />
+      );
+    },
     ...disallowedTags
   } satisfies MDXComponents;
 }
@@ -146,13 +229,14 @@ export async function MarkdownContent(props: MarkdownContentProps) {
 async function MarkdownRenderer({
   content,
   linkHeaders = false,
-  className
+  className,
+  editableCheckboxes = false
 }: MarkdownContentProps) {
   console.time("Markdown Rendering");
   const file = await compile(
     new VFile({
       basename: "example.md",
-      value: content
+      value: replaceMarkdownMentions(content)
     }),
     {
       jsx: false,
@@ -178,7 +262,7 @@ async function MarkdownRenderer({
   return (
     <article className={clsx(className, "break-words leading-normal")}>
       {mod.default({
-        components: getComponents(linkHeaders)
+        components: getComponents(linkHeaders, editableCheckboxes)
       })}
     </article>
   );
