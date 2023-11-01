@@ -1,23 +1,17 @@
 import "server-only";
 
+// components
+import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
+import { MarkdownContent } from "~/app/(components)/markdown/markdown-content";
+
 // utils
-import { db } from "~/lib/server/db/index.server";
-import { cache } from "react";
-import { issues } from "~/lib/server/db/schema/issue.sql";
-import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { preprocess, z } from "zod";
+import { getIssueDetail } from "~/app/(actions)/issue";
 
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
-import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
-import { MarkdownContent } from "~/app/(components)/markdown/markdown-content";
-import { preprocess, z } from "zod";
-import { LabelBadge } from "~/app/(components)/label-badge";
-
-const getIssueDetail = cache(async function getIssueDetail(number: number) {
-  return await db.select().from(issues).where(eq(issues.number, number));
-});
 
 export async function generateMetadata({
   params
@@ -59,41 +53,7 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        {/* <h2>
-          <LabelBadge title="CODE" color="#00F" className="text-2xl" />
-        </h2>
-        <pre className="bg-neutral my-8 p-5 overflow-x-auto rounded-md">
-          {issue.body}
-        </pre>
-
-        <h2>
-          <LabelBadge title="RENDER RESULT" color="#F00" className="text-2xl" />
-        </h2> */}
-        {/* <MarkdownContent content={issue.body.replace(/```/g, "~~~")} /> */}
-        <MarkdownContent
-          content={`
-## HTML :
-
-<img src="https://http.cat/418" alt="I'm a teapot">
-
-~~~code~~~
-
-<details>
-
-<summary>Summary</summary>
-
-~strike~
-
-~~~js
-console.log('It works!')
-~~~
-## LINK :
-www.nasa.gov.
-
-## MARKDOWN :
-![I'm a teapot](https://http.cat/418)
-</details>        `}
-        />
+        <MarkdownContent content={issue.body} />
       </section>
     </div>
   );

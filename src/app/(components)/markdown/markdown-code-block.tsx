@@ -19,15 +19,13 @@ export function MarkdownCodeBlock({
   const [isPending, startTransition] = React.useTransition();
 
   return (
-    <div className="group/code relative">
+    <div className="relative">
       {children}
 
       <Tooltip content="Copied!" placement="left" isOpen={isPending}>
         <Button
-          className={clsx(className, "transition duration-150", {
-            "opacity-0 group-hover/code:opacity-100": !isPending
-          })}
-          variant="invisible"
+          className={clsx(className, "transition duration-150")}
+          variant="subtle"
           type="button"
           onClick={() => {
             navigator.clipboard.writeText(codeStr).then(() => {
