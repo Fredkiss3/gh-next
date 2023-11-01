@@ -107,3 +107,14 @@ export async function getIssueAssigneesByUsernameOrName(name: string) {
     name: name + "%"
   });
 }
+
+const singleIssuePrepared = db
+  .select()
+  .from(issues)
+  .where(eq(issues.number, sql.placeholder("number")));
+
+export async function getSingleIssue(number: number) {
+  return await singleIssuePrepared.execute({
+    number
+  });
+}

@@ -20,7 +20,7 @@ import { IssueSearchLink } from "./issue-search-link";
 import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
-import type { IssueSearchListResult } from "~/app/(models)/dto/issue-search-output-validator";
+import type { IssueSearchItem } from "~/app/(models)/dto/issue-search-output-validator";
 
 export const emojiSortMap = {
   "reactions-+1-desc": "👍",
@@ -34,7 +34,7 @@ export const emojiSortMap = {
 } as const;
 export type EmojiSortKey = keyof typeof emojiSortMap;
 
-export type IssueRowProps = IssueSearchListResult["issues"][number] & {
+export type IssueRowProps = IssueSearchItem & {
   authedUserId?: number;
   authedUserAvatar?: string;
   authedUserUsername?: string;
@@ -137,7 +137,7 @@ export function IssueRow({
                     "inline break-words text-lg font-semibold text-foreground",
                     "hover:text-accent",
                     "transition duration-150",
-                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                    "ring-accent rounded-md focus:outline-none focus:ring-2"
                   )}
                 >
                   {title}
@@ -226,7 +226,7 @@ export function IssueRow({
               className={clsx(
                 "hover:text-accent",
                 "transition duration-150",
-                "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                "ring-accent rounded-md focus:outline-none focus:ring-2"
               )}
             >
               {author.username}
@@ -241,9 +241,9 @@ export function IssueRow({
           <Link
             href={`/issues/${number}`}
             className={clsx(
-              "flex items-center gap-1 text-grey hover:text-accent",
+              "text-grey hover:text-accent flex items-center gap-1",
               "transition duration-150",
-              "focus:ring-2 ring-accent focus:outline-none rounded-md"
+              "ring-accent rounded-md focus:outline-none focus:ring-2"
             )}
           >
             <CommentIcon className="h-4 w-4 flex-shrink-0" />
@@ -255,9 +255,9 @@ export function IssueRow({
           <Link
             href={`/issues/${number}`}
             className={clsx(
-              "flex items-center gap-1 text-grey hover:text-accent",
+              "text-grey hover:text-accent flex items-center gap-1",
               "transition duration-150",
-              "focus:ring-2 ring-accent focus:outline-none rounded-md"
+              "ring-accent rounded-md focus:outline-none focus:ring-2"
             )}
           >
             {emojiSortMap[emojiSort]}

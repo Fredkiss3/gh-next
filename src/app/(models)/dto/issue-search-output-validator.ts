@@ -61,3 +61,5 @@ export const issueSearchListOutputValidator = z.object({
 export type IssueSearchListResult = z.TypeOf<
   typeof issueSearchListOutputValidator
 >;
+
+export type IssueSearchItem = IssueSearchListResult["issues"][number];

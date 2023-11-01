@@ -5,14 +5,17 @@ import {
   getIssueAssigneesByUsername,
   getIssueAssigneesByUsernameOrName,
   getIssueAuthorsByName,
-  getIssueAuthorsByUsername
+  getIssueAuthorsByUsername,
+  getSingleIssue
 } from "~/app/(models)/issues";
 
 import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search-output-validator";
 import { searchIssues } from "~/app/(models)/issues/search";
 
-import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 import { getAuthedUser } from "./auth";
+import { cache } from "react";
+
+import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 
 /**
  * We use `promise` because server actions are not batched,
@@ -73,3 +76,9 @@ export async function filterLabelsByName(name: string) {
     promise: getLabelsByName(name)
   };
 }
+
+export const getIssueDetail = cache(async function getIssueDetail(
+  number: number
+) {
+  return getSingleIssue(number);
+});
