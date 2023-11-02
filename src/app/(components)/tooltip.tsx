@@ -52,9 +52,9 @@ export function Tooltip({
             width={8}
             viewBox="0 0 512 345.51"
             className={clsx(
-              "fill-tooltip-dark",
-              "group-data-[placement=left]/tooltip:-rotate-90",
-              "group-data-[placement=right]/tooltip:rotate-90",
+              "fill-tooltip-dark relative",
+              "group-data-[placement=left]/tooltip:-rotate-90 group-data-[placement=left]/tooltip:right-1",
+              "group-data-[placement=right]/tooltip:rotate-90 group-data-[placement=left]/tooltip:left-1",
               "group-data-[placement=bottom]/tooltip:rotate-180"
             )}
           >

@@ -118,3 +118,14 @@ export async function getSingleIssue(number: number) {
     number
   });
 }
+
+export async function getMultipleIssues(numbers: number[]) {
+  return await db
+    .select({
+      status: issues.status,
+      title: issues.title,
+      number: issues.number
+    })
+    .from(issues)
+    .where(sql`${issues.number} in ${numbers}`);
+}

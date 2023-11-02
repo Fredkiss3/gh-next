@@ -4,7 +4,12 @@ import * as React from "react";
 // components
 import { Code } from "bright";
 import { MarkdownCodeBlock } from "./markdown-code-block";
-import { LinkIcon } from "@primer/octicons-react";
+import {
+  IssueClosedIcon,
+  IssueOpenedIcon,
+  LinkIcon,
+  SkipIcon
+} from "@primer/octicons-react";
 import { MarkdownErrorBoundary } from "~/app/(components)/markdown/markdown-error-boundary";
 import Link from "next/link";
 
@@ -18,10 +23,18 @@ import rehypeRaw from "rehype-raw";
 import { compile, run } from "@mdx-js/mdx";
 import { VFile } from "vfile";
 import { env } from "~/env";
+import { getMultipleIssues } from "~/app/(models)/issues";
 
 // types
 import type { UseMdxComponents } from "@mdx-js/mdx";
+import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
+
 type MDXComponents = ReturnType<UseMdxComponents>;
+type ResolvedIssues = Record<
+  number,
+  Awaited<ReturnType<typeof getMultipleIssues>>[number]
+>;
+
 export type MarkdownContentProps = {
   content: string;
   linkHeaders?: boolean;
@@ -34,46 +47,75 @@ function replaceMarkdownMentions(
   // TODO : make this configurable
   repo: string = "vercel/next.js"
 ) {
-  return (
-    input
-      // Replace commit hash with repo specified with a link
-      .replace(
-        /\b([a-zA-Z0-9-_]+)\/([a-zA-Z0-9-_]+)@([a-f0-9]{7,40})\b/g,
-        (_: string, user: string, repo: string, commit: string) =>
-          `[${user}/${repo}@${commit.slice(0, 7)}](${
-            env.NEXT_PUBLIC_VERCEL_URL
-          }/${user}/${repo}/commit/${commit})`
-      )
-      // Replace commit hash with a link
-      .replace(
-        /\b([a-f0-9]{7,40})\b/g,
-        (commit: string) =>
-          `[${commit.slice(0, 7)}](${
-            env.NEXT_PUBLIC_VERCEL_URL
-          }/${repo}/commit/${commit})`
-      )
-      // Replace issue or PR number with a link
-      .replace(
-        /#(\d+)/g,
-        (_: string, issue: string) =>
-          `[#${issue}](${env.NEXT_PUBLIC_VERCEL_URL}/${repo}/issues/${issue})`
-      )
-      // Replace 'GH-' issue number with a link
-      .replace(
-        /GH-(\d+)/g,
-        (_: string, issue: string) =>
-          `[GH-${issue}](${env.NEXT_PUBLIC_VERCEL_URL}/${repo}/issues/${issue})`
-      )
-      // Replace GitHub username mention with a link
-      .replace(
-        /@([a-zA-Z0-9-_]+)/g,
-        (_: string, user: string) =>
-          `<a data-type="mention" href="${env.NEXT_PUBLIC_VERCEL_URL}/u/${user}"><strong>@${user}</strong></a>`
-      )
+  const issueRefRegexHashtag = /(?<![a-zA-Z0-9])#(?<issue>\d+)/g;
+  const otherIssueRegexHashtag =
+    /([a-zA-Z0-9-_]+)\/([a-zA-Z0-9-_]+)#(?<issue>\d+)/g;
+  const issueRefRegexGH = /(?<![a-zA-Z0-9])GH-(?<issue>\d+)/g;
+
+  const issueNumbers = new Set(
+    [
+      ...input.matchAll(issueRefRegexHashtag),
+      ...input.matchAll(issueRefRegexGH)
+      // TODO : to fetch from other repos, we do this :
+      // ...input.matchAll(otherIssueRegexHashtag),
+    ].map((regexArray) => Number(regexArray[regexArray.length - 1]))
   );
+
+  const processed = input
+
+    // Replace GitHub username mention with a link
+    .replace(
+      /(?<![a-zA-Z0-9])@([a-zA-Z0-9-_]+)/g,
+      (_: string, user: string) =>
+        `<a data-type="mention" href="${env.NEXT_PUBLIC_VERCEL_URL}/u/${user}"><strong>@${user}</strong></a>`
+    )
+
+    // Replace commit hash with a link
+    .replace(
+      /(?<![a-zA-Z0-9/#-])\b([a-f0-9]{7,40})\b/g,
+      (commit: string) =>
+        `[\`${commit.slice(0, 7)}\`](${
+          env.NEXT_PUBLIC_VERCEL_URL
+        }/${repo}/commit/${commit})`
+    )
+
+    // Replace commit hash with repo specified with a link
+    .replace(
+      /(?<![a-zA-Z0-9/#-])\b([a-zA-Z0-9-_]+)\/([a-zA-Z0-9-_]+)@([a-f0-9]{7,40})\b/g,
+      (_: string, user: string, repo: string, commit: string) =>
+        `[${user}/${repo}@${commit.slice(0, 7)}](${
+          env.NEXT_PUBLIC_VERCEL_URL
+        }/${user}/${repo}/commit/${commit})`
+    )
+
+    // Replace issue or PR number with a link
+    .replace(
+      issueRefRegexHashtag,
+      (_: string, issue: string) =>
+        `<a data-type="issue" data-issue-number="${issue}" href="${env.NEXT_PUBLIC_VERCEL_URL}/issues/${issue}">#${issue}</a>`
+    )
+
+    // Replace 'GH-' issue number with a link
+    .replace(
+      issueRefRegexGH,
+      (_: string, issue: string) =>
+        `<a data-type="issue" data-issue-number="${issue}" href="${env.NEXT_PUBLIC_VERCEL_URL}/issues/${issue}">#${issue}</a>`
+    );
+  return {
+    processed,
+    issueNumbers
+  };
 }
 
-function getComponents(linkHeaders: boolean, editableCheckboxes: boolean) {
+function getComponents({
+  linkHeaders,
+  editableCheckboxes,
+  resolvedIssues
+}: {
+  linkHeaders: boolean;
+  editableCheckboxes: boolean;
+  resolvedIssues: ResolvedIssues;
+}) {
   Code.theme = {
     dark: githubDark,
     light: githubLight
@@ -91,6 +133,8 @@ function getComponents(linkHeaders: boolean, editableCheckboxes: boolean) {
     xmp: () => null
   } satisfies MDXComponents;
 
+  let noOfKeys = 0;
+
   return {
     h1: (props) => <Header as="h1" showLink={linkHeaders} {...props} />,
     h2: (props) => <Header as="h2" showLink={linkHeaders} {...props} />,
@@ -98,22 +142,33 @@ function getComponents(linkHeaders: boolean, editableCheckboxes: boolean) {
     h4: (props) => <Header as="h4" showLink={linkHeaders} {...props} />,
     h5: (props) => <Header as="h5" showLink={linkHeaders} {...props} />,
     h6: (props) => <Header as="h6" showLink={linkHeaders} {...props} />,
-    ul: (props) => (
-      <ul
-        {...props}
-        className={clsx("text-sm md:text-base", {
-          "pl-12": props.className === "contains-task-list",
-          "list-disc pl-10": props.className !== "contains-task-list"
-        })}
-      />
-    ),
-    ol: (props) => (
-      <ol
-        {...props}
-        className={"list-decimal pl-10 [&_ol]:list-[lower-roman]"}
-      />
-    ),
-    p: (props) => <p {...props} className={"my-4"} />,
+    ul: (props) => {
+      const key = ++noOfKeys;
+      return (
+        <ul
+          {...props}
+          key={key}
+          className={clsx("text-sm md:text-base", {
+            "pl-12": props.className === "contains-task-list",
+            "list-disc pl-10": props.className !== "contains-task-list"
+          })}
+        />
+      );
+    },
+    ol: (props) => {
+      const key = ++noOfKeys;
+      return (
+        <ol
+          {...props}
+          key={key}
+          className={"list-decimal pl-10 [&_ol]:list-[lower-roman]"}
+        />
+      );
+    },
+    p: (props) => {
+      const key = ++noOfKeys;
+      return <p {...props} key={key} className={"my-4"} />;
+    },
     table: (props) => (
       <table
         {...props}
@@ -130,15 +185,19 @@ function getComponents(linkHeaders: boolean, editableCheckboxes: boolean) {
     td: (props) => (
       <td {...props} className="border border-neutral px-5 py-2" />
     ),
-    li: (props) => (
-      <li
-        {...props}
-        className={clsx({
-          "mt-1.5": props.className === "task-list-item",
-          "my-2": props.className !== "task-list-item"
-        })}
-      />
-    ),
+    li: (props) => {
+      const key = ++noOfKeys;
+      return (
+        <li
+          {...props}
+          key={key}
+          className={clsx({
+            "mt-1.5": props.className === "task-list-item",
+            "my-2": props.className !== "task-list-item"
+          })}
+        />
+      );
+    },
     hr: (props) => <hr className="h-1 bg-neutral/50 border-0" {...props} />,
     a: (props) => {
       let isExternal = true;
@@ -155,22 +214,50 @@ function getComponents(linkHeaders: boolean, editableCheckboxes: boolean) {
 
       // @ts-expect-error data-type can be passed to props
       const isMention = props["data-type"] === "mention";
+      // @ts-expect-error data-issue-number can be passed to props
+      const issueNo = Number(props["data-issue-number"]);
+      const found = resolvedIssues[issueNo];
+
+      let children = found ? (
+        <>
+          {found.status === "OPEN" && (
+            <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-0.5" />
+          )}
+          {found.status === "CLOSED" && (
+            <IssueClosedIcon className="h-4 w-4 flex-shrink-0 text-done relative top-0.5" />
+          )}
+          {found.status === "NOT_PLANNED" && (
+            <SkipIcon className="h-4 w-4 flex-shrink-0 text-grey relative top-0.5" />
+          )}
+          <span>
+            <MarkdownTitle title={found.title} className="font-semibold" />
+            &nbsp;
+            <span className="text-grey font-normal">#{issueNo}</span>
+          </span>
+        </>
+      ) : (
+        props.children
+      );
 
       return isExternal ? (
         <a
           {...props}
-          className={clsx("underline", {
+          className={clsx("underline inline-flex gap-1 items-baseline", {
             "text-accent": !isMention
           })}
-        />
+        >
+          {children}
+        </a>
       ) : (
         // @ts-expect-error the types are fiiiiine !
         <Link
           {...props}
-          className={clsx("underline", {
+          className={clsx("underline inline-flex gap-1 items-baseline", {
             "text-accent": !isMention
           })}
-        />
+        >
+          {children}
+        </Link>
       );
     },
     code: (props) => {
@@ -193,7 +280,7 @@ function getComponents(linkHeaders: boolean, editableCheckboxes: boolean) {
           >
             <Code
               lang={lang}
-              codeClassName="bg-neutral/30 mb-4 rounded-md py-[16px] px-[2px] overflow-auto w-full"
+              codeClassName="bg-neutral/30 rounded-md py-[16px] px-[2px] overflow-auto w-full"
               className="w-full overflow-auto rounded-md p-0"
             >
               {props.children.toString().trimEnd()}
@@ -233,10 +320,21 @@ async function MarkdownRenderer({
   editableCheckboxes = false
 }: MarkdownContentProps) {
   console.time("Markdown Rendering");
+  const { issueNumbers, processed } = replaceMarkdownMentions(content);
+  const resolvedIssues = (
+    issueNumbers.size > 0 ? await getMultipleIssues([...issueNumbers]) : []
+  ).reduce((acc, issue) => {
+    if (!acc) {
+      acc = {};
+    }
+    acc[issue.number] = issue;
+    return acc;
+  }, {} as ResolvedIssues);
+
   const file = await compile(
     new VFile({
       basename: "example.md",
-      value: replaceMarkdownMentions(content)
+      value: processed
     }),
     {
       jsx: false,
@@ -262,7 +360,11 @@ async function MarkdownRenderer({
   return (
     <article className={clsx(className, "break-words leading-normal")}>
       {mod.default({
-        components: getComponents(linkHeaders, editableCheckboxes)
+        components: getComponents({
+          linkHeaders,
+          editableCheckboxes,
+          resolvedIssues
+        })
       })}
     </article>
   );
