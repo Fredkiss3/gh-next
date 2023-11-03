@@ -264,7 +264,6 @@ async function getComponents({
                 &nbsp;
                 <span className="text-grey font-normal">#{issueNo}</span>
               </span>
-              {found.title}
             </Link>
           </ReactAriaLink>
         </HoverCard>
