@@ -12,6 +12,10 @@ import {
 } from "@primer/octicons-react";
 import { MarkdownErrorBoundary } from "~/app/(components)/markdown/markdown-error-boundary";
 import Link from "next/link";
+import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
+import { HoverCard } from "~/app/(components)/hovercard";
+import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-contents";
+import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 
 // utils
 import remarkGfm from "remark-gfm";
@@ -23,11 +27,11 @@ import rehypeRaw from "rehype-raw";
 import { compile, run } from "@mdx-js/mdx";
 import { VFile } from "vfile";
 import { env } from "~/env";
+import { getAuthedUser } from "~/app/(actions)/auth";
 import { getMultipleIssues } from "~/app/(models)/issues";
 
 // types
 import type { UseMdxComponents } from "@mdx-js/mdx";
-import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 
 type MDXComponents = ReturnType<UseMdxComponents>;
 type ResolvedIssues = Record<
@@ -107,7 +111,7 @@ function replaceMarkdownMentions(
   };
 }
 
-function getComponents({
+async function getComponents({
   linkHeaders,
   editableCheckboxes,
   resolvedIssues
@@ -120,6 +124,9 @@ function getComponents({
     dark: githubDark,
     light: githubLight
   };
+
+  const authedUser = await getAuthedUser();
+
   const disallowedTags = {
     title: () => null,
     textarea: () => null,
@@ -218,46 +225,58 @@ function getComponents({
       const issueNo = Number(props["data-issue-number"]);
       const found = resolvedIssues[issueNo];
 
-      let children = found ? (
-        <>
-          {found.status === "OPEN" && (
-            <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-0.5" />
-          )}
-          {found.status === "CLOSED" && (
-            <IssueClosedIcon className="h-4 w-4 flex-shrink-0 text-done relative top-0.5" />
-          )}
-          {found.status === "NOT_PLANNED" && (
-            <SkipIcon className="h-4 w-4 flex-shrink-0 text-grey relative top-0.5" />
-          )}
-          <span>
-            <MarkdownTitle title={found.title} className="font-semibold" />
-            &nbsp;
-            <span className="text-grey font-normal">#{issueNo}</span>
-          </span>
-        </>
+      return found ? (
+        <HoverCard
+          content={
+            <IssueHoverCardContents
+              id={found.number}
+              status={found.status}
+              title={found.title}
+              excerpt={found.excerpt}
+              createdAt={found.createdAt}
+              labels={[]}
+              isAuthor={authedUser?.id === found.author.id}
+              // isMentioned={authedUser?.username === mentioned_user}
+              // hasCommented={authedUser?.username === commented_user}
+              userAvatarURL={authedUser?.avatar_url}
+            />
+          }
+        >
+          <ReactAriaLink>
+            {/* @ts-expect-error the types are fiiiine ! */}
+            <Link
+              {...props}
+              className={clsx("underline inline-flex gap-1 items-baseline", {
+                "text-accent": !isMention
+              })}
+            >
+              {found.status === "OPEN" && (
+                <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-0.5" />
+              )}
+              {found.status === "CLOSED" && (
+                <IssueClosedIcon className="h-4 w-4 flex-shrink-0 text-done relative top-0.5" />
+              )}
+              {found.status === "NOT_PLANNED" && (
+                <SkipIcon className="h-4 w-4 flex-shrink-0 text-grey relative top-0.5" />
+              )}
+              <span>
+                <MarkdownTitle title={found.title} className="font-semibold" />
+                &nbsp;
+                <span className="text-grey font-normal">#{issueNo}</span>
+              </span>
+              {found.title}
+            </Link>
+          </ReactAriaLink>
+        </HoverCard>
       ) : (
-        props.children
-      );
-
-      return isExternal ? (
         <a
           {...props}
           className={clsx("underline inline-flex gap-1 items-baseline", {
             "text-accent": !isMention
           })}
         >
-          {children}
+          {props.children}
         </a>
-      ) : (
-        // @ts-expect-error the types are fiiiiine !
-        <Link
-          {...props}
-          className={clsx("underline inline-flex gap-1 items-baseline", {
-            "text-accent": !isMention
-          })}
-        >
-          {children}
-        </Link>
       );
     },
     code: (props) => {
@@ -360,7 +379,7 @@ async function MarkdownRenderer({
   return (
     <article className={clsx(className, "break-words leading-normal")}>
       {mod.default({
-        components: getComponents({
+        components: await getComponents({
           linkHeaders,
           editableCheckboxes,
           resolvedIssues

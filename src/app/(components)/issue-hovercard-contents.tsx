@@ -9,7 +9,7 @@ import Link from "next/link";
 import { LabelBadge } from "./label-badge";
 
 // utils
-import { excerpt, formatDate } from "~/lib/shared/utils.shared";
+import { formatDate } from "~/lib/shared/utils.shared";
 import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
 
 // types
@@ -20,7 +20,7 @@ export type IssueHoverCardContentsProps = {
   id: number;
   status: IssueStatus;
   title: string;
-  description?: string;
+  excerpt?: string;
   createdAt: Date;
   labels: Array<Pick<Label, "name" | "id" | "color">>;
   isAuthor?: boolean;
@@ -33,7 +33,7 @@ export function IssueHoverCardContents({
   id,
   status,
   title,
-  description,
+  excerpt,
   createdAt,
   labels,
   isAuthor,
@@ -82,9 +82,7 @@ export function IssueHoverCardContents({
                 </span>
               </Link>
 
-              {description && (
-                <p className="text-sm text-grey">{excerpt(description, 84)}</p>
-              )}
+              {excerpt && <p className="text-sm text-grey">{excerpt}</p>}
             </div>
 
             <ul className="flex flex-wrap gap-2">

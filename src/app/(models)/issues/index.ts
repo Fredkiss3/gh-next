@@ -124,8 +124,19 @@ export async function getMultipleIssues(numbers: number[]) {
     .select({
       status: issues.status,
       title: issues.title,
-      number: issues.number
+      number: issues.number,
+      createdAt: issues.created_at,
+      excerpt: sql<string>`SUBSTRING(${issues.body} FROM 1 FOR 85) AS excerpt`,
+      author: {
+        username: issues.author_username,
+        avatar_url: issues.author_avatar_url,
+        name: users.name,
+        bio: users.bio,
+        id: users.id,
+        location: users.location
+      }
     })
     .from(issues)
+    .leftJoin(users, eq(users.id, issues.author_id))
     .where(sql`${issues.number} in ${numbers}`);
 }

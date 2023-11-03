@@ -121,7 +121,7 @@ export function IssueRow({
                   id={number}
                   status={status}
                   title={title}
-                  description={excerpt}
+                  excerpt={excerpt}
                   createdAt={created_at}
                   labels={labels}
                   isAuthor={authedUserId === author.id}

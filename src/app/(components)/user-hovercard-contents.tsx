@@ -5,7 +5,7 @@ import { LocationIcon } from "@primer/octicons-react";
 import Link from "next/link";
 
 // utils
-import { clsx, excerpt } from "~/lib/shared/utils.shared";
+import { clsx, getExcerpt } from "~/lib/shared/utils.shared";
 
 // types
 import type { User } from "~/lib/server/db/schema/user.sql";
@@ -42,7 +42,7 @@ export function UserHoverCardContents({
           </>
         )}
       </Link>
-      {bio && <p>{excerpt(bio, 88)}</p>}
+      {bio && <p>{getExcerpt(bio, 88)}</p>}
       {location && (
         <div className="flex items-center gap-1 text-grey">
           <LocationIcon className="h-4 w-4" />

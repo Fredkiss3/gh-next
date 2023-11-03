@@ -264,10 +264,10 @@ export function formatDate(date: Date | string): string {
  * @returns The excerpted string.
  *
  * @example
- * excerpt("Hello world!", 5); // "Hello..."
- * excerpt("Hello world!", 20); // "Hello world!"
+ * getExcerpt("Hello world!", 5); // "Hello..."
+ * getExcerpt("Hello world!", 20); // "Hello world!"
  */
-export function excerpt(str: string, maxChars: number): string {
+export function getExcerpt(str: string, maxChars: number): string {
   if (str.length <= maxChars) {
     return str;
   }
