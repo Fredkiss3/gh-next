@@ -9,7 +9,11 @@ import {
 } from "~/lib/server/db/schema/issue.sql";
 import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
 import { users } from "~/lib/server/db/schema/user.sql";
-import { MAX_ITEMS_PER_PAGE, IN_FILTERS } from "~/lib/shared/constants";
+import {
+  MAX_ITEMS_PER_PAGE,
+  IN_FILTERS,
+  UN_MATCHABLE_USERNAME
+} from "~/lib/shared/constants";
 import { ReactionTypes, reactions } from "~/lib/server/db/schema/reaction.sql";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 
@@ -78,8 +82,6 @@ export async function searchIssues(
     .from(reactions)
     .groupBy(reactions.issue_id)
     .as("reaction_count_per_issue");
-
-  const UN_MATCHABLE_USERNAME = "<>";
 
   const issueWhereUserCommentedSubQuery = db
     .selectDistinct({

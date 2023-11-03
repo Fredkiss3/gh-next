@@ -60,10 +60,10 @@ export default async function IssueDetailPage({
 *   Commit (fork): foo@f8083175fe890cbf14f41d0a06e7aa35d4989587
 *   Commit (repo): remarkjs/remark@e1aa9f6c02de18b9459b7d269712bcb50183ce89
 *   Issue or PR (\`#\`): #48748
-*   Issue or PR (\`GH-\`): GH-49929
+*   Issue or PR (\`GH-\`): GH-42991
 *   Issue or PR (fork): foo#1
 *   Issue or PR (project): remarkjs/remark#1
-*   Mention: @wooorm
+*   Mention: @fredkiss3
 
 Some links:
 

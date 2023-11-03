@@ -1,10 +1,13 @@
 import "server-only";
-import { eq, ilike, or, sql } from "drizzle-orm";
+import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { CacheKeys } from "~/lib/server/cache-keys.server";
 import { db } from "~/lib/server/db/index.server";
 import { issueToAssignees, issues } from "~/lib/server/db/schema/issue.sql";
 import { nextCache } from "~/lib/server/rsc-utils.server";
-import { users } from "~/lib/server/db/schema/user.sql";
+import { users, type User } from "~/lib/server/db/schema/user.sql";
+import { comments } from "~/lib/server/db/schema/comment.sql";
+import { UN_MATCHABLE_USERNAME } from "~/lib/shared/constants";
+import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 
 export async function getOpenIssuesCount() {
   const fn = nextCache(
@@ -119,7 +122,24 @@ export async function getSingleIssue(number: number) {
   });
 }
 
-export async function getMultipleIssues(numbers: number[]) {
+export async function getMultipleIssues(
+  numbers: number[],
+  currentUser?: User | null
+) {
+  const issueWhereUserCommentedSubQuery = db
+    .selectDistinct({
+      issue_id: comments.issue_id,
+      author_username: comments.author_username
+    })
+    .from(comments)
+    .where(
+      ilike(
+        comments.author_username,
+        currentUser?.username ?? UN_MATCHABLE_USERNAME
+      )
+    )
+    .as("issue_commented");
+
   return await db
     .select({
       status: issues.status,
@@ -134,9 +154,25 @@ export async function getMultipleIssues(numbers: number[]) {
         bio: users.bio,
         id: users.id,
         location: users.location
-      }
+      },
+      mentioned_user: issueUserMentions.username,
+      commented_user: issueWhereUserCommentedSubQuery.author_username
     })
     .from(issues)
     .leftJoin(users, eq(users.id, issues.author_id))
+    .leftJoin(
+      issueUserMentions,
+      and(
+        eq(issues.id, issueUserMentions.issue_id),
+        ilike(
+          issueUserMentions.username,
+          currentUser?.username ?? UN_MATCHABLE_USERNAME
+        )
+      )
+    )
+    .leftJoin(
+      issueWhereUserCommentedSubQuery,
+      eq(issues.id, issueWhereUserCommentedSubQuery.issue_id)
+    )
     .where(sql`${issues.number} in ${numbers}`);
 }

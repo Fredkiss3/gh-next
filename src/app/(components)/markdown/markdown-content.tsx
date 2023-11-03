@@ -32,6 +32,7 @@ import { getMultipleIssues } from "~/app/(models)/issues";
 
 // types
 import type { UseMdxComponents } from "@mdx-js/mdx";
+import type { User } from "~/lib/server/db/schema/user.sql";
 
 type MDXComponents = ReturnType<UseMdxComponents>;
 type ResolvedIssues = Record<
@@ -114,18 +115,18 @@ function replaceMarkdownMentions(
 async function getComponents({
   linkHeaders,
   editableCheckboxes,
-  resolvedIssues
+  resolvedIssues,
+  authedUser
 }: {
   linkHeaders: boolean;
   editableCheckboxes: boolean;
   resolvedIssues: ResolvedIssues;
+  authedUser?: User | null;
 }) {
   Code.theme = {
     dark: githubDark,
     light: githubLight
   };
-
-  const authedUser = await getAuthedUser();
 
   const disallowedTags = {
     title: () => null,
@@ -236,8 +237,8 @@ async function getComponents({
               createdAt={found.createdAt}
               labels={[]}
               isAuthor={authedUser?.id === found.author.id}
-              // isMentioned={authedUser?.username === mentioned_user}
-              // hasCommented={authedUser?.username === commented_user}
+              isMentioned={authedUser?.username === found.mentioned_user}
+              hasCommented={authedUser?.username === found.commented_user}
               userAvatarURL={authedUser?.avatar_url}
             />
           }
@@ -339,8 +340,11 @@ async function MarkdownRenderer({
 }: MarkdownContentProps) {
   console.time("Markdown Rendering");
   const { issueNumbers, processed } = replaceMarkdownMentions(content);
+  const authedUser = await getAuthedUser();
   const resolvedIssues = (
-    issueNumbers.size > 0 ? await getMultipleIssues([...issueNumbers]) : []
+    issueNumbers.size > 0
+      ? await getMultipleIssues([...issueNumbers], authedUser)
+      : []
   ).reduce((acc, issue) => {
     if (!acc) {
       acc = {};
@@ -381,7 +385,8 @@ async function MarkdownRenderer({
         components: await getComponents({
           linkHeaders,
           editableCheckboxes,
-          resolvedIssues
+          resolvedIssues,
+          authedUser
         })
       })}
     </article>
