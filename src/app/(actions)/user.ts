@@ -3,20 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { withAuth } from "~/lib/server/rsc-utils.server";
 import { updateUserInfos } from "~/app/(models)/user";
-import { getSession, getAuthedUser } from "./auth";
 import {
   updateUserProfileInfosInputValidator,
   type UpdateUserProfileInfosInput
 } from "~/app/(models)/dto/update-profile-info-input-validator";
 
-import type { AuthError, ServerActionResult } from "~/lib/types";
+import type { AuthError, AuthState, FormState } from "~/lib/types";
 
 export const updateUserProfile = withAuth(async function (
-  _: ServerActionResult<UpdateUserProfileInfosInput> | AuthError,
+  auth: AuthState,
+  _: FormState<UpdateUserProfileInfosInput> | AuthError,
   formData: FormData
 ) {
-  const session = await getSession();
-  const currentUser = (await getAuthedUser())!;
   const result = updateUserProfileInfosInputValidator.safeParse(
     Object.fromEntries(formData)
   );
@@ -34,9 +32,9 @@ export const updateUserProfile = withAuth(async function (
     };
   }
 
-  await updateUserInfos(result.data, currentUser!.id);
+  await updateUserInfos(result.data, auth.currentUser!.id);
 
-  await session.addFlash({
+  await auth.session.addFlash({
     type: "success",
     message: "Profile updated successfully"
   });

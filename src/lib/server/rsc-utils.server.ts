@@ -2,16 +2,21 @@ import "server-only";
 import { revalidatePath, unstable_cache } from "next/cache";
 import { cache } from "react";
 import { getAuthedUser, getSession } from "~/app/(actions)/auth";
-import type { AuthedServerActionResult } from "../types";
+import type {
+  AuthError,
+  AuthState,
+  AuthedServerActionResult,
+  OmitFirstItemInArray
+} from "../types";
 
-export function withAuth<T extends (...args: any[]) => Promise<any>>(
-  action: T
-): AuthedServerActionResult<T> {
-  return async (...args: Parameters<T>) => {
-    const user = await getAuthedUser();
+export function withAuth<
+  T extends (auth: AuthState, ...args: any[]) => Promise<any>
+>(action: T): AuthedServerActionResult<T> {
+  return async (...args: OmitFirstItemInArray<Parameters<T>>) => {
+    const session = await getSession();
+    const currentUser = await getAuthedUser();
 
-    if (!user) {
-      const session = await getSession();
+    if (!currentUser) {
       await session.addFlash({
         type: "warning",
         message: "You must be authenticated to do this action."
@@ -20,9 +25,11 @@ export function withAuth<T extends (...args: any[]) => Promise<any>>(
       revalidatePath("/");
       return {
         type: "AUTH_ERROR" as const
-      } satisfies Awaited<ReturnType<AuthedServerActionResult<T>>>;
+      } satisfies AuthError;
     }
-    return action(...args);
+
+    const boundAction = action.bind(null, { currentUser, session });
+    return boundAction(...args);
   };
 }
 

@@ -13,6 +13,7 @@ import {
 import { experimental_taintObjectReference as taintObjectReference } from "react";
 import { revalidatePath } from "next/cache";
 import { withAuth } from "~/lib/server/rsc-utils.server";
+import type { AuthState } from "~/lib/types";
 
 export async function authenticateWithGithub(formData: FormData) {
   const searchParams = new URLSearchParams();
@@ -34,9 +35,9 @@ export async function authenticateWithGithub(formData: FormData) {
   );
 }
 
-export const logoutUser = withAuth(async function logoutUser() {
-  const session = await getSession();
-
+export const logoutUser = withAuth(async function logoutUser({
+  session
+}: AuthState) {
   const newSession = await session.invalidate();
   await newSession.addFlash({
     type: "info",

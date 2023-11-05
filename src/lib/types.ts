@@ -1,3 +1,6 @@
+import type { Session } from "~/lib/server/session.server";
+import type { User } from "~/lib/server/db/schema/user.sql";
+
 export interface PageProps<
   TParams extends Record<string, string> = {},
   TSearchParams extends Record<string, string | string[]> = {}
@@ -46,7 +49,7 @@ export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
 
-export type ServerActionResult<
+export type FormState<
   TFormData extends unknown = Record<string, string | number | boolean | null>
 > =
   | {
@@ -65,6 +68,24 @@ export type AuthError = {
   type: "AUTH_ERROR";
 };
 
+export type OmitFirstItemInArray<T extends any[]> = T extends [any, ...infer R]
+  ? R
+  : never;
+
+export type OmitLastItemInArray<T extends any[]> = T extends [
+  ...infer Head,
+  any
+]
+  ? Head
+  : any[];
+
+export type AuthState = {
+  currentUser: User;
+  session: Session;
+};
+
 export type AuthedServerActionResult<
-  T extends (...args: any[]) => Promise<any>
-> = (...args: Parameters<T>) => Promise<Awaited<ReturnType<T>> | AuthError>;
+  Action extends (auth: AuthState, ...args: any[]) => Promise<any>
+> = (
+  ...args: OmitFirstItemInArray<Parameters<Action>>
+) => Promise<Awaited<ReturnType<Action>> | AuthError>;
