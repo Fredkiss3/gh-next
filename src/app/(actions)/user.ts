@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { withAuth } from "~/lib/server/rsc-utils.server";
+import { withAuth } from "./middlewares";
 import { updateUserInfos } from "~/app/(models)/user";
 import {
   updateUserProfileInfosInputValidator,

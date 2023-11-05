@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 import { users } from "~/lib/server/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
 import { redirect } from "next/navigation";
-import { withAuth } from "~/lib/server/rsc-utils.server";
+import { withAuth } from "./middlewares";
 
 import type { AuthState } from "~/lib/types";
 

@@ -12,7 +12,7 @@ import {
 } from "~/app/(models)/user";
 import { experimental_taintObjectReference as taintObjectReference } from "react";
 import { revalidatePath } from "next/cache";
-import { withAuth } from "~/lib/server/rsc-utils.server";
+import { withAuth } from "./middlewares";
 import type { AuthState } from "~/lib/types";
 
 export async function authenticateWithGithub(formData: FormData) {
