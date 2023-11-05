@@ -9,7 +9,9 @@ import { revalidatePath } from "next/cache";
 import { users } from "~/lib/server/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
 import { redirect } from "next/navigation";
-import { withAuth } from "~/lib/server/rsc-utils.server";
+import { withAuth } from "./middlewares";
+
+import type { AuthState } from "~/lib/types";
 
 const userThemeSchema = createSelectSchema(users).pick({
   preferred_theme: true
@@ -25,10 +27,10 @@ export const getTheme = cache(async function getTheme() {
 });
 
 export const updateTheme = withAuth(async function updateTheme(
+  { session }: AuthState,
   formData: FormData
 ) {
   const themeResult = themeSchema.safeParse(formData.get("theme")?.toString());
-  const session = await getSession();
 
   revalidatePath(`/`);
 
