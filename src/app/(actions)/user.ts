@@ -1,18 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { withAuth } from "./middlewares";
+import { withAuth, type AuthError, type AuthState } from "./middlewares";
 import { updateUserInfos } from "~/app/(models)/user";
 import {
   updateUserProfileInfosInputValidator,
   type UpdateUserProfileInfosInput
 } from "~/app/(models)/dto/update-profile-info-input-validator";
 
-import type { AuthError, AuthState, FormState } from "~/lib/types";
+import type { FormState } from "~/lib/types";
 
 export const updateUserProfile = withAuth(async function (
-  auth: AuthState,
-  _: FormState<UpdateUserProfileInfosInput> | AuthError,
+  { session, currentUser }: AuthState,
+  _previousState: FormState<UpdateUserProfileInfosInput> | AuthError,
   formData: FormData
 ) {
   const result = updateUserProfileInfosInputValidator.safeParse(
@@ -32,9 +32,9 @@ export const updateUserProfile = withAuth(async function (
     };
   }
 
-  await updateUserInfos(result.data, auth.currentUser!.id);
+  await updateUserInfos(result.data, currentUser.id);
 
-  await auth.session.addFlash({
+  await session.addFlash({
     type: "success",
     message: "Profile updated successfully"
   });

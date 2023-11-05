@@ -9,9 +9,7 @@ import { revalidatePath } from "next/cache";
 import { users } from "~/lib/server/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
 import { redirect } from "next/navigation";
-import { withAuth } from "./middlewares";
-
-import type { AuthState } from "~/lib/types";
+import { withAuth, type AuthState } from "./middlewares";
 
 const userThemeSchema = createSelectSchema(users).pick({
   preferred_theme: true
@@ -27,14 +25,13 @@ export const getTheme = cache(async function getTheme() {
 });
 
 export const updateTheme = withAuth(async function updateTheme(
-  { session }: AuthState,
+  { session, currentUser }: AuthState,
   formData: FormData
 ) {
   const themeResult = themeSchema.safeParse(formData.get("theme")?.toString());
 
-  revalidatePath(`/`);
-
   if (!themeResult.success) {
+    revalidatePath("/settings/appearance");
     await session.addFlash({
       type: "warning",
       message: "Invalid theme provided, please retry"
@@ -44,7 +41,7 @@ export const updateTheme = withAuth(async function updateTheme(
 
   const theme = themeResult.data;
 
-  await updateUserTheme(theme, session.user!.id);
+  await updateUserTheme(theme, currentUser.id);
   await session.setUserTheme(theme);
 
   await session.addFlash({
