@@ -11,6 +11,7 @@ Expect stuff to break.
 ## Roadmap
 <details>
 <summary>Click to see more</summary>
+
 - [x] Login/Logout
 - [x] HomePage (README content)
 - [x] Responsive Layout
