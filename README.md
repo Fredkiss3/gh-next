@@ -50,6 +50,9 @@ Expect stuff to break.
 - [ ] files hosting for repos (with a storage limit)
   - [ ] file browsing UI
   - [ ] file searching
+- [ ] Repository list
+  - [ ] list of repos
+  - [ ] search for repos
 - [ ] Git web UI
   - [ ] commit history
   - [ ] time travel
