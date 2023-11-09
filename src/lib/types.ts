@@ -74,3 +74,6 @@ export type OmitLastItemInArray<T extends any[]> = T extends [
 ]
   ? Head
   : any[];
+
+export type FunctionWithoutLastArg<T extends (...args: any[]) => any> =
+  T extends (...args: [...infer P, any]) => infer R ? (...args: P) => R : never;

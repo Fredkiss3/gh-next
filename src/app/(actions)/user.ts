@@ -11,9 +11,9 @@ import {
 import type { FormState } from "~/lib/types";
 
 export const updateUserProfile = withAuth(async function (
-  { session, currentUser }: AuthState,
   _previousState: FormState<UpdateUserProfileInfosInput> | AuthError,
-  formData: FormData
+  formData: FormData,
+  { session, currentUser }: AuthState
 ) {
   const result = updateUserProfileInfosInputValidator.safeParse(
     Object.fromEntries(formData)

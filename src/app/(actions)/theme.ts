@@ -25,8 +25,8 @@ export const getTheme = cache(async function getTheme() {
 });
 
 export const updateTheme = withAuth(async function updateTheme(
-  { session, currentUser }: AuthState,
-  formData: FormData
+  formData: FormData,
+  { session, currentUser }: AuthState
 ) {
   const themeResult = themeSchema.safeParse(formData.get("theme")?.toString());
 
