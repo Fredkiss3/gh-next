@@ -47,6 +47,21 @@ export type MarkdownContentProps = {
   editableCheckboxes?: boolean;
 };
 
+function getAllReferencedIssueNumbers(input: string) {
+  const issueRefRegexHashtag = /(?<![a-zA-Z0-9])#(?<issue>\d+)/g;
+  const otherIssueRegexHashtag =
+    /([a-zA-Z0-9-_]+)\/([a-zA-Z0-9-_]+)#(?<issue>\d+)/g;
+  const issueRefRegexGH = /(?<![a-zA-Z0-9])GH-(?<issue>\d+)/g;
+
+  const issueNumbers = new Set(
+    [
+      ...input.matchAll(issueRefRegexHashtag),
+      ...input.matchAll(issueRefRegexGH),
+      ...input.matchAll(otherIssueRegexHashtag)
+    ].map((regexArray) => Number(regexArray[regexArray.length - 1]))
+  );
+}
+
 function replaceMarkdownMentions(
   input: string,
   // TODO : make this configurable
@@ -60,9 +75,8 @@ function replaceMarkdownMentions(
   const issueNumbers = new Set(
     [
       ...input.matchAll(issueRefRegexHashtag),
-      ...input.matchAll(issueRefRegexGH)
-      // TODO : to fetch from other repos, we do this :
-      // ...input.matchAll(otherIssueRegexHashtag),
+      ...input.matchAll(issueRefRegexGH),
+      ...input.matchAll(otherIssueRegexHashtag)
     ].map((regexArray) => Number(regexArray[regexArray.length - 1]))
   );
 
