@@ -8,7 +8,7 @@ import {
   boolean,
   index
 } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import { users } from "./user.sql";
 import { labelToIssues } from "./label.sql";
 import { comments } from "./comment.sql";
@@ -18,6 +18,7 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 import { pgTable } from "./index.sql";
 import { issueEvents } from "./event.sql";
+import { repositories } from "./repository.sql";
 
 export const IssueStatuses = {
   OPEN: "OPEN",
@@ -57,7 +58,10 @@ export const issues = pgTable(
     author_username: varchar("author_username", { length: 255 }).notNull(),
     author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
     is_locked: boolean("is_locked").default(false).notNull(),
-    lock_reason: issueLockReasonEnum("lock_reason")
+    lock_reason: issueLockReasonEnum("lock_reason"),
+    repository_id: integer("repository_id").references(() => repositories.id, {
+      onDelete: "cascade"
+    })
   },
   (table) => ({
     titleIdx: index("title_idx").on(table.title)
@@ -65,6 +69,11 @@ export const issues = pgTable(
 );
 
 export const issuesRelations = relations(issues, ({ one, many }) => ({
+  repository: one(repositories, {
+    fields: [issues.repository_id],
+    references: [repositories.id],
+    relationName: "repository"
+  }),
   author: one(users, {
     fields: [issues.author_id],
     references: [users.id],

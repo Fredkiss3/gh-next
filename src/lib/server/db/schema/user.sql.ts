@@ -1,4 +1,5 @@
-import { relations, type InferModel, type InferSelectModel } from "drizzle-orm";
+import { repositories } from "./repository.sql";
+import { relations, type InferSelectModel } from "drizzle-orm";
 import { issueToAssignees, issueUserSubscriptions, issues } from "./issue.sql";
 import { reactions } from "./reaction.sql";
 import { comments } from "./comment.sql";
@@ -23,6 +24,9 @@ export const users = pgTable("users", {
 export const usersRelations = relations(users, ({ many }) => ({
   createdIssues: many(issues, {
     relationName: "author"
+  }),
+  repositories: many(repositories, {
+    relationName: "repositories"
   }),
   assignedIssues: many(issueToAssignees, {
     relationName: "assignee"
