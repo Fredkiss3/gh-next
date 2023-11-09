@@ -45,7 +45,9 @@ const GITHUB_REPO_SOURCE = {
   owner: "vercel",
   name: "next.js"
 } as const;
-const MAX_ISSUES_TO_FETCH = 5 * MAX_ITEMS_PER_PAGE; // 5 pages of issues
+const MAX_ISSUES_TO_FETCH =
+  (env.NEXT_PUBLIC_VERCEL_URL.startsWith("http://localhost") ? 1 : 5) *
+  MAX_ITEMS_PER_PAGE; // 5 pages of issues
 
 type Actor = {
   login: string;
