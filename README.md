@@ -1,13 +1,16 @@
-# A clone of github\* in Next.JS
+# A simple clone of github in Next.JS
 
-\* only some features are implemented : issues CRUD & notifications
+A simple github alternative open source on github (ironic right ?), it aims is to be fully functionnal with some of the core features of github working.
+
+See [#84](https://github.com/Fredkiss3/gh-next/issues/84) for more info on the supported features.
 
 ## ⚠️ THIS PROJECT IS IN ACTIVE DEVELOPMENT ⚠️
 
 Expect stuff to break.
 
 ## Roadmap
-
+<details>
+<summary>Click to see more</summary>
 - [x] Login/Logout
 - [x] HomePage (README content)
 - [x] Responsive Layout
@@ -15,6 +18,7 @@ Expect stuff to break.
 - [x] Stargazers Page
 - [x] See Profile informations
   - [x] Update username
+  - [x] Change theme
   - [ ] User detail page
 
 - [x] Issues List page
@@ -30,6 +34,8 @@ Expect stuff to break.
 
 - [ ] OpenGraph
   - [ ] landing (inspiration: https://github.com/trpc/trpc/blob/main/www/og-image/pages/api/landing.tsx)
+  - [ ] Per repository
+  - [ ] Per user
   - [ ] Per Issue (inspiration: https://opengraph.githubassets.com/101e5bdeef8e959c800fab2aef88eef0b01b15d883e3e17c990bde8dfd67d6b3/trpc/trpc/issues/4306)
 
 - [ ] Labels CRUD (can only add or update labels, no deleting)
@@ -40,6 +46,20 @@ Expect stuff to break.
   - [ ] Notifications for issue statuses
   - [ ] Filter notifications by status, title, closed, etc.
   - [ ] Mark as done, unsubscribe
+
+- [ ] files hosting for repos (with a storage limit)
+  - [ ] file browsing UI
+  - [ ] file searching
+- [ ] Git web UI
+  - [ ] commit history
+  - [ ] time travel
+  - [ ] support `git push` and `git remote` commands
+- [ ] issue kanban board (like github projects), to close an issue either with a commit or from the UI
+
+- [ ] CI/CD
+  - [ ] running CI with docker, we can take inspiration from gitlab
+
+</details>
 
 ## Stack
 
