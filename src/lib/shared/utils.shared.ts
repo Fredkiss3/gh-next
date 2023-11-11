@@ -549,3 +549,42 @@ export function reversePaginate<T>(
   // Slice the array from end towards the beginning
   return arr.slice(startIdx, endIdx).reverse();
 }
+
+/**
+ * Splits an array into chunks of a specified size.
+ *
+ * This function takes an array and divides it into multiple sub-arrays,
+ * each of the specified size. If the array cannot be divided evenly,
+ * the final chunk will contain the remaining elements. The function
+ * throws an error if the chunk size is less than or equal to zero.
+ *
+ * @param {T[]} array - The array to be chunked. It can be of any type.
+ * @param {number} chunkSize - The size of each chunk. Must be a positive integer.
+ * @returns {T[][]} An array of chunked arrays. Each sub-array is a chunk of the original array.
+ *
+ * @example
+ * // Example usage
+ * const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+ * const chunked = chunkArray(numbers, 3);
+ * console.log(chunked);
+ * // Output: [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+ *
+ * @throws {Error} If the chunk size is less than or equal to zero.
+ */
+export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  // Check if the chunk size is valid
+  if (chunkSize <= 0) {
+    throw new Error("Chunk size must be greater than 0");
+  }
+
+  // The result array of chunks
+  const chunkedArray: T[][] = [];
+
+  // Loop through the array and slice it into chunks
+  for (let i = 0; i < array.length; i += chunkSize) {
+    const chunk = array.slice(i, i + chunkSize);
+    chunkedArray.push(chunk);
+  }
+
+  return chunkedArray;
+}
