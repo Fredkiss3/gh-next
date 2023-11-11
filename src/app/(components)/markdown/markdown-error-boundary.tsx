@@ -6,6 +6,7 @@ type MarkdownErrorBoundaryProps = {
   children: React.ReactNode;
 };
 
+// TODO : render a better error UI
 export async function MarkdownErrorBoundary({
   children
 }: MarkdownErrorBoundaryProps) {

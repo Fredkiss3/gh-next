@@ -218,6 +218,20 @@
       "when": 1699492977074,
       "tag": "0030_yielding_blonde_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "5",
+      "when": 1699735996153,
+      "tag": "0031_ambiguous_wasp",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "5",
+      "when": 1699736331655,
+      "tag": "0032_cold_tattoo",
+      "breakpoints": true
     }
   ]
 }

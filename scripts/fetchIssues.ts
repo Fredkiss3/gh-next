@@ -1,4 +1,8 @@
 import {
+  GITHUB_AUTHOR_USERNAME,
+  GITHUB_REPOSITORY_NAME
+} from "./../src/lib/shared/constants";
+import {
   issueToAssignees,
   type IssueToAssigneeInsert,
   type IssueLockReason
@@ -15,7 +19,7 @@ import { _envObject as env } from "~/env-config.mjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { users, type User } from "~/lib/server/db/schema/user.sql";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import {
   labels,
   type LabelInsert,
@@ -39,6 +43,7 @@ import {
 import { MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 import { chunkArray } from "~/lib/shared/utils.shared";
+import { repositories } from "~/lib/server/db/schema/repository.sql";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -492,6 +497,24 @@ function stringToNumber(str: string) {
 async function insertSingleIssue(issue: GithubIssue) {
   if (!issue.author) return null;
 
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.username, GITHUB_AUTHOR_USERNAME));
+
+  if (!user) return null;
+
+  const [repository] = await db
+    .select()
+    .from(repositories)
+    .where(
+      and(
+        eq(repositories.name, GITHUB_REPOSITORY_NAME),
+        eq(repositories.creator_id, user.id)
+      )
+    );
+
+  if (!repository) return null;
   /**
    * INSERTING ISSUES
    */
@@ -527,7 +550,8 @@ async function insertSingleIssue(issue: GithubIssue) {
     is_locked: issue.locked,
     lock_reason: issue.activeLockReason,
     created_at: new Date(issue.createdAt),
-    status: issue.stateReason === "NOT_PLANNED" ? "NOT_PLANNED" : issue.state
+    status: issue.stateReason === "NOT_PLANNED" ? "NOT_PLANNED" : issue.state,
+    repository_id: repository.id
   } satisfies IssueInsert;
 
   const [issueInsertQueryResult] = await db

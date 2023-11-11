@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_issues" ALTER COLUMN "repository_id" SET NOT NULL;

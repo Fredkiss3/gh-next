@@ -8,6 +8,8 @@ import { users, type User } from "~/lib/server/db/schema/user.sql";
 import { comments } from "~/lib/server/db/schema/comment.sql";
 import { UN_MATCHABLE_USERNAME } from "~/lib/shared/constants";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
+import { repositories } from "~/lib/server/db/schema/repository.sql";
+import { alias } from "drizzle-orm/pg-core";
 
 export async function getOpenIssuesCount() {
   const fn = nextCache(
@@ -122,10 +124,16 @@ export async function getSingleIssue(number: number) {
   });
 }
 
-export async function getMultipleIssues(
-  numbers: number[],
+export async function getMultipleIssuesPerRepositories(
+  payload: {
+    user: string;
+    project: string;
+    no: string;
+  }[],
   currentUser?: User | null
 ) {
+  if (payload.length === 0) return [];
+
   const issueWhereUserCommentedSubQuery = db
     .selectDistinct({
       issue_id: comments.issue_id,
@@ -139,6 +147,8 @@ export async function getMultipleIssues(
       )
     )
     .as("issue_commented");
+
+  const owner = alias(users, "owner");
 
   return await db
     .select({
@@ -156,9 +166,13 @@ export async function getMultipleIssues(
         location: users.location
       },
       mentioned_user: issueUserMentions.username,
-      commented_user: issueWhereUserCommentedSubQuery.author_username
+      commented_user: issueWhereUserCommentedSubQuery.author_username,
+      repository_name: repositories.name,
+      repository_owner: owner.username
     })
     .from(issues)
+    .innerJoin(repositories, eq(issues.repository_id, repositories.id))
+    .innerJoin(owner, eq(repositories.creator_id, owner.id))
     .leftJoin(users, eq(users.id, issues.author_id))
     .leftJoin(
       issueUserMentions,
@@ -174,5 +188,9 @@ export async function getMultipleIssues(
       issueWhereUserCommentedSubQuery,
       eq(issues.id, issueWhereUserCommentedSubQuery.issue_id)
     )
-    .where(sql`${issues.number} in ${numbers}`);
+    .where(sql`${issues.number} in ${payload.map((p) => Number(p.no))}`);
 }
+
+export type IssueQueryResult = Awaited<
+  ReturnType<typeof getMultipleIssuesPerRepositories>
+>[number];

@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, ilike, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "~/lib/server/db/index.server";
 import { users } from "~/lib/server/db/schema/user.sql";
@@ -44,6 +44,25 @@ export async function getUserById(id: number) {
     id
   });
 }
+
+export async function getMultipleUserByUsername(usernames: string[]) {
+  if (usernames.length === 0) return [];
+  return await db
+    .select({
+      name: users.name,
+      username: users.username,
+      bio: users.bio,
+      location: users.location,
+      avatar_url: users.avatar_url,
+      id: users.id
+    })
+    .from(users)
+    .where(or(...usernames.map((u) => ilike(users.username, u))));
+}
+
+export type UserQueryResult = Awaited<
+  ReturnType<typeof getMultipleUserByUsername>
+>[number];
 
 export async function updateUserInfos(
   data: UpdateUserProfileInfosInput,

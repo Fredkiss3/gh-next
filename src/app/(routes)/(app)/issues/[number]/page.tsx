@@ -53,6 +53,7 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
+        <MarkdownContent content={issue.body} />
         <MarkdownContent
           content={`Some references:
 
@@ -63,7 +64,7 @@ export default async function IssueDetailPage({
 *   Issue or PR (\`GH-\`): GH-42991
 *   Issue or PR (fork): foo#1
 *   Issue or PR (project): remarkjs/remark#1
-*   Mention: @fredkiss3
+*   Mention: @fredkiss3, @everx80, @woooorm, @crazymeal
 
 Some links:
 
