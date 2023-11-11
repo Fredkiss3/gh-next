@@ -13,8 +13,8 @@
     "db:studio": "set -a; . ./.env.local; set +a && drizzle-kit studio --port 3003 --verbose",
     "db:migrate": "set -a; . ./.env.local; set +a && tsx ./migrate.ts",
     "format": "prettier . --write",
-    "db:fetch-users": "set -a; . ./.env.local; set +a && tsx ./scripts/fetchUsers.ts",
-    "db:fetch-issues": "set -a; . ./.env.local; set +a && tsx ./scripts/fetchIssues.ts"
+    "db:fetch-users": "set -a; . ./.env.local; set +a && tsx --tsconfig ./tsconfig.script.json ./scripts/fetchUsers.ts",
+    "db:fetch-issues": "set -a; . ./.env.local; set +a && tsx --tsconfig ./tsconfig.script.json ./scripts/fetchIssues.ts"
   },
   "type": "module",
   "dependencies": {
@@ -33,7 +33,7 @@
     "geist": "^1.0.0",
     "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
-    "next": "14.0.0",
+    "next": "14.0.2",
     "nextjs-toploader": "^1.4.2",
     "pg": "^8.11.3",
     "postgres": "^3.3.5",
@@ -60,8 +60,8 @@
     "@tanstack/react-query-devtools": "^5.0.0",
     "@types/node": "20.5.7",
     "@types/pg": "^8.10.2",
-    "@types/react": "18.2.28",
-    "@types/react-dom": "18.2.13",
+    "@types/react": "18.2.37",
+    "@types/react-dom": "18.2.15",
     "autoprefixer": "10.4.15",
     "drizzle-kit": "^0.19.13",
     "postcss": "8.4.29",
