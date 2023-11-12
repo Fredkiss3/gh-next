@@ -59,6 +59,8 @@ export function IssueRow({
   authedUserUsername,
   mentioned_user,
   commented_user,
+  repository_name,
+  repository_owner,
   ...reactionCounts
 }: IssueRowProps) {
   let emojiCount: number = 0;
@@ -133,7 +135,7 @@ export function IssueRow({
             >
               <ReactAriaLink>
                 <Link
-                  href={`/issues/${number}`}
+                  href={`/${repository_owner}/${repository_name}/issues/${number}`}
                   className={clsx(
                     "inline break-words text-lg font-semibold text-foreground",
                     "hover:text-accent",

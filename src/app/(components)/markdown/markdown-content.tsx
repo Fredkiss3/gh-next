@@ -84,6 +84,7 @@ async function MarkdownRenderer({
     .use(remarkGithub, {
       repository,
       mentionStrong: false,
+      baseURL: "gh.fredkiss.dev",
       buildUrl: (values) => {
         const searchParams = new URLSearchParams(values);
         switch (values.type) {
@@ -94,7 +95,7 @@ async function MarkdownRenderer({
             }/commit/${values.hash}?${searchParams.toString()}`;
           case "issue":
             resolvedItems.push(values);
-            return `${env.NEXT_PUBLIC_VERCEL_URL}/${values.user}${
+            return `${env.NEXT_PUBLIC_VERCEL_URL}/${values.user}/${
               values.project
             }/issues/${values.no}?${searchParams.toString()}`;
           case "mention":
@@ -322,6 +323,8 @@ async function getComponents({
         return <></>;
       }
     },
+    // eslint-disable-next-line @next/next/no-img-element
+    img: (props) => <img {...props} loading="lazy" alt={props.alt ?? ""} />,
     input: (props) => {
       if (props.type !== "checkbox") {
         return null;

@@ -99,18 +99,6 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
               </Button>
             </li>
 
-            <li className="hidden md:block">
-              <Button
-                isSquared
-                href="/pulls"
-                variant="invisible"
-                renderLeadingIcon={(cls) => (
-                  <GitPullRequestIcon className={cls} />
-                )}
-              >
-                <span className="sr-only">Pull Requests</span>
-              </Button>
-            </li>
             <li>
               <Button
                 isSquared

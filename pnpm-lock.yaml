@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  remark-github@12.0.0:
+    hash: r6p66lpjmzsyfkxagihqbpyhje
+    path: patches/remark-github@12.0.0.patch
+
 dependencies:
   '@headlessui/react':
     specifier: ^1.7.17
@@ -91,7 +96,7 @@ dependencies:
     version: 4.0.0
   remark-github:
     specifier: ^12.0.0
-    version: 12.0.0
+    version: 12.0.0(patch_hash=r6p66lpjmzsyfkxagihqbpyhje)
   server-only:
     specifier: ^0.0.1
     version: 0.0.1
@@ -5956,7 +5961,7 @@ packages:
       - supports-color
     dev: false
 
-  /remark-github@12.0.0:
+  /remark-github@12.0.0(patch_hash=r6p66lpjmzsyfkxagihqbpyhje):
     resolution: {integrity: sha512-ByefQKFN184LeiGRCabfl7zUJsdlMYWEhiLX1gpmQ11yFg6xSuOTW7LVCv0oc1x+YvUMJW23NU36sJX2RWGgvg==}
     dependencies:
       '@types/mdast': 4.0.2
@@ -5966,6 +5971,7 @@ packages:
       unist-util-visit: 5.0.0
       vfile: 6.0.1
     dev: false
+    patched: true
 
   /remark-mdx@3.0.0:
     resolution: {integrity: sha512-O7yfjuC6ra3NHPbRVxfflafAj3LTwx3b73aBvkEFU5z4PsD6FD4vrqJAkE5iNGLz71GdjXfgRqm3SQ0h0VuE7g==}

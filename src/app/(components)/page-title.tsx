@@ -43,7 +43,7 @@ export function PageTitle() {
     <Link
       href={href}
       className={clsx(
-        "rounded-md px-2 py-1 transition duration-150",
+        "rounded-md px-2 py-1 transition duration-150 text-base",
         "md:text-lg",
         "hover:bg-neutral/50",
         "flex flex-wrap gap-2"

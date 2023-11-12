@@ -16,10 +16,12 @@ import {
 } from "~/lib/shared/constants";
 import { ReactionTypes, reactions } from "~/lib/server/db/schema/reaction.sql";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
+import { alias } from "drizzle-orm/pg-core";
 
 import type { User } from "~/lib/server/db/schema/user.sql";
 import type { SQL } from "drizzle-orm";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
+import { repositories } from "~/lib/server/db/schema/repository.sql";
 
 /**
  * Main function to search for issues
@@ -97,6 +99,7 @@ export async function searchIssues(
     )
     .as("issue_commented");
 
+  const owner = alias(users, "owner");
   let issueQuery = db
     .selectDistinct({
       id: issues.id,
@@ -128,9 +131,13 @@ export async function searchIssues(
       laugh_count: reactionCountQuery.laugh_count,
       rocket_count: reactionCountQuery.rocket_count,
       mentioned_user: issueUserMentions.username,
-      commented_user: issueWhereUserCommentedSubQuery.author_username
+      commented_user: issueWhereUserCommentedSubQuery.author_username,
+      repository_name: repositories.name,
+      repository_owner: owner.username
     })
     .from(issues)
+    .innerJoin(repositories, eq(issues.repository_id, repositories.id))
+    .innerJoin(owner, eq(repositories.creator_id, owner.id))
     .leftJoin(users, eq(users.id, issues.author_id))
     .leftJoin(comments, eq(comments.issue_id, issues.id))
     .leftJoin(

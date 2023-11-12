@@ -48,7 +48,9 @@ export const issueSearchListOutputValidator = z.object({
           })
         ),
         mentioned_user: z.string().nullable(),
-        commented_user: z.string().nullable()
+        commented_user: z.string().nullable(),
+        repository_name: z.string(),
+        repository_owner: z.string()
       })
       .merge(
         createSelectSchema(issues).pick({

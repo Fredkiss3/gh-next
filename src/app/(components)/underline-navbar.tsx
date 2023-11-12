@@ -64,22 +64,22 @@ export function HeaderUnderlineNavbar({
               )}
             </NavLink>
           </li>
-          <li className="inline-flex">
+          {/* <li className="inline-flex">
             <NavLink href="/pulls" icon={GitPullRequestIcon}>
               Pull Requests
             </NavLink>
-          </li>
-          <li className="inline-flex">
+          </li> */}
+          {/* <li className="inline-flex">
             <NavLink href="/discussions" icon={CommentDiscussionIcon}>
               Discussions
             </NavLink>
-          </li>
-          <li className="inline-flex">
+          </li> */}
+          {/* <li className="inline-flex">
             <NavLink href="/actions" icon={PlayIcon}>
               Actions
             </NavLink>
-          </li>
-          <li className="inline-flex">
+          </li> */}
+          {/* <li className="inline-flex">
             <NavLink href="/security" icon={ShieldIcon}>
               Security
             </NavLink>
@@ -88,7 +88,7 @@ export function HeaderUnderlineNavbar({
             <NavLink href="/pulse" icon={GraphIcon}>
               Insights
             </NavLink>
-          </li>
+          </li> */}
         </ul>
       </nav>
     )
