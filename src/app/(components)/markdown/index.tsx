@@ -34,13 +34,18 @@ import { remark } from "remark";
 import type { UseMdxComponents } from "@mdx-js/mdx";
 import {
   GITHUB_AUTHOR_USERNAME,
-  GITHUB_REPOSITORY_NAME
+  GITHUB_REPOSITORY_NAME,
+  PRODUCTION_DOMAIN
 } from "~/lib/shared/constants";
 import type { User } from "~/lib/server/db/schema/user.sql";
 import {
   getMultipleUserByUsername,
   type UserQueryResult
 } from "~/app/(models)/user";
+import {
+  DeviceCameraVideoIcon,
+  TriangleDownIcon
+} from "@primer/octicons-react";
 
 export type MDXComponents = ReturnType<UseMdxComponents>;
 export type ResolvedIssues = Record<
@@ -84,7 +89,7 @@ async function MarkdownContent({
     .use(remarkGithub, {
       repository,
       mentionStrong: false,
-      baseURL: "gh.fredkiss.dev",
+      baseURL: PRODUCTION_DOMAIN,
       buildUrl: (values) => {
         const searchParams = new URLSearchParams(values);
         switch (values.type) {
@@ -217,6 +222,29 @@ async function getComponents({
   let noOfKeys = 0;
 
   return {
+    video: (props) => (
+      <details className="rounded-md border border-neutral">
+        <summary
+          className={clsx(
+            "py-2 px-4 cursor-pointer w-full",
+            "[&::marker]:hidden [&::marker]:[content:'']",
+            "inline-flex gap-1 items-center"
+          )}
+        >
+          <DeviceCameraVideoIcon className="h-4" />
+          <span className="sr-only">Video description</span>
+          {props["aria-label"] ?? props.src}
+          <TriangleDownIcon className="h-4" />
+        </summary>
+        <video
+          muted={true}
+          controls={true}
+          className="rounded-b-md"
+          src={props.src}
+          {...props}
+        ></video>
+      </details>
+    ),
     h1: (props) => <MarkdownH as="h1" showLink={linkHeaders} {...props} />,
     h2: (props) => <MarkdownH as="h2" showLink={linkHeaders} {...props} />,
     h3: (props) => <MarkdownH as="h3" showLink={linkHeaders} {...props} />,

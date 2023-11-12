@@ -66,11 +66,16 @@ export default async function IssueDetailPage({
 *   Issue or PR (project): remarkjs/remark#1
 *   Mention: @fredkiss3, @everx80, @woooorm, @crazymeal
 
+## video 
+
+<video src="https://github.com/vercel/next.js/assets/38298743/415037db-31a9-4cde-9b13-4f7c6eb99c3a" aria-label="enregistreement"></video>
+
 Some links:
 
 *   Commit: https://github.com/remarkjs/remark/commit/e1aa9f6c02de18b9459b7d269712bcb50183ce89
 *   Commit comment: https://github.com/remarkjs/remark/commit/ac63bc3abacf14cf08ca5e2d8f1f8e88a7b9015c#commitcomment-16372693
 *   Issue or PR: https://github.com/remarkjs/remark/issues/182
+*   Issue or PR: https://gh.fredkiss.dev/Fredkiss3/gh-next/issues/42991
 *   Issue or PR comment: https://github.com/remarkjs/remark-github/issues/3#issue-151160339
 *   Mention: https://github.com/ben-eb
 `}
