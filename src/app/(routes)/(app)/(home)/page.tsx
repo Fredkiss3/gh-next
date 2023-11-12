@@ -16,7 +16,7 @@ import { Avatar } from "~/app/(components)/avatar";
 import { Badge } from "~/app/(components)/badge";
 import { CounterBadge } from "~/app/(components)/counter-badge";
 import { Button } from "~/app/(components)/button";
-import { MarkdownContent } from "~/app/(components)/markdown/markdown-content";
+import { Markdown } from "~/app/(components)/markdown";
 import Link from "next/link";
 
 // utils
@@ -386,7 +386,7 @@ async function ReadmeContent({ className }: { className?: string }) {
           "sm:rounded-b-md"
         )}
       >
-        <MarkdownContent
+        <Markdown
           linkHeaders
           content={readmeContent}
           className="w-full max-w-full px-8 pb-8 pt-4"

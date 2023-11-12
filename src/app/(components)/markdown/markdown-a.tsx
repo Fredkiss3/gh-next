@@ -27,7 +27,7 @@ export type ResolvedItems = {
   mentions: Record<string, UserQueryResult>;
 };
 
-type MarkdownLinkProps = {
+type MarkdownAProps = {
   "data-type"?: string;
   "data-issue-number"?: string;
   resolvedItems: ResolvedItems;
@@ -40,7 +40,7 @@ export async function MarkdownA({
   authedUser,
   currentRepo,
   ...props
-}: MarkdownLinkProps) {
+}: MarkdownAProps) {
   let isExternal = true;
   let buildUrlValues: BuildUrlValues | null = null;
   if (props.href) {

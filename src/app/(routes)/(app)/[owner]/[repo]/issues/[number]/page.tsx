@@ -2,7 +2,7 @@ import "server-only";
 
 // components
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
-import { MarkdownContent } from "~/app/(components)/markdown/markdown-content";
+import { Markdown } from "~/app/(components)/markdown";
 
 // utils
 import { notFound } from "next/navigation";
@@ -53,8 +53,8 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        <MarkdownContent content={issue.body} />
-        <MarkdownContent
+        <Markdown content={issue.body} />
+        <Markdown
           content={`Some references:
 
 *   Commit: f8083175fe890cbf14f41d0a06e7aa35d4989587

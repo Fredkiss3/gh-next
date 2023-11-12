@@ -48,7 +48,7 @@ export type ResolvedIssues = Record<
   Awaited<ReturnType<typeof getMultipleIssuesPerRepositories>>[number]
 >;
 
-export type MarkdownContentProps = {
+export type MarkdownProps = {
   content: string;
   linkHeaders?: boolean;
   className?: string;
@@ -56,23 +56,23 @@ export type MarkdownContentProps = {
   repository?: string;
 };
 
-export async function MarkdownContent(props: MarkdownContentProps) {
+export async function Markdown(props: MarkdownProps) {
   return process.env.NODE_ENV === "development" ? (
-    <MarkdownRenderer {...props} />
+    <MarkdownContent {...props} />
   ) : (
     <MarkdownErrorBoundary>
-      <MarkdownRenderer {...props} />
+      <MarkdownContent {...props} />
     </MarkdownErrorBoundary>
   );
 }
 
-async function MarkdownRenderer({
+async function MarkdownContent({
   content,
   linkHeaders = false,
   className,
   editableCheckboxes = false,
   repository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
-}: MarkdownContentProps) {
+}: MarkdownProps) {
   const dt = new Date().getTime();
   console.time(`[${dt}] Markdown Rendering`);
 
