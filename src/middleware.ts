@@ -46,7 +46,9 @@ export default async function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname === "/issues") {
     return NextResponse.rewrite(
-      `${env.NEXT_PUBLIC_VERCEL_URL}/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/issues`
+      `${
+        env.NEXT_PUBLIC_VERCEL_URL
+      }/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/issues?${request.nextUrl.searchParams.toString()}`
     );
   }
 
