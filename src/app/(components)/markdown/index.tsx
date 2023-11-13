@@ -16,7 +16,6 @@ import {
   DeviceCameraVideoIcon,
   TriangleDownIcon
 } from "@primer/octicons-react";
-import { MarkdownSkeleton } from "~/app/(components)/markdown/markdown-skeleton";
 
 // utils
 import remarkGfm from "remark-gfm";
@@ -148,6 +147,12 @@ async function processMarkdownContentAndGetReferences(
       })
     );
 
+  console.dir(
+    {
+      references
+    },
+    { depth: null }
+  );
   const processedContent = await compile(preprocessedContent, {
     jsx: false,
     outputFormat: "function-body",
@@ -235,6 +240,12 @@ async function getComponents({
   let noOfKeys = 0;
 
   return {
+    blockquote: (props) => (
+      <blockquote
+        {...props}
+        className="border-l-4 border-neutral  pl-4 text-grey"
+      />
+    ),
     video: (props) => (
       <details
         className="rounded-md border border-neutral"
