@@ -9,7 +9,7 @@ import {
   MarkdownA,
   type IssueReference,
   type Reference,
-  type ResolvedItems
+  type ResolvedReferences
 } from "~/app/(components)/markdown/markdown-a";
 import { MarkdownH } from "~/app/(components)/markdown/markdown-h";
 import {
@@ -79,7 +79,41 @@ async function MarkdownContent({
   const dt = new Date().getTime();
   console.time(`[${dt}] Markdown Rendering`);
 
-  let referencesFound: Reference[] = [];
+  const { processedContent, references } =
+    await processMarkdownContentAndGetReferences(content, repository);
+  const authedUser = await getAuthedUser();
+  const resolvedReferences = await resolveReferences(references, authedUser);
+
+  const generatedMdxModule = await run(processedContent, {
+    Fragment: React.Fragment,
+    jsx: React.createElement,
+    jsxs: React.createElement
+  });
+
+  console.timeEnd(`[${dt}] Markdown Rendering`);
+
+  return (
+    <article
+      className={clsx(className, "break-words leading-normal text-base")}
+    >
+      {generatedMdxModule.default({
+        components: await getComponents({
+          linkHeaders,
+          editableCheckboxes,
+          authedUser,
+          resolvedReferences,
+          currentRepository: repository
+        })
+      })}
+    </article>
+  );
+}
+
+async function processMarkdownContentAndGetReferences(
+  content: string,
+  repository: string
+) {
+  let references: Reference[] = [];
 
   // preprocess links & mentions
   const preprocessedContent = await remark()
@@ -92,17 +126,17 @@ async function MarkdownContent({
         const searchParams = new URLSearchParams(values);
         switch (values.type) {
           case "commit":
-            referencesFound.push(values);
+            references.push(values);
             return `${env.NEXT_PUBLIC_VERCEL_URL}/${values.user}/${
               values.project
             }/commit/${values.hash}?${searchParams.toString()}`;
           case "issue":
-            referencesFound.push(values);
+            references.push(values);
             return `${env.NEXT_PUBLIC_VERCEL_URL}/${values.user}/${
               values.project
             }/issues/${values.no}?${searchParams.toString()}`;
           case "mention":
-            referencesFound.push(values);
+            references.push(values);
             return `${env.NEXT_PUBLIC_VERCEL_URL}/u/${
               values.user
             }?${searchParams.toString()}`;
@@ -118,7 +152,7 @@ async function MarkdownContent({
       })
     );
 
-  const file = await compile(preprocessedContent, {
+  const processedContent = await compile(preprocessedContent, {
     jsx: false,
     outputFormat: "function-body",
     rehypePlugins: [
@@ -130,74 +164,59 @@ async function MarkdownContent({
     format: "md"
   });
 
-  const mod = await run(String(file), {
-    Fragment: React.Fragment,
-    jsx: React.createElement,
-    jsxs: React.createElement
-  });
+  return {
+    references,
+    processedContent: String(processedContent)
+  };
+}
 
-  const authedUser = await getAuthedUser();
-
-  const issueReferences = referencesFound.filter(
-    (item) => item.type === "issue"
+async function resolveReferences(
+  references: Reference[],
+  authedUser: User | null
+): Promise<ResolvedReferences> {
+  const issueReferences = references.filter(
+    (ref) => ref.type === "issue"
   ) as IssueReference[];
 
-  const userMentions = referencesFound
-    .map((val) => (val.type === "mention" ? val.user : null))
+  const userMentions = references
+    .map((ref) => (ref.type === "mention" ? ref.user : null))
     .filter((item) => item !== null) as string[];
 
-  const resolvedIssues = await getMultipleIssuesPerRepositories(
-    issueReferences,
-    authedUser
-  );
-  const resolvedMentions = await getMultipleUserByUsername(userMentions);
+  const [resolvedIssues, resolvedMentions] = await Promise.all([
+    getMultipleIssuesPerRepositories(issueReferences, authedUser),
+    getMultipleUserByUsername(userMentions)
+  ]);
 
-  console.timeEnd(`[${dt}] Markdown Rendering`);
-
-  return (
-    <article
-      className={clsx(className, "break-words leading-normal text-base")}
-    >
-      {mod.default({
-        components: await getComponents({
-          linkHeaders,
-          editableCheckboxes,
-          authedUser,
-          currentRepo: repository,
-          resolvedItems: {
-            issues: resolvedIssues.reduce(
-              (acc, issue) => {
-                acc[issue.number] = issue;
-                return acc;
-              },
-              {} as Record<number, IssueQueryResult>
-            ),
-            mentions: resolvedMentions.reduce(
-              (acc, user) => {
-                acc[user.username.toLowerCase()] = user;
-                return acc;
-              },
-              {} as Record<string, UserQueryResult>
-            )
-          }
-        })
-      })}
-    </article>
-  );
+  return {
+    issues: resolvedIssues.reduce(
+      (acc, issue) => {
+        acc[issue.number] = issue;
+        return acc;
+      },
+      {} as Record<number, IssueQueryResult>
+    ),
+    mentions: resolvedMentions.reduce(
+      (acc, user) => {
+        acc[user.username.toLowerCase()] = user;
+        return acc;
+      },
+      {} as Record<string, UserQueryResult>
+    )
+  };
 }
 
 async function getComponents({
   linkHeaders,
   editableCheckboxes,
-  resolvedItems,
+  resolvedReferences,
   authedUser,
-  currentRepo
+  currentRepository
 }: {
   linkHeaders: boolean;
   editableCheckboxes: boolean;
-  resolvedItems: ResolvedItems;
+  resolvedReferences: ResolvedReferences;
   authedUser: User | null;
-  currentRepo: string;
+  currentRepository: string;
 }) {
   Code.theme = {
     dark: githubDark,
@@ -318,8 +337,8 @@ async function getComponents({
       return (
         <MarkdownA
           key={key}
-          currentRepo={currentRepo}
-          resolvedItems={resolvedItems}
+          currentRepository={currentRepository}
+          resolvedReferences={resolvedReferences}
           authedUser={authedUser}
           {...props}
         />

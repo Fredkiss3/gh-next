@@ -22,7 +22,7 @@ import type { User } from "~/lib/server/db/schema/user.sql";
 import type { UserQueryResult } from "~/app/(models)/user";
 import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
 
-export type ResolvedItems = {
+export type ResolvedReferences = {
   issues: Record<number, IssueQueryResult>;
   mentions: Record<string, UserQueryResult>;
 };
@@ -30,15 +30,15 @@ export type ResolvedItems = {
 type MarkdownAProps = {
   "data-type"?: string;
   "data-issue-number"?: string;
-  resolvedItems: ResolvedItems;
+  resolvedReferences: ResolvedReferences;
   authedUser?: User | null;
-  currentRepo: string;
+  currentRepository: string;
 } & React.ComponentProps<"a">;
 
 export async function MarkdownA({
-  resolvedItems,
+  resolvedReferences,
   authedUser,
-  currentRepo,
+  currentRepository,
   ...props
 }: MarkdownAProps) {
   let isExternal = true;
@@ -86,7 +86,7 @@ export async function MarkdownA({
   }
 
   if (references.type === "issue") {
-    const issueFound = resolvedItems.issues[Number(references.no)];
+    const issueFound = resolvedReferences.issues[Number(references.no)];
     const repository = `${references.user}/${references.project}`;
 
     if (!issueFound) {
@@ -133,7 +133,8 @@ export async function MarkdownA({
               />
               &nbsp;
               <span className="text-grey font-normal">
-                {repository === currentRepo ? "" : repository}#{references.no}
+                {repository === currentRepository ? "" : repository}#
+                {references.no}
               </span>
             </span>
           </Link>
@@ -143,7 +144,8 @@ export async function MarkdownA({
   }
 
   if (references.type === "mention") {
-    const userFound = resolvedItems.mentions[references.user.toLowerCase()];
+    const userFound =
+      resolvedReferences.mentions[references.user.toLowerCase()];
 
     if (!userFound) {
       return <span>{props.children}</span>;
