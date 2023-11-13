@@ -42,14 +42,14 @@ export async function MarkdownA({
   ...props
 }: MarkdownAProps) {
   let isExternal = true;
-  let buildUrlValues: BuildUrlValues | null = null;
+  let references: Reference | null = null;
   if (props.href) {
     try {
       const url = new URL(props.href, env.NEXT_PUBLIC_VERCEL_URL);
       const baseURL = new URL(env.NEXT_PUBLIC_VERCEL_URL);
       isExternal = url.hostname !== baseURL.hostname;
 
-      const parseResult = BuildUrlValuesSchema.safeParse(
+      const parseResult = ReferenceSchema.safeParse(
         [...url.searchParams.keys()].reduce(
           (acc, key) => {
             const value = url.searchParams.get(key);
@@ -64,8 +64,8 @@ export async function MarkdownA({
       );
 
       if (parseResult.success) {
-        buildUrlValues = parseResult.data;
-        Object.keys(buildUrlValues).map((key) => url.searchParams.delete(key));
+        references = parseResult.data;
+        Object.keys(references).map((key) => url.searchParams.delete(key));
         props.href = url.toString();
       }
     } catch (error) {
@@ -73,7 +73,7 @@ export async function MarkdownA({
     }
   }
 
-  if (isExternal || !buildUrlValues) {
+  if (isExternal || !references) {
     return (
       <a
         {...props}
@@ -85,9 +85,9 @@ export async function MarkdownA({
     );
   }
 
-  if (buildUrlValues.type === "issue") {
-    const issueFound = resolvedItems.issues[Number(buildUrlValues.no)];
-    const repository = `${buildUrlValues.user}/${buildUrlValues.project}`;
+  if (references.type === "issue") {
+    const issueFound = resolvedItems.issues[Number(references.no)];
+    const repository = `${references.user}/${references.project}`;
 
     if (!issueFound) {
       return <span>{props.children}</span>;
@@ -133,8 +133,7 @@ export async function MarkdownA({
               />
               &nbsp;
               <span className="text-grey font-normal">
-                {repository === currentRepo ? "" : repository}#
-                {buildUrlValues.no}
+                {repository === currentRepo ? "" : repository}#{references.no}
               </span>
             </span>
           </Link>
@@ -143,8 +142,8 @@ export async function MarkdownA({
     );
   }
 
-  if (buildUrlValues.type === "mention") {
-    const userFound = resolvedItems.mentions[buildUrlValues.user.toLowerCase()];
+  if (references.type === "mention") {
+    const userFound = resolvedItems.mentions[references.user.toLowerCase()];
 
     if (!userFound) {
       return <span>{props.children}</span>;
@@ -181,7 +180,7 @@ export async function MarkdownA({
     );
   }
 
-  if (buildUrlValues.type === "commit") {
+  if (references.type === "commit") {
     // TODO : handle commit mentions
     return <span>{props.children}</span>;
   }
@@ -200,37 +199,35 @@ export async function MarkdownA({
  * These build URL values from the package 'remark-github' these correspond
  * to the linked issues, commits & mentions
  */
-const BuildUrlCommitValuesSchema = z.object({
+const CommitReferenceSchema = z.object({
   hash: z.string(),
   project: z.string(),
   type: z.literal("commit"),
   user: z.string()
 });
 
-export type BuildUrlCommitValues = z.TypeOf<typeof BuildUrlCommitValuesSchema>;
+export type CommitReference = z.TypeOf<typeof CommitReferenceSchema>;
 
-const BuildUrlIssueValuesSchema = z.object({
+const IssueReferenceSchema = z.object({
   no: z.string(),
   project: z.string(),
   type: z.literal("issue"),
   user: z.string()
 });
 
-export type BuildUrlIssueValues = z.TypeOf<typeof BuildUrlIssueValuesSchema>;
+export type IssueReference = z.TypeOf<typeof IssueReferenceSchema>;
 
-const BuildUrlMentionValuesSchema = z.object({
+const MentionReferenceSchema = z.object({
   type: z.literal("mention"),
   user: z.string()
 });
 
-export type BuildUrlMentionValues = z.TypeOf<
-  typeof BuildUrlMentionValuesSchema
->;
+export type MentionReference = z.TypeOf<typeof MentionReferenceSchema>;
 
-const BuildUrlValuesSchema = z.union([
-  BuildUrlCommitValuesSchema,
-  BuildUrlIssueValuesSchema,
-  BuildUrlMentionValuesSchema
+const ReferenceSchema = z.union([
+  CommitReferenceSchema,
+  IssueReferenceSchema,
+  MentionReferenceSchema
 ]);
 
-export type BuildUrlValues = z.TypeOf<typeof BuildUrlValuesSchema>;
+export type Reference = z.TypeOf<typeof ReferenceSchema>;

@@ -20,7 +20,7 @@ import { _envObject as env } from "~/env-config.mjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { users, type User } from "~/lib/server/db/schema/user.sql";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, like, sql } from "drizzle-orm";
 import {
   labels,
   type LabelInsert,
@@ -43,7 +43,6 @@ import {
 } from "~/lib/server/db/schema/event.sql";
 import { MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
-import { chunkArray } from "~/lib/shared/utils.shared";
 import { repositories } from "~/lib/server/db/schema/repository.sql";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
@@ -353,7 +352,7 @@ type EventsResponse = {
         totalCount: number;
         nodes: TimelineItem[];
       };
-    };
+    } | null;
   };
 };
 
@@ -573,10 +572,15 @@ async function insertSingleIssue(issue: GithubIssue) {
               createdAt: new Date(issue.createdAt),
               initiator: currentUser
             });
-            return `https://${PRODUCTION_DOMAIN}/${values.user}/${values.project}/issues/${values.no}`;
+
+            // only replaces the URL when replacing full urls (from github), else don't do any replacement
+            // as #<ref> are automatically managed by the <Markdown> component
+            return !values.fullUrlMatch
+              ? false
+              : `https://${PRODUCTION_DOMAIN}/${values.user}/${values.project}/issues/${values.no}`;
           case "mention":
             linkingEvents.push(values);
-            return `https://${PRODUCTION_DOMAIN}/u/${values.user}`;
+            return false;
           default:
             return false;
         }
@@ -776,34 +780,32 @@ async function insertSingleIssue(issue: GithubIssue) {
     .where(eq(issueEvents.issue_id, issueInsertQueryResult.issue_id));
 
   let nextEventsCursor: string | null = null;
-  let eventsHasNextPage = false;
+  let eventsHasNextPage = true;
   let totalNumberOfEvents = 0;
 
-  do {
+  while (eventsHasNextPage) {
     /**
      * INSERTING EVENTS
      */
-    const {
-      repository: {
-        issue: {
-          timelineItems: {
-            nodes: eventsResultList,
-            // @ts-expect-error
-            pageInfo: eventsPageInfo
-          }
-        }
+    const eventResponse: EventsResponse = await fetchFromGithubAPI(
+      eventsQuery,
+      {
+        repoOwner: GITHUB_REPO_SOURCE.owner,
+        repoName: GITHUB_REPO_SOURCE.name,
+        cursor: nextEventsCursor,
+        issue_number: issue.number
       }
-    } = await fetchFromGithubAPI<EventsResponse>(eventsQuery, {
-      repoOwner: GITHUB_REPO_SOURCE.owner,
-      repoName: GITHUB_REPO_SOURCE.name,
-      cursor: nextEventsCursor,
-      issue_number: issue.number
-    });
+    );
 
-    nextEventsCursor = eventsPageInfo.endCursor;
-    eventsHasNextPage = eventsPageInfo.hasNextPage;
+    if (!eventResponse.repository.issue) continue;
 
-    for (const event of eventsResultList) {
+    nextEventsCursor =
+      eventResponse.repository.issue.timelineItems.pageInfo.endCursor;
+    eventsHasNextPage =
+      eventResponse.repository.issue.timelineItems.pageInfo.hasNextPage;
+
+    const eventsToInsert: IssueEventInsert[] = [];
+    for (const event of eventResponse.repository.issue.timelineItems.nodes) {
       totalNumberOfEvents++;
       let currentUser: User | null | undefined = null;
 
@@ -893,13 +895,17 @@ async function insertSingleIssue(issue: GithubIssue) {
                     createdAt: new Date(event.createdAt),
                     initiator: currentUser
                   });
-                  return `https://${PRODUCTION_DOMAIN}/${values.user}/${values.project}/issues/${values.no}`;
+                  // only replaces the URL when replacing full urls (from github), else don't do any replacement
+                  // as #<ref> are automatically managed by the <Markdown> component
+                  return !values.fullUrlMatch
+                    ? false
+                    : `https://${PRODUCTION_DOMAIN}/${values.user}/${values.project}/issues/${values.no}`;
                 case "mention":
                   linkingEvents.push({
                     ...values,
                     comment_id: commentInsertQueryResult.comment_id
                   });
-                  return `https://${PRODUCTION_DOMAIN}/u/${values.user}`;
+                  return false;
                 default:
                   return false;
               }
@@ -1027,18 +1033,17 @@ async function insertSingleIssue(issue: GithubIssue) {
         continue;
       }
 
-      const [returning] = await db
-        .insert(issueEvents)
-        .values(eventPayload)
-        .returning({
-          id: issueEvents.id
-        });
-
-      console.log(
-        `\nsuccessfully inserted \x1b[34m${event.__typename} #${returning.id} event\x1b[37m ✅`
-      );
+      eventsToInsert.push(eventPayload);
     }
-  } while (eventsHasNextPage);
+
+    await db.insert(issueEvents).values(eventsToInsert).returning({
+      id: issueEvents.id
+    });
+
+    console.log(
+      `\ninserted \x1b[34m${eventsToInsert.length} events\x1b[37m ✅`
+    );
+  }
 
   console.log(
     `\nsuccessfully inserted \x1b[34m${totalNumberOfEvents} events\x1b[37m ✅`
@@ -1076,11 +1081,14 @@ async function insertSingleIssue(issue: GithubIssue) {
   );
 
   console.log("--- INSERTING ISSUES REFERENCES ---");
+  let noOfReferencesInserted = 0;
   for (const event of linkingEvents.filter(
     (event) => event.type === "issue"
   ) as IssueLinkingValues[]) {
     let dbIssues = await db
-      .select()
+      .select({
+        id: issues.id
+      })
       .from(issues)
       .where(eq(issues.number, Number(event.no)));
 
@@ -1115,9 +1123,12 @@ async function insertSingleIssue(issue: GithubIssue) {
       mentionned_issue_id: mentionnedIssueId
     } satisfies IssueEventInsert;
     await db.insert(issueEvents).values(eventPayload);
+    noOfReferencesInserted++;
   }
 
-  console.log(`\nsuccessfully inserted issue references ✅`);
+  console.log(
+    `\nsuccessfully inserted ${noOfReferencesInserted} issue references ✅`
+  );
 
   return issueInsertQueryResult.issue_id;
 }

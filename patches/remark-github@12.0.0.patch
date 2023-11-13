@@ -1,7 +1,16 @@
 diff --git a/lib/index.d.ts b/lib/index.d.ts
-index 75ee6ed7721c0749eeb5c4ed129ea524adade68f..c65081dce620c04efa4fe76b8abdf656c2be380b 100644
+index 75ee6ed7721c0749eeb5c4ed129ea524adade68f..052da459747ad0a203310f9b6f3de3525debd3c6 100644
 --- a/lib/index.d.ts
 +++ b/lib/index.d.ts
+@@ -110,7 +110,7 @@ export type BuildUrlMentionValues = {
+ /**
+  * Info.
+  */
+-export type BuildUrlValues = BuildUrlCommitValues | BuildUrlCompareValues | BuildUrlIssueValues | BuildUrlMentionValues;
++export type BuildUrlValues = (BuildUrlCommitValues | BuildUrlCompareValues | BuildUrlIssueValues | BuildUrlMentionValues) & { fullUrlMatch?: boolean };
+ /**
+  * Configuration.
+  */
 @@ -130,6 +130,10 @@ export type Options = {
       * should point to a GitHub repository (such as `'user/project'`)
       */
@@ -14,7 +23,7 @@ index 75ee6ed7721c0749eeb5c4ed129ea524adade68f..c65081dce620c04efa4fe76b8abdf656
  /**
   * Owner and project of repo.
 diff --git a/lib/index.js b/lib/index.js
-index d84795fb97abfdc0ab57529433dd1514a80a7348..3feaa8a3a47c873ff042ede49ffb29a85e843082 100644
+index d84795fb97abfdc0ab57529433dd1514a80a7348..b0a4c8566eae4e4a4aee27dfc170b57f562f9871 100644
 --- a/lib/index.js
 +++ b/lib/index.js
 @@ -1,3 +1,4 @@
@@ -22,6 +31,15 @@ index d84795fb97abfdc0ab57529433dd1514a80a7348..3feaa8a3a47c873ff042ede49ffb29a8
  /**
   * @typedef {import('mdast').PhrasingContent} PhrasingContent
   * @typedef {import('mdast').Root} Root
+@@ -56,7 +57,7 @@
+  * @property {string} user
+  *   User name.
+  *
+- * @typedef {BuildUrlCommitValues | BuildUrlCompareValues | BuildUrlIssueValues | BuildUrlMentionValues} BuildUrlValues
++ * @typedef {(BuildUrlCommitValues | BuildUrlCompareValues | BuildUrlIssueValues | BuildUrlMentionValues) & {fullUrlMatch?: boolean}} BuildUrlValues
+  *   Info.
+  *
+  * @typedef Options
 @@ -70,6 +71,8 @@
   * @property {string | null | undefined} [repository]
   *   Repository to link against (default: `repository` from `packag.json` in CWD in Node);
@@ -64,7 +82,7 @@ index d84795fb97abfdc0ab57529433dd1514a80a7348..3feaa8a3a47c873ff042ede49ffb29a8
            value: base + link.reference + comment
          })
 +        if(link.page === 'issues') {
-+          node.url = buildUrl({type: 'issue', no: link.reference, project: link.project, user: link.user});
++          node.url = buildUrl({type: 'issue', no: link.reference, project: link.project, user: link.user, fullUrlMatch: true});
 +        }
        } else {
          if (base) {
@@ -78,7 +96,7 @@ index d84795fb97abfdc0ab57529433dd1514a80a7348..3feaa8a3a47c873ff042ede49ffb29a8
          if (link.comment) {
            children.push({type: 'text', value: comment})
          }
-+        node.url = buildUrl({type: 'commit', hash: link.reference, project: link.project, user: link.user});
++        node.url = buildUrl({type: 'commit', hash: link.reference, project: link.project, user: link.user, fullUrlMatch: true});
        }
  
        node.children = children

@@ -54,7 +54,7 @@ export default async function IssueDetailPage({
 
       <section className="px-5 flex flex-col gap-5">
         <Markdown content={issue.body} />
-        <Markdown
+        {/* <Markdown
           content={`Some references:
 
 *   Commit: f8083175fe890cbf14f41d0a06e7aa35d4989587
@@ -79,7 +79,7 @@ Some links:
 *   Issue or PR comment: https://github.com/remarkjs/remark-github/issues/3#issue-151160339
 *   Mention: https://github.com/ben-eb
 `}
-        />
+        /> */}
       </section>
     </div>
   );

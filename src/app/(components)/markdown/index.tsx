@@ -7,14 +7,20 @@ import { MarkdownCodeBlock } from "./markdown-code-block";
 import { MarkdownErrorBoundary } from "~/app/(components)/markdown/markdown-error-boundary";
 import {
   MarkdownA,
-  type BuildUrlValues,
+  type IssueReference,
+  type Reference,
   type ResolvedItems
 } from "~/app/(components)/markdown/markdown-a";
 import { MarkdownH } from "~/app/(components)/markdown/markdown-h";
+import {
+  DeviceCameraVideoIcon,
+  TriangleDownIcon
+} from "@primer/octicons-react";
+import { MarkdownSkeleton } from "~/app/(components)/markdown/markdown-skeleton";
 
 // utils
 import remarkGfm from "remark-gfm";
-import remarkGithub, { type BuildUrlIssueValues } from "remark-github";
+import remarkGithub from "remark-github";
 import rehypeSlug from "rehype-slug";
 import { clsx } from "~/lib/shared/utils.shared";
 import githubDark from "~/lib/server/themes/github-dark.json";
@@ -23,35 +29,23 @@ import rehypeRaw from "rehype-raw";
 import { compile, run } from "@mdx-js/mdx";
 import { env } from "~/env";
 import { getAuthedUser } from "~/app/(actions)/auth";
-import {
-  getMultipleIssuesPerRepositories,
-  type IssueQueryResult
-} from "~/app/(models)/issues";
+import { getMultipleIssuesPerRepositories } from "~/app/(models)/issues";
 import { VFile } from "vfile";
 import { remark } from "remark";
-
-// types
-import type { UseMdxComponents } from "@mdx-js/mdx";
 import {
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_NAME,
   PRODUCTION_DOMAIN
 } from "~/lib/shared/constants";
+import { getMultipleUserByUsername } from "~/app/(models)/user";
+
+// types
+import type { UseMdxComponents } from "@mdx-js/mdx";
 import type { User } from "~/lib/server/db/schema/user.sql";
-import {
-  getMultipleUserByUsername,
-  type UserQueryResult
-} from "~/app/(models)/user";
-import {
-  DeviceCameraVideoIcon,
-  TriangleDownIcon
-} from "@primer/octicons-react";
+import type { IssueQueryResult } from "~/app/(models)/issues";
+import type { UserQueryResult } from "~/app/(models)/user";
 
 export type MDXComponents = ReturnType<UseMdxComponents>;
-export type ResolvedIssues = Record<
-  number,
-  Awaited<ReturnType<typeof getMultipleIssuesPerRepositories>>[number]
->;
 
 export type MarkdownProps = {
   content: string;
@@ -62,49 +56,53 @@ export type MarkdownProps = {
 };
 
 export async function Markdown(props: MarkdownProps) {
-  return process.env.NODE_ENV === "development" ? (
-    <MarkdownContent {...props} />
-  ) : (
-    <MarkdownErrorBoundary>
-      <MarkdownContent {...props} />
-    </MarkdownErrorBoundary>
+  return (
+    <React.Suspense fallback={<MarkdownSkeleton className={props.className} />}>
+      {process.env.NODE_ENV === "development" ? (
+        <MarkdownContent {...props} />
+      ) : (
+        <MarkdownErrorBoundary>
+          <MarkdownContent {...props} />
+        </MarkdownErrorBoundary>
+      )}
+    </React.Suspense>
   );
 }
 
 async function MarkdownContent({
   content,
-  linkHeaders = false,
   className,
+  linkHeaders = false,
   editableCheckboxes = false,
   repository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
 }: MarkdownProps) {
   const dt = new Date().getTime();
   console.time(`[${dt}] Markdown Rendering`);
 
-  let resolvedItems: BuildUrlValues[] = [];
+  let referencesFound: Reference[] = [];
 
   // preprocess links & mentions
-  const preprocessed = await remark()
+  const preprocessedContent = await remark()
     .use(remarkGfm)
     .use(remarkGithub, {
       repository,
       mentionStrong: false,
       baseURL: PRODUCTION_DOMAIN,
-      buildUrl: (values) => {
+      buildUrl: ({ fullUrlMatch, ...values }) => {
         const searchParams = new URLSearchParams(values);
         switch (values.type) {
           case "commit":
-            resolvedItems.push(values);
+            referencesFound.push(values);
             return `${env.NEXT_PUBLIC_VERCEL_URL}/${values.user}/${
               values.project
             }/commit/${values.hash}?${searchParams.toString()}`;
           case "issue":
-            resolvedItems.push(values);
+            referencesFound.push(values);
             return `${env.NEXT_PUBLIC_VERCEL_URL}/${values.user}/${
               values.project
             }/issues/${values.no}?${searchParams.toString()}`;
           case "mention":
-            resolvedItems.push(values);
+            referencesFound.push(values);
             return `${env.NEXT_PUBLIC_VERCEL_URL}/u/${
               values.user
             }?${searchParams.toString()}`;
@@ -120,7 +118,7 @@ async function MarkdownContent({
       })
     );
 
-  const file = await compile(preprocessed, {
+  const file = await compile(preprocessedContent, {
     jsx: false,
     outputFormat: "function-body",
     rehypePlugins: [
@@ -140,16 +138,16 @@ async function MarkdownContent({
 
   const authedUser = await getAuthedUser();
 
-  const issueNumbers = resolvedItems.filter(
+  const issueReferences = referencesFound.filter(
     (item) => item.type === "issue"
-  ) as BuildUrlIssueValues[];
+  ) as IssueReference[];
 
-  const userMentions = resolvedItems
+  const userMentions = referencesFound
     .map((val) => (val.type === "mention" ? val.user : null))
     .filter((item) => item !== null) as string[];
 
   const resolvedIssues = await getMultipleIssuesPerRepositories(
-    issueNumbers,
+    issueReferences,
     authedUser
   );
   const resolvedMentions = await getMultipleUserByUsername(userMentions);
@@ -223,7 +221,10 @@ async function getComponents({
 
   return {
     video: (props) => (
-      <details className="rounded-md border border-neutral">
+      <details
+        className="rounded-md border border-neutral"
+        suppressHydrationWarning
+      >
         <summary
           className={clsx(
             "py-2 px-4 cursor-pointer w-full",
@@ -276,7 +277,11 @@ async function getComponents({
     },
     p: (props) => {
       const key = ++noOfKeys;
-      return <p {...props} key={key} className={"my-4"} />;
+      return (
+        <p suppressHydrationWarning {...props} key={key} className={"my-4"}>
+          {props.children}
+        </p>
+      );
     },
     table: (props) => (
       <table
