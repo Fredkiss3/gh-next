@@ -10,6 +10,7 @@ import { HoverCard } from "~/app/(components)/hovercard";
 import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-contents";
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
+import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
 
 // utils
 import { env } from "~/env";
@@ -20,7 +21,6 @@ import { z } from "zod";
 import type { IssueQueryResult } from "~/app/(models)/issues";
 import type { User } from "~/lib/server/db/schema/user.sql";
 import type { UserQueryResult } from "~/app/(models)/user";
-import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
 
 export type ResolvedReferences = {
   issues: Record<number, IssueQueryResult>;
@@ -28,8 +28,6 @@ export type ResolvedReferences = {
 };
 
 type MarkdownAProps = {
-  "data-type"?: string;
-  "data-issue-number"?: string;
   resolvedReferences: ResolvedReferences;
   authedUser?: User | null;
   currentRepository: string;
@@ -42,7 +40,7 @@ export async function MarkdownA({
   ...props
 }: MarkdownAProps) {
   let isExternal = true;
-  let references: Reference | null = null;
+  let referenceFound: Reference | null = null;
   if (props.href) {
     try {
       const url = new URL(props.href, env.NEXT_PUBLIC_VERCEL_URL);
@@ -64,8 +62,8 @@ export async function MarkdownA({
       );
 
       if (parseResult.success) {
-        references = parseResult.data;
-        Object.keys(references).map((key) => url.searchParams.delete(key));
+        referenceFound = parseResult.data;
+        Object.keys(referenceFound).map((key) => url.searchParams.delete(key));
         props.href = url.toString();
       }
     } catch (error) {
@@ -73,7 +71,7 @@ export async function MarkdownA({
     }
   }
 
-  if (isExternal || !references) {
+  if (isExternal || !referenceFound) {
     return (
       <a
         {...props}
@@ -85,9 +83,9 @@ export async function MarkdownA({
     );
   }
 
-  if (references.type === "issue") {
-    const issueFound = resolvedReferences.issues[Number(references.no)];
-    const repository = `${references.user}/${references.project}`;
+  if (referenceFound.type === "issue") {
+    const issueFound = resolvedReferences.issues[Number(referenceFound.no)];
+    const repository = `${referenceFound.user}/${referenceFound.project}`;
 
     if (!issueFound) {
       return <span>{props.children}</span>;
@@ -134,7 +132,7 @@ export async function MarkdownA({
               &nbsp;
               <span className="text-grey font-normal">
                 {repository === currentRepository ? "" : repository}#
-                {references.no}
+                {referenceFound.no}
               </span>
             </span>
           </Link>
@@ -143,9 +141,9 @@ export async function MarkdownA({
     );
   }
 
-  if (references.type === "mention") {
+  if (referenceFound.type === "mention") {
     const userFound =
-      resolvedReferences.mentions[references.user.toLowerCase()];
+      resolvedReferences.mentions[referenceFound.user.toLowerCase()];
 
     if (!userFound) {
       return <span>{props.children}</span>;
@@ -182,7 +180,7 @@ export async function MarkdownA({
     );
   }
 
-  if (references.type === "commit") {
+  if (referenceFound.type === "commit") {
     // TODO : handle commit mentions
     return <span>{props.children}</span>;
   }

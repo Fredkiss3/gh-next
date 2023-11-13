@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
-import { Button } from "../button";
+import { Button } from "~/app/(components)/button";
 import { CheckIcon, CopyIcon } from "@primer/octicons-react";
 import { clsx, wait } from "~/lib/shared/utils.shared";
-import { Tooltip } from "../tooltip";
+import { Tooltip } from "~/app/(components)/tooltip";
 
 export type MarkdownCodeBlockProps = {
   codeStr: string;

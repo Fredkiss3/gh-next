@@ -45,8 +45,6 @@ import type { User } from "~/lib/server/db/schema/user.sql";
 import type { IssueQueryResult } from "~/app/(models)/issues";
 import type { UserQueryResult } from "~/app/(models)/user";
 
-export type MDXComponents = ReturnType<UseMdxComponents>;
-
 export type MarkdownProps = {
   content: string;
   linkHeaders?: boolean;
@@ -148,12 +146,6 @@ async function processMarkdownContentAndGetReferences(
       })
     );
 
-  console.dir(
-    {
-      references
-    },
-    { depth: null }
-  );
   const processedContent = await compile(preprocessedContent, {
     jsx: false,
     outputFormat: "function-body",
@@ -220,6 +212,8 @@ async function getComponents({
   authedUser: User | null;
   currentRepository: string;
 }) {
+  type MDXComponents = ReturnType<UseMdxComponents>;
+
   Code.theme = {
     dark: githubDark,
     light: githubLight
