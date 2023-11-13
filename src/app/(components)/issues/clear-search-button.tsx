@@ -20,7 +20,6 @@ export function ClearSearchButtonSection() {
             <Link
               prefetch={false}
               href="/issues"
-              // onClick={() => setSearchQuery(BASE_ISSUE_SEARCH_QUERY)}
               className="group flex items-center gap-2 font-semibold text-grey hover:text-accent"
             >
               <div className="flex items-center justify-center rounded-md bg-grey p-1 group-hover:bg-accent">

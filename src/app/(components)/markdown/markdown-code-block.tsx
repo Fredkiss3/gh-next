@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
-import { Button } from "./button";
+import { Button } from "~/app/(components)/button";
 import { CheckIcon, CopyIcon } from "@primer/octicons-react";
 import { clsx, wait } from "~/lib/shared/utils.shared";
-import { Tooltip } from "./tooltip";
+import { Tooltip } from "~/app/(components)/tooltip";
 
 export type MarkdownCodeBlockProps = {
   codeStr: string;
@@ -19,15 +19,13 @@ export function MarkdownCodeBlock({
   const [isPending, startTransition] = React.useTransition();
 
   return (
-    <div className="group/code relative">
+    <div className="relative">
       {children}
 
       <Tooltip content="Copied!" placement="left" isOpen={isPending}>
         <Button
-          className={clsx(className, "transition duration-150", {
-            "opacity-0 group-hover/code:opacity-100": !isPending
-          })}
-          variant="invisible"
+          className={clsx(className, "transition duration-150")}
+          variant="subtle"
           type="button"
           onClick={() => {
             navigator.clipboard.writeText(codeStr).then(() => {

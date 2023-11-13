@@ -2,13 +2,7 @@
 import { HomeIcon } from "@primer/octicons-react";
 import { Button } from "~/app/(components)/button";
 
-// this is for the next version of next.js
-import type { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Segment Not found"
-};
-
-export default function Page() {
+export default function AppNotFound() {
   return (
     <>
       <section className="flex h-[80vh] flex-col items-center justify-center gap-6 text-foreground">

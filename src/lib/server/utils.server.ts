@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { env } from "~/env";
+import { _envObject as env } from "~/env-config.mjs";
 import { GITHUB_AUTHOR_USERNAME } from "~/lib/shared/constants";
 
 const githubGraphQLAPIResponseSchema = z.union([

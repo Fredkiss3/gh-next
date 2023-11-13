@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE_KEY } from "./lib/shared/constants";
+import {
+  GITHUB_AUTHOR_USERNAME,
+  GITHUB_REPOSITORY_NAME,
+  SESSION_COOKIE_KEY
+} from "./lib/shared/constants";
 import { Session } from "./lib/server/session.server";
 import isbot from "isbot";
 
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { env } from "~/env";
 
 /**
  * Set the cookies on request + response so that
@@ -37,6 +42,12 @@ export default async function middleware(request: NextRequest) {
     request.nextUrl.pathname.endsWith("svg")
   ) {
     return NextResponse.next();
+  }
+
+  if (request.nextUrl.pathname === "/issues") {
+    return NextResponse.rewrite(
+      `${env.NEXT_PUBLIC_VERCEL_URL}/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/issues`
+    );
   }
 
   // Ensure a session is attached to each user

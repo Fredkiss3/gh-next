@@ -64,10 +64,6 @@ export type FormState<
     }
   | { type: undefined; message: null }; // initial state
 
-export type AuthError = {
-  type: "AUTH_ERROR";
-};
-
 export type OmitFirstItemInArray<T extends any[]> = T extends [any, ...infer R]
   ? R
   : never;
@@ -79,13 +75,5 @@ export type OmitLastItemInArray<T extends any[]> = T extends [
   ? Head
   : any[];
 
-export type AuthState = {
-  currentUser: User;
-  session: Session;
-};
-
-export type AuthedServerActionResult<
-  Action extends (auth: AuthState, ...args: any[]) => Promise<any>
-> = (
-  ...args: OmitFirstItemInArray<Parameters<Action>>
-) => Promise<Awaited<ReturnType<Action>> | AuthError>;
+export type FunctionWithoutLastArg<T extends (...args: any[]) => any> =
+  T extends (...args: [...infer P, any]) => infer R ? (...args: P) => R : never;

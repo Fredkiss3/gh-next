@@ -7,6 +7,7 @@ export const DEFAULT_CACHE_TTL = 1 * 24 * 60 * 60; // 1 day in seconds
 export const GITHUB_REPOSITORY_CACHE_KEY = "github:repository";
 
 export const GITHUB_AUTHOR_USERNAME = "Fredkiss3";
+export const PRODUCTION_DOMAIN = "gh.fredkiss.dev";
 export const GITHUB_REPOSITORY_NAME = "gh-next";
 export const AUTHOR_AVATAR_URL =
   "https://avatars.githubusercontent.com/u/38298743?v=4";
@@ -35,3 +36,4 @@ export const NO_METADATA_FILTERS = ["label", "assignee"] as const;
 export const DEFAULT_ISSUE_SEARCH_QUERY = "is:open";
 
 export const MAX_ITEMS_PER_PAGE = 25;
+export const UN_MATCHABLE_USERNAME = "<>";
