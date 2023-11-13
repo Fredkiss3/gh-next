@@ -56,16 +56,12 @@ export type MarkdownProps = {
 };
 
 export async function Markdown(props: MarkdownProps) {
-  return (
-    <React.Suspense fallback={<MarkdownSkeleton className={props.className} />}>
-      {process.env.NODE_ENV === "development" ? (
-        <MarkdownContent {...props} />
-      ) : (
-        <MarkdownErrorBoundary>
-          <MarkdownContent {...props} />
-        </MarkdownErrorBoundary>
-      )}
-    </React.Suspense>
+  return process.env.NODE_ENV === "development" ? (
+    <MarkdownContent {...props} />
+  ) : (
+    <MarkdownErrorBoundary>
+      <MarkdownContent {...props} />
+    </MarkdownErrorBoundary>
   );
 }
 
