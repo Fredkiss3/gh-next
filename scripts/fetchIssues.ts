@@ -1,6 +1,7 @@
 import {
   GITHUB_AUTHOR_USERNAME,
-  GITHUB_REPOSITORY_NAME
+  GITHUB_REPOSITORY_NAME,
+  PRODUCTION_DOMAIN
 } from "./../src/lib/shared/constants";
 import {
   issueToAssignees,
@@ -44,6 +45,10 @@ import { MAX_ITEMS_PER_PAGE } from "~/lib/shared/constants";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 import { chunkArray } from "~/lib/shared/utils.shared";
 import { repositories } from "~/lib/server/db/schema/repository.sql";
+import { remark } from "remark";
+import remarkGfm from "remark-gfm";
+import remarkGithub from "remark-github";
+import { VFile } from "vfile";
 
 const db = drizzle(postgres(env.DATABASE_URL));
 
@@ -495,7 +500,7 @@ function stringToNumber(str: string) {
 }
 
 async function insertSingleIssue(issue: GithubIssue) {
-  if (!issue.author) return null;
+  if (!issue?.author) return null;
 
   const [user] = await db
     .select()
@@ -532,13 +537,62 @@ async function insertSingleIssue(issue: GithubIssue) {
 
   let currentUser = dbUser[0];
 
-  const mentionRegex =
-    /(?:^|[^a-zA-Z0-9])(@[0-9a-zA-Z]+[0-9a-zA-Z\-])(?:[^a-zA-Z0-9]|$)/gm;
+  type IssueLinkingValues = {
+    user: string;
+    project: string;
+    no: string;
+    comment_id?: number;
+    type: "issue";
+    createdAt: Date;
+    initiator?: {
+      id: number;
+      avatar_url: string;
+      username: string;
+    };
+  };
+
+  type MentionLinkingValues = {
+    comment_id?: number;
+    type: "mention";
+    user: string;
+  };
+  type LinkingEventValues = IssueLinkingValues | MentionLinkingValues;
+
+  const linkingEvents: LinkingEventValues[] = [];
+  const preprocessedIssueBody = await remark()
+    .use(remarkGfm)
+    .use(remarkGithub, {
+      repository: `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`,
+      mentionStrong: false,
+      baseURL: "github.com",
+      buildUrl: (values) => {
+        switch (values.type) {
+          case "issue":
+            linkingEvents.push({
+              ...values,
+              createdAt: new Date(issue.createdAt),
+              initiator: currentUser
+            });
+            return `https://${PRODUCTION_DOMAIN}/${values.user}/${values.project}/issues/${values.no}`;
+          case "mention":
+            linkingEvents.push(values);
+            return `https://${PRODUCTION_DOMAIN}/u/${values.user}`;
+          default:
+            return false;
+        }
+      }
+    })
+    .process(
+      new VFile({
+        basename: "example.md",
+        value: issue.body
+      })
+    );
 
   const issuePayload = {
     title: issue.title,
     number: issue.number,
-    body: issue.body,
+    body: String(preprocessedIssueBody),
     status_updated_at: new Date(issue.closedAt ?? issue.createdAt),
     author_id: currentUser ? currentUser.id : null,
     author_username: currentUser
@@ -558,39 +612,13 @@ async function insertSingleIssue(issue: GithubIssue) {
     .insert(issues)
     .values(issuePayload)
     .onConflictDoUpdate({
-      target: issues.number,
+      target: [issues.repository_id, issues.number],
       set: issuePayload
     })
     .returning({
       issue_id: issues.id,
       number: issues.number
     });
-
-  console.log("--- INSERTING ISSUES USER MENTIONS ---");
-  const regexIt = issue.body.matchAll(mentionRegex);
-
-  let noOfMentionsInserted = 0;
-  const found: string[] = [];
-  for (const occurence of regexIt) {
-    const username = occurence[1].replace("@", "");
-
-    if (!found.includes(username)) {
-      noOfMentionsInserted++;
-      found.push(username);
-
-      await db
-        .insert(issueUserMentions)
-        .values({
-          username,
-          issue_id: issueInsertQueryResult.issue_id
-        })
-        .onConflictDoNothing();
-    }
-  }
-
-  console.log(
-    `\n${noOfMentionsInserted} user mention inserted successfully ✅`
-  );
 
   console.log("--- INSERTING ISSUES REVISIONS ---");
   let noOfIssueRevisionsInserted = 0;
@@ -850,6 +878,44 @@ async function insertSingleIssue(issue: GithubIssue) {
             comment_id: comments.id
           });
 
+        const preprocessedCommentBody = await remark()
+          .use(remarkGfm)
+          .use(remarkGithub, {
+            repository: `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`,
+            mentionStrong: false,
+            baseURL: "github.com",
+            buildUrl: (values) => {
+              switch (values.type) {
+                case "issue":
+                  linkingEvents.push({
+                    ...values,
+                    comment_id: commentInsertQueryResult.comment_id,
+                    createdAt: new Date(event.createdAt),
+                    initiator: currentUser
+                  });
+                  return `https://${PRODUCTION_DOMAIN}/${values.user}/${values.project}/issues/${values.no}`;
+                case "mention":
+                  linkingEvents.push({
+                    ...values,
+                    comment_id: commentInsertQueryResult.comment_id
+                  });
+                  return `https://${PRODUCTION_DOMAIN}/u/${values.user}`;
+                default:
+                  return false;
+              }
+            }
+          })
+          .process(
+            new VFile({
+              basename: "example.md",
+              value: comment.body
+            })
+          );
+
+        await db.update(comments).set({
+          content: String(preprocessedCommentBody)
+        });
+
         // Add event
         eventPayload.comment_id = commentInsertQueryResult.comment_id;
 
@@ -909,26 +975,6 @@ async function insertSingleIssue(issue: GithubIssue) {
             });
           }
         }
-
-        const regexIterator = comment.body.matchAll(mentionRegex);
-
-        const found: string[] = [];
-        for (const occurence of regexIterator) {
-          const username = occurence[1].replace("@", "");
-
-          if (!found.includes(username)) {
-            found.push(username);
-
-            await db
-              .insert(issueUserMentions)
-              .values({
-                username,
-                issue_id: issueInsertQueryResult.issue_id,
-                comment_id: commentInsertQueryResult.comment_id
-              })
-              .onConflictDoNothing();
-          }
-        }
       } else if (event.__typename === "AssignedEvent") {
         // if the user is in our DB, use that instead of a generated username & avatar url
         const dbUser = await db
@@ -977,50 +1023,20 @@ async function insertSingleIssue(issue: GithubIssue) {
           });
 
         eventPayload.label_id = labelInsertResult.label_id;
-      } else if (event.__typename === "CrossReferencedEvent") {
-        if (event.isCrossRepository || event.source.__typename !== "Issue") {
-          continue;
-        }
-
-        let dbIssues = await db
-          .select()
-          .from(issues)
-          .where(eq(issues.number, event.source.number));
-
-        let mentionnedIssueId: number | null = dbIssues[0]?.id;
-        if (dbIssues.length === 0) {
-          const {
-            repository: { issue }
-          } = await fetchFromGithubAPI<SingleIssueReponse>(singleIssueQuery, {
-            repoOwner: GITHUB_REPO_SOURCE.owner,
-            repoName: GITHUB_REPO_SOURCE.name,
-            number: event.source.number
-          });
-          mentionnedIssueId = await insertSingleIssue(issue);
-        }
-
-        if (!mentionnedIssueId) {
-          continue;
-        }
-
-        eventPayload = {
-          issue_id: issueInsertQueryResult.issue_id,
-          initiator_id: currentUser ? currentUser.id : null,
-          initiator_username: currentUser
-            ? currentUser.username
-            : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
-          initiator_avatar_url: currentUser
-            ? currentUser.avatar_url
-            : faker.image.avatarGitHub(),
-          type: "ISSUE_MENTION",
-          created_at: new Date(event.createdAt),
-          mentionned_issue_id: mentionnedIssueId
-        } satisfies IssueEventInsert;
       } else {
         continue;
       }
 
-      await db.insert(issueEvents).values(eventPayload);
+      const [returning] = await db
+        .insert(issueEvents)
+        .values(eventPayload)
+        .returning({
+          id: issueEvents.id
+        });
+
+      console.log(
+        `\nsuccessfully inserted \x1b[34m${event.__typename} #${returning.id} event\x1b[37m ✅`
+      );
     }
   } while (eventsHasNextPage);
 
@@ -1031,6 +1047,77 @@ async function insertSingleIssue(issue: GithubIssue) {
   console.log(
     `\nissue \x1b[34m${issue.number}\x1b[37m inserted successfully ✅`
   );
+
+  console.log("--- INSERTING ISSUES USER MENTIONS ---");
+  let noOfMentionsInserted = 0;
+  const found: string[] = [];
+  for (const occurence of linkingEvents.filter(
+    (event) => event.type === "mention"
+  )) {
+    const username = occurence.user;
+
+    if (!found.includes(username)) {
+      noOfMentionsInserted++;
+      found.push(username);
+
+      await db
+        .insert(issueUserMentions)
+        .values({
+          username,
+          issue_id: issueInsertQueryResult.issue_id,
+          comment_id: occurence.comment_id
+        })
+        .onConflictDoNothing();
+    }
+  }
+
+  console.log(
+    `\n${noOfMentionsInserted} user mention inserted successfully ✅`
+  );
+
+  console.log("--- INSERTING ISSUES REFERENCES ---");
+  for (const event of linkingEvents.filter(
+    (event) => event.type === "issue"
+  ) as IssueLinkingValues[]) {
+    let dbIssues = await db
+      .select()
+      .from(issues)
+      .where(eq(issues.number, Number(event.no)));
+
+    let mentionnedIssueId: number | null = dbIssues[0]?.id;
+    if (dbIssues.length === 0) {
+      const {
+        repository: { issue }
+      } = await fetchFromGithubAPI<SingleIssueReponse>(singleIssueQuery, {
+        repoOwner: GITHUB_REPO_SOURCE.owner,
+        repoName: GITHUB_REPO_SOURCE.name,
+        number: Number(event.no)
+      });
+      mentionnedIssueId = await insertSingleIssue(issue);
+    }
+
+    if (!mentionnedIssueId) {
+      continue;
+    }
+
+    const eventPayload = {
+      issue_id: issueInsertQueryResult.issue_id,
+      comment_id: event.comment_id,
+      initiator_id: event.initiator?.id,
+      initiator_username: event.initiator
+        ? event.initiator.username
+        : faker.internet.userName().replaceAll(".", "_").toLowerCase(),
+      initiator_avatar_url: event.initiator
+        ? event.initiator.avatar_url
+        : faker.image.avatarGitHub(),
+      type: "ISSUE_MENTION",
+      created_at: new Date(event.createdAt),
+      mentionned_issue_id: mentionnedIssueId
+    } satisfies IssueEventInsert;
+    await db.insert(issueEvents).values(eventPayload);
+  }
+
+  console.log(`\nsuccessfully inserted issue references ✅`);
 
   return issueInsertQueryResult.issue_id;
 }
@@ -1051,10 +1138,8 @@ do {
   hasNextPage = pageInfo.hasNextPage;
   totalIssuesFetched += nodes.length;
 
-  const issueChunked = chunkArray(nodes, 10);
-
-  for (const chunk of issueChunked) {
-    await Promise.allSettled(chunk.map(insertSingleIssue));
+  for (const issue of nodes) {
+    await insertSingleIssue(issue);
   }
 } while (hasNextPage && totalIssuesFetched < MAX_ISSUES_TO_FETCH);
 
