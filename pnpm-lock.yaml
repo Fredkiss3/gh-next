@@ -91,6 +91,9 @@ dependencies:
   remark:
     specifier: ^15.0.1
     version: 15.0.1
+  remark-gemoji:
+    specifier: ^8.0.0
+    version: 8.0.0
   remark-gfm:
     specifier: ^4.0.0
     version: 4.0.0
@@ -3733,6 +3736,10 @@ packages:
       '@next/font': 13.5.6
     dev: false
 
+  /gemoji@8.1.0:
+    resolution: {integrity: sha512-HA4Gx59dw2+tn+UAa7XEV4ufUKI4fH1KgcbenVA9YKSj1QJTT0xh5Mwv5HMFNN3l2OtUe3ZIfuRwSyZS5pLIWw==}
+    dev: false
+
   /get-intrinsic@1.2.1:
     resolution: {integrity: sha512-2DcsyfABl+gVHEfCOaTrWgyt+tb6MSEGmKq+kI5HwLbIYgjgmMcV8KQ41uaKz1xxUcn9tJtgFbQUEVcEbd0FYw==}
     dependencies:
@@ -5946,6 +5953,14 @@ packages:
       hast-util-to-string: 2.0.0
       unified: 10.1.2
       unist-util-visit: 4.1.2
+    dev: false
+
+  /remark-gemoji@8.0.0:
+    resolution: {integrity: sha512-/fL9rc72FYwFGtOKcT+QeQdx9Q9t5v4N6KLXSDOTEgaedzK85I9judBqB2eqz+g4b0ERMejlwSOuPK+wket6aA==}
+    dependencies:
+      '@types/mdast': 4.0.2
+      gemoji: 8.1.0
+      mdast-util-find-and-replace: 3.0.1
     dev: false
 
   /remark-gfm@4.0.0:

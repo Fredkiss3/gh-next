@@ -85,6 +85,13 @@ Some links:
 > Lorem ipsum dolor sit amet consectetur adipisicing elit. 
 > Itaque tempora minus ipsum cum quos recusandae fuga! Velit incidunt architecto 
 > nam amet labore saepe iusto, vero sit eum blanditiis necessitatibus eveniet.
+
+## Emojis
+Look, the moon :new_moon_with_face:
+
+Here’s a family :family_man_man_boy_boy:
+
+Слава Україні!  :ukraine:
 `}
         />
       </section>
