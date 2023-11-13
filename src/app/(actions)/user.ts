@@ -14,7 +14,7 @@ export const updateUserProfile = withAuth(async function (
   _previousState: FormState<UpdateUserProfileInfosInput> | AuthError,
   formData: FormData,
   { session, currentUser }: AuthState
-) {
+): Promise<FormState<UpdateUserProfileInfosInput>> {
   const result = updateUserProfileInfosInputValidator.safeParse(
     Object.fromEntries(formData)
   );

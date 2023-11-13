@@ -58,7 +58,9 @@ export type FormState<
     }
   | {
       type: "error";
-      fieldErrors?: Record<string, string[] | undefined> | null;
+      fieldErrors?: {
+        [K in keyof TFormData]?: string[] | undefined;
+      };
       formErrors?: string[];
       formData: TFormData;
     }
@@ -75,5 +77,7 @@ export type OmitLastItemInArray<T extends any[]> = T extends [
   ? Head
   : any[];
 
-export type FunctionWithoutLastArg<T extends (...args: any[]) => any> =
-  T extends (...args: [...infer P, any]) => infer R ? (...args: P) => R : never;
+export type FunctionWithoutLastArg<Func extends (...args: any[]) => any> =
+  Func extends (...args: [...infer P, any]) => infer R
+    ? (...args: P) => R
+    : never;

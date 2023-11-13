@@ -16,12 +16,14 @@ export type AuthError = {
 
 export type AuthedServerAction<
   Action extends (...args: [...any[], auth: AuthState]) => Promise<any>
-> = FunctionWithoutLastArg<Action>;
+> = (
+  ...args: Parameters<FunctionWithoutLastArg<Action>>
+) => Promise<Awaited<ReturnType<Action>> | AuthError>;
 
 export function withAuth<Action extends (...args: any[]) => Promise<any>>(
   action: Action
 ) {
-  return (async (...args: OmitLastItemInArray<Parameters<Action>>) => {
+  return (async (...args: Parameters<FunctionWithoutLastArg<Action>>) => {
     const session = await getSession();
     const currentUser = await getAuthedUser();
 
