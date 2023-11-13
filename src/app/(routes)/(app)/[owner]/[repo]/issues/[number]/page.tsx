@@ -54,7 +54,7 @@ export default async function IssueDetailPage({
 
       <section className="px-5 flex flex-col gap-5">
         <Markdown content={issue.body} />
-        {/* <Markdown
+        <Markdown
           content={`Some references:
 
 *   Commit: f8083175fe890cbf14f41d0a06e7aa35d4989587
@@ -66,10 +66,6 @@ export default async function IssueDetailPage({
 *   Issue or PR (project): remarkjs/remark#1
 *   Mention: @fredkiss3, @everx80, @woooorm, @crazymeal
 
-## video 
-
-<video src="https://github.com/vercel/next.js/assets/38298743/415037db-31a9-4cde-9b13-4f7c6eb99c3a" aria-label="enregistreement"></video>
-
 Some links:
 
 *   Commit: https://github.com/remarkjs/remark/commit/e1aa9f6c02de18b9459b7d269712bcb50183ce89
@@ -78,8 +74,19 @@ Some links:
 *   Issue or PR: https://gh.fredkiss.dev/Fredkiss3/gh-next/issues/42991
 *   Issue or PR comment: https://github.com/remarkjs/remark-github/issues/3#issue-151160339
 *   Mention: https://github.com/ben-eb
+
+
+## video 
+
+<video src="https://github.com/vercel/next.js/assets/38298743/415037db-31a9-4cde-9b13-4f7c6eb99c3a" aria-label="enregistreement"></video>
+
+## BlockQuotes
+
+> Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+> Itaque tempora minus ipsum cum quos recusandae fuga! Velit incidunt architecto 
+> nam amet labore saepe iusto, vero sit eum blanditiis necessitatibus eveniet.
 `}
-        /> */}
+        />
       </section>
     </div>
   );

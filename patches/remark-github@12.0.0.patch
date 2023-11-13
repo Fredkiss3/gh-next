@@ -1,5 +1,5 @@
 diff --git a/lib/index.d.ts b/lib/index.d.ts
-index 75ee6ed7721c0749eeb5c4ed129ea524adade68f..052da459747ad0a203310f9b6f3de3525debd3c6 100644
+index 75ee6ed7721c0749eeb5c4ed129ea524adade68f..77f0e0c5b80ac6e4ff8cd79f9c90bea2d518a1eb 100644
 --- a/lib/index.d.ts
 +++ b/lib/index.d.ts
 @@ -110,7 +110,7 @@ export type BuildUrlMentionValues = {
@@ -11,7 +11,7 @@ index 75ee6ed7721c0749eeb5c4ed129ea524adade68f..052da459747ad0a203310f9b6f3de352
  /**
   * Configuration.
   */
-@@ -130,6 +130,10 @@ export type Options = {
+@@ -130,6 +130,14 @@ export type Options = {
       * should point to a GitHub repository (such as `'user/project'`)
       */
      repository?: string | null | undefined;
@@ -19,11 +19,15 @@ index 75ee6ed7721c0749eeb5c4ed129ea524adade68f..052da459747ad0a203310f9b6f3de352
 +     * The baseUrl to parse links
 +     */
 +    baseURL?: string | null | undefined; 
++    /**
++     * Whether or not we should replace links with a string content
++     */
++    replaceFullLinks?: boolean | null | undefined; 
  };
  /**
   * Owner and project of repo.
 diff --git a/lib/index.js b/lib/index.js
-index d84795fb97abfdc0ab57529433dd1514a80a7348..b0a4c8566eae4e4a4aee27dfc170b57f562f9871 100644
+index d84795fb97abfdc0ab57529433dd1514a80a7348..a79a4701bbc9901a276b6572a4b6e1c31f8fedb3 100644
 --- a/lib/index.js
 +++ b/lib/index.js
 @@ -1,3 +1,4 @@
@@ -40,16 +44,18 @@ index d84795fb97abfdc0ab57529433dd1514a80a7348..b0a4c8566eae4e4a4aee27dfc170b57f
   *   Info.
   *
   * @typedef Options
-@@ -70,6 +71,8 @@
+@@ -70,6 +71,10 @@
   * @property {string | null | undefined} [repository]
   *   Repository to link against (default: `repository` from `packag.json` in CWD in Node);
   *   should point to a GitHub repository (such as `'user/project'`)
 + * @property {string | null | undefined} [baseURL]
 + *   The baseUrl to parse links
++ * @property {boolean | null | undefined} [replaceFullLinks]
++ *   Whether or not we should replace links with a string content
   *
   * @typedef RepositoryInfo
   *   Owner and project of repo.
-@@ -139,12 +142,12 @@ const userGroup = '[\\da-z][-\\da-z]{0,38}'
+@@ -139,12 +144,12 @@ const userGroup = '[\\da-z][-\\da-z]{0,38}'
  const projectGroup = '(?:\\.git[\\w-]|\\.(?!git)|[\\w-])+'
  const repoGroup = '(' + userGroup + ')\\/(' + projectGroup + ')'
  
@@ -68,16 +74,17 @@ index d84795fb97abfdc0ab57529433dd1514a80a7348..b0a4c8566eae4e4a4aee27dfc170b57f
  
  const repoRegex = new RegExp(
    '(?:^|/(?:repos/)?)' + repoGroup + '(?=\\.git|[\\/#@]|$)',
-@@ -262,7 +265,7 @@ export default function remarkGithub(options) {
+@@ -262,7 +267,8 @@ export default function remarkGithub(options) {
  
      visit(tree, 'link', function (node) {
        /** @type {Readonly<UrlInfo> | undefined} */
 -      const link = parse(node)
 +      const link = parse(node, settings.baseURL ?? 'github.com')
++      const replaceFullLinks = settings.replaceFullLinks ?? true;
  
        if (!link) {
          return
-@@ -293,16 +296,20 @@ export default function remarkGithub(options) {
+@@ -293,19 +299,25 @@ export default function remarkGithub(options) {
            type: 'text',
            value: base + link.reference + comment
          })
@@ -99,8 +106,14 @@ index d84795fb97abfdc0ab57529433dd1514a80a7348..b0a4c8566eae4e4a4aee27dfc170b57f
 +        node.url = buildUrl({type: 'commit', hash: link.reference, project: link.project, user: link.user, fullUrlMatch: true});
        }
  
-       node.children = children
-@@ -487,11 +494,18 @@ function abbr(sha) {
+-      node.children = children
++      if(replaceFullLinks) {
++        node.children = children
++      }
+     })
+ 
+     /**
+@@ -487,11 +499,18 @@ function abbr(sha) {
   * Parse a link and determine whether it links to GitHub.
   *
   * @param {import('mdast').Link} node

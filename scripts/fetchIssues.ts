@@ -563,6 +563,7 @@ async function insertSingleIssue(issue: GithubIssue) {
     .use(remarkGithub, {
       repository: `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`,
       mentionStrong: false,
+      replaceFullLinks: false,
       baseURL: "github.com",
       buildUrl: (values) => {
         switch (values.type) {
@@ -885,6 +886,7 @@ async function insertSingleIssue(issue: GithubIssue) {
           .use(remarkGithub, {
             repository: `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`,
             mentionStrong: false,
+            replaceFullLinks: false,
             baseURL: "github.com",
             buildUrl: (values) => {
               switch (values.type) {
