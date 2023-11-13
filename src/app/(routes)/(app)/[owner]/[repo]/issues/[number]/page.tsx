@@ -54,46 +54,6 @@ export default async function IssueDetailPage({
 
       <section className="px-5 flex flex-col gap-5">
         <Markdown content={issue.body} />
-        <Markdown
-          content={`Some references:
-
-*   Commit: f8083175fe890cbf14f41d0a06e7aa35d4989587
-*   Commit (fork): foo@f8083175fe890cbf14f41d0a06e7aa35d4989587
-*   Commit (repo): remarkjs/remark@e1aa9f6c02de18b9459b7d269712bcb50183ce89
-*   Issue or PR (\`#\`): #48748
-*   Issue or PR (\`GH-\`): GH-42991
-*   Issue or PR (fork): foo#1
-*   Issue or PR (project): remarkjs/remark#1
-*   Mention: @fredkiss3, @everx80, @woooorm, @crazymeal
-
-Some links:
-
-*   Commit: https://github.com/remarkjs/remark/commit/e1aa9f6c02de18b9459b7d269712bcb50183ce89
-*   Commit comment: https://github.com/remarkjs/remark/commit/ac63bc3abacf14cf08ca5e2d8f1f8e88a7b9015c#commitcomment-16372693
-*   Issue or PR: https://github.com/remarkjs/remark/issues/182
-*   Issue or PR: https://gh.fredkiss.dev/Fredkiss3/gh-next/issues/42991
-*   Issue or PR comment: https://github.com/remarkjs/remark-github/issues/3#issue-151160339
-*   Mention: https://github.com/ben-eb
-
-
-## video 
-
-<video src="https://github.com/vercel/next.js/assets/38298743/415037db-31a9-4cde-9b13-4f7c6eb99c3a" aria-label="enregistreement"></video>
-
-## BlockQuotes
-
-> Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-> Itaque tempora minus ipsum cum quos recusandae fuga! Velit incidunt architecto 
-> nam amet labore saepe iusto, vero sit eum blanditiis necessitatibus eveniet.
-
-## Emojis
-Look, the moon :new_moon_with_face:
-
-Here’s a family :family_man_man_boy_boy:
-
-Слава Україні!  :ukraine:
-`}
-        />
       </section>
     </div>
   );
