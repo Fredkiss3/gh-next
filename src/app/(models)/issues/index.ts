@@ -10,6 +10,7 @@ import { UN_MATCHABLE_USERNAME } from "~/lib/shared/constants";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 import { repositories } from "~/lib/server/db/schema/repository.sql";
 import { alias } from "drizzle-orm/pg-core";
+import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
 
 export async function getOpenIssuesCount() {
   const fn = nextCache(
@@ -150,8 +151,9 @@ export async function getMultipleIssuesPerRepositories(
 
   const owner = alias(users, "owner");
 
-  return await db
+  const issueList = await db
     .select({
+      id: issues.id,
       status: issues.status,
       title: issues.title,
       number: issues.number,
@@ -189,6 +191,33 @@ export async function getMultipleIssuesPerRepositories(
       eq(issues.id, issueWhereUserCommentedSubQuery.issue_id)
     )
     .where(sql`${issues.number} in ${payload.map((p) => Number(p.no))}`);
+
+  const id_list = issueList.map((issue) => issue.id);
+  // get labels
+  const labelList =
+    id_list.length === 0
+      ? []
+      : await db
+          .selectDistinct({
+            issue_id: labelToIssues.issue_id,
+            id: labels.id,
+            color: labels.color,
+            name: labels.name,
+            description: labels.description
+          })
+          .from(labels)
+          .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
+          .where(sql`${labelToIssues.issue_id} in ${id_list}`);
+  // Group issue by labels & assignees
+  const issueResult = issueList.map((issue) => {
+    const labelsForIssue = labelList.filter(
+      (label) => label.issue_id === issue.id
+    );
+
+    return { ...issue, labels: labelsForIssue };
+  });
+
+  return issueResult;
 }
 
 export type IssueQueryResult = Awaited<

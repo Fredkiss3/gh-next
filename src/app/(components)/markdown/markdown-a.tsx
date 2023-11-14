@@ -100,7 +100,7 @@ export async function MarkdownA({
             title={issueFound.title}
             excerpt={issueFound.excerpt}
             createdAt={issueFound.createdAt}
-            labels={[]}
+            labels={issueFound.labels}
             isAuthor={authedUser?.id === issueFound.author.id}
             isMentioned={authedUser?.username === issueFound.mentioned_user}
             hasCommented={authedUser?.username === issueFound.commented_user}
