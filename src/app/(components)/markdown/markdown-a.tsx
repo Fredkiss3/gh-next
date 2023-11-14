@@ -11,6 +11,7 @@ import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-conte
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
+import { Avatar } from "~/app/(components)/avatar";
 
 // utils
 import { env } from "~/env";
@@ -99,7 +100,7 @@ export async function MarkdownA({
             title={issueFound.title}
             excerpt={issueFound.excerpt}
             createdAt={issueFound.createdAt}
-            labels={[]}
+            labels={issueFound.labels}
             isAuthor={authedUser?.id === issueFound.author.id}
             isMentioned={authedUser?.username === issueFound.mentioned_user}
             hasCommented={authedUser?.username === issueFound.commented_user}
@@ -166,14 +167,19 @@ export async function MarkdownA({
           <Link
             href={`/u/${userFound.username}`}
             className={clsx(
-              "inline-flex gap-1 items-baseline font-bold underline",
+              "inline-flex gap-1 font-bold underline items-center",
               {
                 "bg-severe bg-opacity-30 rounded-sm px-0.5 text-yellow-100":
                   authedUser?.id === userFound.id
               }
             )}
           >
-            @{userFound.username}
+            <Avatar
+              src={userFound.avatar_url}
+              username={userFound.username}
+              size="x-small"
+            />
+            <span>@{userFound.username}</span>
           </Link>
         </ReactAriaLink>
       </HoverCard>

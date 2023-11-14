@@ -5,7 +5,7 @@ export type AvatarProps = {
   username: string;
   src: string;
   className?: string;
-  size?: "small" | "medium" | "large";
+  size?: "x-small" | "small" | "medium" | "large";
 };
 
 export function Avatar({
@@ -23,6 +23,7 @@ export function Avatar({
       className={clsx(
         "flex-shrink-0 rounded-full bg-grey/60",
         {
+          "h-4 w-4": size === "x-small",
           "h-6 w-6": size === "small",
           "h-16 w-16": size === "large",
           "h-10 w-10": size === "medium"

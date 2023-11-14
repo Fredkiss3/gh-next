@@ -54,6 +54,28 @@ export default async function IssueDetailPage({
 
       <section className="px-5 flex flex-col gap-5">
         <Markdown content={issue.body} />
+        {/* <Markdown
+          content={`
+## Some references:
+
+*   Commit: f8083175fe890cbf14f41d0a06e7aa35d4989587
+*   Commit (fork): foo@f8083175fe890cbf14f41d0a06e7aa35d4989587
+*   Commit (repo): remarkjs/remark@e1aa9f6c02de18b9459b7d269712bcb50183ce89
+*   Issue or PR (\`#\`): #48748
+*   Issue or PR (\`GH-\`): GH-42991
+*   Issue or PR (fork): foo#1
+*   Issue or PR (project): remarkjs/remark#1
+*   Mention: @fredkiss3, @BeardedBear, @alvarlagerlof, @twidi
+*   Issue or PR (link) : https://gh.fredkiss.dev/Fredkiss3/gh-next/issues/42991
+- feat: support excluded paths by @fredkiss3 in #25
+- fix(multiple-dependency-versions): increase versions padding by @fredkiss3 in #26
+- feat: new non-existant-packages rule by @fredkiss3 in #27
+- fix(types-in-dependencies): autofix when package doesn't have devDependencies by @fredkiss3 in #28
+- fix(multiple-dependency-versions): improve formatting for single packages by @fredkiss3 in #29
+- feat: autofix non-existant-packages by @fredkiss3 in #30
+- feat: autofix packages-without-package-json by @fredkiss3 in #31
+`}
+        /> */}
       </section>
     </div>
   );
