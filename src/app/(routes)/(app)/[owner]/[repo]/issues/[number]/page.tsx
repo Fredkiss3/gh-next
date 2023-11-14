@@ -64,7 +64,7 @@ export default async function IssueDetailPage({
 *   Issue or PR (\`GH-\`): GH-42991
 *   Issue or PR (fork): foo#1
 *   Issue or PR (project): remarkjs/remark#1
-*   Mention: @fredkiss3, @karlhorky, @alvarlagerlof, @crazymeal
+*   Mention: @fredkiss3, @BeardedBear, @alvarlagerlof, @twidi
 *   Issue or PR (link) : https://gh.fredkiss.dev/Fredkiss3/gh-next/issues/42991
 - feat: support excluded paths by @fredkiss3 in #25
 - fix(multiple-dependency-versions): increase versions padding by @fredkiss3 in #26
