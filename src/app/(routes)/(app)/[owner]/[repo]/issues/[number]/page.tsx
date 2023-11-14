@@ -53,7 +53,8 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        <Markdown
+        <Markdown content={issue.body} />
+        {/* <Markdown
           content={`
 ## Some references:
 
@@ -74,7 +75,7 @@ export default async function IssueDetailPage({
 - feat: autofix non-existant-packages by @fredkiss3 in #30
 - feat: autofix packages-without-package-json by @fredkiss3 in #31
 `}
-        />
+        /> */}
       </section>
     </div>
   );
