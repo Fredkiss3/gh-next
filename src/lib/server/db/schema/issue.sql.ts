@@ -47,7 +47,7 @@ export const issues = pgTable(
   {
     id: serial("id").primaryKey(),
     number: integer("number").notNull(),
-    title: varchar("title", { length: 255 }).notNull(),
+    title: text("title").notNull(),
     body: text("body").default("").notNull(),
     created_at: timestamp("created_at").defaultNow().notNull(),
     updated_at: timestamp("updated_at").defaultNow().notNull(),
