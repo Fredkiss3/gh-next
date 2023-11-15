@@ -7,7 +7,7 @@ import {
   SESSION_COOKIE_KEY,
   LOGGED_OUT_SESSION_TTL
 } from "~/lib/shared/constants";
-import { env } from "~/env";
+import { _envObject as env } from "~/env-config.mjs";
 import { nanoid } from "nanoid";
 
 import { users } from "~/lib/server/db/schema/user.sql";

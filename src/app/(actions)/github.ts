@@ -8,6 +8,7 @@ import {
 } from "~/lib/shared/constants";
 import { nextCache } from "~/lib/server/rsc-utils.server";
 import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { cache } from "react";
 
 type RepositoryStatsResponse = {
   repository: {
@@ -56,7 +57,7 @@ type StargazersResponse = {
  * this data is refetched at most every 30 minutes
  * @returns
  */
-export const getGithubRepoData = async function () {
+export const getGithubRepoData = cache(async function () {
   const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
   const fn = nextCache(
     async () => {
@@ -191,4 +192,4 @@ export const getGithubRepoData = async function () {
   );
 
   return fn();
-};
+});

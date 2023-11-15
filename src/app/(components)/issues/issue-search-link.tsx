@@ -8,7 +8,7 @@ import {
   formatSearchFiltersToString,
   parseIssueFilterTokens
 } from "~/lib/shared/utils.shared";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 
 // types
@@ -29,6 +29,10 @@ export const IssueSearchLink = React.forwardRef<
   { filters, conserveCurrentFilters = false, ...props },
   ref
 ) {
+  const params = useParams() as {
+    user: string;
+    repository: string;
+  };
   const searchParams = useSearchParams();
   const allFilters = parseIssueFilterTokens(
     searchParams.get("q") ?? DEFAULT_ISSUE_SEARCH_QUERY
@@ -49,7 +53,7 @@ export const IssueSearchLink = React.forwardRef<
 
   const sp = new URLSearchParams();
   sp.append("q", searchStr);
-  const href = `/issues?` + sp.toString();
+  const href = `/${params.user}/${params.repository}/issues?` + sp.toString();
 
   return <Link {...props} ref={ref} href={href} prefetch={false} />;
 });

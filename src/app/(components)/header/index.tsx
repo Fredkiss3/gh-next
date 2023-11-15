@@ -1,9 +1,9 @@
+import "server-only";
 import * as React from "react";
 
 // components
 import {
   CommandPaletteIcon,
-  GitPullRequestIcon,
   InboxIcon,
   IssueOpenedIcon,
   MarkGithubIcon,
@@ -11,28 +11,27 @@ import {
   SearchIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { Input } from "./input";
-import { Button } from "./button";
-import { HeaderUnderlineNavbar } from "./underline-navbar";
+import { Input } from "~/app/(components)/input";
+import { Button } from "~/app/(components)/button";
+
 import {
   UserDropdown,
   UserDropdownSkeleton
-} from "./user-dropdown/user-dropdown.server";
+} from "~/app/(components)/user-dropdown/user-dropdown.server";
 
 // utils
 import { getAuthedUser, getSession } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared/utils.shared";
-import { PageTitle } from "./page-title";
-import { getOpenIssuesCount } from "~/app/(models)/issues";
 
 // types
 export type HeaderProps = {
   hideRepoNavbar?: boolean;
+  children?: React.ReactNode;
+  pageTitle?: React.ReactNode;
 };
 
-export async function Header({ hideRepoNavbar = false }: HeaderProps) {
+export async function Header({ children, pageTitle }: HeaderProps) {
   const { user } = await getSession();
-  const noOfOpennedIssues = await getOpenIssuesCount();
 
   if (user) {
     // preload the user so that it is accessed faster in <UserDropdown />
@@ -40,11 +39,7 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
   }
 
   return (
-    <header
-      className={clsx({
-        "border-b border-neutral": hideRepoNavbar
-      })}
-    >
+    <header className={clsx("bg-header border-b border-neutral")}>
       <div
         className={clsx(
           "z-5 relative flex h-16 items-center justify-between bg-header px-5 py-4",
@@ -56,7 +51,7 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
             <MarkGithubIcon className="h-10 w-10" />
           </Link>
 
-          <PageTitle />
+          {pageTitle}
         </div>
 
         <nav className="flex h-full items-center gap-2">
@@ -127,10 +122,7 @@ export async function Header({ hideRepoNavbar = false }: HeaderProps) {
         </nav>
       </div>
 
-      <HeaderUnderlineNavbar
-        className="bg-header"
-        noOfOpennedIssues={noOfOpennedIssues}
-      />
+      {children}
     </header>
   );
 }

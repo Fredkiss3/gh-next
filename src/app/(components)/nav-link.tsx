@@ -13,16 +13,18 @@ import type { LinkProps } from "next/link";
 
 type NavLinkProps = LinkProps & {
   children: React.ReactNode;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ReactNode;
+  isRootLink?: boolean;
 };
 
 export function NavLink({
   href,
   children,
-  icon: Icon,
+  icon,
+  isRootLink,
   ...props
 }: NavLinkProps) {
-  const isActive = useActiveLink(href.toString());
+  const isActive = useActiveLink(href.toString(), isRootLink);
 
   return (
     <Link
@@ -41,7 +43,8 @@ export function NavLink({
           "group-hover:bg-neutral/50 group-focus:ring-2 ring-accent"
         )}
       >
-        <Icon className="h-4 w-4 text-grey" />
+        {icon}
+        {/* <Icon className="h-4 w-4 text-grey" /> */}
         {children}
       </div>
     </Link>

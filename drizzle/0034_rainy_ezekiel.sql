@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_repositories" ADD COLUMN "is_public" boolean DEFAULT true;
