@@ -3,6 +3,7 @@ import "server-only";
 import { z } from "zod";
 import { createSelectSchema } from "drizzle-zod";
 import { issues } from "~/lib/server/db/schema/issue.sql";
+import { publicUserOutputValidator } from "./public-user-output-validator";
 
 export const issueSearchListOutputValidator = z.object({
   noOfIssuesOpen: z.number(),
@@ -28,14 +29,7 @@ export const issueSearchListOutputValidator = z.object({
             avatar_url: z.string().url()
           })
         ),
-        author: z.object({
-          id: z.number().nullable(),
-          username: z.string(),
-          avatar_url: z.string(),
-          bio: z.string().nullable(),
-          location: z.string().nullable(),
-          name: z.string().nullable()
-        }),
+        author: publicUserOutputValidator,
         no_of_comments: z.number(),
         created_at: z.date(),
         status_updated_at: z.date(),

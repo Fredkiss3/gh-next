@@ -1,3 +1,4 @@
+import "server-only";
 import * as React from "react";
 // components
 import {
@@ -15,13 +16,13 @@ import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-conte
 import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
 import { Tooltip } from "~/app/(components)/tooltip";
 import { IssueSearchLink } from "./issue-search-link";
+import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 
 // utils
 import { clsx, formatDate } from "~/lib/shared/utils.shared";
 
 // types
 import type { IssueSearchItem } from "~/app/(models)/dto/issue-search-output-validator";
-import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 
 export const emojiSortMap = {
   "reactions-+1-desc": "👍",
@@ -104,7 +105,7 @@ export function IssueRow({
       )}
 
       <Link
-        href={`/issues/${number}`}
+        href={`/${repository_owner}/${repository_name}/issues/${number}`}
         className="after:absolute after:inset-0 sm:hidden"
       >
         <span className="sr-only">Link to issue #{number}</span>
@@ -242,7 +243,7 @@ export function IssueRow({
         <IssueRowAvatarStack users={assigned_to} />
         {no_of_comments > 0 && (
           <Link
-            href={`/issues/${number}`}
+            href={`/${repository_owner}/${repository_name}/issues/${number}`}
             className={clsx(
               "text-grey hover:text-accent flex items-center gap-1",
               "transition duration-150",
@@ -256,7 +257,7 @@ export function IssueRow({
 
         {emojiSort && (
           <Link
-            href={`/issues/${number}`}
+            href={`/${repository_owner}/${repository_name}/issues/${number}`}
             className={clsx(
               "text-grey hover:text-accent flex items-center gap-1",
               "transition duration-150",

@@ -165,7 +165,7 @@ export async function MarkdownA({
       >
         <ReactAriaLink>
           <Link
-            href={`/u/${userFound.username}`}
+            href={`/${userFound.username}`}
             className={clsx(
               "inline-flex gap-1 font-bold underline items-center",
               {

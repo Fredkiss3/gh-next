@@ -1,13 +1,16 @@
 import { usePathname } from "next/navigation";
 import { linkWithSlash } from "~/lib/shared/utils.shared";
 
-export function useActiveLink(href: string) {
+export function useActiveLink(href: string, isRoot?: boolean) {
   const path = usePathname();
 
   // treat `/` as special or else it would always be considered active
   // as every path starts with `/`
   const url = new URL(href, "http://localhost");
-  if (url.pathname === "/" && url.pathname !== path) {
+  if (
+    (url.pathname === "/" || isRoot) &&
+    linkWithSlash(url.pathname) !== linkWithSlash(path)
+  ) {
     return false;
   }
 

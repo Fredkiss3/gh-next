@@ -124,15 +124,14 @@ export const getAuthedUser = cache(async function getUser() {
   const user = await getSession().then((session) => session.user);
 
   if (user) {
-    const dbUsers = await getUserById(user.id);
+    const dbUser = await getUserById(user.id);
 
-    if (dbUsers !== null && dbUsers.length > 0) {
-      const user = dbUsers[0];
+    if (dbUser !== null) {
       taintObjectReference(
         "Do not pass the whole user object to the client",
-        user
+        dbUser
       );
-      return user;
+      return dbUser;
     }
   }
 

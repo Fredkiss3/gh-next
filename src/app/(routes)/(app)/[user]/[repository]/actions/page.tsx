@@ -3,27 +3,19 @@ import { HomeIcon } from "@primer/octicons-react";
 import { Button } from "~/app/(components)/button";
 
 // utils
-import { notFound } from "next/navigation";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
+import type { PageProps } from "~/lib/types";
 
 export const metadata: Metadata = {
   title: "Not implemented"
 };
 
-export default function Page({
-  params: { "not-implemented": path }
-}: {
-  params: { "not-implemented": string };
-}) {
-  const validPaths = ["pulls", "security", "pulse", "discussions", "actions"];
-
-  if (!validPaths.includes(path)) {
-    notFound();
-  }
-
+export default function Page(
+  props: PageProps<{ user: string; repository: string }>
+) {
   return (
     <section
       className={clsx(
@@ -32,11 +24,11 @@ export default function Page({
         "md:px-8"
       )}
     >
-      <h1 className="text-4xl font-bold">This page has not been implemented</h1>
+      <h1 className="text-4xl font-bold">
+        This page has not been implemented yet
+      </h1>
 
-      <h2 className="text-2xl">
-        For the sake of this demo, we have not implemented this feature.
-      </h2>
+      <h2 className="text-2xl">Come back later when we implement this.</h2>
 
       <Button
         href="/"

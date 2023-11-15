@@ -8,10 +8,10 @@ import Link from "next/link";
 import { clsx, getExcerpt } from "~/lib/shared/utils.shared";
 
 // types
-import type { User } from "~/lib/server/db/schema/user.sql";
+import type { PublicUser } from "~/app/(models)/dto/public-user-output-validator";
 export type UserHoverCardContentsProps = {
   className?: string;
-} & Pick<User, "name" | "username" | "bio" | "location" | "avatar_url">;
+} & Omit<PublicUser, "id">;
 
 export function UserHoverCardContents({
   name,
@@ -29,7 +29,7 @@ export function UserHoverCardContents({
       )}
     >
       <Avatar size="medium" src={avatar_url} username={username} />
-      <Link href={`/u/${username}`} className="group/hovercard-link">
+      <Link href={`/${username}`} className="group/hovercard-link">
         <span className="text-lg font-semibold group-hover/hovercard-link:text-accent">
           {username}
         </span>

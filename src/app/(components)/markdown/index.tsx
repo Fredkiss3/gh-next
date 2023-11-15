@@ -131,7 +131,7 @@ async function processMarkdownContentAndGetReferences(
             }/issues/${values.no}?${searchParams.toString()}`;
           case "mention":
             references.push(values);
-            return `${env.NEXT_PUBLIC_VERCEL_URL}/u/${
+            return `${env.NEXT_PUBLIC_VERCEL_URL}/${
               values.user
             }?${searchParams.toString()}`;
           default:
@@ -304,22 +304,36 @@ async function getComponents({
         </p>
       );
     },
-    table: (props) => (
-      <table
-        {...props}
-        className="block w-max max-w-full table-auto border-collapse overflow-auto border border-neutral"
-      />
-    ),
-    th: (props) => (
-      <th
-        {...props}
-        className="border border-neutral px-5 py-2 text-left text-lg font-semibold"
-      />
-    ),
-    tr: (props) => <tr {...props} className="even:bg-subtle" />,
-    td: (props) => (
-      <td {...props} className="border border-neutral px-5 py-2" />
-    ),
+    table: (props) => {
+      const key = ++noOfKeys;
+      return (
+        <table
+          {...props}
+          key={key}
+          className="block w-max max-w-full table-auto border-collapse overflow-auto border border-neutral"
+        />
+      );
+    },
+    th: (props) => {
+      const key = ++noOfKeys;
+      return (
+        <th
+          {...props}
+          key={key}
+          className="border border-neutral px-5 py-2 text-left text-lg font-semibold"
+        />
+      );
+    },
+    tr: (props) => {
+      const key = ++noOfKeys;
+      return <tr {...props} key={key} className="even:bg-subtle" />;
+    },
+    td: (props) => {
+      const key = ++noOfKeys;
+      return (
+        <td {...props} key={key} className="border border-neutral px-5 py-2" />
+      );
+    },
     li: (props) => {
       const key = ++noOfKeys;
       return (
@@ -338,11 +352,11 @@ async function getComponents({
       const key = ++noOfKeys;
       return (
         <MarkdownA
-          key={key}
           currentRepository={currentRepository}
           resolvedReferences={resolvedReferences}
           authedUser={authedUser}
           {...props}
+          key={key}
         />
       );
     },

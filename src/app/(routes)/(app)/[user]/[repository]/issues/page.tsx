@@ -24,12 +24,19 @@ export const metadata: Metadata = {
 };
 
 export default function IssuesListPage({
-  searchParams
-}: PageProps<{}, { q: string; page: string }>) {
+  searchParams,
+  params
+}: PageProps<
+  {
+    user: string;
+    repository: string;
+  },
+  { q: string; page: string }
+>) {
   return (
     <ReactQueryProvider>
       <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
-        <IssuesListHeader />
+        <IssuesListHeader {...params} />
         <ClearSearchButtonSection />
         <IssuesListBody params={searchParams} />
       </div>
@@ -37,7 +44,7 @@ export default function IssuesListPage({
   );
 }
 
-async function IssuesListHeader() {
+async function IssuesListHeader(props: { user: string; repository: string }) {
   const isAuthed = (await getAuthedUser()) !== null;
   const labelCount = await getLabelsCount();
   return (

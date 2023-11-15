@@ -20,7 +20,8 @@ export const repositories = pgTable(
     creator_id: integer("creator_id").references(() => users.id, {
       onDelete: "cascade"
     }),
-    is_archived: boolean("is_archived").default(false)
+    is_archived: boolean("is_archived").default(false),
+    is_public: boolean("is_public").default(true)
   },
   (table) => ({
     nameIdx: index("name_idx").on(table.name)

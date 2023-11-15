@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     default:
       "Fredkiss3/gh-next · A minimal Github clone built on nextjs app router"
   },
-  description: "This is an issue management app"
+  description: "A clone of github"
 };
 
 export const revalidate = 0;
