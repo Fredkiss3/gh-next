@@ -1038,10 +1038,11 @@ async function insertSingleIssue(issue: GithubIssue) {
       eventsToInsert.push(eventPayload);
     }
 
-    await db.insert(issueEvents).values(eventsToInsert).returning({
-      id: issueEvents.id
-    });
-
+    if (eventsToInsert.length > 0) {
+      await db.insert(issueEvents).values(eventsToInsert).returning({
+        id: issueEvents.id
+      });
+    }
     console.log(
       `\ninserted \x1b[34m${eventsToInsert.length} events\x1b[37m ✅`
     );
