@@ -17,18 +17,14 @@ import {
   IN_FILTERS,
   UN_MATCHABLE_USERNAME
 } from "~/lib/shared/constants";
-import {
-  ReactionTypes,
-  reactions,
-  reactionsCountPerIssue
-} from "~/lib/server/db/schema/reaction.sql";
+import { reactionsCountPerIssue } from "~/lib/server/db/schema/reaction.sql";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 import { alias } from "drizzle-orm/pg-core";
+import { repositories } from "~/lib/server/db/schema/repository.sql";
 
 import type { User } from "~/lib/server/db/schema/user.sql";
 import type { SQL } from "drizzle-orm";
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
-import { repositories } from "~/lib/server/db/schema/repository.sql";
 
 /**
  * Main function to search for issues

@@ -9,8 +9,8 @@ import {
   index,
   pgMaterializedView
 } from "drizzle-orm/pg-core";
-import { eq, relations, sql } from "drizzle-orm";
-import { pgTable, tsVector } from "./index.sql";
+import { relations, sql } from "drizzle-orm";
+import { pgTable } from "./index.sql";
 
 import { users } from "./user.sql";
 import { issues } from "./issue.sql";
