@@ -1,4 +1,4 @@
-import { integer, serial, unique, varchar } from "drizzle-orm/pg-core";
+import { index, integer, serial, unique, varchar } from "drizzle-orm/pg-core";
 import { pgTable } from "./index.sql";
 import { issues } from "./issue.sql";
 import { comments } from "./comment.sql";
@@ -24,6 +24,8 @@ export const issueUserMentions = pgTable(
     })
   },
   (table) => ({
+    username_idx: index("ment_username_idx").on(table.username),
+    issue_idx: index("ment_issue_idx").on(table.issue_id),
     unique_idx: unique().on(table.username, table.issue_id, table.comment_id)
   })
 );

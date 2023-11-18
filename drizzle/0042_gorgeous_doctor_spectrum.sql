@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "rakt_type_idx" ON "gh_next_reactions" ("author_id");

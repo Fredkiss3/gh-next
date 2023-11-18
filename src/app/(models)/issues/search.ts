@@ -1,7 +1,10 @@
 import "server-only";
 import { sql, eq, ilike, or, and, not, desc, asc } from "drizzle-orm";
 import { db } from "~/lib/server/db/index.server";
-import { comments } from "~/lib/server/db/schema/comment.sql";
+import {
+  comments,
+  commentsCountPerIssue
+} from "~/lib/server/db/schema/comment.sql";
 import {
   issues,
   issueToAssignees,
@@ -14,7 +17,11 @@ import {
   IN_FILTERS,
   UN_MATCHABLE_USERNAME
 } from "~/lib/shared/constants";
-import { ReactionTypes, reactions } from "~/lib/server/db/schema/reaction.sql";
+import {
+  ReactionTypes,
+  reactions,
+  reactionsCountPerIssue
+} from "~/lib/server/db/schema/reaction.sql";
 import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -34,57 +41,6 @@ export async function searchIssues(
   currentPage: number,
   currentUser?: User | null
 ) {
-  const commentsCountPerIssueSubQuery = db
-    .select({
-      issue_id: comments.issue_id,
-      comment_count: sql<number>`count(${comments.id})`
-        .mapWith(Number)
-        .as("comment_count")
-    })
-    .from(comments)
-    .groupBy(comments.issue_id)
-    .as("comments_count_per_issue");
-
-  const reactionCountQuery = db
-    .select({
-      issue_id: reactions.issue_id,
-      plus_one_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.PLUS_ONE} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("plus_one_count"),
-      minus_one_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.MINUS_ONE} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("minus_one_count"),
-      confused_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.CONFUSED} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("confused_count"),
-      eyes_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.EYES} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("eyes_count"),
-      heart_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.HEART} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("heart_count"),
-      hooray_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.HOORAY} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("hooray_count"),
-      laugh_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.LAUGH} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("laugh_count"),
-      rocket_count:
-        sql<number>`COALESCE(SUM(CASE WHEN ${reactions.type} = ${ReactionTypes.ROCKET} THEN 1 ELSE 0 END), 0)`
-          .mapWith(Number)
-          .as("rocket_count")
-    })
-    .from(reactions)
-    .groupBy(reactions.issue_id)
-    .as("reaction_count_per_issue");
-
   const issueWhereUserCommentedSubQuery = db
     .selectDistinct({
       issue_id: comments.issue_id,
@@ -92,7 +48,7 @@ export async function searchIssues(
     })
     .from(comments)
     .where(
-      ilike(
+      eq(
         comments.author_username,
         currentUser?.username ?? UN_MATCHABLE_USERNAME
       )
@@ -119,17 +75,17 @@ export async function searchIssues(
         location: users.location
       },
       no_of_comments:
-        sql<number>`COALESCE(${commentsCountPerIssueSubQuery.comment_count}, 0)`
+        sql<number>`COALESCE(${commentsCountPerIssue.comment_count}, 0)`
           .mapWith(Number)
           .as("comment_count"),
-      plus_one_count: reactionCountQuery.plus_one_count,
-      minus_one_count: reactionCountQuery.minus_one_count,
-      confused_count: reactionCountQuery.confused_count,
-      eyes_count: reactionCountQuery.eyes_count,
-      heart_count: reactionCountQuery.heart_count,
-      hooray_count: reactionCountQuery.hooray_count,
-      laugh_count: reactionCountQuery.laugh_count,
-      rocket_count: reactionCountQuery.rocket_count,
+      plus_one_count: reactionsCountPerIssue.plus_one_count,
+      minus_one_count: reactionsCountPerIssue.minus_one_count,
+      confused_count: reactionsCountPerIssue.confused_count,
+      eyes_count: reactionsCountPerIssue.eyes_count,
+      heart_count: reactionsCountPerIssue.heart_count,
+      hooray_count: reactionsCountPerIssue.hooray_count,
+      laugh_count: reactionsCountPerIssue.laugh_count,
+      rocket_count: reactionsCountPerIssue.rocket_count,
       mentioned_user: issueUserMentions.username,
       commented_user: issueWhereUserCommentedSubQuery.author_username,
       repository_name: repositories.name,
@@ -141,15 +97,18 @@ export async function searchIssues(
     .leftJoin(users, eq(users.id, issues.author_id))
     .leftJoin(comments, eq(comments.issue_id, issues.id))
     .leftJoin(
-      commentsCountPerIssueSubQuery,
-      eq(commentsCountPerIssueSubQuery.issue_id, issues.id)
+      commentsCountPerIssue,
+      eq(commentsCountPerIssue.issue_id, issues.id)
     )
-    .leftJoin(reactionCountQuery, eq(reactionCountQuery.issue_id, issues.id))
+    .leftJoin(
+      reactionsCountPerIssue,
+      eq(reactionsCountPerIssue.issue_id, issues.id)
+    )
     .leftJoin(
       issueUserMentions,
       and(
         eq(issues.id, issueUserMentions.issue_id),
-        ilike(
+        eq(
           issueUserMentions.username,
           currentUser?.username ?? UN_MATCHABLE_USERNAME
         )
@@ -173,34 +132,34 @@ export async function searchIssues(
       orderBy = desc(issues.updated_at);
       break;
     case "comments-asc":
-      orderBy = asc(commentsCountPerIssueSubQuery.comment_count);
+      orderBy = asc(commentsCountPerIssue.comment_count);
       break;
     case "comments-desc":
-      orderBy = desc(commentsCountPerIssueSubQuery.comment_count);
+      orderBy = desc(commentsCountPerIssue.comment_count);
       break;
     case "reactions-+1-desc":
-      orderBy = sql`${reactionCountQuery.plus_one_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.plus_one_count} DESC NULLS LAST`;
       break;
     case "reactions--1-desc":
-      orderBy = sql`${reactionCountQuery.minus_one_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.minus_one_count} DESC NULLS LAST`;
       break;
     case "reactions-eyes-desc":
-      orderBy = sql`${reactionCountQuery.eyes_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.eyes_count} DESC NULLS LAST`;
       break;
     case "reactions-heart-desc":
-      orderBy = sql`${reactionCountQuery.heart_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.heart_count} DESC NULLS LAST`;
       break;
     case "reactions-rocket-desc":
-      orderBy = sql`${reactionCountQuery.rocket_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.rocket_count} DESC NULLS LAST`;
       break;
     case "reactions-tada-desc":
-      orderBy = sql`${reactionCountQuery.hooray_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.hooray_count} DESC NULLS LAST`;
       break;
     case "reactions-thinking_face-desc":
-      orderBy = sql`${reactionCountQuery.confused_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.confused_count} DESC NULLS LAST`;
       break;
     case "reactions-smile-desc":
-      orderBy = sql`${reactionCountQuery.laugh_count} DESC NULLS LAST`;
+      orderBy = sql`${reactionsCountPerIssue.laugh_count} DESC NULLS LAST`;
       break;
     default:
       orderBy = sql`${issues.created_at} DESC NULLS LAST`;
@@ -214,11 +173,15 @@ export async function searchIssues(
     });
   }
 
+  const date = Date.now();
+  console.time(`\n[${date}] Select Issues`);
   const issueList = await issueQuery
     .limit(MAX_ITEMS_PER_PAGE)
     .offset((currentPage - 1) * MAX_ITEMS_PER_PAGE);
+  console.timeEnd(`\n[${date}] Select Issues`);
   const id_list = issueList.map((issue) => issue.id);
 
+  console.time(`\n[${date}] Select labels`);
   // get labels
   const labelList =
     id_list.length === 0
@@ -234,7 +197,9 @@ export async function searchIssues(
           .from(labels)
           .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
           .where(sql`${labelToIssues.issue_id} in ${id_list}`);
+  console.timeEnd(`\n[${date}] Select labels`);
 
+  console.time(`\n[${date}] Select assignees`);
   // get assignees
   const assigneeList =
     id_list.length === 0
@@ -247,6 +212,7 @@ export async function searchIssues(
           })
           .from(issueToAssignees)
           .where(sql`${issueToAssignees.issue_id} in ${id_list}`);
+  console.timeEnd(`\n[${date}] Select assignees`);
 
   // Group issue by labels & assignees
   const issueResult = issueList.map((issue) => {
@@ -528,7 +494,7 @@ function issueSearchfiltersToSQLConditions(
         })
         .from(issueUserMentions)
         .rightJoin(issues, eq(issueUserMentions.issue_id, issues.id))
-        .where(ilike(issueUserMentions.username, mentionnedUser))
+        .where(eq(issueUserMentions.username, mentionnedUser))
         .as("mentionSubQuery");
       const mentionSubQueryOnlyID = db
         .select({ issue_id: mentionSubQuery.issue_id })
@@ -558,7 +524,7 @@ function issueSearchfiltersToSQLConditions(
         })
         .from(issueUserMentions)
         .rightJoin(issues, eq(issueUserMentions.issue_id, issues.id))
-        .where(ilike(issueUserMentions.username, mentionnedUser))
+        .where(eq(issueUserMentions.username, mentionnedUser))
         .as("mentionSubQuery");
 
       const mentionSubQueryOnlyID = db

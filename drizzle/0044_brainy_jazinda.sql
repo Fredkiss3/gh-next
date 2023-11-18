@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "ment_issue_idx" ON "gh_next_issue_user_mentions" ("issue_id");

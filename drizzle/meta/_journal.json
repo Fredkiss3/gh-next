@@ -246,6 +246,104 @@
       "when": 1700017366148,
       "tag": "0034_rainy_ezekiel",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "5",
+      "when": 1700323931026,
+      "tag": "0035_deep_mephisto",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "5",
+      "when": 1700324463027,
+      "tag": "0036_careful_freak",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "5",
+      "when": 1700324570464,
+      "tag": "0037_cynical_peter_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "5",
+      "when": 1700325285272,
+      "tag": "0038_common_hiroim",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "5",
+      "when": 1700325436400,
+      "tag": "0039_marvelous_mercury",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "5",
+      "when": 1700325800063,
+      "tag": "0040_awesome_leech",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "5",
+      "when": 1700327242437,
+      "tag": "0041_damp_jack_murdock",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "5",
+      "when": 1700328085271,
+      "tag": "0042_gorgeous_doctor_spectrum",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "5",
+      "when": 1700328172762,
+      "tag": "0043_blue_tusk",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "5",
+      "when": 1700328579730,
+      "tag": "0044_brainy_jazinda",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "5",
+      "when": 1700328712425,
+      "tag": "0045_bent_roulette",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "5",
+      "when": 1700329739162,
+      "tag": "0046_square_ikaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "5",
+      "when": 1700330524431,
+      "tag": "0047_same_stark_industries",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "5",
+      "when": 1700331636048,
+      "tag": "0048_dusty_leper_queen",
+      "breakpoints": true
     }
   ]
 }

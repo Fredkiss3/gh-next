@@ -47,7 +47,7 @@ export const issues = pgTable(
   {
     id: serial("id").primaryKey(),
     number: integer("number").notNull(),
-    title: text("title").notNull(),
+    title: varchar("title", { length: 500 }).notNull(),
     body: text("body").default("").notNull(),
     created_at: timestamp("created_at").defaultNow().notNull(),
     updated_at: timestamp("updated_at").defaultNow().notNull(),
@@ -67,8 +67,14 @@ export const issues = pgTable(
       .notNull()
   },
   (table) => ({
-    titleIdx: index("title_idx").on(table.title),
-    uniqNumberIdx: unique("uniq_number_idx").on(
+    titleIdx: index("iss_title_idx").on(table.title),
+    createdAtIdx: index("iss_created_idx").on(table.created_at),
+    updatedAtIdx: index("iss_updated_idx").on(table.updated_at),
+    statusIdx: index("iss_status_idx").on(table.status),
+    repositoryFKIdx: index("iss_repo_fk_idx").on(table.repository_id),
+    authorFKIdx: index("iss_author_fk_idx").on(table.author_id),
+    authorUsernameIdx: index("iss_author_uname_idx").on(table.author_username),
+    uniqNumberIdx: unique("iss_uniq_number_idx").on(
       table.repository_id,
       table.number
     )
