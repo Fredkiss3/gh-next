@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "iss_status_idx" ON "gh_next_issues" ("status");

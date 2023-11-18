@@ -47,7 +47,7 @@ export const issues = pgTable(
   {
     id: serial("id").primaryKey(),
     number: integer("number").notNull(),
-    title: text("title").notNull(),
+    title: varchar("title", { length: 500 }).notNull(),
     body: text("body").default("").notNull(),
     created_at: timestamp("created_at").defaultNow().notNull(),
     updated_at: timestamp("updated_at").defaultNow().notNull(),
@@ -67,8 +67,14 @@ export const issues = pgTable(
       .notNull()
   },
   (table) => ({
-    titleIdx: index("title_idx").on(table.title),
-    uniqNumberIdx: unique("uniq_number_idx").on(
+    titleIdx: index("iss_title_idx").on(table.title),
+    createdAtIdx: index("iss_created_idx").on(table.created_at),
+    updatedAtIdx: index("iss_updated_idx").on(table.updated_at),
+    statusIdx: index("iss_status_idx").on(table.status),
+    repositoryFKIdx: index("iss_repo_fk_idx").on(table.repository_id),
+    authorFKIdx: index("iss_author_fk_idx").on(table.author_id),
+    authorUsernameIdx: index("iss_author_uname_idx").on(table.author_username),
+    uniqNumberIdx: unique("iss_uniq_number_idx").on(
       table.repository_id,
       table.number
     )
@@ -101,21 +107,28 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
   })
 }));
 
-export const issueToAssignees = pgTable("issues_to_assignees", {
-  id: serial("id").primaryKey(),
-  assignee_username: varchar("assignee_username", {
-    length: 255
-  }).notNull(),
-  assignee_avatar_url: varchar("assignee_avatar_url", {
-    length: 255
-  }).notNull(),
-  issue_id: integer("issue_id")
-    .references(() => issues.id)
-    .notNull(),
-  assignee_id: integer("assignee_id").references(() => users.id, {
-    onDelete: "cascade"
+export const issueToAssignees = pgTable(
+  "issues_to_assignees",
+  {
+    id: serial("id").primaryKey(),
+    assignee_username: varchar("assignee_username", {
+      length: 255
+    }).notNull(),
+    assignee_avatar_url: varchar("assignee_avatar_url", {
+      length: 255
+    }).notNull(),
+    issue_id: integer("issue_id")
+      .references(() => issues.id)
+      .notNull(),
+    assignee_id: integer("assignee_id").references(() => users.id, {
+      onDelete: "cascade"
+    })
+  },
+  (table) => ({
+    issueFkIndex: index("is_2_ass_issue_fk_index").on(table.issue_id),
+    assigneeFkIndex: index("is_2_ass_assignee_fk_index").on(table.assignee_id)
   })
-});
+);
 
 export const issueToAssigneesRelation = relations(
   issueToAssignees,

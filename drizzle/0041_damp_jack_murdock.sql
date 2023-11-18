@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS "com_author_uname_idx" ON "gh_next_comments" ("author_username");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "iss_author_uname_idx" ON "gh_next_issues" ("author_username");
