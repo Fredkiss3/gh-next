@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS "is_2_ass_issue_fk_index" ON "gh_next_issues_to_assignees" ("issue_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "is_2_ass_assignee_fk_index" ON "gh_next_issues_to_assignees" ("assignee_id");

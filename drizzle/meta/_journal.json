@@ -344,6 +344,13 @@
       "when": 1700331636048,
       "tag": "0048_dusty_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "5",
+      "when": 1700332792302,
+      "tag": "0049_flowery_ikaris",
+      "breakpoints": true
     }
   ]
 }

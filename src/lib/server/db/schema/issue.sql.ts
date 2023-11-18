@@ -107,21 +107,28 @@ export const issuesRelations = relations(issues, ({ one, many }) => ({
   })
 }));
 
-export const issueToAssignees = pgTable("issues_to_assignees", {
-  id: serial("id").primaryKey(),
-  assignee_username: varchar("assignee_username", {
-    length: 255
-  }).notNull(),
-  assignee_avatar_url: varchar("assignee_avatar_url", {
-    length: 255
-  }).notNull(),
-  issue_id: integer("issue_id")
-    .references(() => issues.id)
-    .notNull(),
-  assignee_id: integer("assignee_id").references(() => users.id, {
-    onDelete: "cascade"
+export const issueToAssignees = pgTable(
+  "issues_to_assignees",
+  {
+    id: serial("id").primaryKey(),
+    assignee_username: varchar("assignee_username", {
+      length: 255
+    }).notNull(),
+    assignee_avatar_url: varchar("assignee_avatar_url", {
+      length: 255
+    }).notNull(),
+    issue_id: integer("issue_id")
+      .references(() => issues.id)
+      .notNull(),
+    assignee_id: integer("assignee_id").references(() => users.id, {
+      onDelete: "cascade"
+    })
+  },
+  (table) => ({
+    issueFkIndex: index("is_2_ass_issue_fk_index").on(table.issue_id),
+    assigneeFkIndex: index("is_2_ass_assignee_fk_index").on(table.assignee_id)
   })
-});
+);
 
 export const issueToAssigneesRelation = relations(
   issueToAssignees,
