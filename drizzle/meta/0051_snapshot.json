@@ -1,0 +1,1268 @@
+{
+  "id": "9098f7d9-dd0b-4e3f-8240-52dd75000d34",
+  "prevId": "493d1a46-6002-49c8-a9e6-85d96dc0d538",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "gh_next_comment_revisions": {
+      "name": "gh_next_comment_revisions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_content": {
+          "name": "updated_content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "gh_next_comment_revisions_comment_id_gh_next_comments_id_fk": {
+          "name": "gh_next_comment_revisions_comment_id_gh_next_comments_id_fk",
+          "tableFrom": "gh_next_comment_revisions",
+          "columnsFrom": [
+            "comment_id"
+          ],
+          "tableTo": "gh_next_comments",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "gh_next_comments": {
+      "name": "gh_next_comments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "author_username": {
+          "name": "author_username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_avatar_url": {
+          "name": "author_avatar_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hidden": {
+          "name": "hidden",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "hidden_reason": {
+          "name": "hidden_reason",
+          "type": "comment_hide_reason",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "com_author_fk_idx": {
+          "name": "com_author_fk_idx",
+          "columns": [
+            "author_id"
+          ],
+          "isUnique": false
+        },
+        "com_author_uname_idx": {
+          "name": "com_author_uname_idx",
+          "columns": [
+            "author_username"
+          ],
+          "isUnique": false
+        },
+        "com_issue_fk_idx": {
+          "name": "com_issue_fk_idx",
+          "columns": [
+            "issue_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gh_next_comments_author_id_gh_next_users_id_fk": {
+          "name": "gh_next_comments_author_id_gh_next_users_id_fk",
+          "tableFrom": "gh_next_comments",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "tableTo": "gh_next_users",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        },
+        "gh_next_comments_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_comments_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_comments",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "gh_next_issue_events": {
+      "name": "gh_next_issue_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "initiator_id": {
+          "name": "initiator_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "initiator_username": {
+          "name": "initiator_username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "initiator_avatar_url": {
+          "name": "initiator_avatar_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "event_type",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "old_title": {
+          "name": "old_title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "new_title": {
+          "name": "new_title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "issue_status",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mentionned_issue_id": {
+          "name": "mentionned_issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignee_username": {
+          "name": "assignee_username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignee_avatar_url": {
+          "name": "assignee_avatar_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "label_id": {
+          "name": "label_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "gh_next_issue_events_initiator_id_gh_next_users_id_fk": {
+          "name": "gh_next_issue_events_initiator_id_gh_next_users_id_fk",
+          "tableFrom": "gh_next_issue_events",
+          "columnsFrom": [
+            "initiator_id"
+          ],
+          "tableTo": "gh_next_users",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        },
+        "gh_next_issue_events_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_issue_events_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_issue_events",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "gh_next_issue_events_mentionned_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_issue_events_mentionned_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_issue_events",
+          "columnsFrom": [
+            "mentionned_issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "gh_next_issue_events_label_id_gh_next_labels_id_fk": {
+          "name": "gh_next_issue_events_label_id_gh_next_labels_id_fk",
+          "tableFrom": "gh_next_issue_events",
+          "columnsFrom": [
+            "label_id"
+          ],
+          "tableTo": "gh_next_labels",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "gh_next_issue_events_comment_id_gh_next_comments_id_fk": {
+          "name": "gh_next_issue_events_comment_id_gh_next_comments_id_fk",
+          "tableFrom": "gh_next_issue_events",
+          "columnsFrom": [
+            "comment_id"
+          ],
+          "tableTo": "gh_next_comments",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "gh_next_issue_revisions": {
+      "name": "gh_next_issue_revisions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "revised_by_username": {
+          "name": "revised_by_username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revised_by_avatar_url": {
+          "name": "revised_by_avatar_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_description": {
+          "name": "updated_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "gh_next_issue_revisions_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_issue_revisions_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_issue_revisions",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "gh_next_issues_to_assignees": {
+      "name": "gh_next_issues_to_assignees",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "assignee_username": {
+          "name": "assignee_username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignee_avatar_url": {
+          "name": "assignee_avatar_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignee_id": {
+          "name": "assignee_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "is_2_ass_issue_fk_index": {
+          "name": "is_2_ass_issue_fk_index",
+          "columns": [
+            "issue_id"
+          ],
+          "isUnique": false
+        },
+        "is_2_ass_assignee_fk_index": {
+          "name": "is_2_ass_assignee_fk_index",
+          "columns": [
+            "assignee_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gh_next_issues_to_assignees_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_issues_to_assignees_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_issues_to_assignees",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "gh_next_issues_to_assignees_assignee_id_gh_next_users_id_fk": {
+          "name": "gh_next_issues_to_assignees_assignee_id_gh_next_users_id_fk",
+          "tableFrom": "gh_next_issues_to_assignees",
+          "columnsFrom": [
+            "assignee_id"
+          ],
+          "tableTo": "gh_next_users",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "gh_next_issue_user_subscriptions": {
+      "name": "gh_next_issue_user_subscriptions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "gh_next_issue_user_subscriptions_user_id_gh_next_users_id_fk": {
+          "name": "gh_next_issue_user_subscriptions_user_id_gh_next_users_id_fk",
+          "tableFrom": "gh_next_issue_user_subscriptions",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "tableTo": "gh_next_users",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "gh_next_issue_user_subscriptions_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_issue_user_subscriptions_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_issue_user_subscriptions",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "gh_next_issues": {
+      "name": "gh_next_issues",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "status_updated_at": {
+          "name": "status_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "issue_status",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'OPEN'"
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "author_username": {
+          "name": "author_username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_avatar_url": {
+          "name": "author_avatar_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_locked": {
+          "name": "is_locked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "lock_reason": {
+          "name": "lock_reason",
+          "type": "issue_lock_reason",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repository_id": {
+          "name": "repository_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "iss_title_idx": {
+          "name": "iss_title_idx",
+          "columns": [
+            "title"
+          ],
+          "isUnique": false
+        },
+        "iss_created_idx": {
+          "name": "iss_created_idx",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false
+        },
+        "iss_updated_idx": {
+          "name": "iss_updated_idx",
+          "columns": [
+            "updated_at"
+          ],
+          "isUnique": false
+        },
+        "iss_status_idx": {
+          "name": "iss_status_idx",
+          "columns": [
+            "status"
+          ],
+          "isUnique": false
+        },
+        "iss_repo_fk_idx": {
+          "name": "iss_repo_fk_idx",
+          "columns": [
+            "repository_id"
+          ],
+          "isUnique": false
+        },
+        "iss_author_fk_idx": {
+          "name": "iss_author_fk_idx",
+          "columns": [
+            "author_id"
+          ],
+          "isUnique": false
+        },
+        "iss_author_uname_idx": {
+          "name": "iss_author_uname_idx",
+          "columns": [
+            "author_username"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gh_next_issues_author_id_gh_next_users_id_fk": {
+          "name": "gh_next_issues_author_id_gh_next_users_id_fk",
+          "tableFrom": "gh_next_issues",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "tableTo": "gh_next_users",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        },
+        "gh_next_issues_repository_id_gh_next_repositories_id_fk": {
+          "name": "gh_next_issues_repository_id_gh_next_repositories_id_fk",
+          "tableFrom": "gh_next_issues",
+          "columnsFrom": [
+            "repository_id"
+          ],
+          "tableTo": "gh_next_repositories",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "iss_uniq_number_idx": {
+          "name": "iss_uniq_number_idx",
+          "columns": [
+            "repository_id",
+            "number"
+          ],
+          "nullsNotDistinct": false
+        }
+      }
+    },
+    "gh_next_labels_to_issues": {
+      "name": "gh_next_labels_to_issues",
+      "schema": "",
+      "columns": {
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label_id": {
+          "name": "label_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "lbl_2_iss_issue_fk_index": {
+          "name": "lbl_2_iss_issue_fk_index",
+          "columns": [
+            "issue_id"
+          ],
+          "isUnique": false
+        },
+        "lbl_2_iss_assignee_fk_index": {
+          "name": "lbl_2_iss_assignee_fk_index",
+          "columns": [
+            "label_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gh_next_labels_to_issues_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_labels_to_issues_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_labels_to_issues",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "gh_next_labels_to_issues_label_id_gh_next_labels_id_fk": {
+          "name": "gh_next_labels_to_issues_label_id_gh_next_labels_id_fk",
+          "tableFrom": "gh_next_labels_to_issues",
+          "columnsFrom": [
+            "label_id"
+          ],
+          "tableTo": "gh_next_labels",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "gh_next_labels_to_issues_issue_id_label_id": {
+          "name": "gh_next_labels_to_issues_issue_id_label_id",
+          "columns": [
+            "issue_id",
+            "label_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "gh_next_labels": {
+      "name": "gh_next_labels",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_next_labels_name_unique": {
+          "name": "gh_next_labels_name_unique",
+          "columns": [
+            "name"
+          ],
+          "nullsNotDistinct": false
+        }
+      }
+    },
+    "gh_next_issue_user_mentions": {
+      "name": "gh_next_issue_user_mentions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "ment_username_idx": {
+          "name": "ment_username_idx",
+          "columns": [
+            "username"
+          ],
+          "isUnique": false
+        },
+        "ment_issue_idx": {
+          "name": "ment_issue_idx",
+          "columns": [
+            "issue_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gh_next_issue_user_mentions_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_issue_user_mentions_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_issue_user_mentions",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "gh_next_issue_user_mentions_comment_id_gh_next_comments_id_fk": {
+          "name": "gh_next_issue_user_mentions_comment_id_gh_next_comments_id_fk",
+          "tableFrom": "gh_next_issue_user_mentions",
+          "columnsFrom": [
+            "comment_id"
+          ],
+          "tableTo": "gh_next_comments",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_next_issue_user_mentions_username_issue_id_comment_id_unique": {
+          "name": "gh_next_issue_user_mentions_username_issue_id_comment_id_unique",
+          "columns": [
+            "username",
+            "issue_id",
+            "comment_id"
+          ],
+          "nullsNotDistinct": false
+        }
+      }
+    },
+    "gh_next_reactions": {
+      "name": "gh_next_reactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "reaction_type",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "issue_id": {
+          "name": "issue_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "rakt_author_fk_idx": {
+          "name": "rakt_author_fk_idx",
+          "columns": [
+            "author_id"
+          ],
+          "isUnique": false
+        },
+        "rakt_type_idx": {
+          "name": "rakt_type_idx",
+          "columns": [
+            "type"
+          ],
+          "isUnique": false
+        },
+        "rakt_issue_fk_idx": {
+          "name": "rakt_issue_fk_idx",
+          "columns": [
+            "issue_id"
+          ],
+          "isUnique": false
+        },
+        "rakt_comment_fk_idx": {
+          "name": "rakt_comment_fk_idx",
+          "columns": [
+            "comment_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gh_next_reactions_author_id_gh_next_users_id_fk": {
+          "name": "gh_next_reactions_author_id_gh_next_users_id_fk",
+          "tableFrom": "gh_next_reactions",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "tableTo": "gh_next_users",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        },
+        "gh_next_reactions_comment_id_gh_next_comments_id_fk": {
+          "name": "gh_next_reactions_comment_id_gh_next_comments_id_fk",
+          "tableFrom": "gh_next_reactions",
+          "columnsFrom": [
+            "comment_id"
+          ],
+          "tableTo": "gh_next_comments",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "gh_next_reactions_issue_id_gh_next_issues_id_fk": {
+          "name": "gh_next_reactions_issue_id_gh_next_issues_id_fk",
+          "tableFrom": "gh_next_reactions",
+          "columnsFrom": [
+            "issue_id"
+          ],
+          "tableTo": "gh_next_issues",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "gh_next_repositories": {
+      "name": "gh_next_repositories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "creator_id": {
+          "name": "creator_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_archived": {
+          "name": "is_archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "repo_name_idx": {
+          "name": "repo_name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": false
+        },
+        "repo_creator_fk_idx": {
+          "name": "repo_creator_fk_idx",
+          "columns": [
+            "creator_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "gh_next_repositories_creator_id_gh_next_users_id_fk": {
+          "name": "gh_next_repositories_creator_id_gh_next_users_id_fk",
+          "tableFrom": "gh_next_repositories",
+          "columnsFrom": [
+            "creator_id"
+          ],
+          "tableTo": "gh_next_users",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_next_repositories_name_unique": {
+          "name": "gh_next_repositories_name_unique",
+          "columns": [
+            "name"
+          ],
+          "nullsNotDistinct": false
+        }
+      }
+    },
+    "gh_next_users": {
+      "name": "gh_next_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "github_id": {
+          "name": "github_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "company": {
+          "name": "company",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "preferred_theme": {
+          "name": "preferred_theme",
+          "type": "themes",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'system'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_next_users_username_unique": {
+          "name": "gh_next_users_username_unique",
+          "columns": [
+            "username"
+          ],
+          "nullsNotDistinct": false
+        },
+        "gh_next_users_github_id_unique": {
+          "name": "gh_next_users_github_id_unique",
+          "columns": [
+            "github_id"
+          ],
+          "nullsNotDistinct": false
+        }
+      }
+    }
+  },
+  "enums": {
+    "comment_hide_reason": {
+      "name": "comment_hide_reason",
+      "values": {
+        "ABUSE": "ABUSE",
+        "OFF_TOPIC": "OFF_TOPIC",
+        "OUTDATED": "OUTDATED",
+        "RESOLVED": "RESOLVED",
+        "DUPLICATE": "DUPLICATE",
+        "SPAM": "SPAM"
+      }
+    },
+    "event_type": {
+      "name": "event_type",
+      "values": {
+        "CHANGE_TITLE": "CHANGE_TITLE",
+        "TOGGLE_STATUS": "TOGGLE_STATUS",
+        "ISSUE_MENTION": "ISSUE_MENTION",
+        "ASSIGN_USER": "ASSIGN_USER",
+        "ADD_LABEL": "ADD_LABEL",
+        "REMOVE_LABEL": "REMOVE_LABEL",
+        "ADD_COMMENT": "ADD_COMMENT"
+      }
+    },
+    "issue_lock_reason": {
+      "name": "issue_lock_reason",
+      "values": {
+        "OFF_TOPIC": "OFF_TOPIC",
+        "TOO_HEATED": "TOO_HEATED",
+        "RESOLVED": "RESOLVED",
+        "SPAM": "SPAM"
+      }
+    },
+    "issue_status": {
+      "name": "issue_status",
+      "values": {
+        "OPEN": "OPEN",
+        "CLOSED": "CLOSED",
+        "NOT_PLANNED": "NOT_PLANNED"
+      }
+    },
+    "reaction_type": {
+      "name": "reaction_type",
+      "values": {
+        "PLUS_ONE": "PLUS_ONE",
+        "MINUS_ONE": "MINUS_ONE",
+        "LAUGH": "LAUGH",
+        "CONFUSED": "CONFUSED",
+        "HEART": "HEART",
+        "HOORAY": "HOORAY",
+        "ROCKET": "ROCKET",
+        "EYES": "EYES"
+      }
+    },
+    "themes": {
+      "name": "themes",
+      "values": {
+        "dark": "dark",
+        "light": "light",
+        "system": "system"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

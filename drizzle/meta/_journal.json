@@ -358,6 +358,13 @@
       "when": 1700333438623,
       "tag": "0050_special_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "5",
+      "when": 1700336505996,
+      "tag": "0051_tricky_tempest",
+      "breakpoints": true
     }
   ]
 }
