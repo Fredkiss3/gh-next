@@ -1,4 +1,10 @@
-import { serial, varchar, integer, primaryKey } from "drizzle-orm/pg-core";
+import {
+  serial,
+  varchar,
+  integer,
+  primaryKey,
+  index
+} from "drizzle-orm/pg-core";
 
 import {
   relations,
@@ -32,7 +38,9 @@ export const labelToIssues = pgTable(
       })
   },
   (table) => ({
-    pk: primaryKey(table.issue_id, table.label_id)
+    pk: primaryKey(table.issue_id, table.label_id),
+    issueFkIndex: index("lbl_2_iss_issue_fk_index").on(table.issue_id),
+    assigneeFkIndex: index("lbl_2_iss_assignee_fk_index").on(table.label_id)
   })
 );
 

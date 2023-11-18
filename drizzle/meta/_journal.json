@@ -351,6 +351,13 @@
       "when": 1700332792302,
       "tag": "0049_flowery_ikaris",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "5",
+      "when": 1700333438623,
+      "tag": "0050_special_blue_blade",
+      "breakpoints": true
     }
   ]
 }
