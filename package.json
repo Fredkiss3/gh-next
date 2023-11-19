@@ -38,7 +38,7 @@
     "pg": "^8.11.3",
     "postgres": "^3.3.5",
     "react": "18.2.0",
-    "react-aria-components": "1.0.0-alpha.6",
+    "react-aria-components": "1.0.0-rc.0",
     "react-dom": "18.2.0",
     "react-error-boundary": "^4.0.11",
     "react-markdown": "^9.0.0",
