@@ -99,6 +99,32 @@ export function linkWithSlash(href: string) {
   return href + "/";
 }
 
+/**
+ * Remove a `/` at the end of a path if it contains it
+ * @param href
+ * @returns
+ */
+export function linkWithoutSlash(
+  href: string,
+  trimPosition: "start" | "end" | "both" = "end"
+) {
+  let modifiedHref = href;
+
+  if (trimPosition === "start" || trimPosition === "both") {
+    if (href.startsWith("/")) {
+      modifiedHref = modifiedHref.substring(1);
+    }
+  }
+
+  if (trimPosition === "end" || trimPosition === "both") {
+    if (href.endsWith("/")) {
+      modifiedHref = modifiedHref.substring(0, href.length - 1);
+    }
+  }
+
+  return modifiedHref;
+}
+
 export async function jsonFetch<T>(
   url: string,
   options: RequestInit = {}

@@ -89,7 +89,7 @@ export class Session {
     await Session.#save(this.#_session);
   }
 
-  public getCookie(): ResponseCookie {
+  public getCookie() {
     return {
       name: SESSION_COOKIE_KEY,
       value: `${this.#_session.id}.${this.#_session.signature}`,
@@ -100,7 +100,7 @@ export class Session {
       secure: !env.NEXT_PUBLIC_VERCEL_URL.startsWith("localhost")
         ? true
         : undefined
-    };
+    } satisfies ResponseCookie;
   }
 
   async setUserTheme(theme: User["preferred_theme"]): Promise<this> {
