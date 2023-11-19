@@ -20,7 +20,6 @@ import {
 } from "~/app/(components)/user-dropdown/user-dropdown.server";
 
 // utils
-import { getAuthedUser, getSession } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
@@ -31,13 +30,6 @@ export type HeaderProps = {
 };
 
 export async function Header({ children, pageTitle }: HeaderProps) {
-  const { user } = await getSession();
-
-  if (user) {
-    // preload the user so that it is accessed faster in <UserDropdown />
-    getAuthedUser();
-  }
-
   return (
     <header className={clsx("bg-header border-b border-neutral")}>
       <div
@@ -106,19 +98,9 @@ export async function Header({ children, pageTitle }: HeaderProps) {
             </li>
           </ul>
 
-          {user ? (
-            <React.Suspense fallback={<UserDropdownSkeleton />}>
-              <UserDropdown />
-            </React.Suspense>
-          ) : (
-            <Button
-              className="flex-shrink-0 !border-foreground !text-foreground"
-              href="/login"
-              variant="invisible"
-            >
-              Sign in
-            </Button>
-          )}
+          <React.Suspense fallback={<UserDropdownSkeleton />}>
+            <UserDropdown />
+          </React.Suspense>
         </nav>
       </div>
 

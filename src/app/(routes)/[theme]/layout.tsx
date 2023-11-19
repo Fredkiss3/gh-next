@@ -9,30 +9,24 @@ import { IconSwitcher } from "~/app/(components)/icon-switcher";
 
 // utils
 import { GeistSans } from "geist/font";
-import { getTheme } from "~/app/(actions)/theme";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
+import type { Theme } from "~/app/(actions)/theme";
 import type { Metadata } from "next";
+import type { LayoutProps } from "~/lib/types";
 
 export const metadata: Metadata = {
-  title: {
-    template: "%s · Fredkiss3/gh-next",
-    default:
-      "Fredkiss3/gh-next · A minimal Github clone built on nextjs app router"
-  },
-  description: "A clone of github"
+  title: "gh-next",
+  description: "A minimal Github clone built on nextjs app router"
 };
 
-export const revalidate = 0;
 export const fetchCache = "default-cache";
 
 export default async function RootLayout({
-  children
-}: {
-  children: React.ReactNode;
-}) {
-  const theme = await getTheme();
+  children,
+  params: { theme }
+}: LayoutProps<{ theme: Theme }>) {
   return (
     <html lang="en" suppressHydrationWarning data-theme={theme}>
       <head>
@@ -59,7 +53,9 @@ export default async function RootLayout({
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
 
-        <Toaster />
+        <React.Suspense fallback={<></>}>
+          <Toaster />
+        </React.Suspense>
       </body>
     </html>
   );

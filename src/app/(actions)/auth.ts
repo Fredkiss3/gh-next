@@ -14,14 +14,13 @@ import { experimental_taintObjectReference as taintObjectReference } from "react
 import { revalidatePath } from "next/cache";
 import { withAuth, type AuthState } from "./middlewares";
 
-export async function authenticateWithGithub(formData: FormData) {
+export async function authenticateWithGithub(nextUrl: string | undefined) {
   const searchParams = new URLSearchParams();
 
   searchParams.append("client_id", env.GITHUB_CLIENT_ID);
   searchParams.append("redirect_uri", env.GITHUB_REDIRECT_URI);
 
   // save the url to redirect after login in session
-  const nextUrl = formData.get("_nextUrl")?.toString();
   if (nextUrl) {
     const session = await getSession();
     await session.addAdditionnalData({

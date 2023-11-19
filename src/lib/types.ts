@@ -1,5 +1,4 @@
-import type { Session } from "~/lib/server/session.server";
-import type { User } from "~/lib/server/db/schema/user.sql";
+import * as React from "react";
 
 export interface PageProps<
   TParams extends Record<string, string> = {},
@@ -7,6 +6,14 @@ export interface PageProps<
 > {
   params: TParams;
   searchParams?: Partial<TSearchParams>;
+}
+export interface LayoutProps<
+  TParams extends Record<string, string> = {},
+  TSearchParams extends Record<string, string | string[]> = {}
+> {
+  params: TParams;
+  searchParams?: Partial<TSearchParams>;
+  children: React.ReactNode;
 }
 
 export type FormErrors = Record<string, string[]> | null | undefined;

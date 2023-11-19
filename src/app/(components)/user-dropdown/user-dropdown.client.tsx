@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 // components
-import { DropdownMenu } from "../dropdown-menu";
+import { DropdownMenu } from "~/app/(components)/dropdown-menu";
 import { Avatar } from "~/app/(components)/avatar";
 import {
   PaintbrushIcon,
