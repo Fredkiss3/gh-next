@@ -63,18 +63,19 @@ export async function Markdown(props: MarkdownProps) {
   );
 }
 
-async function MarkdownContent({
+export async function MarkdownContent({
   content,
   className,
   linkHeaders = false,
   editableCheckboxes = false,
-  repository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
+  repository:
+    currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
 }: MarkdownProps) {
   const dt = new Date().getTime();
   console.time(`[${dt}] Markdown Rendering`);
 
   const { processedContent, references } =
-    await processMarkdownContentAndGetReferences(content, repository);
+    await processMarkdownContentAndGetReferences(content, currentRepository);
   const authedUser = await getAuthedUser();
   const resolvedReferences = await resolveReferences(references, authedUser);
 
@@ -84,21 +85,21 @@ async function MarkdownContent({
     jsxs: React.createElement
   });
 
+  const components = await getComponents({
+    linkHeaders,
+    editableCheckboxes,
+    authedUser,
+    resolvedReferences,
+    currentRepository
+  });
+
   console.timeEnd(`[${dt}] Markdown Rendering`);
 
   return (
     <article
       className={clsx(className, "break-words leading-normal text-base")}
     >
-      {generatedMdxModule.default({
-        components: await getComponents({
-          linkHeaders,
-          editableCheckboxes,
-          authedUser,
-          resolvedReferences,
-          currentRepository: repository
-        })
-      })}
+      {generatedMdxModule.default({ components })}
     </article>
   );
 }
