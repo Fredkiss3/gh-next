@@ -7,7 +7,8 @@ const nextConfig = {
   output: "standalone",
   experimental: {
     isrMemoryCacheSize: 0,
-    taint: true
+    taint: true,
+    ppr: true
   },
   logging: {
     fetches: {

@@ -33,7 +33,7 @@
     "geist": "^1.0.0",
     "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
-    "next": "14.0.3",
+    "next": "14.0.4-canary.4",
     "nextjs-toploader": "^1.4.2",
     "pg": "^8.11.3",
     "postgres": "^3.3.5",
