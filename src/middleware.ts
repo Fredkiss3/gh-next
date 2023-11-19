@@ -8,7 +8,6 @@ import { Session } from "./lib/server/session.server";
 import isbot from "isbot";
 
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import { _envObject as env } from "~/env-config.mjs";
 
 /**
  * Set the cookies on request + response so that
@@ -47,14 +46,18 @@ export default async function middleware(request: NextRequest) {
   // TODO : to remove
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(
-      `${env.NEXT_PUBLIC_VERCEL_URL}/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/`
+      new URL(
+        `/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/`,
+        request.url
+      )
     );
   }
   if (request.nextUrl.pathname === "/issues") {
     return NextResponse.redirect(
-      `${
-        env.NEXT_PUBLIC_VERCEL_URL
-      }/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/issues?${request.nextUrl.searchParams.toString()}`
+      new URL(
+        `/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/issues?${request.nextUrl.searchParams.toString()}`,
+        request.url
+      )
     );
   }
 
