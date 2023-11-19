@@ -1,3 +1,3 @@
 export default function NewIssuePage() {
-  return <></>;
+  return null;
 }
