@@ -67,7 +67,7 @@ export function IssueListSearchInput({
   const assigneeRegex = /^(-)?assignee:/;
   const labelListRegex = /^(-)?label:/;
 
-  const { data: authorList, isInitialLoading: isLoadingAuthor } =
+  const { data: authorList, isLoading: isLoadingAuthor } =
     useIssueAuthorListQuery({
       name: currentWord.match(authorRegex)
         ? currentWord.replace(authorRegex, "")
@@ -75,7 +75,7 @@ export function IssueListSearchInput({
       enabled: !!currentWord.match(authorRegex)
     });
 
-  const { data: assigneeList, isInitialLoading: isLoadingAssignee } =
+  const { data: assigneeList, isLoading: isLoadingAssignee } =
     useIssueAssigneeListQuery({
       name: currentWord.match(assigneeRegex)
         ? currentWord.replace(assigneeRegex, "")
@@ -83,7 +83,7 @@ export function IssueListSearchInput({
       enabled: !!currentWord.match(assigneeRegex)
     });
 
-  const { data: labelList, isInitialLoading: isLoadingLabels } =
+  const { data: labelList, isLoading: isLoadingLabels } =
     useIssueLabelListByNameQuery({
       name: currentWord.match(labelListRegex)
         ? currentWord.replace(labelListRegex, "")

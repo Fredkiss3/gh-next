@@ -142,7 +142,7 @@ export async function getMultipleIssuesPerRepositories(
     })
     .from(comments)
     .where(
-      ilike(
+      eq(
         comments.author_username,
         currentUser?.username ?? UN_MATCHABLE_USERNAME
       )
@@ -180,7 +180,7 @@ export async function getMultipleIssuesPerRepositories(
       issueUserMentions,
       and(
         eq(issues.id, issueUserMentions.issue_id),
-        ilike(
+        eq(
           issueUserMentions.username,
           currentUser?.username ?? UN_MATCHABLE_USERNAME
         )

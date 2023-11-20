@@ -2,13 +2,12 @@
 import * as React from "react";
 
 // components
-
 import Link from "next/link";
 import {
   Button,
   Popover,
   Menu,
-  Item,
+  MenuItem,
   MenuTrigger
 } from "react-aria-components";
 
@@ -88,7 +87,7 @@ export function DropdownMenu({
           items={items}
         >
           {(item) => (
-            <Item className="focus-visible:outline-none">
+            <MenuItem className="focus-visible:outline-none">
               {({ isHovered, isFocused, isPressed, isFocusVisible }) => {
                 const Icon = item.icon;
                 if (isDropdownMenuButton(item)) {
@@ -142,7 +141,7 @@ export function DropdownMenu({
                   );
                 }
               }}
-            </Item>
+            </MenuItem>
           )}
         </Menu>
       </Popover>

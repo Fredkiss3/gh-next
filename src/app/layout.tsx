@@ -55,7 +55,7 @@ export default async function RootLayout({
       >
         <IconSwitcher />
 
-        <NextTopLoader showSpinner={false} />
+        {/* <NextTopLoader showSpinner={false} /> */}
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
 
