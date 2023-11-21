@@ -57,6 +57,8 @@ export const issues = pgTable(
       onDelete: "set null"
     }),
     author_username: varchar("author_username", { length: 255 }).notNull(),
+    // case sensitive username
+    author_username_cs: varchar("author_username_cs", { length: 255 }),
     author_avatar_url: varchar("author_avatar_url", { length: 255 }).notNull(),
     is_locked: boolean("is_locked").default(false).notNull(),
     lock_reason: issueLockReasonEnum("lock_reason"),
@@ -111,6 +113,10 @@ export const issueToAssignees = pgTable(
   "issues_to_assignees",
   {
     id: serial("id").primaryKey(),
+    // case sensitive
+    assignee_username_cs: varchar("assignee_username_cs", {
+      length: 255
+    }),
     assignee_username: varchar("assignee_username", {
       length: 255
     }).notNull(),

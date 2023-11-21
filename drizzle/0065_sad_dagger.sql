@@ -1,0 +1,1 @@
+ALTER TABLE "gh_next_issues_to_assignees" ALTER COLUMN "assignee_username_cs" DROP NOT NULL;

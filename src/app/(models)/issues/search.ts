@@ -281,7 +281,7 @@ function issueSearchfiltersToSQLConditions(
         queryFilters = and(
           queryFilters,
           not(
-            ilike(
+            eq(
               issues.author_username,
               searchingAuthor.replaceAll("%", "").replaceAll(`@`, "")
             ) // don't filter authors with `%`
@@ -299,7 +299,7 @@ function issueSearchfiltersToSQLConditions(
       if (searchingAuthor) {
         queryFilters = and(
           queryFilters,
-          ilike(
+          eq(
             issues.author_username,
             searchingAuthor.replaceAll("%", "").replaceAll(`@`, "")
           ) // don't filter authors with `%`

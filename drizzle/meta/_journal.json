@@ -442,6 +442,90 @@
       "when": 1700578368960,
       "tag": "0062_naive_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "5",
+      "when": 1700579830490,
+      "tag": "0063_brief_colossus",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "5",
+      "when": 1700579943553,
+      "tag": "0064_faithful_ben_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "5",
+      "when": 1700580118236,
+      "tag": "0065_sad_dagger",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "5",
+      "when": 1700580930289,
+      "tag": "0066_hot_quasimodo",
+      "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "5",
+      "when": 1700580944305,
+      "tag": "0067_rapid_thunderbolt_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "5",
+      "when": 1700581695750,
+      "tag": "0068_wakeful_skaar",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "5",
+      "when": 1700581979062,
+      "tag": "0069_petite_shriek",
+      "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "5",
+      "when": 1700581991373,
+      "tag": "0070_even_princess_powerful",
+      "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "5",
+      "when": 1700582100657,
+      "tag": "0071_swift_captain_cross",
+      "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "5",
+      "when": 1700582499447,
+      "tag": "0072_oval_fallen_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "5",
+      "when": 1700582913350,
+      "tag": "0073_sad_crusher_hogan",
+      "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "5",
+      "when": 1700583032039,
+      "tag": "0074_dear_prowler",
+      "breakpoints": true
     }
   ]
 }

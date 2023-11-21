@@ -49,7 +49,7 @@ export async function getUserById(id: number) {
 const userByUsernamePrepared = db
   .select()
   .from(users)
-  .where(ilike(users.username, sql.placeholder("username")))
+  .where(eq(users.username, sql.placeholder("username")))
   .prepare("user_by_username");
 
 export async function getUserByUsername(username: string) {
@@ -73,7 +73,7 @@ export async function getMultipleUserByUsername(usernames: string[]) {
       id: users.id
     })
     .from(users)
-    .where(or(...usernames.map((u) => ilike(users.username, u))));
+    .where(sql`${users.username} in ${usernames}`);
 }
 
 export type UserQueryResult = Awaited<
