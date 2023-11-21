@@ -126,7 +126,10 @@ export const issueToAssignees = pgTable(
   },
   (table) => ({
     issueFkIndex: index("is_2_ass_issue_fk_index").on(table.issue_id),
-    assigneeFkIndex: index("is_2_ass_assignee_fk_index").on(table.assignee_id)
+    assigneeFkIndex: index("is_2_ass_assignee_fk_index").on(table.assignee_id),
+    assigneeUnameIdx: index("is_2_ass_assignee_uname_idx").on(
+      table.assignee_username
+    )
   })
 );
 

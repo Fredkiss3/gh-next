@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "ev_initiator_uname_idx" ON "gh_next_issue_events" ("initiator_username");

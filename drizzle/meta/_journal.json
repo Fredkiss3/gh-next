@@ -365,6 +365,83 @@
       "when": 1700336505996,
       "tag": "0051_tricky_tempest",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "5",
+      "when": 1700485418569,
+      "tag": "0052_goofy_prism",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "5",
+      "when": 1700573719790,
+      "tag": "0053_familiar_dragon_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "5",
+      "when": 1700574718676,
+      "tag": "0054_marvelous_living_lightning",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "5",
+      "when": 1700575105355,
+      "tag": "0055_nasty_toad_men",
+      "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "5",
+      "when": 1700577501839,
+      "tag": "0056_kind_whirlwind",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "5",
+      "when": 1700577843149,
+      "tag": "0057_goofy_mephisto",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "5",
+      "when": 1700577926945,
+      "tag": "0058_flimsy_ender_wiggin",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "5",
+      "when": 1700578017176,
+      "tag": "0059_cuddly_grim_reaper",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "5",
+      "when": 1700578089964,
+      "tag": "0060_wealthy_chimera",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "5",
+      "when": 1700578255099,
+      "tag": "0061_striped_monster_badoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "5",
+      "when": 1700578368960,
+      "tag": "0062_naive_jubilee",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,8 @@ import {
   varchar,
   integer,
   timestamp,
-  pgEnum
+  pgEnum,
+  index
 } from "drizzle-orm/pg-core";
 
 import { relations } from "drizzle-orm";
@@ -35,55 +36,68 @@ const issueStatusEnum = pgEnum("issue_status", [
   "NOT_PLANNED"
 ]);
 
-export const issueEvents = pgTable("issue_events", {
-  id: serial("id").primaryKey(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  initiator_id: integer("initiator_id").references(() => users.id, {
-    onDelete: "set null"
-  }),
-  initiator_username: varchar("initiator_username", { length: 255 }).notNull(),
-  initiator_avatar_url: varchar("initiator_avatar_url", {
-    length: 255
-  }).notNull(),
+export const issueEvents = pgTable(
+  "issue_events",
+  {
+    id: serial("id").primaryKey(),
+    created_at: timestamp("created_at").defaultNow().notNull(),
+    initiator_id: integer("initiator_id").references(() => users.id, {
+      onDelete: "set null"
+    }),
+    initiator_username: varchar("initiator_username", {
+      length: 255
+    }).notNull(),
+    initiator_avatar_url: varchar("initiator_avatar_url", {
+      length: 255
+    }).notNull(),
 
-  issue_id: integer("issue_id")
-    .references(() => issues.id, {
+    issue_id: integer("issue_id")
+      .references(() => issues.id, {
+        onDelete: "cascade"
+      })
+      .notNull(),
+    type: eventTypeEnum("type").notNull(),
+
+    // type = CHANGE_TITLE
+    old_title: varchar("old_title", { length: 255 }),
+    new_title: varchar("new_title", { length: 255 }),
+
+    // type = TOGGLE_STATUS
+    status: issueStatusEnum("status"),
+
+    // type = ISSUE_MENTION
+    mentionned_issue_id: integer("mentionned_issue_id").references(
+      () => issues.id,
+      {
+        onDelete: "cascade"
+      }
+    ),
+
+    // type = ASSIGN_USER
+    assignee_username: varchar("assignee_username", { length: 255 }),
+    assignee_avatar_url: varchar("assignee_avatar_url", {
+      length: 255
+    }),
+
+    // type = ADD_LABEL | REMOVE_LABEL
+    label_id: integer("label_id").references(() => labels.id, {
+      onDelete: "cascade"
+    }),
+
+    // type = ADD_COMMENT
+    comment_id: integer("comment_id").references(() => comments.id, {
       onDelete: "cascade"
     })
-    .notNull(),
-  type: eventTypeEnum("type").notNull(),
-
-  // type = CHANGE_TITLE
-  old_title: varchar("old_title", { length: 255 }),
-  new_title: varchar("new_title", { length: 255 }),
-
-  // type = TOGGLE_STATUS
-  status: issueStatusEnum("status"),
-
-  // type = ISSUE_MENTION
-  mentionned_issue_id: integer("mentionned_issue_id").references(
-    () => issues.id,
-    {
-      onDelete: "cascade"
-    }
-  ),
-
-  // type = ASSIGN_USER
-  assignee_username: varchar("assignee_username", { length: 255 }),
-  assignee_avatar_url: varchar("assignee_avatar_url", {
-    length: 255
-  }),
-
-  // type = ADD_LABEL | REMOVE_LABEL
-  label_id: integer("label_id").references(() => labels.id, {
-    onDelete: "cascade"
-  }),
-
-  // type = ADD_COMMENT
-  comment_id: integer("comment_id").references(() => comments.id, {
-    onDelete: "cascade"
+  },
+  (table) => ({
+    initiatorUsernameIdx: index("ev_initiator_uname_idx").on(
+      table.initiator_username
+    ),
+    assigneeUsernameIdx: index("ev_assignee_uname_idx").on(
+      table.assignee_username
+    )
   })
-});
+);
 
 export const issueEventsRelations = relations(issueEvents, ({ one }) => ({
   initiator: one(users, {
