@@ -12,7 +12,7 @@ import { publicUserOutputValidator } from "~/app/(models)/dto/public-user-output
  * @param ghUser
  * @returns
  */
-export async function getUserFromGithubProfile(
+export async function getOrInsertUserFromGithubProfile(
   ghUser: z.TypeOf<typeof githubUserSchema>
 ) {
   return await db

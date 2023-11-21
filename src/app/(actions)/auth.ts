@@ -7,7 +7,7 @@ import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
 import { Session } from "~/lib/server/session.server";
 import {
   getUserById,
-  getUserFromGithubProfile,
+  getOrInsertUserFromGithubProfile,
   githubUserSchema
 } from "~/app/(models)/user";
 import { experimental_taintObjectReference as taintObjectReference } from "react";
@@ -67,7 +67,7 @@ export async function loginUser(user: any) {
   // Find or create the corresponding user in DB
   const ghUser = sessionResult.data;
 
-  const [dbUser] = await getUserFromGithubProfile(ghUser);
+  const [dbUser] = await getOrInsertUserFromGithubProfile(ghUser);
 
   const session = await getSession();
   await session.generateForUser(dbUser);
