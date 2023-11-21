@@ -2,9 +2,9 @@ import "server-only";
 import * as React from "react";
 
 // components
-import { NavLink } from "../nav-link";
+import { NavLink } from "~/app/(components)/nav-link";
 import { CodeIcon, IssueOpenedIcon, PlayIcon } from "@primer/octicons-react";
-import { CounterBadge } from "../counter-badge";
+import { CounterBadge } from "~/app/(components)/counter-badge";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";

@@ -53,8 +53,8 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        {/* <Markdown content={issue.body} /> */}
-        <Markdown
+        <Markdown content={issue.body} />
+        {/* <Markdown
           content={`
 ## Some references:
 
@@ -65,7 +65,7 @@ export default async function IssueDetailPage({
 *   Issue or PR (\`GH-\`): GH-42991
 *   Issue or PR (fork): foo#1
 *   Issue or PR (project): remarkjs/remark#1
-*   Mention: @fredkiss3, @BeardedBear, @alvarlagerlof, @twidi
+*   Mention: @fredkiss3, @BeardedBear, @alvarlagerlof, @fredk3
 *   Issue or PR (link) : https://gh.fredkiss.dev/Fredkiss3/gh-next/issues/42991
 - feat: support excluded paths by @fredkiss3 in #25
 - fix(multiple-dependency-versions): increase versions padding by @fredkiss3 in #26
@@ -75,7 +75,7 @@ export default async function IssueDetailPage({
 - feat: autofix non-existant-packages by @fredkiss3 in #30
 - feat: autofix packages-without-package-json by @fredkiss3 in #31
 `}
-        />
+        /> */}
       </section>
     </div>
   );
