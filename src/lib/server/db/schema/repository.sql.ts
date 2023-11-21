@@ -24,7 +24,6 @@ export const repositories = pgTable(
     is_public: boolean("is_public").default(true)
   },
   (table) => ({
-    nameIdx: index("repo_name_idx").on(table.name),
     creatorFkIdx: index("repo_creator_fk_idx").on(table.creator_id)
   })
 );

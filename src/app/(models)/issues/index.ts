@@ -41,7 +41,7 @@ const issueAuthorsByNamePrepared = db
   .leftJoin(users, eq(users.id, issues.author_id))
   .where(
     or(
-      ilike(issues.author_username, sql.placeholder("name")),
+      ilike(issues.author_username_cs, sql.placeholder("name")),
       ilike(users.name, sql.placeholder("name"))
     )
   )
@@ -61,7 +61,7 @@ const issueAuthorsByUsernamePrepared = db
   })
   .from(issues)
   .leftJoin(users, eq(users.id, issues.author_id))
-  .where(ilike(issues.author_username, sql.placeholder("username")))
+  .where(ilike(issues.author_username_cs, sql.placeholder("username")))
   .limit(20)
   .prepare("issue_authors_by_username");
 
@@ -80,9 +80,11 @@ const issueAssigneesByUsernamePrepared = db
   .from(issues)
   .rightJoin(issueToAssignees, eq(issueToAssignees.issue_id, issues.id))
   .leftJoin(users, eq(users.id, issueToAssignees.assignee_id))
-  .where(ilike(issueToAssignees.assignee_username, sql.placeholder("username")))
+  .where(
+    ilike(issueToAssignees.assignee_username_cs, sql.placeholder("username"))
+  )
   .limit(20)
-  .prepare("issue_assignees_by_username");
+  .prepare("issue_assignee_by_username");
 
 export async function getIssueAssigneesByUsername(username: string) {
   return await issueAssigneesByUsernamePrepared.execute({
@@ -101,7 +103,7 @@ const issueAssigneesByUsernameOrNamePrepared = db
   .leftJoin(users, eq(users.id, issueToAssignees.assignee_id))
   .where(
     or(
-      ilike(issueToAssignees.assignee_username, sql.placeholder("name")),
+      ilike(issueToAssignees.assignee_username_cs, sql.placeholder("name")),
       ilike(users.name, sql.placeholder("name"))
     )
   )

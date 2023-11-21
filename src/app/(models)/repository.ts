@@ -24,12 +24,12 @@ const repositoryByNamePrepared = db
     users,
     and(
       eq(repositories.creator_id, users.id),
-      ilike(users.username, sql.placeholder("owner_username"))
+      eq(users.username, sql.placeholder("owner_username"))
     )
   )
   .where(
     and(
-      ilike(repositories.name, sql.placeholder("repository_name")),
+      eq(repositories.name, sql.placeholder("repository_name")),
       eq(repositories.is_public, true)
     )
   )
