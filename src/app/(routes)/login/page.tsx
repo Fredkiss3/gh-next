@@ -19,6 +19,7 @@ export default function LoginPage({
   searchParams
 }: PageProps<{}, { nextUrl: string }>) {
   const nextUrl = searchParams?.nextUrl;
+  const loginAction = authenticateWithGithub.bind(null, nextUrl);
 
   return (
     <>
@@ -59,10 +60,9 @@ export default function LoginPage({
             </ul>
           </div>
           <form
-            action={authenticateWithGithub}
+            action={loginAction}
             className="flex w-full flex-col items-center"
           >
-            <input type="hidden" name="_nextUrl" value={nextUrl} />
             <Button variant="primary" type="submit" isBlock>
               <MarkGithubIcon className="h-4 w-4" />
               <span>Login with GitHub</span>
