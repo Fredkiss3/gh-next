@@ -257,7 +257,7 @@ export function IssueListSearchInput({
         <div
           className={clsx(
             "flex items-center gap-1.5 overflow-x-auto hide-scrollbars min-w-0",
-            "rounded-r-md border border-neutral px-3 py-1.5",
+            "rounded-r-md border border-neutral px-2 py-1",
             "w-full bg-header shadow-sm outline-none ring-accent font-medium max-w-full",
             "text-foreground",
             "focus-within:border focus-within:border-accent focus-within:bg-background focus-within:ring-1",
@@ -268,9 +268,9 @@ export function IssueListSearchInput({
           )}
         >
           {isLoading ? (
-            <LoadingIndicator className="h-5 w-5 flex-shrink-0 text-grey" />
+            <LoadingIndicator className="h-4 w-4 flex-shrink-0 text-grey" />
           ) : (
-            <SearchIcon className="h-5 w-5 flex-shrink-0 text-grey" />
+            <SearchIcon className="h-4 w-4 flex-shrink-0 text-grey" />
           )}
           <div
             className="flex w-full relative overflow-x-auto max-w-full hide-scrollbars"
@@ -310,7 +310,7 @@ export function IssueListSearchInput({
                 }}
                 className={clsx(
                   "p-0 bg-transparent outline-none min-w-full overflow-y-hidden overflow-x-auto",
-                  "relative z-10 caret-foreground hide-scrollbars resize-none",
+                  "relative z-10 caret-foreground hide-scrollbars resize-none text-sm",
                   {
                     "text-transparent": !isFirstRender
                   }
@@ -367,10 +367,10 @@ export function IssueListSearchInput({
                       }}
                     >
                       <div className="inline-flex items-baseline gap-2">
-                        <SearchIcon className="text-grey h-5 w-5 flex-shrink-0 relative top-1.5" />
+                        <SearchIcon className="text-grey h-4 w-4 flex-shrink-0 relative top-1" />
                         <p>{searchTokens}</p>
                       </div>
-                      <span className="text-grey text-sm whitespace-nowrap">
+                      <span className="text-grey text-xs whitespace-nowrap">
                         Submit search
                       </span>
                     </CommandItem>
@@ -418,7 +418,7 @@ export function IssueListSearchInput({
                             className="group justify-between"
                           >
                             <span>{key}:</span>
-                            <span className="text-grey text-sm">
+                            <span className="text-grey text-xs">
                               Autocomplete
                             </span>
                           </CommandItem>
@@ -564,7 +564,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={clsx(
-      "overflow-hidden text-foreground py-3 px-2.5",
+      "overflow-hidden text-foreground py-3 px-2.5 tex-sm",
       "[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-grey",
       className
     )}
@@ -581,7 +581,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={clsx(
-      "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-base outline-none",
+      "relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none",
       "aria-selected:bg-neutral/40 aria-selected:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       "aria-selected:before:absolute aria-selected:before:-left-1",
       "aria-selected:before:h-6 aria-selected:before:w-1 aria-selected:before:rounded-md aria-selected:before:bg-accent",

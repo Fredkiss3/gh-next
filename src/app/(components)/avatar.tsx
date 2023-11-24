@@ -23,10 +23,10 @@ export function Avatar({
       className={clsx(
         "flex-shrink-0 rounded-full bg-grey/60",
         {
-          "h-4 w-4": size === "x-small",
-          "h-6 w-6": size === "small",
+          "h-3.5 w-3.5": size === "x-small",
+          "h-5 w-5": size === "small",
           "h-16 w-16": size === "large",
-          "h-10 w-10": size === "medium"
+          "h-8 w-8": size === "medium"
         },
         className
       )}

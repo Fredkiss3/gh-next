@@ -117,13 +117,13 @@ export async function MarkdownA({
             )}
           >
             {issueFound.status === "OPEN" && (
-              <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-0.5" />
+              <IssueOpenedIcon className="h-3.5 w-3.5 flex-shrink-0 text-success relative top-0.5" />
             )}
             {issueFound.status === "CLOSED" && (
-              <IssueClosedIcon className="h-4 w-4 flex-shrink-0 text-done relative top-0.5" />
+              <IssueClosedIcon className="h-3.5 w-3.5 flex-shrink-0 text-done relative top-0.5" />
             )}
             {issueFound.status === "NOT_PLANNED" && (
-              <SkipIcon className="h-4 w-4 flex-shrink-0 text-grey relative top-0.5" />
+              <SkipIcon className="h-3.5 w-3.5 flex-shrink-0 text-grey relative top-0.5" />
             )}
             <span>
               <MarkdownTitle

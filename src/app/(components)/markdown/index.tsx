@@ -96,9 +96,7 @@ export async function MarkdownContent({
   console.timeEnd(`[${dt}] Markdown Rendering`);
 
   return (
-    <article
-      className={clsx(className, "break-words leading-normal text-base")}
-    >
+    <article className={clsx("break-words leading-normal text-sm", className)}>
       {generatedMdxModule.default({ components })}
     </article>
   );
@@ -280,7 +278,7 @@ async function getComponents({
         <ul
           {...props}
           key={key}
-          className={clsx("text-sm md:text-base", {
+          className={clsx({
             "pl-12": props.className === "contains-task-list",
             "list-disc pl-10": props.className !== "contains-task-list"
           })}
@@ -341,7 +339,7 @@ async function getComponents({
         <li
           {...props}
           key={key}
-          className={clsx("text-base", {
+          className={clsx({
             "mt-1.5": props.className === "task-list-item",
             "my-2": props.className !== "task-list-item"
           })}

@@ -30,7 +30,7 @@ export function NavLink({
     <Link
       {...props}
       className={clsx("group relative py-3", "focus:outline-none", {
-        "font-medium after:absolute after:-bottom-0.5 after:left-0 after:right-0":
+        "font-medium after:absolute after:bottom-0 after:left-0 after:right-0":
           isActive,
         "after:z-20 after:h-1 after:rounded-md after:bg-severe-border": isActive
       })}
@@ -44,7 +44,6 @@ export function NavLink({
         )}
       >
         {icon}
-        {/* <Icon className="h-4 w-4 text-grey" /> */}
         {children}
       </div>
     </Link>

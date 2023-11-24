@@ -19,34 +19,41 @@ import { getLabelsCount } from "~/app/(models)/label";
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
+
 export const metadata: Metadata = {
   title: "Issues"
 };
 
-export default function IssuesListPage({
-  searchParams,
-  params
-}: PageProps<
+type IssueListPageProps = PageProps<
   {
     user: string;
     repository: string;
   },
-  { q: string; page: string }
->) {
+  { page: string; q: string }
+>;
+
+export default function IssuesListPage({
+  searchParams,
+  params
+}: IssueListPageProps) {
   return (
     <ReactQueryProvider>
       <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
         <IssuesListHeader {...params} />
         <ClearSearchButtonSection />
-        <IssuesListBody params={searchParams} />
+        <IssuesListBody params={params} searchParams={searchParams} />
       </div>
     </ReactQueryProvider>
   );
 }
 
 async function IssuesListHeader(props: { user: string; repository: string }) {
-  const isAuthed = (await getAuthedUser()) !== null;
-  const labelCount = await getLabelsCount();
+  const [authedUser, labelCount] = await Promise.all([
+    getAuthedUser(),
+    getLabelsCount()
+  ]);
+
+  const isAuthed = authedUser !== null;
   return (
     <section
       className="flex flex-col gap-4 px-5 md:flex-row md:px-0 max-w-full"
@@ -61,7 +68,7 @@ async function IssuesListHeader(props: { user: string; repository: string }) {
         <SegmentedLayout>
           <li>
             <Button
-              href="/labels"
+              href={`/${props.user}/${props.repository}/labels`}
               variant="invisible"
               className="!text-foreground"
               renderLeadingIcon={(cls) => <TagIcon className={cls} />}
@@ -81,7 +88,7 @@ async function IssuesListHeader(props: { user: string; repository: string }) {
           </li>
         </SegmentedLayout>
 
-        <Button href="/issues/new">
+        <Button href={`/${props.user}/${props.repository}/issues/new`}>
           New<span className="sr-only md:not-sr-only">issue</span>
         </Button>
       </div>
@@ -89,13 +96,19 @@ async function IssuesListHeader(props: { user: string; repository: string }) {
   );
 }
 
-async function IssuesListBody(props: {
-  params: PageProps<{}, { page?: string; q?: string }>["searchParams"];
-}) {
+async function IssuesListBody(props: IssueListPageProps) {
   return (
     <section className="flex flex-col gap-4" id="issue-list">
-      <React.Suspense fallback={<IssueListSkeleton />} key={props.params?.q}>
-        <IssueList page={props.params?.page} searchQuery={props.params?.q} />
+      <React.Suspense
+        fallback={<IssueListSkeleton />}
+        key={props.searchParams?.q}
+      >
+        <IssueList
+          user={props.params.user}
+          repository={props.params.repository}
+          page={props.searchParams?.page}
+          searchQuery={props.searchParams?.q}
+        />
       </React.Suspense>
 
       <div className="flex items-start justify-center gap-2 px-5 py-12 text-grey md:px-0">

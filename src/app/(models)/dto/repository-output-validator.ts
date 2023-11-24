@@ -5,6 +5,8 @@ import { publicUserOutputValidator } from "~/app/(models)/dto/public-user-output
 export const repositoryOutputValidator = z.object({
   id: z.number(),
   name: z.string(),
+  description: z.string(),
+  is_public: z.boolean(),
   owner: publicUserOutputValidator
 });
 

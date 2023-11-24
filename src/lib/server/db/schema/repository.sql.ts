@@ -3,6 +3,7 @@ import {
   index,
   integer,
   serial,
+  text,
   timestamp,
   varchar
 } from "drizzle-orm/pg-core";
@@ -16,6 +17,7 @@ export const repositories = pgTable(
   {
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull().unique(),
+    description: text("description").notNull().default(""),
     created_at: timestamp("created_at").defaultNow().notNull(),
     creator_id: integer("creator_id").references(() => users.id, {
       onDelete: "cascade"

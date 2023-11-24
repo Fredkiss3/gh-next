@@ -96,7 +96,7 @@ export function ActionList<TItem>({
                 {title && (
                   <header
                     className={clsx(
-                      "flex justify-between gap-4 border-b border-neutral/70 px-4 py-4 font-medium",
+                      "flex justify-between gap-4 border-b border-neutral/70 px-4 py-4 font-medium text-xs",
                       "sm:py-2"
                     )}
                   >
@@ -124,7 +124,7 @@ export function ActionList<TItem>({
                       {group.header && (
                         <div
                           className={clsx(
-                            "w-full border-b border-t border-neutral/70 px-4 py-2 font-medium text-grey sm:py-2",
+                            "w-full border-b border-t border-neutral/70 px-4 py-2 font-medium text-grey text-xs sm:py-2",
                             {
                               "bg-neutral/50": group.header.filled
                             }

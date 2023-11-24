@@ -13,7 +13,7 @@ import { notFound } from "next/navigation";
 // types
 import type { PageProps } from "~/lib/types";
 
-export default async function RepositoryPageTitle({
+export async function RepositoryPageTitle({
   params
 }: PageProps<{
   user: string;
@@ -50,7 +50,7 @@ export default async function RepositoryPageTitle({
               "font-medium text-grey",
               "md:font-normal md:text-foreground",
               "hover:bg-neutral/50",
-              "rounded-md px-2 py-1 transition duration-150 text-base"
+              "rounded-md px-2 py-1 transition duration-150 text-sm"
             )}
           >
             {repository.owner.username}
@@ -62,7 +62,7 @@ export default async function RepositoryPageTitle({
         href={`/${repository.owner.username}/${repository.name}`}
         className={clsx(
           "hover:bg-neutral/50",
-          "rounded-md px-2 py-1 transition duration-150 text-base"
+          "rounded-md px-2 py-1 transition duration-150 text-sm"
         )}
       >
         <strong className="whitespace-nowrap font-semibold">
@@ -72,3 +72,5 @@ export default async function RepositoryPageTitle({
     </div>
   );
 }
+
+export default RepositoryPageTitle;

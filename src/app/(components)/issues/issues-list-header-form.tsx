@@ -120,11 +120,11 @@ export function IssuesListHeaderForm({
                 onClick={onCloseList}
                 className={clsx(
                   className,
-                  "flex items-center gap-2 hover:bg-neutral/50"
+                  "flex items-center gap-2 hover:bg-neutral/50 text-xs"
                 )}
               >
                 <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
-                  {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
+                  {selected && <CheckIcon className="h-4 w-4 flex-shrink-0" />}
                 </div>
                 <span>{text}</span>
               </IssueSearchLink>
@@ -135,10 +135,10 @@ export function IssuesListHeaderForm({
               <a
                 href="https://docs.github.com/articles/searching-issues"
                 target="_blank"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs"
               >
                 <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
-                  <LinkExternalIcon className="h-5 w-5 flex-shrink-0" />
+                  <LinkExternalIcon className="h-4 w-4 flex-shrink-0" />
                 </div>
                 <strong className="font-medium">
                   View advanced search syntax

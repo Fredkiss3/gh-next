@@ -3,7 +3,7 @@ import * as React from "react";
 // components
 import Link from "next/link";
 import { LoadingIndicator } from "./loading-indicator";
-import { ReactAriaButton, ReactAriaLink } from "./react-aria-button";
+import { ReactAriaButton } from "./react-aria-button";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -69,14 +69,14 @@ export const Button = React.forwardRef<
     ("aria-disabled" in restProps && restProps["aria-disabled"] === true);
 
   const commonClasses = clsx(
-    "items-center justify-center gap-2 ",
+    "items-center justify-center gap-2 text-sm",
     "rounded-md border-2 font-medium outline-accent border-gray-900/10",
     "transition duration-150",
     "disabled:opacity-50 focus-visible:outline-none",
     {
       "inline-flex": !isBlock,
       flex: isBlock,
-      "p-2": isSquared,
+      "p-1.5": isSquared,
       "py-1.5 px-3": !isSquared,
       "bg-success text-white shadow-subtle": variant === "primary",
       "bg-subtle text-danger border-neutral": variant === "danger",
@@ -109,18 +109,16 @@ export const Button = React.forwardRef<
     const { href, children, ...linkProps } = restProps;
 
     return (
-      <ReactAriaLink>
-        <Link
-          href={href}
-          ref={ref as React.Ref<HTMLAnchorElement>}
-          className={commonClasses}
-          {...linkProps}
-        >
-          {renderLeadingIcon?.("h-5 w-5 flex-shrink-0")}
-          {children}
-          {renderTrailingIcon?.("h-5 w-5 flex-shrink-0")}
-        </Link>
-      </ReactAriaLink>
+      <Link
+        href={href}
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        className={commonClasses}
+        {...linkProps}
+      >
+        {renderLeadingIcon?.("h-4 w-4 flex-shrink-0")}
+        {children}
+        {renderTrailingIcon?.("h-4 w-4 flex-shrink-0")}
+      </Link>
     );
   } else if (isButton(restProps)) {
     const {
@@ -152,10 +150,10 @@ export const Button = React.forwardRef<
         <span className="sr-only" aria-live="assertive">
           {isLoading ? loadingMessage : ""}
         </span>
-        {isLoading && <LoadingIndicator className="h-5 w-5 flex-shrink-0" />}
-        {!isLoading && renderLeadingIcon?.("h-5 w-5 flex-shrink-0")}
+        {isLoading && <LoadingIndicator className="h-4 w-4 flex-shrink-0" />}
+        {!isLoading && renderLeadingIcon?.("h-4 w-4 flex-shrink-0")}
         {children}
-        {renderTrailingIcon?.("h-5 w-5 flex-shrink-0")}
+        {renderTrailingIcon?.("h-4 w-4 flex-shrink-0")}
       </ReactAriaButton>
     );
   }

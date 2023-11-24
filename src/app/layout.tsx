@@ -6,6 +6,7 @@ import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
 import { Toaster } from "~/app/(components)/toast/toaster.server";
 import { IconSwitcher } from "~/app/(components)/icon-switcher";
 import { TopLoader } from "~/app/(components)/top-loader";
+import { SkipToMainButton } from "~/app/(components)/skip-to-main-button";
 
 // utils
 import { GeistSans } from "geist/font";
@@ -17,9 +18,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s · Fredkiss3/gh-next",
-    default:
-      "Fredkiss3/gh-next · A minimal Github clone built on nextjs app router"
+    template: "%s · gh-next",
+    default: "gh-next · A minimal Github clone built on nextjs app router"
   },
   description: "A clone of github"
 };
@@ -53,6 +53,7 @@ export default async function RootLayout({
         className={clsx(GeistSans.className, "bg-backdrop")}
         suppressHydrationWarning
       >
+        <SkipToMainButton />
         <IconSwitcher />
 
         <TopLoader />

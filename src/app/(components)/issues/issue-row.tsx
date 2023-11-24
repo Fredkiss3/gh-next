@@ -41,6 +41,7 @@ export type IssueRowProps = IssueSearchItem & {
   authedUserAvatar?: string;
   authedUserUsername?: string;
   emojiSort?: EmojiSortKey | null;
+  className?: string;
 };
 
 export function IssueRow({
@@ -62,6 +63,7 @@ export function IssueRow({
   commented_user,
   repository_name,
   repository_owner,
+  className,
   ...reactionCounts
 }: IssueRowProps) {
   let emojiCount: number = 0;
@@ -93,15 +95,22 @@ export function IssueRow({
   }
 
   return (
-    <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
+    <div
+      className={clsx(
+        "relative flex w-full items-start gap-2.5 py-2 px-4",
+        "hover:bg-subtle",
+        "border-b border-neutral/70",
+        className
+      )}
+    >
       {status === "OPEN" && (
-        <IssueOpenedIcon className="h-5 w-5 flex-shrink-0 text-success" />
+        <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-1" />
       )}
       {status === "CLOSED" && (
-        <IssueClosedIcon className="h-5 w-5 flex-shrink-0 text-done" />
+        <IssueClosedIcon className="h-4 w-4 flex-shrink-0 text-done relative top-1" />
       )}
       {status === "NOT_PLANNED" && (
-        <SkipIcon className="h-5 w-5 flex-shrink-0 text-grey" />
+        <SkipIcon className="h-4 w-4 flex-shrink-0 text-grey relative top-1" />
       )}
 
       <Link
@@ -113,7 +122,7 @@ export function IssueRow({
 
       <div
         className={clsx(
-          "flex w-full flex-col items-start gap-2 sm:w-[70%] md:w-full"
+          "flex w-full flex-col items-start gap-1.5 sm:w-[70%] md:w-full"
         )}
       >
         <div className="flex-auto flex-wrap gap-2">
@@ -144,7 +153,10 @@ export function IssueRow({
                     "ring-accent rounded-md focus:outline-none focus:ring-2"
                   )}
                 >
-                  <MarkdownTitle title={title} className="font-semibold" />
+                  <MarkdownTitle
+                    title={title}
+                    className="font-semibold text-base"
+                  />
                 </Link>
               </ReactAriaLink>
             </HoverCard>
@@ -187,7 +199,7 @@ export function IssueRow({
           )}
         </div>
 
-        <small className="text-grey">
+        <small className="text-grey text-xs">
           {formatIssueRowSubtext({
             number,
             status_updated_at,
@@ -239,7 +251,7 @@ export function IssueRow({
         </small>
       </div>
 
-      <div className="hidden w-[30%] items-center justify-end gap-8 sm:flex">
+      <div className="hidden w-[30%] items-center justify-end gap-8 sm:flex text-sm">
         <IssueRowAvatarStack users={assigned_to} />
         {no_of_comments > 0 && (
           <Link
