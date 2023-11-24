@@ -61,6 +61,9 @@ dependencies:
   nextjs-toploader:
     specifier: ^1.6.4
     version: 1.6.4(next@14.0.3)(react-dom@18.2.0)(react@18.2.0)
+  nprogress:
+    specifier: ^0.2.0
+    version: 0.2.0
   pg:
     specifier: ^8.11.3
     version: 8.11.3
@@ -138,6 +141,9 @@ devDependencies:
   '@types/node':
     specifier: 20.5.7
     version: 20.5.7
+  '@types/nprogress':
+    specifier: ^0.2.3
+    version: 0.2.3
   '@types/pg':
     specifier: ^8.10.2
     version: 8.10.3
@@ -2286,9 +2292,8 @@ packages:
   /@types/node@20.5.7:
     resolution: {integrity: sha512-dP7f3LdZIysZnmvP3ANJYTSwg+wLLl8p7RqniVlV7j+oXSXAbt9h0WIBFmJy5inWZoX9wZN6eXx+YXd9Rh3RBA==}
 
-  /@types/nprogress@0.2.1:
-    resolution: {integrity: sha512-TYuyVnp+nOnimgdOydDIDYIxv2kSeuJZw4tF0p/KG7hpzcMF1WkHaREwM8O4blqfT1F7rq0nht6Ko2KVUfWzBA==}
-    dev: false
+  /@types/nprogress@0.2.3:
+    resolution: {integrity: sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==}
 
   /@types/pg@8.10.3:
     resolution: {integrity: sha512-BACzsw64lCZesclRpZGu55tnqgFAYcrCBP92xLh1KLypZLCOsvJTSTgaoFVTy3lCys/aZTQzfeDxtjwrvdzL2g==}
@@ -5145,7 +5150,7 @@ packages:
       react: '>= 16.0.0'
       react-dom: '>= 16.0.0'
     dependencies:
-      '@types/nprogress': 0.2.1
+      '@types/nprogress': 0.2.3
       next: 14.0.3(react-dom@18.2.0)(react@18.2.0)
       nprogress: 0.2.0
       prop-types: 15.8.1

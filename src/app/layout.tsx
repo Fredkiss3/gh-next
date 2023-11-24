@@ -4,7 +4,6 @@ import * as React from "react";
 // components
 import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
 import { Toaster } from "~/app/(components)/toast/toaster.server";
-import NextTopLoader from "nextjs-toploader";
 import { IconSwitcher } from "~/app/(components)/icon-switcher";
 
 // utils
@@ -14,6 +13,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
+import { TopLoader } from "~/app/(components)/top-loader";
 
 export const metadata: Metadata = {
   title: {
@@ -55,7 +55,7 @@ export default async function RootLayout({
       >
         <IconSwitcher />
 
-        {/* <NextTopLoader showSpinner={false} /> */}
+        <TopLoader />
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
 
