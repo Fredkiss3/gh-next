@@ -74,7 +74,7 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
         return (
           <IssueSearchLink
             filters={newFilters}
-            className={clsx(className, "flex items-center gap-4", {
+            className={clsx(className, "flex items-center gap-4 text-xs", {
               "hover:bg-neutral/50": !emoji,
               "justify-center rounded-md p-2 hover:bg-accent border border-transparent":
                 emoji,
@@ -85,8 +85,8 @@ export function IssueSortActionList({ children }: IssueSortActionListProps) {
           >
             {!emoji ? (
               <>
-                <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
-                  {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
+                <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center px-2">
+                  {selected && <CheckIcon className="h-4 w-4 flex-shrink-0" />}
                 </div>
                 <span>{text}</span>
               </>

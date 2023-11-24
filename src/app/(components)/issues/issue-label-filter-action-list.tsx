@@ -96,17 +96,18 @@ export function IssueLabelFilterActionList({
             filters={newFilters}
             className={clsx(
               className,
-              "inline-flex items-start gap-4 hover:bg-neutral/50 whitespace-nowrap w-full"
+              "inline-flex items-start gap-3 whitespace-nowrap w-full text-xs",
+              "hover:bg-neutral/50"
             )}
             onClick={onCloseList}
           >
             <div className="flex h-6 w-6 flex-shrink-0 items-start justify-center px-2">
-              {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
+              {selected && <CheckIcon className="h-4 w-4 flex-shrink-0" />}
             </div>
 
             {color && (
               <div
-                className="h-4 w-4 rounded-full flex-shrink-0"
+                className="h-3.5 w-3.5 rounded-full flex-shrink-0"
                 style={{ backgroundColor: color }}
               />
             )}

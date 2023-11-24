@@ -77,7 +77,7 @@ export const Button = React.forwardRef<
       "inline-flex": !isBlock,
       flex: isBlock,
       "p-1.5": isSquared,
-      "py-1 px-2.5": !isSquared,
+      "py-1.5 px-3": !isSquared,
       "bg-success text-white shadow-subtle": variant === "primary",
       "bg-subtle text-danger border-neutral": variant === "danger",
       "hover:bg-danger hover:text-white hover:border-danger aria-[current]:bg-danger aria-[current]:text-white aria-[current]:border-danger":

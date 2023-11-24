@@ -93,7 +93,7 @@ export function IssueRow({
   }
 
   return (
-    <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
+    <div className="relative flex w-full items-start gap-2.5 border-b border-neutral/70 py-2 px-4 hover:bg-subtle">
       {status === "OPEN" && (
         <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-1" />
       )}
@@ -113,7 +113,7 @@ export function IssueRow({
 
       <div
         className={clsx(
-          "flex w-full flex-col items-start gap-2 sm:w-[70%] md:w-full"
+          "flex w-full flex-col items-start gap-1.5 sm:w-[70%] md:w-full"
         )}
       >
         <div className="flex-auto flex-wrap gap-2">

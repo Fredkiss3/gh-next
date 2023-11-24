@@ -109,12 +109,13 @@ export function IssueAssigneeFilterActionList({
             filters={newFilters}
             className={clsx(
               className,
-              "flex items-center gap-4 hover:bg-neutral/50"
+              "flex items-center gap-4 text-xs",
+              "hover:bg-neutral/50"
             )}
             onClick={onCloseList}
           >
             <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center px-2">
-              {selected && <CheckIcon className="h-5 w-5 flex-shrink-0" />}
+              {selected && <CheckIcon className="h-4 w-4 flex-shrink-0" />}
             </div>
             {username && avatar && (
               <Avatar src={avatar} username={username} size="small" />

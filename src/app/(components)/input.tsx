@@ -100,7 +100,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             disabled={disabled}
             required={required}
             className={clsx(
-              "w-full bg-transparent focus:outline-none disabled:text-foreground/30",
+              "w-full bg-transparent focus:outline-none disabled:text-foreground/30 text-sm",
               inputClassName,
               {
                 "cursor-not-allowed": disabled
