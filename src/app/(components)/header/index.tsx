@@ -112,7 +112,7 @@ export async function Header({ children, pageTitle }: HeaderProps) {
             </React.Suspense>
           ) : (
             <Button
-              className="flex-shrink-0 !border-foreground !text-foreground"
+              className="flex-shrink-0 min-w-max !border-foreground !text-foreground"
               href="/login"
               variant="invisible"
             >
