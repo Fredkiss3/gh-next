@@ -5,6 +5,7 @@ import * as React from "react";
 import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
 import { Toaster } from "~/app/(components)/toast/toaster.server";
 import { IconSwitcher } from "~/app/(components)/icon-switcher";
+import { TopLoader } from "~/app/(components)/top-loader";
 
 // utils
 import { GeistSans } from "geist/font";
@@ -13,7 +14,6 @@ import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
-import { TopLoader } from "~/app/(components)/top-loader";
 
 export const metadata: Metadata = {
   title: {
