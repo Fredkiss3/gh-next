@@ -11,7 +11,7 @@ export function Badge({ label, className }: BadgeProps) {
     <span
       className={clsx(
         className,
-        "rounded-full border border-neutral bg-transparent px-2 text-sm font-normal text-grey"
+        "rounded-full border border-neutral bg-transparent px-2 text-xs font-normal text-grey"
       )}
     >
       {label}

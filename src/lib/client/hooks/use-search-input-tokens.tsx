@@ -90,7 +90,10 @@ export function useSearchInputTokens(
         }
         default: {
           terms.push(
-            <span key={`${key}-${index}`} className="text-foreground break-all">
+            <span
+              key={`${key}-${index}`}
+              className="text-foreground break-all text-sm"
+            >
               {part === " " && useHTMLSpace ? <>&nbsp;</> : part}
             </span>
           );
@@ -105,12 +108,12 @@ export function useSearchInputTokens(
 
 function SearchToken({ value }: { value: string }) {
   return (
-    <span className="inline-block text-accent bg-accent/10 rounded-md">
+    <span className="inline-block text-accent bg-accent/10 rounded-md text-sm">
       {value}
     </span>
   );
 }
 
 function SearchKey({ value }: { value: string }) {
-  return <span className="inline-block text-foreground">{value}:</span>;
+  return <span className="inline-block text-foreground text-sm">{value}:</span>;
 }

@@ -32,13 +32,21 @@ import {
 // types
 import type { EmojiSortKey } from "./issue-row";
 import { getAuthedUser } from "~/app/(actions)/auth";
+import { getRepositoryByOwnerAndName } from "~/app/(models)/repository";
 
 export type IssueListProps = {
   page?: string;
   searchQuery?: string;
+  user: string;
+  repository: string;
 };
 
-export async function IssueList({ page, searchQuery }: IssueListProps) {
+export async function IssueList({
+  page,
+  searchQuery,
+  user,
+  repository: repository_name
+}: IssueListProps) {
   const pageSchema = preprocess(
     (arg) => Number(arg),
     z.number().int().min(1).catch(1)
@@ -51,8 +59,11 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
 
   const baseURL = searchQuery ? `q=${searchQuery ?? ""}&page=` : `page=`;
 
-  const { issues, totalCount, noOfIssuesClosed, noOfIssuesOpen } =
-    await getIssueList(filters, currentPage);
+  const [{ issues, totalCount, noOfIssuesClosed, noOfIssuesOpen }, repository] =
+    await Promise.all([
+      getIssueList(filters, currentPage),
+      getRepositoryByOwnerAndName(user, repository_name)
+    ]);
 
   let paginationCount = totalCount;
   if (filters.is) {
@@ -68,7 +79,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
   return (
     <>
       {/* Header on Mobile */}
-      <div className="flex items-center gap-4 px-5  md:hidden md:px-0">
+      <div className="flex items-center gap-4 px-5 text-sm md:hidden md:px-0">
         <IssueSearchLink
           filters={{
             is: "open"
@@ -84,7 +95,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
           )}
           conserveCurrentFilters
         >
-          <IssueOpenedIcon className="h-5 w-5" />
+          <IssueOpenedIcon className="h-4 w-4" />
           <p>
             {noOfIssuesOpen}&nbsp;
             <span className="sr-only">
@@ -108,7 +119,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
             }
           )}
         >
-          <CheckIcon className="h-5 w-5" />
+          <CheckIcon className="h-4 w-4" />
           <span>
             {noOfIssuesClosed}&nbsp;
             <span className="sr-only">
@@ -124,16 +135,16 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
         <div
           className={clsx(
             "flex items-center justify-between gap-8",
-            "border-b border-neutral bg-subtle p-5 text-grey"
+            "border-b border-neutral bg-subtle p-4 text-grey"
           )}
         >
           <ul className="hidden items-center gap-4 md:flex">
             <li>
               <IssueSearchLink
                 className={clsx(
-                  "flex items-center gap-2",
+                  "flex items-center gap-2 rounded-md text-sm",
                   "transition duration-150",
-                  "focus:ring-2 ring-accent focus:outline-none rounded-md",
+                  "focus:ring-2 ring-accent focus:outline-none",
                   {
                     "font-semibold text-foreground": filters.is === "open"
                   }
@@ -143,7 +154,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
                 }}
                 conserveCurrentFilters
               >
-                <IssueOpenedIcon className="h-5 w-5" />
+                <IssueOpenedIcon className="h-4 w-4" />
                 <p>
                   {noOfIssuesOpen}&nbsp;
                   <span className="sr-only">
@@ -160,15 +171,15 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
                 }}
                 conserveCurrentFilters
                 className={clsx(
-                  "flex items-center gap-2",
+                  "flex items-center gap-2 rounded-md text-sm",
                   "transition duration-150",
-                  "focus:ring-2 ring-accent focus:outline-none rounded-md",
+                  "focus:ring-2 ring-accent focus:outline-none",
                   {
                     "font-semibold text-foreground": filters.is === "closed"
                   }
                 )}
               >
-                <CheckIcon className="h-5 w-5" />
+                <CheckIcon className="h-4 w-4" />
                 <span>
                   {noOfIssuesClosed}&nbsp;
                   <span className="sr-only">
@@ -191,12 +202,12 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
               <IssueAuthorFilterActionList>
                 <button
                   className={clsx(
-                    "flex items-center gap-2",
+                    "flex items-center gap-2 text-sm rounded-md",
                     "transition duration-150",
-                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                    "focus:ring-2 ring-accent focus:outline-none"
                   )}
                 >
-                  <span>Author</span> <TriangleDownIcon className="h-5 w-5" />
+                  <span>Author</span> <TriangleDownIcon className="h-4 w-4" />
                 </button>
               </IssueAuthorFilterActionList>
             </li>
@@ -204,12 +215,12 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
               <IssueLabelFilterActionList>
                 <button
                   className={clsx(
-                    "flex items-center gap-2",
+                    "flex items-center gap-2 text-sm rounded-md",
                     "transition duration-150",
-                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                    "focus:ring-2 ring-accent focus:outline-none"
                   )}
                 >
-                  <span>Label</span> <TriangleDownIcon className="h-5 w-5" />
+                  <span>Label</span> <TriangleDownIcon className="h-4 w-4" />
                 </button>
               </IssueLabelFilterActionList>
             </li>
@@ -217,12 +228,12 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
               <IssueAssigneeFilterActionList>
                 <button
                   className={clsx(
-                    "flex items-center gap-2",
+                    "flex items-center gap-2 text-sm rounded-md",
                     "transition duration-150",
-                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                    "focus:ring-2 ring-accent focus:outline-none"
                   )}
                 >
-                  <span>Assignee</span> <TriangleDownIcon className="h-5 w-5" />
+                  <span>Assignee</span> <TriangleDownIcon className="h-4 w-4" />
                 </button>
               </IssueAssigneeFilterActionList>
             </li>
@@ -230,12 +241,12 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
               <IssueSortActionList>
                 <button
                   className={clsx(
-                    "flex items-center gap-2",
+                    "flex items-center gap-2 text-sm rounded-md",
                     "transition duration-150",
-                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                    "focus:ring-2 ring-accent focus:outline-none"
                   )}
                 >
-                  <span>Sort</span> <TriangleDownIcon className="h-5 w-5" />
+                  <span>Sort</span> <TriangleDownIcon className="h-4 w-4" />
                 </button>
               </IssueSortActionList>
             </li>
@@ -245,7 +256,10 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
 
         {/* Issue content table - list */}
         {issues.length === 0 ? (
-          <EmptyState />
+          <EmptyState
+            user={repository!.owner.username}
+            repository={repository!.name}
+          />
         ) : (
           <ul>
             {issues.map((issue) => (
@@ -277,7 +291,7 @@ export async function IssueList({ page, searchQuery }: IssueListProps) {
   );
 }
 
-function EmptyState() {
+function EmptyState(props: { user: string; repository: string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 px-12 py-24">
       <IssueOpenedIcon className="h-6 w-6 text-grey" />
@@ -287,7 +301,10 @@ function EmptyState() {
       <p className="text-center text-lg text-grey">
         Either no issue matched your search or there is not issue yet in the
         database. <br /> You can still &nbsp;
-        <Link href="/issues/new" className="text-accent">
+        <Link
+          href={`/${props.user}/${props.repository}/issues/new`}
+          className="text-accent"
+        >
           create a new issue
         </Link>
         .

@@ -74,9 +74,9 @@ export default function LoginPage({
         </Card>
       </main>
 
-      <footer className="flex items-center justify-center gap-4 text-grey">
+      <footer className="flex items-center justify-center gap-4 text-grey text-xs">
         <Link href="/">
-          <MarkGithubIcon className="h-8 w-8" />
+          <MarkGithubIcon className="h-6 w-6" />
         </Link>
         <span>
           &copy; {new Date().getFullYear()} Design from Github, Inc. Code

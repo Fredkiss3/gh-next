@@ -18,9 +18,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s · Fredkiss3/gh-next",
-    default:
-      "Fredkiss3/gh-next · A minimal Github clone built on nextjs app router"
+    template: "%s · gh-next",
+    default: "gh-next · A minimal Github clone built on nextjs app router"
   },
   description: "A clone of github"
 };

@@ -10,10 +10,10 @@ import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
 
 export const metadata: Metadata = {
-  title: "Not implemented"
+  title: "Actions"
 };
 
-export default function Page(
+export default function ActionPage(
   props: PageProps<{ user: string; repository: string }>
 ) {
   return (

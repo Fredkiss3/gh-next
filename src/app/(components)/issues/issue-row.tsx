@@ -95,13 +95,13 @@ export function IssueRow({
   return (
     <div className="relative flex w-full items-start gap-4 border-b border-neutral/70 p-5 hover:bg-subtle">
       {status === "OPEN" && (
-        <IssueOpenedIcon className="h-5 w-5 flex-shrink-0 text-success" />
+        <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-1" />
       )}
       {status === "CLOSED" && (
-        <IssueClosedIcon className="h-5 w-5 flex-shrink-0 text-done" />
+        <IssueClosedIcon className="h-4 w-4 flex-shrink-0 text-done relative top-1" />
       )}
       {status === "NOT_PLANNED" && (
-        <SkipIcon className="h-5 w-5 flex-shrink-0 text-grey" />
+        <SkipIcon className="h-4 w-4 flex-shrink-0 text-grey relative top-1" />
       )}
 
       <Link
@@ -144,7 +144,10 @@ export function IssueRow({
                     "ring-accent rounded-md focus:outline-none focus:ring-2"
                   )}
                 >
-                  <MarkdownTitle title={title} className="font-semibold" />
+                  <MarkdownTitle
+                    title={title}
+                    className="font-semibold text-base"
+                  />
                 </Link>
               </ReactAriaLink>
             </HoverCard>
@@ -187,7 +190,7 @@ export function IssueRow({
           )}
         </div>
 
-        <small className="text-grey">
+        <small className="text-grey text-xs">
           {formatIssueRowSubtext({
             number,
             status_updated_at,

@@ -31,7 +31,7 @@ export function LabelBadge({ title, color, className }: LabelBadgeProps) {
         "--label-l": l
       }}
       className={clsx(
-        "label-badge rounded-full border px-2 text-sm font-normal",
+        "label-badge rounded-full border px-2 text-xs font-normal",
         className
       )}
     >

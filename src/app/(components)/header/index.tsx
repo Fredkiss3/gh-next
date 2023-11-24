@@ -39,7 +39,7 @@ export async function Header({ children, pageTitle }: HeaderProps) {
   }
 
   return (
-    <header className={clsx("bg-header border-b border-neutral")}>
+    <header className={clsx("bg-header border-b border-neutral text-sm")}>
       <div
         className={clsx(
           "z-5 relative flex h-16 items-center justify-between bg-header px-5 py-4",

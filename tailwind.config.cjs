@@ -14,6 +14,14 @@ module.exports = {
   darkMode: ['[data-theme="dark"]'],
   theme: {
     extend: {
+      fontSize: {
+        "3.5xl": [
+          "2rem",
+          {
+            lineHeight: "2.25rem"
+          }
+        ]
+      },
       colors: {
         disabled: `rgba(var(--disabled-color))`,
         grey: {

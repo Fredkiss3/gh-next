@@ -23,6 +23,7 @@ import Link from "next/link";
 // utils
 import { getSession } from "~/app/(actions)/auth";
 import { getGithubRepoData } from "~/app/(actions)/github";
+import { getRepositoryByOwnerAndName } from "~/app/(models)/repository";
 import {
   AUTHOR_AVATAR_URL,
   GITHUB_AUTHOR_USERNAME,
@@ -30,9 +31,12 @@ import {
 } from "~/lib/shared/constants";
 import { clsx } from "~/lib/shared/utils.shared";
 import { Skeleton } from "~/app/(components)/skeleton";
+import { notFound } from "next/navigation";
+
+// types
 import type { PageProps } from "~/lib/types";
 
-export default async function HomePage(
+export default async function RepositoryHomePage(
   props: PageProps<{
     user: string;
     repository: string;
@@ -40,16 +44,25 @@ export default async function HomePage(
 ) {
   return (
     <React.Suspense fallback={<HomePageSkeleton />}>
-      <HomePageContent params={props.params} />
+      <RepositoryHomePageContent params={props.params} />
     </React.Suspense>
   );
 }
-async function HomePageContent({
+async function RepositoryHomePageContent({
   params
 }: PageProps<{
   user: string;
   repository: string;
 }>) {
+  const repository = await getRepositoryByOwnerAndName(
+    params.user,
+    params.repository
+  );
+
+  if (!repository) {
+    notFound();
+  }
+
   const { user } = await getSession();
   const repositoryData = await getGithubRepoData();
   const hasStarred = Boolean(
@@ -70,15 +83,18 @@ async function HomePageContent({
           "xl:mx-8 xl:px-0"
         )}
       >
-        <h1 className="flex items-center gap-3 text-2xl font-semibold">
+        <h1 className="flex items-center gap-3 text-xl font-semibold">
           <Avatar
-            username={GITHUB_AUTHOR_USERNAME}
-            src={AUTHOR_AVATAR_URL}
+            username={repository.owner.username}
+            src={repository.owner.avatar_url}
             size="small"
           />
-          <span>gh-next</span>
+          <span>{repository.name}</span>
 
-          <Badge label="Public" />
+          <Badge
+            label={repository.is_public ? "Public" : "Private"}
+            className="relative top-0.5"
+          />
         </h1>
 
         <div className="flex items-center gap-3">
@@ -132,7 +148,7 @@ async function HomePageContent({
         id="repository-header-mobile"
         className={clsx(
           "px-5 pb-6",
-          "flex flex-col items-start gap-5 border-neutral",
+          "flex flex-col items-start gap-3 border-neutral",
           "sm:border-b",
           "md:hidden"
         )}
@@ -174,20 +190,20 @@ async function HomePageContent({
           </Button>
         </div>
 
-        <p className="text-lg text-grey">{repositoryData.description}</p>
+        <p className="text-grey">{repositoryData.description}</p>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-sm">
           <LinkIcon className="h-4 w-4 text-grey" />
           <a href={repositoryData.url} className="font-medium text-accent">
             {repositoryData.url}
           </a>
         </div>
 
-        <ul className="flex flex-wrap items-center gap-4">
+        <ul className="flex flex-wrap items-center gap-4 text-sm">
           <li>
             <Link
               className="group flex items-center gap-2 text-grey hover:text-accent"
-              href={`/${params.user}/${params.repository}/stargazers`}
+              href={`/${repository.owner.username}/${repository.name}/stargazers`}
             >
               <StarIcon className="h-4 w-4" />
               <div>
@@ -235,9 +251,9 @@ async function HomePageContent({
           </li>
         </ul>
 
-        <div className="flex items-center gap-2 text-grey">
+        <div className="flex items-center gap-2 text-grey text-sm">
           <GlobeIcon className="h-4 w-4" />
-          <span>Pulic repository</span>
+          <span>{repository.is_public ? "Pulic " : "Private "} repository</span>
         </div>
       </section>
 
@@ -259,11 +275,11 @@ async function HomePageContent({
             "md:flex"
           )}
         >
-          <div className="flex flex-col items-start gap-5 border-b border-neutral pb-6">
-            <h2 className="text-lg font-semibold">About</h2>
-            <p className="text-lg">{repositoryData.description}</p>
+          <div className="flex flex-col items-start gap-4 border-b border-neutral pb-6">
+            <h2 className="font-semibold">About</h2>
+            <p>{repositoryData.description}</p>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 text-sm">
               <LinkIcon className="h-4 w-4" />
               <a
                 href={repositoryData.url}
@@ -274,7 +290,7 @@ async function HomePageContent({
               </a>
             </div>
 
-            <ul className="flex flex-col items-start gap-3">
+            <ul className="flex flex-col items-start gap-2.5 text-sm">
               <li>
                 <a
                   href="#readme"
@@ -334,9 +350,10 @@ async function HomePageContent({
               </li>
             </ul>
           </div>
+
           <div className="flex flex-col items-start pb-6">
-            <h2 className="mb-5 text-lg font-semibold">Languages</h2>
-            <div className="mb-3 flex h-2 w-full rounded-md">
+            <h2 className="mb-4 font-semibold">Languages</h2>
+            <div className="mb-2 flex h-2 w-full rounded-md">
               {repositoryData.languages.map((lang, index) => (
                 <div
                   className={clsx("h-full", {
@@ -354,7 +371,7 @@ async function HomePageContent({
               ))}
             </div>
 
-            <ul className="flex flex-wrap items-start gap-2">
+            <ul className="flex flex-wrap items-start gap-2 text-xs">
               {repositoryData.languages.map((lang) => (
                 <li key={lang.color} className="flex items-center gap-1">
                   <div
@@ -384,16 +401,16 @@ async function ReadmeContent({ className }: { className?: string }) {
     <div className={className}>
       <div
         className={clsx(
-          "flex items-center gap-2 border border-neutral p-4",
+          "flex items-center gap-2 border border-neutral p-3",
           "sticky -top-1 z-10 bg-backdrop",
           "sm:rounded-t-md"
         )}
       >
         <button className="flex items-center justify-center rounded-md p-2 hover:bg-neutral/50">
-          <ListUnorderedIcon className="h-4 w-4 text-grey" />
+          <ListUnorderedIcon className="h-3.5 w-3.5 text-grey" />
         </button>
         <h2
-          className="scroll-mt-10 text-base font-semibold hover:text-accent hover:underline"
+          className="scroll-mt-10 text-sm font-semibold hover:text-accent hover:underline"
           id="readme"
         >
           <Link href="#readme">README.md</Link>
