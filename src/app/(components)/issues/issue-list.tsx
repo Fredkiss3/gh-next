@@ -262,7 +262,7 @@ export async function IssueList({
           />
         ) : (
           <ul>
-            {issues.map((issue) => (
+            {issues.map((issue, index) => (
               <li key={issue.number}>
                 <IssueRow
                   {...issue}
@@ -270,6 +270,9 @@ export async function IssueList({
                   authedUserId={authedUser?.id}
                   authedUserAvatar={authedUser?.avatar_url}
                   authedUserUsername={authedUser?.username}
+                  className={clsx({
+                    "border-b-0": index === issues.length - 1
+                  })}
                 />
               </li>
             ))}

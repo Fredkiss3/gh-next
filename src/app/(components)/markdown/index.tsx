@@ -96,7 +96,7 @@ export async function MarkdownContent({
   console.timeEnd(`[${dt}] Markdown Rendering`);
 
   return (
-    <article className={clsx(className, "break-words leading-normal text-sm")}>
+    <article className={clsx("break-words leading-normal text-sm", className)}>
       {generatedMdxModule.default({ components })}
     </article>
   );

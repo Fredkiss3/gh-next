@@ -426,7 +426,7 @@ async function ReadmeContent({ className }: { className?: string }) {
         <Markdown
           linkHeaders
           content={readmeContent}
-          className="w-full max-w-full px-8 pb-8 pt-4"
+          className="w-full max-w-full px-8 pb-8 pt-4 text-base"
         />
       </div>
     </div>

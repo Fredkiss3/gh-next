@@ -41,6 +41,7 @@ export type IssueRowProps = IssueSearchItem & {
   authedUserAvatar?: string;
   authedUserUsername?: string;
   emojiSort?: EmojiSortKey | null;
+  className?: string;
 };
 
 export function IssueRow({
@@ -62,6 +63,7 @@ export function IssueRow({
   commented_user,
   repository_name,
   repository_owner,
+  className,
   ...reactionCounts
 }: IssueRowProps) {
   let emojiCount: number = 0;
@@ -93,7 +95,14 @@ export function IssueRow({
   }
 
   return (
-    <div className="relative flex w-full items-start gap-2.5 border-b border-neutral/70 py-2 px-4 hover:bg-subtle">
+    <div
+      className={clsx(
+        "relative flex w-full items-start gap-2.5 py-2 px-4",
+        "hover:bg-subtle",
+        "border-b border-neutral/70",
+        className
+      )}
+    >
       {status === "OPEN" && (
         <IssueOpenedIcon className="h-4 w-4 flex-shrink-0 text-success relative top-1" />
       )}
