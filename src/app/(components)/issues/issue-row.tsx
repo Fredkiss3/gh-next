@@ -242,7 +242,7 @@ export function IssueRow({
         </small>
       </div>
 
-      <div className="hidden w-[30%] items-center justify-end gap-8 sm:flex">
+      <div className="hidden w-[30%] items-center justify-end gap-8 sm:flex text-sm">
         <IssueRowAvatarStack users={assigned_to} />
         {no_of_comments > 0 && (
           <Link
