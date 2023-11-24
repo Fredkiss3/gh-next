@@ -1,13 +1,14 @@
-import type { Session } from "~/lib/server/session.server";
-import type { User } from "~/lib/server/db/schema/user.sql";
-
-export interface PageProps<
+export type PageProps<
   TParams extends Record<string, string> = {},
   TSearchParams extends Record<string, string | string[]> = {}
-> {
+> = {
   params: TParams;
   searchParams?: Partial<TSearchParams>;
-}
+};
+export type LayoutProps<TParams extends Record<string, string> = {}> = {
+  params: TParams;
+  children: React.ReactNode;
+};
 
 export type FormErrors = Record<string, string[]> | null | undefined;
 export type FormDefaultValues =
