@@ -4,8 +4,8 @@ import * as React from "react";
 // components
 import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
 import { Toaster } from "~/app/(components)/toast/toaster.server";
-import NextTopLoader from "nextjs-toploader";
 import { IconSwitcher } from "~/app/(components)/icon-switcher";
+import { TopLoader } from "~/app/(components)/top-loader";
 
 // utils
 import { GeistSans } from "geist/font";
@@ -55,7 +55,7 @@ export default async function RootLayout({
       >
         <IconSwitcher />
 
-        {/* <NextTopLoader showSpinner={false} /> */}
+        <TopLoader />
         {children}
         {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
 
