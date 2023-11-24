@@ -15,7 +15,10 @@ export default async function AppLayout({
   return (
     <>
       <Header pageTitle={page_title}>{header_subnav}</Header>
-      <main className={clsx("mx-auto my-5 max-w-[1270px]", "md:my-6")}>
+      <main
+        id="main-content"
+        className={clsx("mx-auto my-5 max-w-[1270px]", "md:my-6")}
+      >
         {children}
       </main>
       <Footer />

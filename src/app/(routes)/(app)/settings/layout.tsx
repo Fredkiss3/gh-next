@@ -17,6 +17,7 @@ export default async function SettingsLayout({
   return (
     <>
       <main
+        id="main-content"
         className={clsx(
           "mx-auto my-5 flex max-w-[1270px] flex-col gap-6 px-5",
           "md:my-6 md:px-8"

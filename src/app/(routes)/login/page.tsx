@@ -23,7 +23,10 @@ export default function LoginPage({
 
   return (
     <>
-      <main className="flex w-full flex-col items-center justify-center gap-4 p-8">
+      <main
+        id="main-content"
+        className="flex w-full flex-col items-center justify-center gap-4 p-8"
+      >
         <h1 className="text-3xl font-semibold">Sign in</h1>
         <Card className="flex max-w-[400px] flex-col gap-8">
           <div>
@@ -71,7 +74,7 @@ export default function LoginPage({
         </Card>
       </main>
 
-      <div className="flex items-center justify-center gap-4 text-grey">
+      <footer className="flex items-center justify-center gap-4 text-grey">
         <Link href="/">
           <MarkGithubIcon className="h-8 w-8" />
         </Link>
@@ -94,7 +97,7 @@ export default function LoginPage({
             source code
           </a>
         </span>
-      </div>
+      </footer>
     </>
   );
 }

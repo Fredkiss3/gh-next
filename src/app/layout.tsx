@@ -6,6 +6,7 @@ import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
 import { Toaster } from "~/app/(components)/toast/toaster.server";
 import { IconSwitcher } from "~/app/(components)/icon-switcher";
 import { TopLoader } from "~/app/(components)/top-loader";
+import { SkipToMainButton } from "~/app/(components)/skip-to-main-button";
 
 // utils
 import { GeistSans } from "geist/font";
@@ -53,6 +54,7 @@ export default async function RootLayout({
         className={clsx(GeistSans.className, "bg-backdrop")}
         suppressHydrationWarning
       >
+        <SkipToMainButton />
         <IconSwitcher />
 
         <TopLoader />
