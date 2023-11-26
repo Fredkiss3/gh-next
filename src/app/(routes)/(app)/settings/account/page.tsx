@@ -15,14 +15,14 @@ export const metadata: Metadata = {
   title: "Account settings"
 };
 
-export default async function Page() {
+export default async function AccountSettingsPage() {
   await redirectIfNotAuthed("/settings/account");
 
   const user = (await getAuthedUser())!;
   return (
     <div className="flex flex-col gap-24">
       <section className="flex flex-col gap-4 md:gap-8">
-        <h2 className="border-b border-neutral pb-2.5 text-3xl font-medium">
+        <h2 className="border-b border-neutral pb-2.5 text-2xl font-medium">
           Update your public profile
         </h2>
 
@@ -38,14 +38,14 @@ export default async function Page() {
       </section>
 
       <section className="flex flex-col gap-4 md:gap-8">
-        <h2 className="border-b border-neutral py-2.5 text-3xl font-medium text-danger">
+        <h2 className="border-b border-neutral py-2.5 text-2xl font-medium text-danger">
           Danger Zone
         </h2>
 
         <div className="rounded-md border border-danger p-4">
           <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
             <div className="flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">Delete your account</h3>
+              <h3 className="text-lg font-semibold">Delete your account</h3>
               <p>
                 This will delete your mentions, comments and issues references
                 in this website. It won&rsquo;t have any effect on your real

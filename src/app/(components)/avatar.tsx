@@ -25,7 +25,7 @@ export function Avatar({
         {
           "h-3.5 w-3.5": size === "x-small",
           "h-5 w-5": size === "small",
-          "h-16 w-16": size === "large",
+          "h-14 w-14": size === "large",
           "h-8 w-8": size === "medium"
         },
         className

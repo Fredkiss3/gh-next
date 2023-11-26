@@ -14,13 +14,13 @@ export const metadata: Metadata = {
   title: "Appearance"
 };
 
-export default async function Page() {
+export default async function AppearanceSettingsPage() {
   await redirectIfNotAuthed("/settings/appearance");
   const theme = await getTheme();
   return (
     <div>
       <section className="flex flex-col gap-4 md:gap-8">
-        <h2 className="border-b border-neutral py-2.5 text-3xl font-medium">
+        <h2 className="border-b border-neutral py-2.5 text-2xl font-medium">
           Theme preferences
         </h2>
 

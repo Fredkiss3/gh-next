@@ -87,7 +87,7 @@ export function DropdownMenu({
           items={items}
         >
           {(item) => (
-            <MenuItem className="focus-visible:outline-none">
+            <MenuItem className="focus-visible:outline-none text-sm">
               {({ isHovered, isFocused, isPressed, isFocusVisible }) => {
                 const Icon = item.icon;
                 if (isDropdownMenuButton(item)) {
@@ -107,7 +107,7 @@ export function DropdownMenu({
                     >
                       {Icon && (
                         <Icon
-                          className="h-5 w-5 flex-shrink-0 text-grey"
+                          className="h-4 w-4 flex-shrink-0 text-grey"
                           aria-label=""
                         />
                       )}
@@ -132,7 +132,7 @@ export function DropdownMenu({
                     >
                       {Icon && (
                         <Icon
-                          className="h-5 w-5 flex-shrink-0 text-grey"
+                          className="h-4 w-4 flex-shrink-0 text-grey"
                           aria-label=""
                         />
                       )}

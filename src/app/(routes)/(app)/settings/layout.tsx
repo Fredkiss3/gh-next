@@ -27,8 +27,8 @@ export default async function SettingsLayout({
           <Avatar username={user.username} src={user.avatar_url} size="large" />
 
           <div>
-            <h1 className="text-xl font-semibold">{user.username}</h1>
-            <p className="text-grey">Your personnal account</p>
+            <h1 className="text-lg font-semibold">{user.username}</h1>
+            <p className="text-grey text-sm">Your personnal account</p>
           </div>
         </section>
 

@@ -28,7 +28,7 @@ export function VerticalNavLink({
     <Link
       {...props}
       aria-current={isActive && "page"}
-      className={clsx("group relative w-full py-3", {
+      className={clsx("group relative w-full py-3 text-sm", {
         "font-medium before:absolute before:-left-1.5": isActive,
         "before:h-[calc(100%-16px)] before:w-1 before:rounded-md before:bg-accent":
           isActive,
