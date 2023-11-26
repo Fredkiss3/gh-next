@@ -245,27 +245,7 @@ function issueSearchfiltersToSQLConditions(
   includeStatusFilter: boolean = true,
   currentUser?: User | null
 ) {
-  const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
-
-  if (!filters.in) {
-    filters.in = new Set(IN_FILTERS);
-  }
-
-  if (filters.in) {
-    const inFilters = [];
-    const searchQuery = `%${query ?? ""}%`;
-    if (filters.in.has("title")) {
-      inFilters.push(ilike(issues.title, searchQuery));
-    }
-    if (filters.in.has("body")) {
-      inFilters.push(ilike(issues.body, searchQuery));
-    }
-    if (filters.in.has("comments")) {
-      inFilters.push(ilike(comments.content, searchQuery));
-    }
-    queryFilters = or(...inFilters);
-  }
 
   if (filters.author || filters["-author"]) {
     if (filters["-author"]) {
@@ -552,6 +532,24 @@ function issueSearchfiltersToSQLConditions(
       queryFilters
     );
   }
+
+  const query = filters.query;
+  if (!filters.in) {
+    filters.in = new Set(IN_FILTERS);
+  }
+
+  const inFilters = [];
+  const searchQuery = `%${query ?? ""}%`;
+  if (filters.in.has("title")) {
+    inFilters.push(ilike(issues.title, searchQuery));
+  }
+  if (filters.in.has("body")) {
+    inFilters.push(ilike(issues.body, searchQuery));
+  }
+  if (filters.in.has("comments")) {
+    inFilters.push(ilike(comments.content, searchQuery));
+  }
+  queryFilters = or(...inFilters);
 
   return queryFilters;
 }
