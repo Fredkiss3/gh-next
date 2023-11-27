@@ -68,8 +68,7 @@ export async function MarkdownContent({
   className,
   linkHeaders = false,
   editableCheckboxes = false,
-  repository:
-    currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
+  repository: currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
 }: MarkdownProps) {
   const dt = new Date().getTime();
   console.time(`[${dt}] Markdown Rendering`);
@@ -106,7 +105,7 @@ async function processMarkdownContentAndGetReferences(
   content: string,
   repository: string
 ) {
-  let references: Reference[] = [];
+  const references: Reference[] = [];
 
   // preprocess links & mentions
   const preprocessedContent = await remark()

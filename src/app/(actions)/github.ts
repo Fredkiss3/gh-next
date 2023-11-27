@@ -133,9 +133,7 @@ export const getGithubRepoData = cache(async function () {
 
       while (hasNextPage) {
         const {
-          repository: {
-            stargazers: { pageInfo, edges }
-          }
+          repository: { stargazers: { pageInfo, edges } }
         } = await fetchFromGithubAPI<StargazersResponse>(stargazersQuery, {
           cursor: nextCursor,
           repoName: GITHUB_REPOSITORY_NAME,
