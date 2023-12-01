@@ -6,4 +6,12 @@ declare global {
       crypto: Crypto;
     }
   }
+
+  type RSCManifest = {
+    clientModules?: Record<string, any>;
+    moduleLoading?: Record<string, any>;
+    ssrModuleMapping?: Record<string, any>;
+  };
+
+  var __RSC_MANIFEST: Record<string, RSCManifest> | null;
 }
