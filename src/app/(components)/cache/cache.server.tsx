@@ -10,29 +10,27 @@ import { getClientManifest } from "~/app/(components)/cache/manifest";
 import { kv } from "~/lib/server/kv/index.server";
 
 // types
-export type CacheProps<T> = {
-  Component: (props: T) => React.ReactNode | Promise<React.ReactNode>;
-  props: T;
+export type CacheProps = {
   id: string;
   ttl: number;
-  bypassCache?: boolean;
+  bypass?: boolean;
   debug?: boolean;
+  children?: React.ReactNode;
 };
 
 /**
  * Component for caching RSCs
  * it uses REDIS to cache the payload
  */
-export async function Cache<T extends Record<string, any>>({
-  Component,
-  props,
+export async function Cache({
   id,
   ttl,
-  bypassCache = false,
-  debug = false
-}: CacheProps<T>) {
-  if (bypassCache) {
-    return <Component {...props} />;
+  bypass = false,
+  debug = false,
+  children
+}: CacheProps) {
+  if (bypass) {
+    return <>{children}</>;
   }
 
   let cachedPayload = await kv.get<{
@@ -40,10 +38,7 @@ export async function Cache<T extends Record<string, any>>({
   }>(id);
 
   if (!cachedPayload) {
-    const stream = RSDW.renderToReadableStream(
-      <Component {...props} />,
-      getClientManifest()
-    );
+    const stream = RSDW.renderToReadableStream(children, getClientManifest());
 
     cachedPayload = {
       rsc: await streamToString(stream)

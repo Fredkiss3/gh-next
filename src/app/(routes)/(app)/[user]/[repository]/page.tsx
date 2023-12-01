@@ -435,15 +435,15 @@ async function ReadmeContent(props: {
         )}
       >
         <Cache
-          Component={Markdown}
-          props={{
-            linkHeaders: true,
-            content: readmeContent,
-            className: "w-full max-w-full px-8 pb-8 pt-4 text-base"
-          }}
           id={`${props.user}/${props.repository}/readme-${updatedAt}`}
           ttl={THIRTY_MINUTES_IN_SECONDS}
-        />
+        >
+          <Markdown
+            linkHeaders
+            content={readmeContent}
+            className="w-full max-w-full px-8 pb-8 pt-4 text-base"
+          />
+        </Cache>
       </div>
     </div>
   );

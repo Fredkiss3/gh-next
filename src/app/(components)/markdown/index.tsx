@@ -68,10 +68,12 @@ export async function MarkdownContent({
   className,
   linkHeaders = false,
   editableCheckboxes = false,
-  repository: currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
+  repository:
+    currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
 }: MarkdownProps) {
   const dt = new Date().getTime();
-  console.time(`[${dt}] Markdown Rendering`);
+
+  console.time(`\n\x1b[34m[${dt}] \x1b[33m Markdown Rendering \x1b[37m`);
 
   const { processedContent, references } =
     await processMarkdownContentAndGetReferences(content, currentRepository);
@@ -92,7 +94,7 @@ export async function MarkdownContent({
     currentRepository
   });
 
-  console.timeEnd(`[${dt}] Markdown Rendering`);
+  console.timeEnd(`\n\x1b[34m[${dt}] \x1b[33m Markdown Rendering \x1b[37m`);
 
   return (
     <article className={clsx("break-words leading-normal text-sm", className)}>
