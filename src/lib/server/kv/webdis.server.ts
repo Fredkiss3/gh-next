@@ -43,10 +43,8 @@ export class WebdisKV implements KVStore {
       body: body ?? undefined
     }).then(async (r) => {
       const text = await r.text();
-
       console.log({
         key,
-        text,
         fullURL,
         status: { number: r.status, text: r.statusText }
       });

@@ -35,12 +35,12 @@ declare module "react-server-dom-webpack/client.edge" {
         moduleMap: any;
       };
     }
-  );
+  ): Promise<React.ReactNode>;
 }
 
 declare module "react-server-dom-webpack/client" {
   export function createFromReadableStream(
     stream: ReadableStream,
     options?: Record<string, any>
-  );
+  ): Promise<React.ReactNode>;
 }

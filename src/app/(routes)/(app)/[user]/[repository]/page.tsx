@@ -20,6 +20,7 @@ import { Button } from "~/app/(components)/button";
 import { Markdown } from "~/app/(components)/markdown";
 import Link from "next/link";
 import { Cache } from "~/app/(components)/cache/cache.server";
+import { Skeleton } from "~/app/(components)/skeleton";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
@@ -31,8 +32,8 @@ import {
   GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
 import { clsx } from "~/lib/shared/utils.shared";
-import { Skeleton } from "~/app/(components)/skeleton";
 import { notFound } from "next/navigation";
+import { CacheKeys } from "~/lib/server/cache-keys.server";
 
 // types
 import type { PageProps } from "~/lib/types";
@@ -435,7 +436,7 @@ async function ReadmeContent(props: {
         )}
       >
         <Cache
-          id={`${props.user}/${props.repository}/readme-${updatedAt}`}
+          id={CacheKeys.readme(props.user, props.repository, updatedAt)}
           ttl={THIRTY_MINUTES_IN_SECONDS}
         >
           <Markdown

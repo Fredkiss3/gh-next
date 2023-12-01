@@ -38,10 +38,13 @@ export async function Cache({
   }>(id);
 
   if (!cachedPayload) {
-    const stream = RSDW.renderToReadableStream(children, getClientManifest());
+    const rscStream = RSDW.renderToReadableStream(
+      children,
+      getClientManifest()
+    );
 
     cachedPayload = {
-      rsc: await streamToString(stream)
+      rsc: await streamToString(rscStream)
     };
     await kv.set(id, cachedPayload, ttl);
   }

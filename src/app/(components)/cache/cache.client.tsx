@@ -16,18 +16,19 @@ function stringToStream(input: string) {
 }
 
 export function CacheClient({ payload }: { payload: string }) {
-  const cache: { current: Promise<React.ReactNode> | null } = { current: null };
-  const stream = stringToStream(payload);
+  let rscPromise: Promise<React.ReactNode> | null = null;
+  const rscStrem = stringToStream(payload);
 
-  // SSR case
+  // Render to HTML
   if (typeof window === "undefined") {
-    cache.current = RSDWSSr.createFromReadableStream(stream, getSSRManifest());
+    rscPromise = RSDWSSr.createFromReadableStream(rscStrem, getSSRManifest());
   }
 
-  // CSR Case
-  if (!cache.current) {
-    cache.current = RSDW.createFromReadableStream(stream, {});
+  // Hydrate or CSR
+  if (!rscPromise) {
+    rscPromise = RSDW.createFromReadableStream(rscStrem, {});
   }
-  const el = React.use(cache.current!);
+
+  const el = React.use(rscPromise);
   return <>{el}</>;
 }
