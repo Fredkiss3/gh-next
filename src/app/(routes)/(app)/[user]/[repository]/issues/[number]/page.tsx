@@ -3,19 +3,27 @@ import "server-only";
 // components
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { Markdown } from "~/app/(components)/markdown";
+import { Cache } from "~/app/(components)/cache/cache.server";
 
 // utils
 import { notFound } from "next/navigation";
 import { preprocess, z } from "zod";
 import { getIssueDetail } from "~/app/(actions)/issue";
+import { CacheKeys } from "~/lib/server/cache-keys.server";
 
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
 
+type IssueDetailPageProps = PageProps<{
+  user: string;
+  repository: string;
+  number: string;
+}>;
+
 export async function generateMetadata({
   params
-}: PageProps<{ number: string }>): Promise<Metadata> {
+}: IssueDetailPageProps): Promise<Metadata> {
   const issueNumberResult = preprocess(
     (arg) => Number(arg),
     z.number()
@@ -38,8 +46,21 @@ export async function generateMetadata({
 
 export default async function IssueDetailPage({
   params
-}: PageProps<{ number: string }>) {
-  const [issue] = await getIssueDetail(Number(params.number));
+}: IssueDetailPageProps) {
+  const issueNumberResult = preprocess(
+    (arg) => Number(arg),
+    z.number()
+  ).safeParse(params.number);
+
+  if (!issueNumberResult.success) {
+    notFound();
+  }
+
+  const issueNo = issueNumberResult.data;
+  const [issue] = await getIssueDetail(issueNo);
+  if (!issue) {
+    notFound();
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -53,7 +74,16 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        <Markdown content={issue.body} />
+        <Cache
+          id={CacheKeys.issues({
+            user: params.user,
+            repo: params.repository,
+            number: issueNo,
+            updatedAt: issue.updated_at.getTime()
+          })}
+        >
+          <Markdown content={issue.body} />
+        </Cache>
         {/* <Markdown
           content={`
 ## Some references:
