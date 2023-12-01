@@ -8,10 +8,12 @@ export class WebdisKV implements KVStore {
     const authString = `${env.REDIS_HTTP_USERNAME}:${env.REDIS_HTTP_PASSWORD}`;
     const [key, ...restArgs] = args;
 
+    // we separate the body from the rest of the args
+    // this is only for SET* commands
     let body: string | null = null;
-
     const urlParts = [env.KV_PREFIX + key, ...restArgs];
     const partsForTheURL: string[] = [];
+
     for (let i = 0; i < urlParts.length; i++) {
       const part = urlParts[i];
 
@@ -30,7 +32,9 @@ export class WebdisKV implements KVStore {
         .map((arg) =>
           typeof arg === "string"
             ? encodeURIComponent(arg.replaceAll("/", "-"))
-            : arg
+            : // if we dont replace `/` with something else
+              // webdis will consider them as `/` even though they are encoded as `%2F`
+              arg
         )
         .join("/");
 

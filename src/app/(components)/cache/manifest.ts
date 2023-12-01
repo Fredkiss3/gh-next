@@ -1,12 +1,12 @@
 export function getClientManifest() {
-  let clientManifest: Record<string, any> = {};
+  let clientManifest: ClientManifest = {};
 
   // we concatennate all the manifest for all pages
   if (globalThis.__RSC_MANIFEST) {
     const allManifests = Object.values(globalThis.__RSC_MANIFEST);
     for (const rscManifest of allManifests) {
       clientManifest = {
-        ...clientManifest.clientModules,
+        ...clientManifest,
         ...rscManifest.clientModules
       };
     }

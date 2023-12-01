@@ -40,11 +40,16 @@ export async function Cache({
   if (!cachedPayload) {
     const rscStream = RSDW.renderToReadableStream(
       children,
+      // the client manifest is required for react to resolve
+      // all the clients components and where to import them
+      // they will be inlined into the RSC payload as references
+      // React will use those references during SSR to resolve
+      // the client components
       getClientManifest()
     );
 
     cachedPayload = {
-      rsc: await streamToString(rscStream)
+      rsc: await transformStreamToString(rscStream)
     };
     await kv.set(id, cachedPayload, ttl);
   }
@@ -56,7 +61,7 @@ export async function Cache({
   return <CacheClient payload={cachedPayload.rsc} />;
 }
 
-async function streamToString(stream: ReadableStream) {
+async function transformStreamToString(stream: ReadableStream) {
   const reader = stream.getReader();
   const textDecoder = new TextDecoder();
   let result = "";

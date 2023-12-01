@@ -14,7 +14,6 @@ declare module "react-server-dom-webpack/server.edge" {
   export type Options = {
     identifierPrefix?: string;
     signal?: AbortSignal;
-    // context?: Array<[string, ServerContextJSONValue]>;
     onError?: (error: unknown) => void;
     onPostpone?: (reason: string) => void;
   };
