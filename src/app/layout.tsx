@@ -15,6 +15,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
+import { XMasDecorations } from "~/app/(components)/x-mas-decorations";
 
 export const metadata: Metadata = {
   title: {
@@ -33,6 +34,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const theme = await getTheme();
+  const currentDate = new Date();
   return (
     <html lang="en" suppressHydrationWarning data-theme={theme}>
       <head>
@@ -53,6 +55,7 @@ export default async function RootLayout({
         className={clsx(GeistSans.className, "bg-backdrop")}
         suppressHydrationWarning
       >
+        {currentDate.getMonth() === 11 && <XMasDecorations />}
         <SkipToMainButton />
         <IconSwitcher />
 
