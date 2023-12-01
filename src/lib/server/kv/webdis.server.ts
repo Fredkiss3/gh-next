@@ -41,7 +41,9 @@ export class WebdisKV implements KVStore {
       const text = await r.text();
 
       console.log({
+        key,
         text,
+        fullURL,
         status: { number: r.status, text: r.statusText }
       });
       return JSON.parse(text) as Promise<T>;
