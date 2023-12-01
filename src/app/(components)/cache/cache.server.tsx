@@ -12,7 +12,7 @@ import { kv } from "~/lib/server/kv/index.server";
 // types
 export type CacheProps = {
   id: string;
-  ttl: number;
+  ttl?: number;
   bypass?: boolean;
   debug?: boolean;
   children?: React.ReactNode;
@@ -20,7 +20,9 @@ export type CacheProps = {
 
 /**
  * Component for caching RSCs
- * it uses REDIS to cache the payload
+ * it uses REDIS to cache the payload.
+ *
+ * **⚠️⚠️ WARNING ⚠️⚠️** : this uses React experimental APIs, use this at your own risk
  */
 export async function Cache({
   id,
@@ -33,9 +35,11 @@ export async function Cache({
     return <>{children}</>;
   }
 
+  // don't include DEV dependencies into the production server bundle
+  const fullKey = `${process.env.NODE_ENV}-${id}`;
   let cachedPayload = await kv.get<{
     rsc: string;
-  }>(id);
+  }>(fullKey);
 
   if (!cachedPayload) {
     const rscStream = RSDW.renderToReadableStream(
@@ -51,7 +55,14 @@ export async function Cache({
     cachedPayload = {
       rsc: await transformStreamToString(rscStream)
     };
-    await kv.set(id, cachedPayload, ttl);
+    await kv.set(fullKey, cachedPayload, ttl);
+    console.log({
+      cached: { [id]: false }
+    });
+  } else {
+    console.log({
+      cached: { [id]: true }
+    });
   }
 
   if (debug) {
