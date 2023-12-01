@@ -7,7 +7,9 @@ import { CacheClient } from "~/app/(components)/cache/cache.client";
 
 // utils
 import { getClientManifest } from "~/app/(components)/cache/manifest";
+import { cache } from "react";
 import { kv } from "~/lib/server/kv/index.server";
+import fs from "fs/promises";
 
 // types
 export type CacheProps = {
@@ -15,7 +17,8 @@ export type CacheProps = {
   ttl?: number;
   bypass?: boolean;
   debug?: boolean;
-  children?: React.ReactNode;
+  children: React.ReactNode;
+  updatedAt?: Date | number;
 };
 
 /**
@@ -29,14 +32,15 @@ export async function Cache({
   ttl,
   bypass = false,
   debug = false,
-  children
+  children,
+  updatedAt
 }: CacheProps) {
   if (bypass) {
     return <>{children}</>;
   }
 
-  // don't include DEV dependencies into the production server bundle
-  const fullKey = `${process.env.NODE_ENV}-${id}`;
+  const fullKey = await computeCacheKey(id, updatedAt);
+
   let cachedPayload = await kv.get<{
     rsc: string;
   }>(fullKey);
@@ -57,11 +61,17 @@ export async function Cache({
     };
     await kv.set(fullKey, cachedPayload, ttl);
     console.log({
-      cached: { [id]: false }
+      [id]: {
+        inCache: false,
+        fullKey
+      }
     });
   } else {
     console.log({
-      cached: { [id]: true }
+      [id]: {
+        inCache: true,
+        fullKey
+      }
     });
   }
 
@@ -89,4 +99,35 @@ async function transformStreamToString(stream: ReadableStream) {
   }
 
   return read();
+}
+export const getBuildId = cache(async () => {
+  try {
+    return await fs.readFile(".next/BUILD_ID", "utf-8");
+  } catch (e) {
+    return "";
+  }
+});
+
+async function computeCacheKey(id: string, updatedAt?: Date | number) {
+  // don't include DEV dependencies into the production server bundle
+  let envName = "";
+  if (process.env.NODE_ENV === "development") {
+    envName = "dev";
+  } else if (process.env.NODE_ENV === "production") {
+    envName = "prod";
+  } else {
+    envName = process.env.NODE_ENV;
+  }
+
+  // we also get encode the
+  const buildId = await getBuildId();
+  let fullKey = "";
+  if (buildId) {
+    fullKey += `${buildId}-`;
+  }
+  fullKey += `${envName}-${id}`;
+  if (updatedAt) {
+    fullKey += `-${new Date(updatedAt).getTime()}`;
+  }
+  return fullKey;
 }
