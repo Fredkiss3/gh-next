@@ -1,5 +1,5 @@
 export type PageProps<
-  TParams extends Record<string, string> = {},
+  TParams extends Record<string, string | string[]> = {},
   TSearchParams extends Record<string, string | string[]> = {}
 > = {
   params: TParams;
@@ -51,7 +51,7 @@ export type Prettify<T> = {
 } & {};
 
 export type FormState<
-  TFormData extends unknown = Record<string, string | number | boolean | null>
+  TFormData = Record<string, string | number | boolean | null>
 > =
   | {
       type: "success";

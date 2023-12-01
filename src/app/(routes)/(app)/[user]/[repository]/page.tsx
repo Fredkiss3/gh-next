@@ -285,6 +285,7 @@ async function RepositoryHomePageContent({
                 href={repositoryData.url}
                 target="_blank"
                 className="font-semibold text-accent"
+                rel="noreferrer"
               >
                 {repositoryData.url}
               </a>
