@@ -11,7 +11,8 @@ const nextConfig = {
   },
   logging: {
     fetches: {
-      fullUrl: true
+      // this is not yet supported by turbopack
+      // fullUrl: true
     }
   },
   images: {
