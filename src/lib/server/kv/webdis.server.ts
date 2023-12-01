@@ -27,7 +27,11 @@ export class WebdisKV implements KVStore {
     const fullURL =
       `${env.REDIS_HTTP_URL}/${command}/` +
       partsForTheURL
-        .map((arg) => (typeof arg === "string" ? encodeURIComponent(arg) : arg))
+        .map((arg) =>
+          typeof arg === "string"
+            ? encodeURIComponent(arg.replaceAll("/", "-"))
+            : arg
+        )
         .join("/");
 
     return await fetch(fullURL, {
