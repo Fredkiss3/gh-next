@@ -57,7 +57,7 @@ type StargazersResponse = {
  * this data is refetched at most every 30 minutes
  * @returns
  */
-export const getGithubRepoData = cache(async function () {
+export const getGithubRepoData = cache(async () => {
   const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
   const fn = nextCache(
     async () => {
@@ -133,7 +133,9 @@ export const getGithubRepoData = cache(async function () {
 
       while (hasNextPage) {
         const {
-          repository: { stargazers: { pageInfo, edges } }
+          repository: {
+            stargazers: { pageInfo, edges }
+          }
         } = await fetchFromGithubAPI<StargazersResponse>(stargazersQuery, {
           cursor: nextCursor,
           repoName: GITHUB_REPOSITORY_NAME,
@@ -179,7 +181,8 @@ export const getGithubRepoData = cache(async function () {
         stargazers: allStargazers,
         readmeContent: await fetch(
           `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/README.md`
-        ).then((r) => r.text())
+        ).then((r) => r.text()),
+        updatedAt: new Date().getTime()
       } satisfies GithubRepositoryData;
       return data;
     },
