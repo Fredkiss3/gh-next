@@ -30,13 +30,11 @@ export type ResolvedReferences = {
 
 type MarkdownAProps = {
   resolvedReferences: ResolvedReferences;
-  authedUser?: User | null;
   currentRepository: string;
 } & React.ComponentProps<"a">;
 
 export async function MarkdownA({
   resolvedReferences,
-  authedUser,
   currentRepository,
   ...props
 }: MarkdownAProps) {
@@ -101,10 +99,10 @@ export async function MarkdownA({
             excerpt={issueFound.excerpt}
             createdAt={issueFound.createdAt}
             labels={issueFound.labels}
-            isAuthor={authedUser?.id === issueFound.author.id}
-            isMentioned={authedUser?.username === issueFound.mentioned_user}
-            hasCommented={authedUser?.username === issueFound.commented_user}
-            userAvatarURL={authedUser?.avatar_url}
+            // isAuthor={authedUser?.id === issueFound.author.id}
+            // isMentioned={authedUser?.username === issueFound.mentioned_user}
+            // hasCommented={authedUser?.username === issueFound.commented_user}
+            // userAvatarURL={authedUser?.avatar_url}
           />
         }
       >
@@ -167,11 +165,11 @@ export async function MarkdownA({
           <Link
             href={`/${userFound.username}`}
             className={clsx(
-              "inline-flex gap-1 font-bold underline items-center",
-              {
-                "bg-severe bg-opacity-30 rounded-sm px-0.5 text-yellow-100":
-                  authedUser?.id === userFound.id
-              }
+              "inline-flex gap-1 font-bold underline items-center"
+              // {
+              //   "bg-severe bg-opacity-30 rounded-sm px-0.5 text-yellow-100":
+              //     authedUser?.id === userFound.id
+              // }
             )}
           >
             <Avatar

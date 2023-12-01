@@ -77,8 +77,7 @@ export async function MarkdownContent({
 
   const { processedContent, references } =
     await processMarkdownContentAndGetReferences(content, currentRepository);
-  const authedUser = await getAuthedUser();
-  const resolvedReferences = await resolveReferences(references, authedUser);
+  const resolvedReferences = await resolveReferences(references);
 
   const generatedMdxModule = await run(processedContent, {
     Fragment: React.Fragment,
@@ -89,7 +88,6 @@ export async function MarkdownContent({
   const components = await getComponents({
     linkHeaders,
     editableCheckboxes,
-    authedUser,
     resolvedReferences,
     currentRepository
   });
@@ -165,8 +163,7 @@ async function processMarkdownContentAndGetReferences(
 }
 
 async function resolveReferences(
-  references: Reference[],
-  authedUser: User | null
+  references: Reference[]
 ): Promise<ResolvedReferences> {
   const issueReferences = references.filter(
     (ref) => ref.type === "issue"
@@ -177,7 +174,7 @@ async function resolveReferences(
     .filter((item) => item !== null) as string[];
 
   const [resolvedIssues, resolvedMentions] = await Promise.all([
-    getMultipleIssuesPerRepositories(issueReferences, authedUser),
+    getMultipleIssuesPerRepositories(issueReferences),
     getMultipleUserByUsername(userMentions)
   ]);
 
@@ -203,13 +200,11 @@ async function getComponents({
   linkHeaders,
   editableCheckboxes,
   resolvedReferences,
-  authedUser,
   currentRepository
 }: {
   linkHeaders: boolean;
   editableCheckboxes: boolean;
   resolvedReferences: ResolvedReferences;
-  authedUser: User | null;
   currentRepository: string;
 }) {
   type MDXComponents = ReturnType<UseMdxComponents>;
@@ -354,7 +349,6 @@ async function getComponents({
         <MarkdownA
           currentRepository={currentRepository}
           resolvedReferences={resolvedReferences}
-          authedUser={authedUser}
           {...props}
           key={key}
         />
