@@ -20,11 +20,13 @@ export type HoverCardProps = {
   content: React.ReactNode;
   delayInMs?: number;
   closeDelayInMs?: number;
+  onOpenChange?: (arg: boolean) => void;
 } & Pick<ReactAriaTooltipProps, "placement">;
 
 export function HoverCard({
   content,
   children,
+  onOpenChange,
   delayInMs = 150,
   closeDelayInMs = 150,
   placement = "top right"
@@ -35,6 +37,7 @@ export function HoverCard({
       delay={delayInMs}
       closeDelay={closeDelayInMs}
       isDisabled={!isTooltipEnabled}
+      onOpenChange={onOpenChange}
     >
       {children}
 

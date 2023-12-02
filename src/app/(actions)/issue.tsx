@@ -9,6 +9,7 @@ import {
   getSingleIssue
 } from "~/app/(models)/issues";
 
+import { AsyncIssueHoverCardContents } from "~/app/(components)/hovercard/async-issue-hovercard-contents";
 import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search-output-validator";
 import { searchIssues } from "~/app/(models)/issues/search";
 
@@ -82,3 +83,11 @@ export const getIssueDetail = cache(async function getIssueDetail(
 ) {
   return getSingleIssue(number);
 });
+
+export async function getIssueHoverCardContents(
+  user: string,
+  repo: string,
+  no: number
+) {
+  return <AsyncIssueHoverCardContents user={user} repo={repo} no={no} />;
+}
