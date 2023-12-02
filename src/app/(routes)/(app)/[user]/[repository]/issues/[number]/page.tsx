@@ -74,7 +74,7 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        {/* <Cache
+        <Cache
           id={CacheKeys.issues({
             user: params.user,
             repo: params.repository,
@@ -83,8 +83,8 @@ export default async function IssueDetailPage({
           updatedAt={issue.updated_at}
         >
           <Markdown content={issue.body} />
-        </Cache> */}
-        <Cache id={"issue-test"} bypass>
+        </Cache>
+        {/* <Cache id={"issue-test"} bypass>
           <Markdown
             content={`
 ## Some references:
@@ -107,7 +107,7 @@ export default async function IssueDetailPage({
 - feat: autofix packages-without-package-json by @fredkiss3 in #31
 `}
           />
-        </Cache>
+        </Cache> */}
       </section>
     </div>
   );
