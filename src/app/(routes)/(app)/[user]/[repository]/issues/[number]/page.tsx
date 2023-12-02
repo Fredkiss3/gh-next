@@ -9,7 +9,7 @@ import { Cache } from "~/app/(components)/cache/cache.server";
 import { notFound } from "next/navigation";
 import { preprocess, z } from "zod";
 import { getIssueDetail } from "~/app/(actions)/issue";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 
 // types
 import type { Metadata } from "next";

@@ -1,6 +1,6 @@
 import "server-only";
 import { asc, ilike, sql } from "drizzle-orm";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 import { db } from "~/lib/server/db/index.server";
 import { labels } from "~/lib/server/db/schema/label.sql";
 import { nextCache } from "~/lib/server/rsc-utils.server";

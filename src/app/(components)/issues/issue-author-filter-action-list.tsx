@@ -10,7 +10,7 @@ import { IssueSearchLink } from "./issue-search-link";
 // utils
 import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
-import { useIssueAuthorListByNameQuery } from "~/lib/client/hooks/use-issue-author-list-by-name-query";
+import { useIssueAuthorListByNameQuery } from "./use-issue-author-list-by-name-query";
 import { useSearchParams } from "next/navigation";
 import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 

@@ -1,6 +1,6 @@
 import "server-only";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 import { db } from "~/lib/server/db/index.server";
 import { issueToAssignees, issues } from "~/lib/server/db/schema/issue.sql";
 import { nextCache } from "~/lib/server/rsc-utils.server";

@@ -7,7 +7,7 @@ import {
   GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
 import { nextCache } from "~/lib/server/rsc-utils.server";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 import { cache } from "react";
 
 type RepositoryStatsResponse = {

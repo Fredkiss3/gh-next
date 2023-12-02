@@ -1,14 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { use, cache } from "react";
 // components
 import { HoverCard } from "~/app/(components)/hovercard/hovercard";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 
 // utils
-import { getIssueHoverCardContents } from "~/app/(actions)/issue";
 import { IssueHoverCardSkeleton } from "~/app/(components)/hovercard/issue-hovercard-contents";
+import { useIssueHoverCardContents } from "~/app/(components)/hovercard/use-issue-hovercard-contents";
 
 export type IssueHoverCardLinkProps = {
   user: string;
@@ -29,15 +28,7 @@ export function IssueHoverCardLink({
 
   return (
     <HoverCard
-      content={
-        canLoadIssueContent ? (
-          <React.Suspense fallback={<IssueHoverCardSkeleton />}>
-            <IssueContents {...props} />
-          </React.Suspense>
-        ) : (
-          <></>
-        )
-      }
+      content={canLoadIssueContent ? <IssueContents {...props} /> : <></>}
       onOpenChange={(open) => {
         // only once
         if (open && !canLoadIssueContent) {
@@ -52,13 +43,20 @@ export function IssueHoverCardLink({
   );
 }
 
-const loadIssueContents = cache(getIssueHoverCardContents);
-
 function IssueContents({
   user,
   repository,
   no
 }: Pick<IssueHoverCardLinkProps, "user" | "repository" | "no">) {
-  const contents = use(loadIssueContents(user, repository, no));
+  const { data: contents } = useIssueHoverCardContents({
+    user,
+    repository,
+    no
+  });
+
+  if (!contents) {
+    return <IssueHoverCardSkeleton />;
+  }
+
   return <>{contents}</>;
 }

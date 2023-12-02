@@ -33,7 +33,7 @@ import {
 } from "~/lib/shared/constants";
 import { clsx } from "~/lib/shared/utils.shared";
 import { notFound } from "next/navigation";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 
 // types
 import type { PageProps } from "~/lib/types";
