@@ -176,20 +176,18 @@ export function IssueRow({
                     closeDelayInMs={500}
                     placement="bottom end"
                   >
-                    <ReactAriaLink>
-                      <IssueSearchLink
-                        className={clsx(
-                          "transition duration-150",
-                          "focus:ring-2 ring-accent focus:outline-none rounded-md"
-                        )}
-                        filters={{
-                          label: [name]
-                        }}
-                        conserveCurrentFilters
-                      >
-                        <LabelBadge color={color} title={name} />
-                      </IssueSearchLink>
-                    </ReactAriaLink>
+                    <IssueSearchLink
+                      className={clsx(
+                        "transition duration-150",
+                        "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                      )}
+                      filters={{
+                        label: [name]
+                      }}
+                      conserveCurrentFilters
+                    >
+                      <LabelBadge color={color} title={name} />
+                    </IssueSearchLink>
                   </Tooltip>
                 ))}
               </span>
@@ -217,20 +215,18 @@ export function IssueRow({
                 />
               }
             >
-              <ReactAriaLink>
-                <IssueSearchLink
-                  filters={{
-                    author: author.username
-                  }}
-                  className={clsx(
-                    "hover:text-accent",
-                    "transition duration-150",
-                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
-                  )}
-                >
-                  {author.username}
-                </IssueSearchLink>
-              </ReactAriaLink>
+              <IssueSearchLink
+                filters={{
+                  author: author.username
+                }}
+                className={clsx(
+                  "hover:text-accent",
+                  "transition duration-150",
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                )}
+              >
+                {author.username}
+              </IssueSearchLink>
             </HoverCard>
           ) : (
             <IssueSearchLink

@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 // components
-import Link from "next/link";
+import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 
 // utils
 import {
@@ -23,7 +23,7 @@ export type IssueSearchLinkProps = Omit<LinkProps, "href" | "prefetch"> & {
 };
 
 export const IssueSearchLink = React.forwardRef<
-  React.ElementRef<typeof Link>,
+  React.ElementRef<typeof ReactAriaLink>,
   IssueSearchLinkProps
 >(function IssueSearchLink(
   { filters, conserveCurrentFilters = false, ...props },
@@ -55,5 +55,5 @@ export const IssueSearchLink = React.forwardRef<
   sp.append("q", searchStr);
   const href = `/${params.user}/${params.repository}/issues?` + sp.toString();
 
-  return <Link {...props} ref={ref} href={href} prefetch={false} />;
+  return <ReactAriaLink {...props} ref={ref} href={href} />;
 });
