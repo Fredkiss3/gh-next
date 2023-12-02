@@ -37,13 +37,11 @@ export default function IssuesListPage({
   params
 }: IssueListPageProps) {
   return (
-    <ReactQueryProvider>
-      <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
-        <IssuesListHeader {...params} />
-        <ClearSearchButtonSection />
-        <IssuesListBody params={params} searchParams={searchParams} />
-      </div>
-    </ReactQueryProvider>
+    <div className={clsx("flex flex-col items-stretch gap-4", "md:px-8")}>
+      <IssuesListHeader {...params} />
+      <ClearSearchButtonSection />
+      <IssuesListBody params={params} searchParams={searchParams} />
+    </div>
   );
 }
 

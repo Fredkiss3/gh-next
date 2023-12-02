@@ -4,17 +4,38 @@ import type { KVStore } from "./index.server";
 type RedisCommand = "GET" | "SET" | "SETEX" | "DEL";
 
 export class WebdisKV implements KVStore {
-  async #fetch<T extends unknown>(
-    command: RedisCommand,
-    ...args: Array<string | number>
-  ) {
+  async #fetch<T>(command: RedisCommand, ...args: Array<string | number>) {
     const authString = `${env.REDIS_HTTP_USERNAME}:${env.REDIS_HTTP_PASSWORD}`;
     const [key, ...restArgs] = args;
 
-    let fullURL =
+    // we separate the body from the rest of the args
+    // this is only for SET* commands
+    let body: string | null = null;
+    const urlParts = [env.KV_PREFIX + key, ...restArgs];
+    const partsForTheURL: string[] = [];
+
+    for (let i = 0; i < urlParts.length; i++) {
+      const part = urlParts[i];
+
+      if (
+        i === urlParts.length - 1 &&
+        (command === "SET" || command === "SETEX")
+      ) {
+        body = part.toString();
+        continue;
+      }
+      partsForTheURL.push(part.toString());
+    }
+    const fullURL =
       `${env.REDIS_HTTP_URL}/${command}/` +
-      [env.KV_PREFIX + key, ...restArgs]
-        .map((arg) => (typeof arg === "string" ? encodeURIComponent(arg) : arg))
+      partsForTheURL
+        .map((arg) =>
+          typeof arg === "string"
+            ? encodeURIComponent(arg.replaceAll("/", "-"))
+            : // if we dont replace `/` with something else
+              // webdis will consider them as `/` even though they are encoded as `%2F`
+              arg
+        )
         .join("/");
 
     return await fetch(fullURL, {
@@ -22,10 +43,9 @@ export class WebdisKV implements KVStore {
       cache: "no-store",
       headers: {
         Authorization: `Basic ${btoa(authString)}`
-      }
-    }).then(async (r) => {
-      return r.json() as T;
-    });
+      },
+      body: body ?? undefined
+    }).then((r) => r.text().then((text) => JSON.parse(text)) as Promise<T>);
   }
 
   async set<T extends Record<string, any> = {}>(

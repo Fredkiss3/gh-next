@@ -6,7 +6,8 @@ import {
   SkipIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { LabelBadge } from "./label-badge";
+import { LabelBadge } from "../label-badge";
+import { Avatar } from "~/app/(components)/avatar";
 
 // utils
 import { formatDate } from "~/lib/shared/utils.shared";
@@ -14,8 +15,10 @@ import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
 
 // types
 import type { IssueStatus } from "~/lib/server/db/schema/issue.sql";
-import type { Label } from "~/lib/server/db/schema/label.sql";
-import { Avatar } from "~/app/(components)/avatar";
+import { labels, type Label } from "~/lib/server/db/schema/label.sql";
+import { Skeleton } from "~/app/(components)/skeleton";
+import { title } from "process";
+
 export type IssueHoverCardContentsProps = {
   id: number;
   status: IssueStatus;
@@ -101,6 +104,51 @@ export function IssueHoverCardContents({
           </small>
         </footer>
       )}
+    </div>
+  );
+}
+
+export function IssueHoverCardSkeleton() {
+  return (
+    <div className="w-[350px] flex flex-col">
+      <div className="flex flex-col gap-4 p-5">
+        {/* Opened/Closed at */}
+        <Skeleton className="w-1/3 h-3" />
+
+        <div className="flex items-start gap-2">
+          <Skeleton shape="circle" className="h-5 w-5 flex-none" />
+
+          <div className="flex flex-col gap-5 w-full">
+            <div className="flex flex-col gap-4">
+              {/* Issue title */}
+              <div className="flex flex-col gap-2">
+                <Skeleton className="w-full h-4" />
+                <Skeleton className="w-full h-4" />
+              </div>
+
+              {/* excerpt */}
+              <div className="flex flex-col gap-2">
+                <Skeleton className="w-full h-3" />
+                <Skeleton className="w-full h-3" />
+                <Skeleton className="w-2/3 h-3" />
+              </div>
+            </div>
+
+            {/* Labels */}
+            <ul className="flex flex-wrap gap-2">
+              <Skeleton className="w-24 h-[1.125rem] rounded-full" />
+              <Skeleton className="w-16 h-[1.125rem] rounded-full" />
+              <Skeleton className="w-20 h-[1.125rem] rounded-full" />
+            </ul>
+          </div>
+        </div>
+      </div>
+      <footer className="p-5 flex items-center gap-4 border-t border-neutral">
+        {/* Avatar */}
+        <Skeleton shape="circle" className="h-5 w-5 flex-none" />
+        {/* text for Mentions */}
+        <Skeleton className="w-4/5 h-4" />
+      </footer>
     </div>
   );
 }

@@ -19,6 +19,8 @@ import { CounterBadge } from "~/app/(components)/counter-badge";
 import { Button } from "~/app/(components)/button";
 import { Markdown } from "~/app/(components)/markdown";
 import Link from "next/link";
+import { Cache } from "~/app/(components)/cache/cache.server";
+import { Skeleton } from "~/app/(components)/skeleton";
 
 // utils
 import { getSession } from "~/app/(actions)/auth";
@@ -30,8 +32,8 @@ import {
   GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
 import { clsx } from "~/lib/shared/utils.shared";
-import { Skeleton } from "~/app/(components)/skeleton";
 import { notFound } from "next/navigation";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 
 // types
 import type { PageProps } from "~/lib/types";
@@ -267,7 +269,11 @@ async function RepositoryHomePageContent({
           "xl:grid-cols-[repeat(15,_minmax(0,_1fr))]"
         )}
       >
-        <ReadmeContent className="w-full md:col-span-7 lg:col-span-9 xl:col-span-11" />
+        <ReadmeContent
+          className="w-full md:col-span-7 lg:col-span-9 xl:col-span-11"
+          user={repository.owner.username}
+          repository={repository.name}
+        />
 
         <aside
           className={clsx(
@@ -285,6 +291,7 @@ async function RepositoryHomePageContent({
                 href={repositoryData.url}
                 target="_blank"
                 className="font-semibold text-accent"
+                rel="noreferrer"
               >
                 {repositoryData.url}
               </a>
@@ -394,11 +401,16 @@ async function RepositoryHomePageContent({
   );
 }
 
-async function ReadmeContent({ className }: { className?: string }) {
-  const { readmeContent } = await getGithubRepoData();
+async function ReadmeContent(props: {
+  className?: string;
+  user: string;
+  repository: string;
+}) {
+  const { readmeContent, updatedAt } = await getGithubRepoData();
+  const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
 
   return (
-    <div className={className}>
+    <div className={props.className}>
       <div
         className={clsx(
           "flex items-center gap-2 border border-neutral p-3",
@@ -423,11 +435,17 @@ async function ReadmeContent({ className }: { className?: string }) {
           "sm:rounded-b-md"
         )}
       >
-        <Markdown
-          linkHeaders
-          content={readmeContent}
-          className="w-full max-w-full px-8 pb-8 pt-4 text-base"
-        />
+        <Cache
+          id={CacheKeys.readme(props.user, props.repository)}
+          updatedAt={updatedAt}
+          ttl={THIRTY_MINUTES_IN_SECONDS}
+        >
+          <Markdown
+            linkHeaders
+            content={readmeContent}
+            className="w-full max-w-full px-8 pb-8 pt-4 text-base"
+          />
+        </Cache>
       </div>
     </div>
   );

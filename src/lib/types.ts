@@ -25,6 +25,7 @@ export type UpperLowerCase<T extends string> =
   | `${Uppercase<T>}`;
 
 export type GithubRepositoryData = {
+  updatedAt: number;
   forkCount: number;
   stargazerCount: number;
   watcherCount: number;
@@ -51,7 +52,7 @@ export type Prettify<T> = {
 } & {};
 
 export type FormState<
-  TFormData extends unknown = Record<string, string | number | boolean | null>
+  TFormData = Record<string, string | number | boolean | null>
 > =
   | {
       type: "success";

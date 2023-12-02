@@ -72,12 +72,12 @@ export async function MarkdownContent({
     currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
 }: MarkdownProps) {
   const dt = new Date().getTime();
-  console.time(`[${dt}] Markdown Rendering`);
+
+  console.time(`\n\x1b[34m[${dt}] \x1b[33m Markdown Rendering \x1b[37m`);
 
   const { processedContent, references } =
     await processMarkdownContentAndGetReferences(content, currentRepository);
-  const authedUser = await getAuthedUser();
-  const resolvedReferences = await resolveReferences(references, authedUser);
+  const resolvedReferences = await resolveReferences(references);
 
   const generatedMdxModule = await run(processedContent, {
     Fragment: React.Fragment,
@@ -88,12 +88,11 @@ export async function MarkdownContent({
   const components = await getComponents({
     linkHeaders,
     editableCheckboxes,
-    authedUser,
     resolvedReferences,
     currentRepository
   });
 
-  console.timeEnd(`[${dt}] Markdown Rendering`);
+  console.timeEnd(`\n\x1b[34m[${dt}] \x1b[33m Markdown Rendering \x1b[37m`);
 
   return (
     <article className={clsx("break-words leading-normal text-sm", className)}>
@@ -106,7 +105,7 @@ async function processMarkdownContentAndGetReferences(
   content: string,
   repository: string
 ) {
-  let references: Reference[] = [];
+  const references: Reference[] = [];
 
   // preprocess links & mentions
   const preprocessedContent = await remark()
@@ -164,8 +163,7 @@ async function processMarkdownContentAndGetReferences(
 }
 
 async function resolveReferences(
-  references: Reference[],
-  authedUser: User | null
+  references: Reference[]
 ): Promise<ResolvedReferences> {
   const issueReferences = references.filter(
     (ref) => ref.type === "issue"
@@ -176,7 +174,7 @@ async function resolveReferences(
     .filter((item) => item !== null) as string[];
 
   const [resolvedIssues, resolvedMentions] = await Promise.all([
-    getMultipleIssuesPerRepositories(issueReferences, authedUser),
+    getMultipleIssuesPerRepositories(issueReferences),
     getMultipleUserByUsername(userMentions)
   ]);
 
@@ -202,13 +200,11 @@ async function getComponents({
   linkHeaders,
   editableCheckboxes,
   resolvedReferences,
-  authedUser,
   currentRepository
 }: {
   linkHeaders: boolean;
   editableCheckboxes: boolean;
   resolvedReferences: ResolvedReferences;
-  authedUser: User | null;
   currentRepository: string;
 }) {
   type MDXComponents = ReturnType<UseMdxComponents>;
@@ -353,7 +349,6 @@ async function getComponents({
         <MarkdownA
           currentRepository={currentRepository}
           resolvedReferences={resolvedReferences}
-          authedUser={authedUser}
           {...props}
           key={key}
         />

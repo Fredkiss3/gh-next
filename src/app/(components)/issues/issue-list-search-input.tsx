@@ -19,10 +19,10 @@ import {
   SORT_FILTERS,
   STATUS_FILTERS
 } from "~/lib/shared/constants";
-import { useIssueAuthorListQuery } from "~/lib/client/hooks/use-issue-author-list-query";
-import { useIssueAssigneeListQuery } from "~/lib/client/hooks/use-issue-assignee-list-query";
-import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
-import { useSearchInputTokens } from "~/lib/client/hooks/use-search-input-tokens";
+import { useIssueAuthorListQuery } from "./use-issue-author-list-query";
+import { useIssueAssigneeListQuery } from "./use-issue-assignee-list-query";
+import { useIssueLabelListByNameQuery } from "./use-issue-label-list-query";
+import { useSearchInputTokens } from "./use-search-input-tokens";
 
 export type IssueListSearchInputProps = {
   onSearch: () => void;
