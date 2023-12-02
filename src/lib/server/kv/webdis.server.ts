@@ -45,15 +45,7 @@ export class WebdisKV implements KVStore {
         Authorization: `Basic ${btoa(authString)}`
       },
       body: body ?? undefined
-    }).then(async (r) => {
-      const text = await r.text();
-      console.log({
-        key,
-        fullURL,
-        status: { number: r.status, text: r.statusText }
-      });
-      return JSON.parse(text) as Promise<T>;
-    });
+    }).then((r) => r.text().then((text) => JSON.parse(text)) as Promise<T>);
   }
 
   async set<T extends Record<string, any> = {}>(
