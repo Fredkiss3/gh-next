@@ -109,23 +109,12 @@ export const getBuildId = cache(async () => {
 });
 
 async function computeCacheKey(id: string, updatedAt?: Date | number) {
-  // don't include DEV dependencies into the production server bundle
-  let envName = "";
-  if (process.env.NODE_ENV === "development") {
-    envName = "dev";
-  } else if (process.env.NODE_ENV === "production") {
-    envName = "prod";
-  } else {
-    envName = process.env.NODE_ENV;
-  }
-
+  let fullKey = id;
   // we also get encode the
   const buildId = await getBuildId();
-  let fullKey = "";
   if (buildId) {
     fullKey += `${buildId}-`;
   }
-  fullKey += `${envName}-${id}`;
   if (updatedAt) {
     fullKey += `-${new Date(updatedAt).getTime()}`;
   }
