@@ -11,6 +11,7 @@ import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 import { repositories } from "~/lib/server/db/schema/repository.sql";
 import { alias } from "drizzle-orm/pg-core";
 import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
+import { cache } from "react";
 
 export async function getOpenIssuesCount() {
   const fn = nextCache(
@@ -116,16 +117,39 @@ export async function getIssueAssigneesByUsernameOrName(name: string) {
   });
 }
 
-const singleIssuePrepared = db
-  .select()
-  .from(issues)
-  .where(eq(issues.number, sql.placeholder("number")));
+const creator = alias(users, "creator");
 
-export async function getSingleIssue(number: number) {
-  return await singleIssuePrepared.execute({
-    number
+const singleIssuePrepared = db
+  .select({
+    title: issues.title,
+    body: issues.body,
+    updated_at: issues.updated_at,
+    number: issues.number
+  })
+  .from(issues)
+  .innerJoin(repositories, eq(issues.repository_id, repositories.id))
+  .innerJoin(creator, eq(repositories.creator_id, creator.id))
+  .where(
+    and(
+      eq(repositories.name, sql.placeholder("repository_name")),
+      eq(creator.username, sql.placeholder("repository_creator")),
+      eq(issues.number, sql.placeholder("issue_number"))
+    )
+  );
+
+export const getSingleIssue = cache(async function getSingleIssue(
+  repository_creator: string,
+  repository_name: string,
+  issue_number: number
+) {
+  const [issue] = await singleIssuePrepared.execute({
+    repository_creator,
+    repository_name,
+    issue_number
   });
-}
+  if (!issue) return null;
+  return issue;
+});
 
 export async function getMultipleIssuesPerRepositories(
   payload: {

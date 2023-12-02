@@ -78,12 +78,6 @@ export async function filterLabelsByName(name: string) {
   };
 }
 
-export const getIssueDetail = cache(async function getIssueDetail(
-  number: number
-) {
-  return getSingleIssue(number);
-});
-
 export async function getIssueHoverCardContents(
   user: string,
   repo: string,

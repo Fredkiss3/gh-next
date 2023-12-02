@@ -8,8 +8,8 @@ import { Cache } from "~/app/(components)/cache/cache.server";
 // utils
 import { notFound } from "next/navigation";
 import { preprocess, z } from "zod";
-import { getIssueDetail } from "~/app/(actions)/issue";
 import { CacheKeys } from "~/lib/shared/cache-keys.shared";
+import { getSingleIssue } from "~/app/(models)/issues";
 
 // types
 import type { Metadata } from "next";
@@ -21,19 +21,26 @@ type IssueDetailPageProps = PageProps<{
   number: string;
 }>;
 
+const issueParamsSchema = z.object({
+  number: preprocess((arg) => Number(arg), z.number()),
+  user: z.string().min(1),
+  repository: z.string().min(1)
+});
+
 export async function generateMetadata({
   params
 }: IssueDetailPageProps): Promise<Metadata> {
-  const issueNumberResult = preprocess(
-    (arg) => Number(arg),
-    z.number()
-  ).safeParse(params.number);
+  const paramsResult = issueParamsSchema.safeParse(params);
 
-  if (!issueNumberResult.success) {
+  if (!paramsResult.success) {
     notFound();
   }
 
-  const [issue] = await getIssueDetail(issueNumberResult.data);
+  const issue = await getSingleIssue(
+    paramsResult.data.user,
+    paramsResult.data.repository,
+    paramsResult.data.number
+  );
 
   if (!issue) {
     notFound();
@@ -47,17 +54,17 @@ export async function generateMetadata({
 export default async function IssueDetailPage({
   params
 }: IssueDetailPageProps) {
-  const issueNumberResult = preprocess(
-    (arg) => Number(arg),
-    z.number()
-  ).safeParse(params.number);
+  const paramsResult = issueParamsSchema.safeParse(params);
 
-  if (!issueNumberResult.success) {
+  if (!paramsResult.success) {
     notFound();
   }
 
-  const issueNo = issueNumberResult.data;
-  const [issue] = await getIssueDetail(issueNo);
+  const user = paramsResult.data.user;
+  const repo = paramsResult.data.repository;
+  const issueNo = paramsResult.data.number;
+
+  const issue = await getSingleIssue(user, repo, issueNo);
   if (!issue) {
     notFound();
   }
