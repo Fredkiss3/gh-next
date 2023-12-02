@@ -35,7 +35,7 @@ export async function Cache({
   children,
   updatedAt
 }: CacheProps) {
-  if (bypass) {
+  if (bypass || process.env.NODE_ENV === "development") {
     return <>{children}</>;
   }
 
