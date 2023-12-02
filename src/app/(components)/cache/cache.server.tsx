@@ -12,8 +12,9 @@ import { kv } from "~/lib/server/kv/index.server";
 import fs from "fs/promises";
 
 // types
+type CacheId = string | number | (string | number)[];
 export type CacheProps = {
-  id: string | string[];
+  id: CacheId;
   ttl?: number;
   bypass?: boolean;
   debug?: boolean;
@@ -95,11 +96,8 @@ export const getBuildId = cache(async () => {
   }
 });
 
-async function computeCacheKey(
-  id: string | string[],
-  updatedAt?: Date | number
-) {
-  let fullKey = typeof id === "string" ? id : id.join("-");
+async function computeCacheKey(id: CacheId, updatedAt?: Date | number) {
+  let fullKey = Array.isArray(id) ? id.join("-") : id.toString();
   // we also get encode the
   const buildId = await getBuildId();
   if (buildId) {
