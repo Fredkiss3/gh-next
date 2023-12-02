@@ -13,7 +13,7 @@ import fs from "fs/promises";
 
 // types
 export type CacheProps = {
-  id: string;
+  id: string | string[];
   ttl?: number;
   bypass?: boolean;
   debug?: boolean;
@@ -60,19 +60,6 @@ export async function Cache({
       rsc: await transformStreamToString(rscStream)
     };
     await kv.set(fullKey, cachedPayload, ttl);
-    console.log({
-      [id]: {
-        inCache: false,
-        fullKey
-      }
-    });
-  } else {
-    console.log({
-      [id]: {
-        inCache: true,
-        fullKey
-      }
-    });
   }
 
   if (debug) {
@@ -108,8 +95,11 @@ export const getBuildId = cache(async () => {
   }
 });
 
-async function computeCacheKey(id: string, updatedAt?: Date | number) {
-  let fullKey = id;
+async function computeCacheKey(
+  id: string | string[],
+  updatedAt?: Date | number
+) {
+  let fullKey = typeof id === "string" ? id : id.join("-");
   // we also get encode the
   const buildId = await getBuildId();
   if (buildId) {
