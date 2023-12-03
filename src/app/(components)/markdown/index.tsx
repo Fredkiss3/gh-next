@@ -28,7 +28,6 @@ import githubLight from "~/lib/server/themes/github-light.json";
 import rehypeRaw from "rehype-raw";
 import { compile, run } from "@mdx-js/mdx";
 import { env } from "~/env";
-import { getAuthedUser } from "~/app/(actions)/auth";
 import { getMultipleIssuesPerRepositories } from "~/app/(models)/issues";
 import { VFile } from "vfile";
 import { remark } from "remark";
@@ -54,9 +53,7 @@ export type MarkdownProps = {
 };
 
 export async function Markdown(props: MarkdownProps) {
-  return process.env.NODE_ENV === "development" ? (
-    <MarkdownContent {...props} />
-  ) : (
+  return (
     <MarkdownErrorBoundary>
       <MarkdownContent {...props} />
     </MarkdownErrorBoundary>
