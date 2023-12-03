@@ -8,6 +8,7 @@ import { IconSwitcher } from "~/app/(components)/icon-switcher";
 import { TopLoader } from "~/app/(components)/top-loader";
 import { SkipToMainButton } from "~/app/(components)/skip-to-main-button";
 import { XMasDecorations } from "~/app/(components)/x-mas-decorations";
+import { ClientProviders } from "~/app/client-providers";
 
 // utils
 import { GeistSans } from "geist/font";
@@ -16,7 +17,6 @@ import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
-import { ClientProviders } from "~/app/(components)/providers";
 
 export const metadata: Metadata = {
   title: {
