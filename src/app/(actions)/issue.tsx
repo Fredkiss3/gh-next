@@ -5,8 +5,7 @@ import {
   getIssueAssigneesByUsername,
   getIssueAssigneesByUsernameOrName,
   getIssueAuthorsByName,
-  getIssueAuthorsByUsername,
-  getSingleIssue
+  getIssueAuthorsByUsername
 } from "~/app/(models)/issues";
 
 import { AsyncIssueHoverCardContents } from "~/app/(components)/hovercard/async-issue-hovercard-contents";
@@ -14,7 +13,6 @@ import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search-
 import { searchIssues } from "~/app/(models)/issues/search";
 
 import { getAuthedUser } from "./auth";
-import { cache } from "react";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 

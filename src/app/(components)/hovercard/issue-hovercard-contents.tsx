@@ -6,8 +6,9 @@ import {
   SkipIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { LabelBadge } from "../label-badge";
+import { LabelBadge } from "~/app/(components)/label-badge";
 import { Avatar } from "~/app/(components)/avatar";
+import { Skeleton } from "~/app/(components)/skeleton";
 
 // utils
 import { formatDate } from "~/lib/shared/utils.shared";
@@ -15,9 +16,7 @@ import { IssueStatuses } from "~/lib/server/db/schema/issue.sql";
 
 // types
 import type { IssueStatus } from "~/lib/server/db/schema/issue.sql";
-import { labels, type Label } from "~/lib/server/db/schema/label.sql";
-import { Skeleton } from "~/app/(components)/skeleton";
-import { title } from "process";
+import type { Label } from "~/lib/server/db/schema/label.sql";
 
 export type IssueHoverCardContentsProps = {
   id: number;
