@@ -9,6 +9,7 @@ import { CacheClient } from "~/app/(components)/cache/cache.client";
 import { getClientManifest } from "~/app/(components)/cache/manifest";
 import { cache } from "react";
 import { kv } from "~/lib/server/kv/index.server";
+import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 import fs from "fs/promises";
 
 // types
@@ -31,16 +32,22 @@ export type CacheProps = {
 export async function Cache({
   id,
   ttl,
-  bypass = false,
+  bypass,
   debug = false,
   children,
   updatedAt
 }: CacheProps) {
-  if (bypass || process.env.NODE_ENV === "development") {
+  const fullKey = await computeCacheKey(id, updatedAt);
+
+  if (
+    bypass ||
+    (bypass === undefined && process.env.NODE_ENV === "development")
+  ) {
+    console.log(
+      `\x1b[90mBYPASSING CACHE FOR key "\x1b[33m${fullKey}\x1b[90m"\x1b[37m`
+    );
     return <>{children}</>;
   }
-
-  const fullKey = await computeCacheKey(id, updatedAt);
 
   let cachedPayload = await kv.get<{
     rsc: string;
@@ -60,7 +67,7 @@ export async function Cache({
     cachedPayload = {
       rsc: await transformStreamToString(rscStream)
     };
-    await kv.set(fullKey, cachedPayload, ttl);
+    await kv.set(fullKey, cachedPayload, ttl ?? DEFAULT_CACHE_TTL);
   }
 
   if (debug) {
@@ -100,11 +107,11 @@ async function computeCacheKey(id: CacheId, updatedAt?: Date | number) {
   let fullKey = Array.isArray(id) ? id.join("-") : id.toString();
   // we also get encode the
   const buildId = await getBuildId();
-  if (buildId) {
-    fullKey += `${buildId}-`;
-  }
   if (updatedAt) {
     fullKey += `-${new Date(updatedAt).getTime()}`;
+  }
+  if (buildId) {
+    fullKey += `-${buildId}`;
   }
   return fullKey;
 }
