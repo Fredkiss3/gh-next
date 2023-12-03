@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 // components
-import { DropdownMenu } from "../dropdown-menu";
+import { DropdownMenu } from "~/app/(components)/dropdown-menu";
 import { Avatar } from "~/app/(components)/avatar";
 import {
   PaintbrushIcon,
@@ -20,7 +20,7 @@ export type UserDropdownProps = {
 };
 
 export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
-  const [_, startTransition] = React.useTransition();
+  const [, startTransition] = React.useTransition();
   const [injectStyles, setInjectStyles] = React.useState(false);
 
   React.useEffect(() => {
