@@ -68,7 +68,8 @@ export async function MarkdownContent({
   className,
   linkHeaders = false,
   editableCheckboxes = false,
-  repository: currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
+  repository:
+    currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
 }: MarkdownProps) {
   const dt = new Date().getTime();
 

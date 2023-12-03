@@ -105,11 +105,13 @@ export const getBuildId = cache(async () => {
 
 async function computeCacheKey(id: CacheId, updatedAt?: Date | number) {
   let fullKey = Array.isArray(id) ? id.join("-") : id.toString();
-  // we also get encode the
-  const buildId = await getBuildId();
   if (updatedAt) {
     fullKey += `-${new Date(updatedAt).getTime()}`;
   }
+  // the build ID is necessary because the client references for one build
+  // won't necessarily be the same for another build, especially if the component
+  // changed in the meantime
+  const buildId = await getBuildId();
   if (buildId) {
     fullKey += `-${buildId}`;
   }
