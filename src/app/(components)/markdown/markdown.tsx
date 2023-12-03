@@ -40,7 +40,6 @@ import { getMultipleUserByUsername } from "~/app/(models)/user";
 
 // types
 import type { UseMdxComponents } from "@mdx-js/mdx";
-import type { User } from "~/lib/server/db/schema/user.sql";
 import type { IssueQueryResult } from "~/app/(models)/issues";
 import type { UserQueryResult } from "~/app/(models)/user";
 
