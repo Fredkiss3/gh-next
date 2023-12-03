@@ -1,6 +1,6 @@
 import "server-only";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 import { db } from "~/lib/server/db/index.server";
 import { issueToAssignees, issues } from "~/lib/server/db/schema/issue.sql";
 import { nextCache } from "~/lib/server/rsc-utils.server";
@@ -11,6 +11,7 @@ import { issueUserMentions } from "~/lib/server/db/schema/mention.sql";
 import { repositories } from "~/lib/server/db/schema/repository.sql";
 import { alias } from "drizzle-orm/pg-core";
 import { labelToIssues, labels } from "~/lib/server/db/schema/label.sql";
+import { cache } from "react";
 
 export async function getOpenIssuesCount() {
   const fn = nextCache(
@@ -116,27 +117,110 @@ export async function getIssueAssigneesByUsernameOrName(name: string) {
   });
 }
 
-const singleIssuePrepared = db
-  .select()
-  .from(issues)
-  .where(eq(issues.number, sql.placeholder("number")));
+const creator = alias(users, "creator");
 
-export async function getSingleIssue(number: number) {
-  return await singleIssuePrepared.execute({
-    number
+const singleIssuePrepared = db
+  .select({
+    title: issues.title,
+    body: issues.body,
+    updated_at: issues.updated_at,
+    number: issues.number
+  })
+  .from(issues)
+  .innerJoin(repositories, eq(issues.repository_id, repositories.id))
+  .innerJoin(creator, eq(repositories.creator_id, creator.id))
+  .where(
+    and(
+      eq(repositories.name, sql.placeholder("repository_name")),
+      eq(creator.username, sql.placeholder("repository_creator")),
+      eq(issues.number, sql.placeholder("issue_number"))
+    )
+  );
+
+export const getSingleIssue = cache(async function getSingleIssue(
+  repository_creator: string,
+  repository_name: string,
+  issue_number: number
+) {
+  const [issue] = await singleIssuePrepared.execute({
+    repository_creator,
+    repository_name,
+    issue_number
   });
-}
+  if (!issue) return null;
+  return issue;
+});
 
 export async function getMultipleIssuesPerRepositories(
   payload: {
     user: string;
     project: string;
     no: string;
-  }[],
-  currentUser?: User | null
+  }[]
 ) {
   if (payload.length === 0) return [];
 
+  const owner = alias(users, "owner");
+
+  const issueList = await db
+    .select({
+      id: issues.id,
+      status: issues.status,
+      title: issues.title,
+      number: issues.number,
+      createdAt: issues.created_at,
+      excerpt: sql<string>`SUBSTRING(${issues.body} FROM 1 FOR 85) AS excerpt`,
+      repository_name: repositories.name,
+      repository_owner: owner.username
+    })
+    .from(issues)
+    .innerJoin(repositories, eq(issues.repository_id, repositories.id))
+    .innerJoin(owner, eq(repositories.creator_id, owner.id))
+    .leftJoin(users, eq(users.id, issues.author_id))
+    .where(
+      and(
+        sql`${issues.number} in ${payload.map((p) => Number(p.no))}`,
+        sql`${repositories.name} in ${payload.map((p) => p.project)}`,
+        sql`${owner.username} in ${payload.map((p) => p.user)}`
+      )
+    );
+
+  const id_list = issueList.map((issue) => issue.id);
+  // get labels
+  const labelList =
+    id_list.length === 0
+      ? []
+      : await db
+          .selectDistinct({
+            issue_id: labelToIssues.issue_id,
+            id: labels.id,
+            color: labels.color,
+            name: labels.name,
+            description: labels.description
+          })
+          .from(labels)
+          .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
+          .where(sql`${labelToIssues.issue_id} in ${id_list}`);
+  // Group issue by labels & assignees
+  const issueResult = issueList.map((issue) => {
+    const labelsForIssue = labelList.filter(
+      (label) => label.issue_id === issue.id
+    );
+
+    return { ...issue, labels: labelsForIssue };
+  });
+
+  return issueResult;
+}
+
+export async function getSingleIssueWithLabelAndUser(
+  payload: {
+    user: string;
+    project: string;
+    no: number;
+  },
+  currentUser?: User | null
+) {
   const issueWhereUserCommentedSubQuery = db
     .selectDistinct({
       issue_id: comments.issue_id,
@@ -192,34 +276,32 @@ export async function getMultipleIssuesPerRepositories(
       issueWhereUserCommentedSubQuery,
       eq(issues.id, issueWhereUserCommentedSubQuery.issue_id)
     )
-    .where(sql`${issues.number} in ${payload.map((p) => Number(p.no))}`);
+    .where(
+      and(
+        eq(issues.number, payload.no),
+        eq(repositories.name, payload.project),
+        eq(owner.username, payload.user)
+      )
+    )
+    .limit(1);
 
-  const id_list = issueList.map((issue) => issue.id);
+  if (issueList.length === 0) return null;
+
+  const issue = issueList[0];
   // get labels
-  const labelList =
-    id_list.length === 0
-      ? []
-      : await db
-          .selectDistinct({
-            issue_id: labelToIssues.issue_id,
-            id: labels.id,
-            color: labels.color,
-            name: labels.name,
-            description: labels.description
-          })
-          .from(labels)
-          .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
-          .where(sql`${labelToIssues.issue_id} in ${id_list}`);
-  // Group issue by labels & assignees
-  const issueResult = issueList.map((issue) => {
-    const labelsForIssue = labelList.filter(
-      (label) => label.issue_id === issue.id
-    );
+  const labelList = await db
+    .selectDistinct({
+      issue_id: labelToIssues.issue_id,
+      id: labels.id,
+      color: labels.color,
+      name: labels.name,
+      description: labels.description
+    })
+    .from(labels)
+    .innerJoin(labelToIssues, eq(labelToIssues.label_id, labels.id))
+    .where(eq(labelToIssues.issue_id, issue.id));
 
-    return { ...issue, labels: labelsForIssue };
-  });
-
-  return issueResult;
+  return { ...issue, labels: labelList };
 }
 
 export type IssueQueryResult = Awaited<

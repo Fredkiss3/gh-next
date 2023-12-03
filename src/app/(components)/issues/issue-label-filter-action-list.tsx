@@ -9,7 +9,7 @@ import { IssueSearchLink } from "./issue-search-link";
 // utils
 import { clsx, parseIssueFilterTokens } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
-import { useIssueLabelListByNameQuery } from "~/lib/client/hooks/use-issue-label-list-query";
+import { useIssueLabelListByNameQuery } from "./use-issue-label-list-query";
 import { useSearchParams } from "next/navigation";
 import { DEFAULT_ISSUE_SEARCH_QUERY } from "~/lib/shared/constants";
 

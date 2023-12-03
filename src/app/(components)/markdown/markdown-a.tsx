@@ -6,11 +6,11 @@ import {
   SkipIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
-import { HoverCard } from "~/app/(components)/hovercard";
-import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-contents";
+import { HoverCard } from "~/app/(components)/hovercard/hovercard";
+import { IssueHoverCardContents } from "~/app/(components)/hovercard/issue-hovercard-contents";
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
-import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
+import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 import { Avatar } from "~/app/(components)/avatar";
 
 // utils
@@ -20,8 +20,8 @@ import { z } from "zod";
 
 // types
 import type { IssueQueryResult } from "~/app/(models)/issues";
-import type { User } from "~/lib/server/db/schema/user.sql";
 import type { UserQueryResult } from "~/app/(models)/user";
+import { IssueHoverCardLink } from "~/app/(components)/hovercard/issue-hovercard-link";
 
 export type ResolvedReferences = {
   issues: Record<number, IssueQueryResult>;
@@ -30,13 +30,11 @@ export type ResolvedReferences = {
 
 type MarkdownAProps = {
   resolvedReferences: ResolvedReferences;
-  authedUser?: User | null;
   currentRepository: string;
 } & React.ComponentProps<"a">;
 
 export async function MarkdownA({
   resolvedReferences,
-  authedUser,
   currentRepository,
   ...props
 }: MarkdownAProps) {
@@ -91,54 +89,38 @@ export async function MarkdownA({
     if (!issueFound) {
       return <span>{props.children}</span>;
     }
+
     return (
-      <HoverCard
-        content={
-          <IssueHoverCardContents
-            id={issueFound.number}
-            status={issueFound.status}
-            title={issueFound.title}
-            excerpt={issueFound.excerpt}
-            createdAt={issueFound.createdAt}
-            labels={issueFound.labels}
-            isAuthor={authedUser?.id === issueFound.author.id}
-            isMentioned={authedUser?.username === issueFound.mentioned_user}
-            hasCommented={authedUser?.username === issueFound.commented_user}
-            userAvatarURL={authedUser?.avatar_url}
-          />
-        }
+      <IssueHoverCardLink
+        href={props.href!}
+        user={referenceFound.user}
+        repository={referenceFound.project}
+        no={Number(referenceFound.no)}
+        className={clsx(
+          "underline inline-flex gap-1 items-baseline text-accent",
+          "ring-accent rounded-md focus:outline-none focus:ring-2"
+        )}
       >
-        <ReactAriaLink>
-          {/* @ts-expect-error the types are fiiiine ! */}
-          <Link
-            {...props}
-            className={clsx(
-              "underline inline-flex gap-1 items-baseline text-accent"
-            )}
-          >
-            {issueFound.status === "OPEN" && (
-              <IssueOpenedIcon className="h-3.5 w-3.5 flex-shrink-0 text-success relative top-0.5" />
-            )}
-            {issueFound.status === "CLOSED" && (
-              <IssueClosedIcon className="h-3.5 w-3.5 flex-shrink-0 text-done relative top-0.5" />
-            )}
-            {issueFound.status === "NOT_PLANNED" && (
-              <SkipIcon className="h-3.5 w-3.5 flex-shrink-0 text-grey relative top-0.5" />
-            )}
-            <span>
-              <MarkdownTitle
-                title={issueFound.title}
-                className="font-semibold"
-              />
-              &nbsp;
-              <span className="text-grey font-normal">
-                {repository === currentRepository ? "" : repository}#
-                {referenceFound.no}
-              </span>
-            </span>
-          </Link>
-        </ReactAriaLink>
-      </HoverCard>
+        {issueFound.status === "OPEN" && (
+          <IssueOpenedIcon className="h-3.5 w-3.5 flex-shrink-0 text-success relative top-0.5" />
+        )}
+        {issueFound.status === "CLOSED" && (
+          <IssueClosedIcon className="h-3.5 w-3.5 flex-shrink-0 text-done relative top-0.5" />
+        )}
+        {issueFound.status === "NOT_PLANNED" && (
+          <SkipIcon className="h-3.5 w-3.5 flex-shrink-0 text-grey relative top-0.5" />
+        )}
+        <span>
+          <MarkdownTitle title={issueFound.title} className="font-semibold" />
+          &nbsp;
+          <span className="text-grey font-normal">
+            {repository.toLowerCase() === currentRepository.toLowerCase()
+              ? ""
+              : repository}
+            #{referenceFound.no}
+          </span>
+        </span>
+      </IssueHoverCardLink>
     );
   }
 
@@ -163,24 +145,20 @@ export async function MarkdownA({
           />
         }
       >
-        <ReactAriaLink>
-          <Link
-            href={`/${userFound.username}`}
-            className={clsx(
-              "inline-flex gap-1 font-bold underline items-center",
-              {
-                "bg-severe bg-opacity-30 rounded-sm px-0.5 text-yellow-100":
-                  authedUser?.id === userFound.id
-              }
-            )}
-          >
-            <Avatar
-              src={userFound.avatar_url}
-              username={userFound.username}
-              size="x-small"
-            />
-            <span>@{userFound.username}</span>
-          </Link>
+        <ReactAriaLink
+          href={`/${userFound.username}`}
+          className={clsx(
+            "inline-flex gap-1 font-bold underline items-center",
+            "ring-accent rounded-md focus:outline-none focus:ring-2",
+            `mention-${userFound.username}`
+          )}
+        >
+          <Avatar
+            src={userFound.avatar_url}
+            username={userFound.username}
+            size="x-small"
+          />
+          <span>@{userFound.username}</span>
         </ReactAriaLink>
       </HoverCard>
     );

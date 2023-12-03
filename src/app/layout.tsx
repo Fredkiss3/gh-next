@@ -7,6 +7,7 @@ import { Toaster } from "~/app/(components)/toast/toaster.server";
 import { IconSwitcher } from "~/app/(components)/icon-switcher";
 import { TopLoader } from "~/app/(components)/top-loader";
 import { SkipToMainButton } from "~/app/(components)/skip-to-main-button";
+import { XMasDecorations } from "~/app/(components)/x-mas-decorations";
 
 // utils
 import { GeistSans } from "geist/font";
@@ -15,6 +16,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
+import { ClientProviders } from "~/app/(components)/providers";
 
 export const metadata: Metadata = {
   title: {
@@ -33,6 +35,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const theme = await getTheme();
+
   return (
     <html lang="en" suppressHydrationWarning data-theme={theme}>
       <head>
@@ -53,14 +56,16 @@ export default async function RootLayout({
         className={clsx(GeistSans.className, "bg-backdrop")}
         suppressHydrationWarning
       >
-        <SkipToMainButton />
-        <IconSwitcher />
-
-        <TopLoader />
-        {children}
-        {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
-
-        <Toaster />
+        <ClientProviders>
+          {/* only on december */}
+          {new Date().getMonth() === 11 && <XMasDecorations />}
+          <SkipToMainButton />
+          <IconSwitcher />
+          <TopLoader />
+          {children}
+          {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
+          <Toaster />
+        </ClientProviders>
       </body>
     </html>
   );

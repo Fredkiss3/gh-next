@@ -7,7 +7,7 @@ import {
   GITHUB_REPOSITORY_NAME
 } from "~/lib/shared/constants";
 import { nextCache } from "~/lib/server/rsc-utils.server";
-import { CacheKeys } from "~/lib/server/cache-keys.server";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 import { cache } from "react";
 
 type RepositoryStatsResponse = {
@@ -57,7 +57,7 @@ type StargazersResponse = {
  * this data is refetched at most every 30 minutes
  * @returns
  */
-export const getGithubRepoData = cache(async function () {
+export const getGithubRepoData = cache(async () => {
   const THIRTY_MINUTES_IN_SECONDS = 30 * 60;
   const fn = nextCache(
     async () => {
@@ -179,7 +179,8 @@ export const getGithubRepoData = cache(async function () {
         stargazers: allStargazers,
         readmeContent: await fetch(
           `https://raw.githubusercontent.com/${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}/main/README.md`
-        ).then((r) => r.text())
+        ).then((r) => r.text()),
+        updatedAt: new Date().getTime()
       } satisfies GithubRepositoryData;
       return data;
     },

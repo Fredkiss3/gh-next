@@ -1,9 +1,9 @@
 import * as React from "react";
 // components
 import Link from "next/link";
-import { HoverCard } from "~/app/(components)/hovercard";
+import { HoverCard } from "~/app/(components)/hovercard/hovercard";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
-import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
+import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";

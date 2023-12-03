@@ -3,29 +3,44 @@ import "server-only";
 // components
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { Markdown } from "~/app/(components)/markdown";
+import { Cache } from "~/app/(components)/cache/cache.server";
 
 // utils
 import { notFound } from "next/navigation";
 import { preprocess, z } from "zod";
-import { getIssueDetail } from "~/app/(actions)/issue";
+import { CacheKeys } from "~/lib/shared/cache-keys.shared";
+import { getSingleIssue } from "~/app/(models)/issues";
 
 // types
 import type { Metadata } from "next";
 import type { PageProps } from "~/lib/types";
 
+type IssueDetailPageProps = PageProps<{
+  user: string;
+  repository: string;
+  number: string;
+}>;
+
+const issueParamsSchema = z.object({
+  number: preprocess((arg) => Number(arg), z.number()),
+  user: z.string().min(1),
+  repository: z.string().min(1)
+});
+
 export async function generateMetadata({
   params
-}: PageProps<{ number: string }>): Promise<Metadata> {
-  const issueNumberResult = preprocess(
-    (arg) => Number(arg),
-    z.number()
-  ).safeParse(params.number);
+}: IssueDetailPageProps): Promise<Metadata> {
+  const paramsResult = issueParamsSchema.safeParse(params);
 
-  if (!issueNumberResult.success) {
+  if (!paramsResult.success) {
     notFound();
   }
 
-  const [issue] = await getIssueDetail(issueNumberResult.data);
+  const issue = await getSingleIssue(
+    paramsResult.data.user,
+    paramsResult.data.repository,
+    paramsResult.data.number
+  );
 
   if (!issue) {
     notFound();
@@ -38,8 +53,21 @@ export async function generateMetadata({
 
 export default async function IssueDetailPage({
   params
-}: PageProps<{ number: string }>) {
-  const [issue] = await getIssueDetail(Number(params.number));
+}: IssueDetailPageProps) {
+  const paramsResult = issueParamsSchema.safeParse(params);
+
+  if (!paramsResult.success) {
+    notFound();
+  }
+
+  const user = paramsResult.data.user;
+  const repo = paramsResult.data.repository;
+  const issueNo = paramsResult.data.number;
+
+  const issue = await getSingleIssue(user, repo, issueNo);
+  if (!issue) {
+    notFound();
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -53,9 +81,19 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        <Markdown content={issue.body} />
-        {/* <Markdown
-          content={`
+        <Cache
+          id={CacheKeys.issues({
+            user: params.user,
+            repo: params.repository,
+            number: issueNo
+          })}
+          updatedAt={issue.updated_at}
+        >
+          <Markdown content={issue.body} />
+        </Cache>
+        {/* <Cache id={"issue-test"} bypass>
+          <Markdown
+            content={`
 ## Some references:
 
 *   Commit: f8083175fe890cbf14f41d0a06e7aa35d4989587
@@ -75,7 +113,8 @@ export default async function IssueDetailPage({
 - feat: autofix non-existant-packages by @fredkiss3 in #30
 - feat: autofix packages-without-package-json by @fredkiss3 in #31
 `}
-        /> */}
+          />
+        </Cache> */}
       </section>
     </div>
   );

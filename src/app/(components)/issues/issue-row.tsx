@@ -10,10 +10,10 @@ import {
 import Link from "next/link";
 import { IssueRowAvatarStack } from "~/app/(components)/issues/issue-row-avatar-stack";
 import { LabelBadge } from "~/app/(components)/label-badge";
-import { HoverCard } from "~/app/(components)/hovercard";
+import { HoverCard } from "~/app/(components)/hovercard/hovercard";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
-import { IssueHoverCardContents } from "~/app/(components)/issue-hovercard-contents";
-import { UserHoverCardContents } from "~/app/(components)/user-hovercard-contents";
+import { IssueHoverCardContents } from "~/app/(components)/hovercard/issue-hovercard-contents";
+import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 import { Tooltip } from "~/app/(components)/tooltip";
 import { IssueSearchLink } from "./issue-search-link";
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
@@ -66,7 +66,7 @@ export function IssueRow({
   className,
   ...reactionCounts
 }: IssueRowProps) {
-  let emojiCount: number = 0;
+  let emojiCount = 0;
   switch (emojiSort) {
     case "reactions-+1-desc":
       emojiCount = reactionCounts.plus_one_count;
@@ -143,21 +143,19 @@ export function IssueRow({
                 />
               }
             >
-              <ReactAriaLink>
-                <Link
-                  href={`/${repository_owner}/${repository_name}/issues/${number}`}
-                  className={clsx(
-                    "inline break-words text-lg font-semibold text-foreground",
-                    "hover:text-accent",
-                    "transition duration-150",
-                    "ring-accent rounded-md focus:outline-none focus:ring-2"
-                  )}
-                >
-                  <MarkdownTitle
-                    title={title}
-                    className="font-semibold text-base"
-                  />
-                </Link>
+              <ReactAriaLink
+                href={`/${repository_owner}/${repository_name}/issues/${number}`}
+                className={clsx(
+                  "inline break-words text-lg font-semibold text-foreground",
+                  "hover:text-accent",
+                  "transition duration-150",
+                  "ring-accent rounded-md focus:outline-none focus:ring-2"
+                )}
+              >
+                <MarkdownTitle
+                  title={title}
+                  className="font-semibold text-base"
+                />
               </ReactAriaLink>
             </HoverCard>
           </span>
@@ -178,20 +176,18 @@ export function IssueRow({
                     closeDelayInMs={500}
                     placement="bottom end"
                   >
-                    <ReactAriaLink>
-                      <IssueSearchLink
-                        className={clsx(
-                          "transition duration-150",
-                          "focus:ring-2 ring-accent focus:outline-none rounded-md"
-                        )}
-                        filters={{
-                          label: [name]
-                        }}
-                        conserveCurrentFilters
-                      >
-                        <LabelBadge color={color} title={name} />
-                      </IssueSearchLink>
-                    </ReactAriaLink>
+                    <IssueSearchLink
+                      className={clsx(
+                        "transition duration-150",
+                        "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                      )}
+                      filters={{
+                        label: [name]
+                      }}
+                      conserveCurrentFilters
+                    >
+                      <LabelBadge color={color} title={name} />
+                    </IssueSearchLink>
                   </Tooltip>
                 ))}
               </span>
@@ -219,20 +215,18 @@ export function IssueRow({
                 />
               }
             >
-              <ReactAriaLink>
-                <IssueSearchLink
-                  filters={{
-                    author: author.username
-                  }}
-                  className={clsx(
-                    "hover:text-accent",
-                    "transition duration-150",
-                    "focus:ring-2 ring-accent focus:outline-none rounded-md"
-                  )}
-                >
-                  {author.username}
-                </IssueSearchLink>
-              </ReactAriaLink>
+              <IssueSearchLink
+                filters={{
+                  author: author.username
+                }}
+                className={clsx(
+                  "hover:text-accent",
+                  "transition duration-150",
+                  "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                )}
+              >
+                {author.username}
+              </IssueSearchLink>
             </HoverCard>
           ) : (
             <IssueSearchLink

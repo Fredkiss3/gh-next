@@ -11,7 +11,9 @@ export async function MarkdownErrorBoundary({
   children
 }: MarkdownErrorBoundaryProps) {
   return (
-    <ErrorBoundary FallbackComponent={() => <>Error rendering markdown</>}>
+    <ErrorBoundary
+      FallbackComponent={({ error }) => <>Error rendering markdown : {error}</>}
+    >
       {children}
     </ErrorBoundary>
   );

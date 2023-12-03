@@ -25,6 +25,7 @@ export type UpperLowerCase<T extends string> =
   | `${Uppercase<T>}`;
 
 export type GithubRepositoryData = {
+  updatedAt: number;
   forkCount: number;
   stargazerCount: number;
   watcherCount: number;
