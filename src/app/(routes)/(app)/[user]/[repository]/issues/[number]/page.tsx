@@ -2,7 +2,7 @@ import "server-only";
 
 // components
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
-import { Markdown } from "~/app/(components)/markdown";
+import { Markdown } from "~/app/(components)/markdown/markdown";
 import { Cache } from "~/app/(components)/cache/cache.server";
 
 // utils
