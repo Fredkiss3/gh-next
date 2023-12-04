@@ -3,13 +3,21 @@ import { HomeIcon } from "@primer/octicons-react";
 import { Button } from "~/app/(components)/button";
 
 import type { Metadata } from "next";
+
 export const metadata: Metadata = {
-  title: "Page not found - Fredkiss3/gh-next"
+  title: "Page not found"
 };
 
 export default function RootNotFound() {
   return (
     <>
+      {/*
+        FIXME: this is a fix because nextjs considers the metadata on the children layouts 
+          over the metadata set here, even though this is on top of the layout
+          So this way we manually overwrites the title above with a title inside
+       */}
+      <title>Page not found · gh-next</title>
+
       <section className="flex h-screen flex-col items-center justify-center gap-6 text-foreground">
         <div className="relative flex w-full items-end justify-center gap-4">
           <img
