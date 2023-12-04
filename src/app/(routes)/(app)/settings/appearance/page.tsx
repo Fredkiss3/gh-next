@@ -5,7 +5,7 @@ import * as React from "react";
 import { ThemeForm } from "~/app/(components)/theme-form";
 
 // utils
-import { redirectIfNotAuthed } from "~/app/(actions)/auth";
+import { getUserOrRedirect } from "~/app/(actions)/auth";
 import { getTheme } from "~/app/(actions)/theme";
 
 // types
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AppearanceSettingsPage() {
-  await redirectIfNotAuthed("/settings/appearance");
+  await getUserOrRedirect("/settings/appearance");
   const theme = await getTheme();
   return (
     <div>
