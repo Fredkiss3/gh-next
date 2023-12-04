@@ -2,12 +2,12 @@ import * as React from "react";
 import { clsx } from "~/lib/shared/utils.shared";
 import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
-export type InputProps = Omit<
+export type TextareaProps = Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   "size" | "defaultValue" | "value"
 > & {
-  defaultValue?: string | number | ReadonlyArray<string> | undefined | null;
-  value?: string | number | ReadonlyArray<string> | undefined | null;
+  defaultValue?: string | undefined;
+  value?: string | undefined;
   label: React.ReactNode;
   name: string;
   inputClassName?: string;
@@ -20,10 +20,9 @@ export type InputProps = Omit<
   hideLabel?: boolean;
 };
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   function Textarea(
     {
-      onChange,
       label,
       className,
       validationText,
@@ -78,7 +77,6 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, InputProps>(
         >
           {renderLeadingIcon?.("h-5 w-5 text-gray-500 flex-shrink-0")}
 
-          {/* @ts-expect-error defaultValue & value are overriden */}
           <textarea
             {...otherProps}
             ref={ref}
