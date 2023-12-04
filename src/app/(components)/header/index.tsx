@@ -7,7 +7,6 @@ import {
   InboxIcon,
   IssueOpenedIcon,
   MarkGithubIcon,
-  PlusIcon,
   SearchIcon
 } from "@primer/octicons-react";
 import Link from "next/link";
@@ -72,17 +71,6 @@ export async function Header({ children, pageTitle }: HeaderProps) {
           />
 
           <ul className="flex h-full items-center gap-2">
-            <li className="hidden md:block">
-              <Button
-                isSquared
-                href="/issues/new"
-                variant="invisible"
-                renderLeadingIcon={(cls) => <PlusIcon className={cls} />}
-              >
-                <span className="sr-only">New issue</span>
-              </Button>
-            </li>
-
             <li>
               <Button
                 isSquared

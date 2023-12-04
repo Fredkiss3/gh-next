@@ -16,7 +16,7 @@ function updateIcons(theme: Theme) {
   }
 }
 
-export function IconSwitcher() {
+export function FavIconSwitcher() {
   React.useEffect(() => {
     const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
 

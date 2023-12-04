@@ -4,7 +4,7 @@ import * as React from "react";
 // components
 import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
 import { Toaster } from "~/app/(components)/toast/toaster.server";
-import { IconSwitcher } from "~/app/(components)/icon-switcher";
+import { FavIconSwitcher } from "~/app/(components)/favicon-switcher";
 import { TopLoader } from "~/app/(components)/top-loader";
 import { SkipToMainButton } from "~/app/(components)/skip-to-main-button";
 import { XMasDecorations } from "~/app/(components)/x-mas-decorations";
@@ -60,7 +60,7 @@ export default async function RootLayout({
           {/* only on december */}
           {new Date().getMonth() === 11 && <XMasDecorations />}
           <SkipToMainButton />
-          <IconSwitcher />
+          <FavIconSwitcher />
           <TopLoader />
           {children}
           {process.env.NODE_ENV !== "production" && <TailwindIndicator />}
