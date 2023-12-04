@@ -15,8 +15,8 @@ export type NewIssueFormProps = {
 export function NewIssueForm({}: NewIssueFormProps) {
   return (
     <section className="flex flex-col px-5">
-      <form className="grid gap-4">
-        <div className="flex flex-col gap-4">
+      <form className="grid gap-4 md:grid-cols-5 md:place-items-end">
+        <div className="flex flex-col gap-4 md:col-span-3">
           <Input
             name="title"
             required
@@ -49,9 +49,9 @@ export function NewIssueForm({}: NewIssueFormProps) {
           </small>
         </div>
 
-        <aside></aside>
+        <aside className="md:col-span-2"></aside>
 
-        <SubmitButton loadingMessage="Submitting...">
+        <SubmitButton loadingMessage="Submitting..." className="md:col-start-3">
           Submit new issue
         </SubmitButton>
       </form>
