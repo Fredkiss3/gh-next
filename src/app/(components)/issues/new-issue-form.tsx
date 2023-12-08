@@ -107,7 +107,6 @@ export function NewIssueForm({
 
         <div className="[grid-area:BTN] flex justify-end w-full">
           <SubmitButton
-            disabled
             loadingMessage="Submitting..."
             className="w-full md:w-auto"
           >

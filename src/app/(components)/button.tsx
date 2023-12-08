@@ -133,7 +133,6 @@ export const Button = React.forwardRef<
       // @ts-expect-error formAction is defined, but react aria don't take it as an argument
       <ReactAriaButton
         ref={ref as React.Ref<HTMLButtonElement>}
-        isDisabled={disabled || isLoading}
         className={clsx(commonClasses, {
           "focus-visible:outline focus-visible:-outline-offset-2":
             !isLoading && !disabled,
