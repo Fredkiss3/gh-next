@@ -34,8 +34,8 @@ export default async function NewIssuePage(props: NewIssuePageProps) {
   );
   return (
     <NewIssueForm
-      currentUserAvatarUrl={currentUser.username}
-      currentUserUsername={currentUser.avatar_url}
+      currentUserAvatarUrl={currentUser.avatar_url}
+      currentUserUsername={currentUser.username}
     />
   );
 }

@@ -3,12 +3,14 @@ import * as React from "react";
 // components
 import * as Tabs from "@radix-ui/react-tabs";
 import { Textarea } from "~/app/(components)/textarea";
+import { MarkdownIcon } from "@primer/octicons-react";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { TextareaProps } from "~/app/(components)/textarea";
+
 export type MarkdownTextAreaProps = Omit<TextareaProps, "value">;
 
 const TABS = {
@@ -36,7 +38,7 @@ export function MarkdownTextArea({
           value={selectedTab}
           onValueChange={(tab) => setSelectedTab(tab as TabValue)}
         >
-          <Tabs.List className="flex text-sm items-stretch bg-ghost/40">
+          <Tabs.List className="flex text-sm items-stretch bg-ghost">
             <Tabs.Trigger
               value={TABS.EDITOR}
               className={clsx(
@@ -90,6 +92,23 @@ export function MarkdownTextArea({
             <Tabs.Content value={TABS.PREVIEW}>Preview</Tabs.Content>
           </div>
         </Tabs.Root>
+
+        <div className="bg-background rounded-b-md px-2 pb-2">
+          <a
+            target="_blank"
+            className={clsx(
+              "inline-flex gap-2 items-center text-xs px-2 py-1 rounded-md border-2 border-transparent group",
+              "transition duration-150",
+              "hover:bg-ghost",
+              "focus:outline-none focus:border-accent"
+            )}
+            href="https://docs.github.com/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+            rel="noreferrer"
+          >
+            <MarkdownIcon className="text-grey group-hover:text-white h-4 w-4" />
+            <span>Markdown is suppported</span>
+          </a>
+        </div>
       </div>
     </div>
   );
