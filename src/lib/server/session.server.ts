@@ -9,6 +9,7 @@ import {
 } from "~/lib/shared/constants";
 import { _envObject as env } from "~/env-config.mjs";
 import { nanoid } from "nanoid";
+import { headers } from "next/headers";
 
 import { users } from "~/lib/server/db/schema/user.sql";
 import { createSelectSchema } from "drizzle-zod";
@@ -90,14 +91,17 @@ export class Session {
   }
 
   public getCookie(): ResponseCookie {
+    const headerStore = headers();
     return {
       name: SESSION_COOKIE_KEY,
       value: `${this.#_session.id}.${this.#_session.signature}`,
       expires: this.#_session.expiry,
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: !headerStore.get("Host")?.toString().startsWith("localhost")
+        ? "lax"
+        : "none",
       // when testing on local, the cookies should not be set to secure
-      secure: !env.NEXT_PUBLIC_VERCEL_URL.startsWith("localhost")
+      secure: !headerStore.get("Host")?.toString().startsWith("localhost")
         ? true
         : undefined
     };
