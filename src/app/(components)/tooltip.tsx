@@ -19,16 +19,18 @@ export type TooltipProps = {
   delayInMs?: number;
   closeDelayInMs?: number;
   disabled?: boolean;
+  className?: string;
 } & Pick<ReactAriaTooltipProps, "placement" | "isOpen">;
 
 export function Tooltip({
   children,
   content,
-  delayInMs = 150,
-  closeDelayInMs = 150,
   placement,
   isOpen,
-  disabled
+  disabled,
+  className,
+  delayInMs = 150,
+  closeDelayInMs = 150
 }: TooltipProps) {
   return (
     <TooltipTrigger
@@ -42,7 +44,8 @@ export function Tooltip({
         offset={5}
         placement={placement}
         className={clsx(
-          "group/tooltip rounded-md bg-tooltip-dark px-2 py-1 text-white"
+          "group/tooltip rounded-md bg-tooltip-dark px-2 py-1 text-white",
+          className
         )}
       >
         <OverlayArrow>
