@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { loginUser } from "~/app/(actions)/auth";
 import { env } from "~/env";
-import { isValidURLPathname } from "~/lib/shared/utils.shared";
+import { isValidURLPathname, jsonFetch } from "~/lib/shared/utils.shared";
 import type { NextRequest } from "next/server";
 
 export const fetchCache = "force-no-store";
@@ -38,13 +38,13 @@ export async function GET(req: NextRequest) {
     return redirect("/");
   }
 
-  const githubUser = await fetch("https://api.github.com/user", {
+  const githubUser = await jsonFetch("https://api.github.com/user", {
     headers: {
       "User-Agent": `Github-OAuth-${env.GITHUB_CLIENT_ID}`,
       Authorization: `token ${response.access_token}`,
       Accept: "application/json"
     }
-  }).then((r) => r.json());
+  });
 
   const nextURL = await loginUser(githubUser);
 

@@ -71,7 +71,7 @@ export class Session {
     return new Session(serializedPayload);
   }
 
-  public static async create(isBot: boolean = false) {
+  public static async create(isBot = false) {
     return Session.#fromPayload(
       await Session.#create({
         isBot
@@ -226,8 +226,8 @@ export class Session {
       expiry: options?.isBot
         ? new Date(Date.now() + 5 * 1000) // only five seconds for temporary session
         : options?.init?.user
-          ? new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000)
-          : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
+        ? new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000)
+        : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
       signature,
       flashMessages: options?.init?.flashMessages,
       additionnalData: options?.init?.additionnalData,
@@ -264,8 +264,8 @@ export class Session {
 
   static #arrayBufferToBase64(buffer: ArrayBuffer) {
     let binary = "";
-    let bytes = new Uint8Array(buffer);
-    let len = bytes.byteLength;
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
       binary += String.fromCharCode(bytes[i]);
     }

@@ -7,6 +7,9 @@ import { MarkdownTextArea } from "~/app/(components)/issues/markdown-text-area";
 import { SubmitButton } from "~/app/(components)/submit-button";
 import { Avatar } from "~/app/(components)/avatar";
 
+// utils
+import { clsx } from "~/lib/shared/utils.shared";
+
 // types
 export type NewIssueFormProps = {
   currentUserUsername: string;
@@ -18,9 +21,36 @@ export function NewIssueForm({
   currentUserUsername
 }: NewIssueFormProps) {
   return (
-    <section className="flex flex-col px-5">
-      <form className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 md:place-items-end">
-        <div className="md:col-span-2 lg:col-span-3 w-full flex items-start gap-4">
+    <section className="grid px-5">
+      <form
+        style={{
+          // @ts-expect-error these are CSS variables
+          "--grid-area-mobile": `
+          "EDT"
+          "LBL"
+          "ACT"
+          "BTN"
+          `,
+          "--grid-area-md": `
+          "EDT EDT ACT" 
+          ".   BTN .  " 
+          "LBL LBL .  "
+          `,
+          "--grid-area-lg": `
+          "EDT EDT EDT ACT" 
+          ".   .   BTN .  " 
+          "LBL LBL LBL .  "
+          `,
+          gridTemplateRows: "auto auto auto auto"
+        }}
+        className={clsx(
+          "grid gap-4 md:grid-cols-3 lg:grid-cols-4",
+          "[grid-template-areas:var(--grid-area-mobile)]",
+          "md:[grid-template-areas:var(--grid-area-md)]",
+          "lg:[grid-template-areas:var(--grid-area-lg)]"
+        )}
+      >
+        <div className="[grid-area:EDT] w-full flex items-start gap-4">
           <div className="flex-none hidden md:block">
             <Avatar
               username={currentUserUsername}
@@ -43,27 +73,26 @@ export function NewIssueForm({
               placeholder="Add your description here..."
               required
             />
-
-            <small className="text-grey flex gap-2 items-start">
-              <InfoIcon className="flex-none h-4 w-4 relative top-0.5" />
-              <p>
-                Remember, contributions to this repository should follow
-                the&nbsp;
-                <a
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent underline rounded-sm ring-accent focus:outline-none focus:ring-2"
-                  href="https://docs.github.com/fr/site-policy/github-terms/github-community-guidelines"
-                >
-                  GitHub Community Guidelines
-                </a>
-                .
-              </p>
-            </small>
           </div>
         </div>
 
-        <aside className="flex flex-col gap-4 w-full h-full py-4">
+        <small className="text-grey flex gap-2 items-start [grid-area:LBL] md:pl-14">
+          <InfoIcon className="flex-none h-4 w-4 relative top-0.5" />
+          <p>
+            Remember, contributions to this repository should follow the&nbsp;
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="text-accent underline rounded-sm ring-accent focus:outline-none focus:ring-2"
+              href="https://docs.github.com/fr/site-policy/github-terms/github-community-guidelines"
+            >
+              GitHub Community Guidelines
+            </a>
+            .
+          </p>
+        </small>
+
+        <aside className="flex flex-col gap-4 w-full h-full py-4 [grid-area:ACT]">
           <AssigneeFormInput />
           <LabelFormInput />
           <div className="border-b border-neutral flex flex-col gap-2 text-sm pb-4">
@@ -76,12 +105,15 @@ export function NewIssueForm({
           </div>
         </aside>
 
-        <SubmitButton
-          loadingMessage="Submitting..."
-          className="md:col-start-2 lg:col-start-3"
-        >
-          Submit new issue
-        </SubmitButton>
+        <div className="[grid-area:BTN] flex justify-end w-full">
+          <SubmitButton
+            disabled
+            loadingMessage="Submitting..."
+            className="w-full md:w-auto"
+          >
+            Submit new issue
+          </SubmitButton>
+        </div>
       </form>
     </section>
   );

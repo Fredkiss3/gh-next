@@ -38,7 +38,7 @@ export function MarkdownTextArea({
           value={selectedTab}
           onValueChange={(tab) => setSelectedTab(tab as TabValue)}
         >
-          <Tabs.List className="flex text-sm items-stretch bg-ghost">
+          <Tabs.List className="flex text-sm items-stretch bg-ghost/40">
             <Tabs.Trigger
               value={TABS.EDITOR}
               className={clsx(
