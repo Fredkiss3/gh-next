@@ -134,8 +134,7 @@ export const Button = React.forwardRef<
     } = restProps;
 
     return (
-      // @ts-expect-error formAction is defined, but react aria don't take it as an argument
-      <ReactAriaButton
+      <button
         ref={ref as React.Ref<HTMLButtonElement>}
         className={clsx(commonClasses, {
           "focus-visible:outline focus-visible:-outline-offset-2":
@@ -157,7 +156,7 @@ export const Button = React.forwardRef<
         {!isLoading && renderLeadingIcon?.("h-4 w-4 flex-shrink-0")}
         {children}
         {renderTrailingIcon?.("h-4 w-4 flex-shrink-0")}
-      </ReactAriaButton>
+      </button>
     );
   }
 
