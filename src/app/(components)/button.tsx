@@ -3,7 +3,6 @@ import * as React from "react";
 // components
 import Link from "next/link";
 import { LoadingIndicator } from "./loading-indicator";
-import { ReactAriaButton } from "./react-aria-button";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
