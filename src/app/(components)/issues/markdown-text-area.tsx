@@ -49,7 +49,7 @@ export function MarkdownTextArea({
   defaultValue,
   ...props
 }: MarkdownTextAreaProps) {
-  const [textContent, setTextContent] = React.useState(defaultValue);
+  const [textContent, setTextContent] = React.useState(defaultValue ?? "");
   const [selectedTab, setSelectedTab] = React.useState<TabValue>(TABS.EDITOR);
   const [textAreaHeight, setTextAreaHeight] = React.useState(0);
   const textAreaRef = React.useRef<React.ElementRef<"textarea">>(null);
@@ -254,17 +254,22 @@ export function MarkdownTextArea({
                 hideLabel
                 ref={textAreaRef}
                 style={{
-                  height: textAreaHeight
+                  height: textAreaHeight > 0 ? `${textAreaHeight}px` : "auto"
                 }}
               />
             </Tabs.Content>
             <Tabs.Content
               value={TABS.PREVIEW}
               style={{
-                height: textAreaHeight
+                height: `${textAreaHeight}px`
               }}
+              className="text-sm p-4"
             >
-              Preview
+              {textContent.trim().length > 0 ? (
+                textContent
+              ) : (
+                <span>Nothing to preview</span>
+              )}
             </Tabs.Content>
           </div>
         </Tabs.Root>
@@ -308,17 +313,22 @@ function ToolbarButton({
 }: ToolbarButtonProps) {
   return (
     <Toolbar.Button {...props} asChild>
-      {/* <Tooltip content={label} placement="bottom" className="text-xs"> */}
-      <Button
-        onClick={onClick}
-        isSquared
-        variant="neutral"
-        className={clsx(className)}
+      <Tooltip
+        content={label}
+        side="bottom"
+        className="text-xs"
+        delayInMs={500}
       >
-        <span className="sr-only">{label}</span>
-        <Icon className="h-4 w-4 text-grey" />
-      </Button>
-      {/* </Tooltip> */}
+        <Button
+          onClick={onClick}
+          isSquared
+          variant="neutral"
+          className={clsx(className)}
+        >
+          <span className="sr-only">{label}</span>
+          <Icon className="h-4 w-4 text-grey" />
+        </Button>
+      </Tooltip>
     </Toolbar.Button>
   );
 }
