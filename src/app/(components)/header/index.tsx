@@ -19,7 +19,7 @@ import {
 } from "~/app/(components)/user-dropdown/user-dropdown.server";
 
 // utils
-import { getAuthedUser, getSession } from "~/app/(actions)/auth";
+import { getAuthedUser, getSession } from "~/app/(actions)/auth.action";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types

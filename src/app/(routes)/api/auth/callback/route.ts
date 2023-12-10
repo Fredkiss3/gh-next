@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { loginUser } from "~/app/(actions)/auth";
+import { loginUser } from "~/app/(actions)/auth.action";
 import { env } from "~/env";
 import { isValidURLPathname, jsonFetch } from "~/lib/shared/utils.shared";
 import type { NextRequest } from "next/server";

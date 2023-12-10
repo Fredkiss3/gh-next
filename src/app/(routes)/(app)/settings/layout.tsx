@@ -4,7 +4,7 @@ import { Avatar } from "~/app/(components)/avatar";
 import { VerticalNavlist } from "~/app/(components)/vertical-navlist";
 
 // utils
-import { getUserOrRedirect } from "~/app/(actions)/auth";
+import { getUserOrRedirect } from "~/app/(actions)/auth.action";
 import { clsx } from "~/lib/shared/utils.shared";
 
 export default async function SettingsLayout({

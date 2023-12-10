@@ -20,12 +20,6 @@ import {
   TasklistIcon
 } from "@primer/octicons-react";
 import * as Toolbar from "@radix-ui/react-toolbar";
-
-// utils
-import { clsx } from "~/lib/shared/utils.shared";
-
-// types
-import type { TextareaProps } from "~/app/(components)/textarea";
 import { Button } from "~/app/(components)/button";
 import { Tooltip } from "~/app/(components)/tooltip";
 import {
@@ -35,6 +29,12 @@ import {
   DropdownSeparator,
   DropdownTrigger
 } from "~/app/(components)/dropdown";
+
+// utils
+import { clsx } from "~/lib/shared/utils.shared";
+
+// types
+import type { TextareaProps } from "~/app/(components)/textarea";
 
 export type MarkdownTextAreaProps = Omit<TextareaProps, "value">;
 

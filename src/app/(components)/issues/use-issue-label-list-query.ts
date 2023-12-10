@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { filterLabelsByName } from "~/app/(actions)/issue";
+import { filterLabelsByName } from "~/app/(actions)/issue.action";
 
 export function useIssueLabelListByNameQuery({
   name = "",

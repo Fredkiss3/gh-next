@@ -12,7 +12,7 @@ import { AsyncIssueHoverCardContents } from "~/app/(components)/hovercard/async-
 import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search-output-validator";
 import { searchIssues } from "~/app/(models)/issues/search";
 
-import { getAuthedUser } from "./auth";
+import { getAuthedUser } from "./auth.action";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 

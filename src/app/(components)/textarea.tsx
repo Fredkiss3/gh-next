@@ -6,7 +6,7 @@ export type TextareaProps = Omit<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   "size" | "defaultValue" | "value"
 > & {
-  defaultValue?: string | undefined;
+  defaultValue?: string | null | undefined;
   value?: string | undefined;
   label: React.ReactNode;
   name: string;
@@ -33,6 +33,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       renderLeadingIcon,
       renderTrailingIcon,
       required = false,
+      defaultValue,
       autoComplete = "off",
       size = "medium",
       id: defaultId,
@@ -80,6 +81,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           <textarea
             {...otherProps}
             ref={ref}
+            defaultValue={defaultValue ?? undefined}
             aria-describedby={`${validationId} ${helpId}`}
             id={defaultId ?? id}
             autoComplete={autoComplete}

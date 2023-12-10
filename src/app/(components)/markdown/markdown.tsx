@@ -48,7 +48,7 @@ export type MarkdownProps = {
   linkHeaders?: boolean;
   className?: string;
   editableCheckboxes?: boolean;
-  repository?: string;
+  repository?: `${string}/${string}`;
 };
 
 export async function Markdown(props: MarkdownProps) {

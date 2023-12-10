@@ -3,7 +3,7 @@ import { NewIssueForm } from "~/app/(components)/issues/new-issue-form";
 
 // utils
 import { notFound } from "next/navigation";
-import { getUserOrRedirect } from "~/app/(actions)/auth";
+import { getUserOrRedirect } from "~/app/(actions)/auth.action";
 import { getRepositoryByOwnerAndName } from "~/app/(models)/repository";
 
 // types

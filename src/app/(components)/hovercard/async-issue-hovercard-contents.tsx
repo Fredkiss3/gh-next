@@ -1,7 +1,7 @@
 import "server-only";
 
 import * as React from "react";
-import { getAuthedUser } from "~/app/(actions)/auth";
+import { getAuthedUser } from "~/app/(actions)/auth.action";
 import { getSingleIssueWithLabelAndUser } from "~/app/(models)/issues";
 import { IssueHoverCardContents } from "~/app/(components)/hovercard/issue-hovercard-contents";
 

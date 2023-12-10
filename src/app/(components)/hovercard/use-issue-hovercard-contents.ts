@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getIssueHoverCardContents } from "~/app/(actions)/issue";
+import { getIssueHoverCardContents } from "~/app/(actions)/issue.action";
 import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 
 type UseIssueHoverCardContentsArgs = {
