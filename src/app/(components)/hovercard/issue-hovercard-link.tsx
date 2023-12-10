@@ -46,9 +46,7 @@ export function IssueHoverCardLink({
             </React.Suspense>
           </ErrorBoundary>
         ) : (
-          <>
-            <IssueHoverCardSkeleton />
-          </>
+          <IssueHoverCardSkeleton />
         )
       }
       onOpenChange={(open) => {

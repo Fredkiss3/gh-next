@@ -43,8 +43,9 @@ export const DropdownContent = React.forwardRef<
           "min-w-[200px]",
           className
         )}
+        asChild
       >
-        {children}
+        <ul>{children}</ul>
       </DropdownMenu.Content>
     </DropdownMenu.Portal>
   );
@@ -82,7 +83,7 @@ export const DropdownItem = React.forwardRef<
   const Icon = props.icon;
   const router = useRouter();
   return (
-    <div className="px-2">
+    <li className="px-2" role="none">
       <DropdownMenu.Item
         className={clsx(
           "focus-visible:outline-none text-sm px-2 py-1.5",
@@ -101,8 +102,9 @@ export const DropdownItem = React.forwardRef<
         {isDropdownMenuButton(props) ? (
           <button
             className={clsx(
-              "flex w-full min-w-max items-center gap-2 focus:outline-none focus-visible:outline-none",
-              "data-[highlighted]:rounded-md data-[highlighted]:bg-neutral"
+              "flex w-full min-w-max items-center gap-2",
+              "focus:outline-none focus-visible:outline-none",
+              "rounded-md data-[highlighted]:bg-neutral"
             )}
           >
             {Icon && (
@@ -114,7 +116,8 @@ export const DropdownItem = React.forwardRef<
           <Link
             href={props.href}
             className={clsx(
-              "flex w-full min-w-max items-center gap-2 focus:outline-none focus-visible:outline-none",
+              "flex w-full min-w-max items-center gap-2",
+              "focus:outline-none focus-visible:outline-none",
               "data-[highlighted]:rounded-md data-[highlighted]:bg-neutral data-[highlighted]:outline-none"
             )}
           >
@@ -125,6 +128,6 @@ export const DropdownItem = React.forwardRef<
           </Link>
         )}
       </DropdownMenu.Item>
-    </div>
+    </li>
   );
 });

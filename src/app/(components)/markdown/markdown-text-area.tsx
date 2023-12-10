@@ -10,7 +10,6 @@ import {
   DiffIgnoredIcon,
   HeadingIcon,
   ItalicIcon,
-  KebabHorizontalIcon,
   LinkIcon,
   ListOrderedIcon,
   ListUnorderedIcon,
@@ -19,25 +18,17 @@ import {
   QuoteIcon,
   TasklistIcon
 } from "@primer/octicons-react";
-import * as Toolbar from "@radix-ui/react-toolbar";
 import { Button } from "~/app/(components)/button";
-import { Tooltip } from "~/app/(components)/tooltip";
 import {
-  DropdownContent,
-  DropdownItem,
-  DropdownRoot,
-  DropdownSeparator,
-  DropdownTrigger
-} from "~/app/(components)/dropdown";
-import { ErrorBoundary } from "react-error-boundary";
-import { Skeleton } from "~/app/(components)/skeleton";
+  ActionToolbar,
+  type ActionToolbarItemGroups
+} from "~/app/(components)/action-toolbar";
+import { MarkdownPreviewer } from "~/app/(components)/markdown/markdown-previewer";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 import { useParams } from "next/navigation";
 import { z } from "zod";
-import { getMarkdownPreview } from "~/app/(actions)/markdown.action";
-import { getIssueHoverCard } from "~/app/(actions)/issue.action";
 
 // types
 import type { TextareaProps } from "~/app/(components)/textarea";
@@ -126,132 +117,7 @@ export function MarkdownTextArea({
                 Preview
               </Tabs.Trigger>
 
-              <Toolbar.Root className="flex w-full border-b border-neutral px-2 py-1 justify-end">
-                <ToolbarButton
-                  label="Header"
-                  onClick={() => {}}
-                  icon={HeadingIcon}
-                />
-                <ToolbarButton
-                  label="Bold"
-                  onClick={() => {}}
-                  icon={BoldIcon}
-                />
-                <ToolbarButton
-                  label="Italic"
-                  onClick={() => {}}
-                  icon={ItalicIcon}
-                />
-                <ToolbarButton
-                  label="Quote"
-                  onClick={() => {}}
-                  icon={QuoteIcon}
-                />
-                <ToolbarButton
-                  label="Code"
-                  onClick={() => {}}
-                  icon={CodeIcon}
-                />
-                <ToolbarButton
-                  label="Link"
-                  onClick={() => {}}
-                  icon={LinkIcon}
-                  className="hidden lg:inline-flex"
-                />
-
-                <Toolbar.Separator className="h-4 self-center bg-neutral/40 w-[1px] mx-2 hidden lg:block" />
-
-                <ToolbarButton
-                  label="Numbered list"
-                  onClick={() => {}}
-                  icon={ListOrderedIcon}
-                  className="hidden lg:inline-flex"
-                />
-                <ToolbarButton
-                  label="Unordered list"
-                  onClick={() => {}}
-                  icon={ListUnorderedIcon}
-                  className="hidden lg:inline-flex"
-                />
-                <ToolbarButton
-                  label="Task list"
-                  onClick={() => {}}
-                  icon={TasklistIcon}
-                  className="hidden lg:inline-flex"
-                />
-
-                <Toolbar.Separator className="h-4 self-center bg-neutral/40 w-[1px] mx-2 hidden lg:block" />
-
-                <ToolbarButton
-                  label="Mentions"
-                  onClick={() => {}}
-                  icon={MentionIcon}
-                  className="hidden lg:inline-flex"
-                />
-                <ToolbarButton
-                  label="References"
-                  onClick={() => {}}
-                  icon={CrossReferenceIcon}
-                  className="hidden lg:inline-flex"
-                />
-                <ToolbarButton
-                  label="Slash commands"
-                  onClick={() => {}}
-                  icon={DiffIgnoredIcon}
-                  className="hidden lg:inline-flex"
-                />
-
-                <DropdownRoot>
-                  <Toolbar.Button asChild>
-                    <DropdownTrigger>
-                      <Button isSquared variant="neutral" className="lg:hidden">
-                        <span className="sr-only">More actions</span>
-                        <KebabHorizontalIcon className="h-4 w-4 text-grey" />
-                      </Button>
-                    </DropdownTrigger>
-                  </Toolbar.Button>
-
-                  <DropdownContent align="end">
-                    <DropdownItem
-                      icon={LinkIcon}
-                      text="Link"
-                      onClick={() => {}}
-                    />
-                    <DropdownSeparator />
-                    <DropdownItem
-                      text="Numbered list"
-                      onClick={() => {}}
-                      icon={ListOrderedIcon}
-                    />
-                    <DropdownItem
-                      text="Unordered list"
-                      onClick={(e) => {}}
-                      icon={ListUnorderedIcon}
-                    />
-                    <DropdownItem
-                      text="Task list"
-                      onClick={() => {}}
-                      icon={TasklistIcon}
-                    />
-                    <DropdownSeparator />
-                    <DropdownItem
-                      text="Mentions"
-                      onClick={() => {}}
-                      icon={MentionIcon}
-                    />
-                    <DropdownItem
-                      text="References"
-                      onClick={() => {}}
-                      icon={CrossReferenceIcon}
-                    />
-                    <DropdownItem
-                      text="Slash commands"
-                      onClick={() => {}}
-                      icon={DiffIgnoredIcon}
-                    />
-                  </DropdownContent>
-                </DropdownRoot>
-              </Toolbar.Root>
+              <MarkdownTextAreaToolbar textAreaRef={textAreaRef} />
             </Tabs.List>
 
             <div className="p-2 bg-backdrop rounded-b-md">
@@ -292,36 +158,10 @@ export function MarkdownTextArea({
                 className="text-sm p-4 max-w-full overflow-auto min-w-0 data-[state=active]:flex items-stretch justify-stretch"
               >
                 {textContent.trim().length > 0 ? (
-                  <ErrorBoundary
-                    FallbackComponent={({ error }) => (
-                      <div className="flex flex-wrap gap-2">
-                        <span className="text-xl font-semibold">
-                          Error rendering preview :
-                        </span>
-                        <code className="rounded-md bg-neutral text-red-400 px-1.5 py-1">
-                          {error.toString()}
-                        </code>
-                      </div>
-                    )}
-                  >
-                    <React.Suspense
-                      fallback={
-                        <div className="flex flex-col gap-4 sm:rounded-b-md w-full">
-                          <span className="sr-only">loading preview...</span>
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="min-h-[4rem] flex-1 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-4/5" />
-                        </div>
-                      }
-                    >
-                      <MarkdownPreviewer
-                        content={textContent}
-                        repositoryPath={`${params.user}/${params.repository}`}
-                      />
-                    </React.Suspense>
-                  </ErrorBoundary>
+                  <MarkdownPreviewer
+                    content={textContent}
+                    repositoryPath={`${params.user}/${params.repository}`}
+                  />
                 ) : (
                   <span>Nothing to preview</span>
                 )}
@@ -354,54 +194,99 @@ export function MarkdownTextArea({
   );
 }
 
-const loadMarkdownPreview = React.cache(getMarkdownPreview);
-
-export type MarkdownPreviewerProps = {
-  repositoryPath: `${string}/${string}`;
-  content: string;
+type MarkdownTextAreaToolbarProps = {
+  textAreaRef: React.RefObject<React.ElementRef<"textarea">>;
 };
 
-export function MarkdownPreviewer({
-  repositoryPath,
-  content
-}: MarkdownPreviewerProps) {
-  // this is so that the action is included in the client manifest of this page and the hovercard
-  // in the preview works
-  const _ = getIssueHoverCard;
-  return React.use(loadMarkdownPreview(content, repositoryPath));
-}
-
-type ToolbarButtonProps = React.ComponentProps<typeof Toolbar.Button> & {
-  label: string;
-  onClick: () => void;
-  icon: React.ComponentType<{ className?: string }>;
-};
-
-function ToolbarButton({
-  label,
-  onClick,
-  icon: Icon,
-  className,
-  ...props
-}: ToolbarButtonProps) {
+function MarkdownTextAreaToolbar({
+  textAreaRef
+}: MarkdownTextAreaToolbarProps) {
+  const itemGroups = React.useMemo(() => {
+    return [
+      [
+        {
+          id: "header",
+          label: "Header",
+          icon: HeadingIcon,
+          onClick: () => {}
+        },
+        {
+          id: "bold",
+          label: "Bold",
+          onClick: () => {},
+          icon: BoldIcon
+        },
+        {
+          id: "italic",
+          label: "Italic",
+          onClick: () => {},
+          icon: ItalicIcon
+        },
+        {
+          id: "quote",
+          label: "Quote",
+          onClick: () => {},
+          icon: QuoteIcon
+        },
+        {
+          id: "code",
+          label: "Code",
+          onClick: () => {},
+          icon: CodeIcon
+        },
+        {
+          id: "link",
+          label: "Link",
+          onClick: () => {},
+          icon: LinkIcon
+        }
+      ],
+      [
+        {
+          id: "ordered-list",
+          label: "Numbered list",
+          onClick: () => {},
+          icon: ListOrderedIcon
+        },
+        {
+          id: "unordered-list",
+          label: "Unordered list",
+          onClick: () => {},
+          icon: ListUnorderedIcon
+        },
+        {
+          id: "task-list",
+          label: "Task list",
+          onClick: () => {},
+          icon: TasklistIcon
+        }
+      ],
+      [
+        {
+          id: "mentions",
+          label: "Mentions",
+          onClick: () => {},
+          icon: MentionIcon
+        },
+        {
+          id: "references",
+          label: "References",
+          onClick: () => {},
+          icon: CrossReferenceIcon
+        },
+        {
+          id: "commands",
+          label: "Slash commands",
+          onClick: () => {},
+          icon: DiffIgnoredIcon
+        }
+      ]
+    ] satisfies Array<ActionToolbarItemGroups>;
+  }, []);
   return (
-    <Toolbar.Button {...props} asChild>
-      <Tooltip
-        content={label}
-        side="bottom"
-        className="text-xs"
-        delayInMs={500}
-      >
-        <Button
-          onClick={onClick}
-          isSquared
-          variant="neutral"
-          className={clsx(className)}
-        >
-          <span className="sr-only">{label}</span>
-          <Icon className="h-4 w-4 text-grey" />
-        </Button>
-      </Tooltip>
-    </Toolbar.Button>
+    <ActionToolbar
+      className="border-b border-neutral"
+      itemGroups={itemGroups}
+    />
   );
 }
