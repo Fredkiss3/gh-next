@@ -30,6 +30,7 @@ import {
   DropdownTrigger
 } from "~/app/(components)/dropdown";
 import { ErrorBoundary } from "react-error-boundary";
+import { Skeleton } from "~/app/(components)/skeleton";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -287,7 +288,7 @@ export function MarkdownTextArea({
                 style={{
                   minHeight: `${textAreaHeight}px`
                 }}
-                className="text-sm p-4 max-w-full overflow-auto min-w-0"
+                className="text-sm p-4 max-w-full overflow-auto min-w-0 data-[state=active]:flex items-stretch justify-stretch"
               >
                 {textContent.trim().length > 0 ? (
                   <ErrorBoundary
@@ -302,7 +303,18 @@ export function MarkdownTextArea({
                       </div>
                     )}
                   >
-                    <React.Suspense fallback={<>loading preview...</>}>
+                    <React.Suspense
+                      fallback={
+                        <div className="flex flex-col gap-4 sm:rounded-b-md w-full">
+                          <span className="sr-only">loading preview...</span>
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="min-h-[4rem] flex-1 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-4/5" />
+                        </div>
+                      }
+                    >
                       <MarkdownPreviewer
                         content={textContent}
                         repositoryPath={`${params.user}/${params.repository}`}

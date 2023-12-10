@@ -93,7 +93,7 @@ export async function MarkdownContent({
   return (
     <article
       className={clsx(
-        "break-words leading-normal text-sm max-w-full",
+        "break-words leading-normal text-sm max-w-full w-full",
         className
       )}
     >
