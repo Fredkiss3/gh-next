@@ -2,6 +2,7 @@ import "client-only";
 
 import * as React from "react";
 // components
+import * as Toolbar from "@radix-ui/react-toolbar";
 import {
   DropdownRoot,
   DropdownTrigger,
@@ -9,13 +10,12 @@ import {
   DropdownItem,
   DropdownSeparator
 } from "~/app/(components)/dropdown";
-import * as Toolbar from "@radix-ui/react-toolbar";
 import { Button } from "~/app/(components)/button";
 import { Tooltip } from "~/app/(components)/tooltip";
+import { KebabHorizontalIcon } from "@primer/octicons-react";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
-import { KebabHorizontalIcon } from "@primer/octicons-react";
 
 export type ActionToolbarItem = {
   id: string;
