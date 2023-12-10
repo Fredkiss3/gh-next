@@ -7,10 +7,10 @@ import {
 } from "@primer/octicons-react";
 import { HoverCard } from "~/app/(components)/hovercard/hovercard";
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
-import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 import { Avatar } from "~/app/(components)/avatar";
 import { IssueHoverCardLink } from "~/app/(components)/hovercard/issue-hovercard-link";
+import Link from "next/link";
 
 // utils
 import { env } from "~/env";
@@ -131,7 +131,8 @@ export async function MarkdownA({
     }
     return (
       <HoverCard
-        placement="top start"
+        side="top"
+        align="start"
         delayInMs={700}
         content={
           <UserHoverCardContents
@@ -143,7 +144,7 @@ export async function MarkdownA({
           />
         }
       >
-        <ReactAriaLink
+        <Link
           href={`/${userFound.username}`}
           className={clsx(
             "inline-flex gap-1 font-bold underline items-center",
@@ -157,7 +158,7 @@ export async function MarkdownA({
             size="x-small"
           />
           <span>@{userFound.username}</span>
-        </ReactAriaLink>
+        </Link>
       </HoverCard>
     );
   }

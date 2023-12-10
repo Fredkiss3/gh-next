@@ -55,5 +55,5 @@ export const IssueSearchLink = React.forwardRef<
   sp.append("q", searchStr);
   const href = `/${params.user}/${params.repository}/issues?` + sp.toString();
 
-  return <Link {...props} ref={ref} href={href} />;
+  return <Link {...props} ref={ref} href={href} prefetch={false} />;
 });

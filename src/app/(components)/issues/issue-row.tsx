@@ -11,7 +11,6 @@ import Link from "next/link";
 import { IssueRowAvatarStack } from "~/app/(components)/issues/issue-row-avatar-stack";
 import { LabelBadge } from "~/app/(components)/label-badge";
 import { HoverCard } from "~/app/(components)/hovercard/hovercard";
-import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { IssueHoverCardContents } from "~/app/(components)/hovercard/issue-hovercard-contents";
 import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 import { Tooltip } from "~/app/(components)/tooltip";
@@ -143,7 +142,7 @@ export function IssueRow({
                 />
               }
             >
-              <ReactAriaLink
+              <Link
                 href={`/${repository_owner}/${repository_name}/issues/${number}`}
                 className={clsx(
                   "inline break-words text-lg font-semibold text-foreground",
@@ -156,7 +155,7 @@ export function IssueRow({
                   title={title}
                   className="font-semibold text-base"
                 />
-              </ReactAriaLink>
+              </Link>
             </HoverCard>
           </span>
           {labels.length > 0 && (
@@ -218,7 +217,8 @@ export function IssueRow({
           })}
           {author.id ? (
             <HoverCard
-              placement="top start"
+              side="top"
+              align="start"
               delayInMs={700}
               content={
                 <UserHoverCardContents

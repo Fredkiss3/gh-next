@@ -39,6 +39,7 @@ export const Tooltip = React.forwardRef<
               className
             )}
             sideOffset={5}
+            ref={ref}
             {...contentProps}
           >
             {content}

@@ -2,12 +2,13 @@
 
 import * as React from "react";
 // components
+import Link from "next/link";
 import { HoverCard } from "~/app/(components)/hovercard/hovercard";
-import { ReactAriaLink } from "~/app/(components)/react-aria-button";
+import { IssueHoverCardSkeleton } from "~/app/(components)/hovercard/issue-hovercard-contents";
+import { ErrorBoundary } from "react-error-boundary";
 
 // utils
-import { IssueHoverCardSkeleton } from "~/app/(components)/hovercard/issue-hovercard-contents";
-import { useIssueHoverCardContents } from "~/app/(components)/hovercard/use-async-issue-hovercard-contents";
+import { getIssueHoverCard } from "~/app/(actions)/issue.action";
 
 export type IssueHoverCardLinkProps = {
   user: string;
@@ -28,7 +29,28 @@ export function IssueHoverCardLink({
 
   return (
     <HoverCard
-      content={canLoadIssueContent ? <IssueContents {...props} /> : <></>}
+      content={
+        canLoadIssueContent ? (
+          <ErrorBoundary
+            FallbackComponent={({ error }) => (
+              <div className="flex flex-col gap-2 p-2 w-[350px]">
+                <span className="font-semibold">Error loading hovercard</span>
+                <code className="rounded-md bg-neutral text-red-400 px-1.5 py-1">
+                  {error.toString()}
+                </code>
+              </div>
+            )}
+          >
+            <React.Suspense fallback={<IssueHoverCardSkeleton />}>
+              <IssueContents {...props} />
+            </React.Suspense>
+          </ErrorBoundary>
+        ) : (
+          <>
+            <IssueHoverCardSkeleton />
+          </>
+        )
+      }
       onOpenChange={(open) => {
         // only once
         if (open && !canLoadIssueContent) {
@@ -36,27 +58,19 @@ export function IssueHoverCardLink({
         }
       }}
     >
-      <ReactAriaLink href={href} className={className}>
+      <Link href={href} className={className}>
         {children}
-      </ReactAriaLink>
+      </Link>
     </HoverCard>
   );
 }
+
+const loadHoverCardContents = React.cache(getIssueHoverCard);
 
 function IssueContents({
   user,
   repository,
   no
 }: Pick<IssueHoverCardLinkProps, "user" | "repository" | "no">) {
-  const { data: contents } = useIssueHoverCardContents({
-    user,
-    repository,
-    no
-  });
-
-  if (!contents) {
-    return <IssueHoverCardSkeleton />;
-  }
-
-  return <>{contents}</>;
+  return React.use(loadHoverCardContents(user, repository, no));
 }

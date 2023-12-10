@@ -37,6 +37,7 @@ import { clsx } from "~/lib/shared/utils.shared";
 import { useParams } from "next/navigation";
 import { z } from "zod";
 import { getMarkdownPreview } from "~/app/(actions)/markdown.action";
+import { getIssueHoverCard } from "~/app/(actions)/issue.action";
 
 // types
 import type { TextareaProps } from "~/app/(components)/textarea";
@@ -364,6 +365,9 @@ export function MarkdownPreviewer({
   repositoryPath,
   content
 }: MarkdownPreviewerProps) {
+  // this is so that the action is included in the client manifest of this page and the hovercard
+  // in the preview works
+  const _ = getIssueHoverCard;
   return React.use(loadMarkdownPreview(content, repositoryPath));
 }
 
