@@ -40,6 +40,9 @@ dependencies:
   bright:
     specifier: ^0.8.4
     version: 0.8.4(react@18.2.0)
+  client-only:
+    specifier: ^0.0.1
+    version: 0.0.1
   cmdk:
     specifier: ^0.2.0
     version: 0.2.0(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
