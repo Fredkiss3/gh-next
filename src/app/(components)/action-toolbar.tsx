@@ -29,6 +29,7 @@ export type ActionToolbarItemGroups = ActionToolbarItem[];
 export type ActionToolbarProps = {
   itemGroups: Array<ActionToolbarItemGroups>;
   className?: string;
+  title: string;
 };
 
 export function getVisibleAndHiddenItemGroups(
@@ -65,14 +66,15 @@ export function getVisibleAndHiddenItemGroups(
 export const ActionToolbar = React.forwardRef<
   React.ElementRef<typeof Toolbar.Root>,
   ActionToolbarProps
->(function ActionToolbar({ itemGroups, className }, ref) {
+>(function ActionToolbar({ itemGroups, className, title }, ref) {
   const [visibleItemGroups, setVisibleItemGroups] = React.useState(itemGroups);
   const [hiddenItemGroups, setHiddenItemGroups] = React.useState<
     Array<ActionToolbarItemGroups>
   >([]);
   const [hasComputedSize, setHasComputedSize] = React.useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
-  const toolbarRef = React.useRef<React.ElementRef<typeof Toolbar.Root>>(null);
+  const toolbarRef = React.useRef<React.ElementRef<"div">>(null);
 
   React.useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
@@ -113,119 +115,106 @@ export const ActionToolbar = React.forwardRef<
   }, [itemGroups]);
 
   return (
-    <Toolbar.Root
-      ref={(domNode) => {
-        // @ts-expect-error we want to manually update the ref
-        toolbarRef.current = domNode;
-        if (typeof ref === "function") {
-          ref(domNode);
-        } else if (ref) {
-          ref.current = domNode;
-        }
-      }}
-      className={clsx(
-        "flex w-full px-2 py-1 overflow-hidden",
-        {
+    <div className={clsx("w-full overflow-hidden", className)} ref={toolbarRef}>
+      <Toolbar.Root
+        ref={ref}
+        aria-label={title}
+        className={clsx("flex w-full px-2 py-1", {
           "justify-end": hiddenItemGroups.length === 0,
           "justify-start": hiddenItemGroups.length > 0
-        },
-        className
-      )}
-    >
-      {visibleItemGroups.map((items, index) => (
-        <React.Fragment key={index}>
-          {items.map((item) => (
-            <ActionToolbarButton
-              {...item}
-              key={item.id}
-              className={clsx("transition-opacity duration-150", {
-                "opacity-0": !hasComputedSize,
-                "opacity-100": hasComputedSize
-              })}
-            />
-          ))}
-
-          {/* Don't show the separator for the last group */}
-          {index < visibleItemGroups.length - 1 && (
-            <Toolbar.Separator
-              className={clsx(
-                "h-4 self-center bg-neutral/40 w-[1px] mx-2 block flex-none",
-                "transition-opacity duration-150",
-                {
+        })}
+      >
+        {visibleItemGroups.map((items, index) => (
+          <React.Fragment key={index}>
+            {items.map((item) => (
+              <ActionToolbarButton
+                {...item}
+                key={item.id}
+                className={clsx("transition-opacity duration-150", {
                   "opacity-0": !hasComputedSize,
                   "opacity-100": hasComputedSize
-                }
-              )}
-            />
-          )}
-        </React.Fragment>
-      ))}
+                })}
+              />
+            ))}
 
-      {hiddenItemGroups.length > 0 && (
-        <DropdownRoot>
-          <Toolbar.Button asChild>
-            <DropdownTrigger>
-              <Button
-                type="button"
-                isSquared
-                variant="neutral"
+            {/* Don't show the separator for the last group */}
+            {index < visibleItemGroups.length - 1 && (
+              <Toolbar.Separator
                 className={clsx(
-                  "ml-auto flex-none",
+                  "h-4 self-center bg-neutral/40 w-[1px] mx-2 block flex-none",
                   "transition-opacity duration-150",
                   {
                     "opacity-0": !hasComputedSize,
                     "opacity-100": hasComputedSize
                   }
                 )}
-              >
-                <span className="sr-only">More actions</span>
-                <KebabHorizontalIcon className="h-4 w-4 text-grey" />
-              </Button>
-            </DropdownTrigger>
-          </Toolbar.Button>
+              />
+            )}
+          </React.Fragment>
+        ))}
 
-          <DropdownContent align="end">
-            {hiddenItemGroups.map((items, index) => (
-              <React.Fragment key={index}>
-                {items.map((item) => (
-                  <DropdownItem
-                    key={item.id}
-                    text={item.label}
-                    onClick={item.onClick}
-                    icon={item.icon}
-                  />
-                ))}
+        {hiddenItemGroups.length > 0 && (
+          <DropdownRoot open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+            <Toolbar.Button asChild>
+              <DropdownTrigger>
+                <Button
+                  type="button"
+                  isSquared
+                  variant="neutral"
+                  className={clsx(
+                    "ml-auto flex-none",
+                    "transition-opacity duration-150",
+                    {
+                      "opacity-0": !hasComputedSize,
+                      "opacity-100": hasComputedSize
+                    }
+                  )}
+                >
+                  <span className="sr-only">More actions</span>
+                  <KebabHorizontalIcon className="h-4 w-4 text-grey" />
+                </Button>
+              </DropdownTrigger>
+            </Toolbar.Button>
 
-                {/* Don't show the separator for the last group */}
-                {index < hiddenItemGroups.length - 1 && <DropdownSeparator />}
-              </React.Fragment>
-            ))}
-          </DropdownContent>
-        </DropdownRoot>
-      )}
-    </Toolbar.Root>
+            <DropdownContent align="end" aria-label={title}>
+              {hiddenItemGroups.map((items, index) => (
+                <React.Fragment key={index}>
+                  {items.map((item) => (
+                    <DropdownItem
+                      key={item.id}
+                      text={item.label}
+                      onClick={item.onClick}
+                      icon={item.icon}
+                    />
+                  ))}
+
+                  {/* Don't show the separator for the last group */}
+                  {index < hiddenItemGroups.length - 1 && <DropdownSeparator />}
+                </React.Fragment>
+              ))}
+            </DropdownContent>
+          </DropdownRoot>
+        )}
+      </Toolbar.Root>
+    </div>
   );
 });
 
 type ActionToolbarButtonProps = React.ComponentProps<typeof Toolbar.Button> &
   ActionToolbarItem;
 
-function ActionToolbarButton({
-  label,
-  onClick,
-  icon: Icon,
-  className,
-  ...props
-}: ActionToolbarButtonProps) {
+const ActionToolbarButton = React.forwardRef<
+  React.ElementRef<typeof Toolbar.Button>,
+  ActionToolbarButtonProps
+>(function ActionToolbarButton(
+  { label, onClick, icon: Icon, className, id, ...props },
+  ref
+) {
   return (
-    <Toolbar.Button {...props} asChild>
-      <Tooltip
-        content={label}
-        side="bottom"
-        className="text-xs"
-        delayInMs={500}
-      >
+    <Tooltip content={label} side="bottom" className="text-xs" delayInMs={500}>
+      <Toolbar.Button {...props} asChild ref={ref}>
         <Button
+          value={id}
           type="button"
           onClick={onClick}
           isSquared
@@ -235,7 +224,7 @@ function ActionToolbarButton({
           <span className="sr-only">{label}</span>
           <Icon className="h-4 w-4 text-grey" />
         </Button>
-      </Tooltip>
-    </Toolbar.Button>
+      </Toolbar.Button>
+    </Tooltip>
   );
-}
+});

@@ -195,98 +195,100 @@ export function MarkdownTextArea({
 }
 
 type MarkdownTextAreaToolbarProps = {
-  textAreaRef: React.RefObject<React.ElementRef<"textarea">>;
+  textAreaRef: React.Ref<React.ElementRef<"textarea">>;
 };
 
-function MarkdownTextAreaToolbar({
-  textAreaRef
-}: MarkdownTextAreaToolbarProps) {
-  const itemGroups = React.useMemo(() => {
-    return [
-      [
-        {
-          id: "header",
-          label: "Header",
-          icon: HeadingIcon,
-          onClick: () => {}
-        },
-        {
-          id: "bold",
-          label: "Bold",
-          onClick: () => {},
-          icon: BoldIcon
-        },
-        {
-          id: "italic",
-          label: "Italic",
-          onClick: () => {},
-          icon: ItalicIcon
-        },
-        {
-          id: "quote",
-          label: "Quote",
-          onClick: () => {},
-          icon: QuoteIcon
-        },
-        {
-          id: "code",
-          label: "Code",
-          onClick: () => {},
-          icon: CodeIcon
-        },
-        {
-          id: "link",
-          label: "Link",
-          onClick: () => {},
-          icon: LinkIcon
-        }
-      ],
-      [
-        {
-          id: "ordered-list",
-          label: "Numbered list",
-          onClick: () => {},
-          icon: ListOrderedIcon
-        },
-        {
-          id: "unordered-list",
-          label: "Unordered list",
-          onClick: () => {},
-          icon: ListUnorderedIcon
-        },
-        {
-          id: "task-list",
-          label: "Task list",
-          onClick: () => {},
-          icon: TasklistIcon
-        }
-      ],
-      [
-        {
-          id: "mentions",
-          label: "Mentions",
-          onClick: () => {},
-          icon: MentionIcon
-        },
-        {
-          id: "references",
-          label: "References",
-          onClick: () => {},
-          icon: CrossReferenceIcon
-        },
-        {
-          id: "commands",
-          label: "Slash commands",
-          onClick: () => {},
-          icon: DiffIgnoredIcon
-        }
-      ]
-    ] satisfies Array<ActionToolbarItemGroups>;
-  }, []);
+const MarkdownTextAreaToolbar = React.forwardRef<
+  React.ElementRef<typeof ActionToolbar>,
+  MarkdownTextAreaToolbarProps
+>(function MarkdownTextAreaToolbar({ textAreaRef }, ref) {
+  const itemGroups = [
+    [
+      {
+        id: "header",
+        label: "Header",
+        icon: HeadingIcon,
+        onClick: () => {}
+      },
+      {
+        id: "bold",
+        label: "Bold",
+        onClick: () => {},
+        icon: BoldIcon
+      },
+      {
+        id: "italic",
+        label: "Italic",
+        onClick: () => {},
+        icon: ItalicIcon
+      },
+      {
+        id: "quote",
+        label: "Quote",
+        onClick: () => {},
+        icon: QuoteIcon
+      },
+      {
+        id: "code",
+        label: "Code",
+        onClick: () => {},
+        icon: CodeIcon
+      },
+      {
+        id: "link",
+        label: "Link",
+        onClick: () => {},
+        icon: LinkIcon
+      }
+    ],
+    [
+      {
+        id: "ordered-list",
+        label: "Numbered list",
+        onClick: () => {},
+        icon: ListOrderedIcon
+      },
+      {
+        id: "unordered-list",
+        label: "Unordered list",
+        onClick: () => {},
+        icon: ListUnorderedIcon
+      },
+      {
+        id: "task-list",
+        label: "Task list",
+        onClick: () => {},
+        icon: TasklistIcon
+      }
+    ],
+    [
+      {
+        id: "mentions",
+        label: "Mentions",
+        onClick: () => {},
+        icon: MentionIcon
+      },
+      {
+        id: "references",
+        label: "References",
+        onClick: () => {},
+        icon: CrossReferenceIcon
+      },
+      {
+        id: "commands",
+        label: "Slash commands",
+        onClick: () => {},
+        icon: DiffIgnoredIcon
+      }
+    ]
+  ] satisfies Array<ActionToolbarItemGroups>;
+
   return (
     <ActionToolbar
+      ref={ref}
+      title="Formatting options"
       className="border-b border-neutral"
       itemGroups={itemGroups}
     />
   );
-}
+});
