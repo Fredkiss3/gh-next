@@ -2,8 +2,14 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 // components
-import { DropdownMenu } from "~/app/(components)/dropdown-menu";
 import { Avatar } from "~/app/(components)/avatar";
+import {
+  DropdownContent,
+  DropdownItem,
+  DropdownRoot,
+  DropdownSeparator,
+  DropdownTrigger
+} from "~/app/(components)/dropdown";
 import {
   PaintbrushIcon,
   PersonIcon,
@@ -40,32 +46,35 @@ export function UserDropdown({ avatar_url, username }: UserDropdownProps) {
         `}</style>,
           document.body
         )}
-      <DropdownMenu
-        items={[
-          {
-            id: "account",
-            href: "/settings/account",
-            text: "Your account",
-            icon: PersonIcon
-          },
-          {
-            id: "appearance",
-            href: "/settings/appearance",
-            text: "Change Theme",
-            icon: PaintbrushIcon
-          },
-          {
-            id: "sign-out",
-            text: "Sign out",
-            icon: SignOutIcon,
-            onClick: async () => {
-              startTransition(() => void logoutUser());
-            }
-          }
-        ]}
-      >
-        <Avatar username={username} src={avatar_url} />
-      </DropdownMenu>
+
+      <DropdownRoot>
+        <DropdownTrigger>
+          <button
+            aria-label="menu"
+            className="flex-shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <Avatar username={username} src={avatar_url} />
+          </button>
+        </DropdownTrigger>
+        <DropdownContent align="end" className="min-w-[180px]">
+          <DropdownItem
+            icon={PersonIcon}
+            text="Your account"
+            href="/settings/account"
+          />
+          <DropdownItem
+            icon={PaintbrushIcon}
+            text="Change Theme"
+            href="/settings/appearance"
+          />
+          <DropdownSeparator />
+          <DropdownItem
+            icon={SignOutIcon}
+            text="Sign out"
+            onClick={() => startTransition(() => void logoutUser())}
+          />
+        </DropdownContent>
+      </DropdownRoot>
     </>
   );
 }
