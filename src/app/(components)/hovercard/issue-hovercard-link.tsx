@@ -7,7 +7,7 @@ import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 
 // utils
 import { IssueHoverCardSkeleton } from "~/app/(components)/hovercard/issue-hovercard-contents";
-import { useIssueHoverCardContents } from "~/app/(components)/hovercard/use-issue-hovercard-contents";
+import { useIssueHoverCardContents } from "~/app/(components)/hovercard/use-async-issue-hovercard-contents";
 
 export type IssueHoverCardLinkProps = {
   user: string;

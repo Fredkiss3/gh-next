@@ -3,7 +3,7 @@ import * as React from "react";
 // components
 import { GearIcon, InfoIcon } from "@primer/octicons-react";
 import { Input } from "~/app/(components)/input";
-import { MarkdownTextArea } from "~/app/(components)/issues/markdown-text-area";
+import { MarkdownTextArea } from "~/app/(components)/markdown/markdown-text-area";
 import { SubmitButton } from "~/app/(components)/submit-button";
 import { Avatar } from "~/app/(components)/avatar";
 
@@ -50,7 +50,7 @@ export function NewIssueForm({
           "lg:[grid-template-areas:var(--grid-area-lg)]"
         )}
       >
-        <div className="[grid-area:EDT] w-full flex items-start gap-4">
+        <div className="[grid-area:EDT] flex items-start gap-4 min-w-0">
           <div className="flex-none hidden md:block">
             <Avatar
               username={currentUserUsername}
@@ -58,7 +58,7 @@ export function NewIssueForm({
               size="medium"
             />
           </div>
-          <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-col gap-4 w-full min-w-0">
             <Input
               name="title"
               required

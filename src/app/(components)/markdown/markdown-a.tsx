@@ -5,13 +5,12 @@ import {
   IssueClosedIcon,
   SkipIcon
 } from "@primer/octicons-react";
-import Link from "next/link";
 import { HoverCard } from "~/app/(components)/hovercard/hovercard";
-import { IssueHoverCardContents } from "~/app/(components)/hovercard/issue-hovercard-contents";
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 import { Avatar } from "~/app/(components)/avatar";
+import { IssueHoverCardLink } from "~/app/(components)/hovercard/issue-hovercard-link";
 
 // utils
 import { env } from "~/env";
@@ -21,7 +20,6 @@ import { z } from "zod";
 // types
 import type { IssueQueryResult } from "~/app/(models)/issues";
 import type { UserQueryResult } from "~/app/(models)/user";
-import { IssueHoverCardLink } from "~/app/(components)/hovercard/issue-hovercard-link";
 
 export type ResolvedReferences = {
   issues: Record<number, IssueQueryResult>;

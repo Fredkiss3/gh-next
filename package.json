@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "clean-dev": "rm -rf .next && next dev",
     "build": "next build",
     "start": "next start",
@@ -39,7 +39,7 @@
     "geist": "^1.0.0",
     "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
-    "next": "14.0.4",
+    "next": "14.0.5-canary.5",
     "nextjs-toploader": "^1.6.4",
     "nprogress": "^0.2.0",
     "pg": "^8.11.3",

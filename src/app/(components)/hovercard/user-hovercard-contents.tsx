@@ -1,6 +1,6 @@
 import * as React from "react";
 // components
-import { Avatar } from "../avatar";
+import { Avatar } from "~/app/(components)/avatar";
 import { LocationIcon } from "@primer/octicons-react";
 import Link from "next/link";
 

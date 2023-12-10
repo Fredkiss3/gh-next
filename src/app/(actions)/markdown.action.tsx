@@ -2,7 +2,7 @@
 
 import { Markdown } from "~/app/(components)/markdown/markdown";
 
-export function renderMarkdown(
+export async function getMarkdownPreview(
   content: string,
   repositoryPath: `${string}/${string}`
 ) {

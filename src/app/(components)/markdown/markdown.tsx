@@ -91,7 +91,12 @@ export async function MarkdownContent({
   console.timeEnd(`\n\x1b[34m[${dt}] \x1b[33m Markdown Rendering \x1b[37m`);
 
   return (
-    <article className={clsx("break-words leading-normal text-sm", className)}>
+    <article
+      className={clsx(
+        "break-words leading-normal text-sm max-w-full",
+        className
+      )}
+    >
       {generatedMdxModule.default({ components })}
     </article>
   );
@@ -271,7 +276,7 @@ async function getComponents({
           {...props}
           key={key}
           className={clsx({
-            "pl-12": props.className === "contains-task-list",
+            "pl-4": props.className === "contains-task-list",
             "list-disc pl-10": props.className !== "contains-task-list"
           })}
         />
@@ -370,8 +375,8 @@ async function getComponents({
           >
             <Code
               lang={lang}
-              codeClassName="bg-neutral/30 rounded-md py-[16px] px-[2px] overflow-auto w-full"
-              className="w-full overflow-auto rounded-md p-0"
+              codeClassName="bg-neutral/30 rounded-md py-[16px] px-[2px] overflow-auto !min-w-0"
+              className="overflow-scroll rounded-md p-0 text-sm !min-w-0"
             >
               {props.children.toString().trimEnd()}
             </Code>
