@@ -36,7 +36,7 @@ import { z } from "zod";
 import type { TextareaProps } from "~/app/(components)/textarea";
 import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
 
-export type MarkdownTextareaProps = Omit<TextareaProps, "value">;
+export type MarkdownEditorProps = Omit<TextareaProps, "value">;
 
 const TABS = {
   PREVIEW: "PREVIEW",
@@ -44,11 +44,11 @@ const TABS = {
 } as const;
 type TabValue = (typeof TABS)[keyof typeof TABS];
 
-export function MarkdownTextarea({
+export function MarkdownEditor({
   label,
   defaultValue,
   ...props
-}: MarkdownTextareaProps) {
+}: MarkdownEditorProps) {
   const paramsSchema = z.object({
     user: z.string(),
     repository: z.string()
