@@ -110,10 +110,12 @@ export function MarkdownEditor({
               <Tabs.Trigger
                 value={TABS.PREVIEW}
                 onMouseEnter={() => {
-                  preloadMarkdownPreview(
-                    textContent,
-                    `${params.user}/${params.repository}`
-                  );
+                  if (textContent.trim().length > 0) {
+                    preloadMarkdownPreview(
+                      textContent,
+                      `${params.user}/${params.repository}`
+                    );
+                  }
                 }}
                 className={clsx(
                   "px-3 py-2 border-b border-neutral",
