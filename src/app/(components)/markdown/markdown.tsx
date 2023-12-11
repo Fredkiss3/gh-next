@@ -4,7 +4,6 @@ import * as React from "react";
 // components
 import { Code } from "bright";
 import { MarkdownCodeBlock } from "./markdown-code-block";
-import { MarkdownErrorBoundary } from "~/app/(components)/markdown/markdown-error-boundary";
 import {
   MarkdownA,
   type IssueReference,
@@ -52,11 +51,7 @@ export type MarkdownProps = {
 };
 
 export async function Markdown(props: MarkdownProps) {
-  return (
-    <MarkdownErrorBoundary>
-      <MarkdownContent {...props} />
-    </MarkdownErrorBoundary>
-  );
+  return <MarkdownContent {...props} />;
 }
 
 export async function MarkdownContent({

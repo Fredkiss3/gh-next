@@ -40,7 +40,7 @@
     "geist": "^1.0.0",
     "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
-    "next": "14.0.5-canary.5",
+    "next": "14.0.4",
     "nextjs-toploader": "^1.6.4",
     "nprogress": "^0.2.0",
     "pg": "^8.11.3",
@@ -79,7 +79,7 @@
     "prettier-plugin-tailwindcss": "^0.5.4",
     "tailwindcss": "3.3.3",
     "tsx": "^3.12.8",
-    "typescript": "5.3.2"
+    "typescript": "5.3.3"
   },
   "pnpm": {
     "patchedDependencies": {

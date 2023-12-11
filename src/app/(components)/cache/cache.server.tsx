@@ -53,6 +53,8 @@ export async function Cache({
     rsc: string;
   }>(fullKey);
 
+  const cacheHit = !!cachedPayload;
+
   if (!cachedPayload) {
     const rscStream = RSDW.renderToReadableStream(
       children,
@@ -68,6 +70,16 @@ export async function Cache({
       rsc: await transformStreamToString(rscStream)
     };
     await kv.set(fullKey, cachedPayload, ttl ?? DEFAULT_CACHE_TTL);
+  }
+
+  if (cacheHit) {
+    console.log(
+      `\x1b[33mCACHE HIT \x1b[37mFOR key \x1b[90m"\x1b[34m${fullKey}\x1b[90m"\x1b[37m`
+    );
+  } else {
+    console.log(
+      `\x1b[31mCACHE MISS \x1b[37mFOR key \x1b[90m"\x1b[34m${fullKey}\x1b[90m"\x1b[37m`
+    );
   }
 
   if (debug) {
@@ -108,6 +120,7 @@ async function computeCacheKey(id: CacheId, updatedAt?: Date | number) {
   if (updatedAt) {
     fullKey += `-${new Date(updatedAt).getTime()}`;
   }
+
   // the build ID is necessary because the client references for one build
   // won't necessarily be the same for another build, especially if the component
   // changed in the meantime
