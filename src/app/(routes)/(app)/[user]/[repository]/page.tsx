@@ -19,7 +19,7 @@ import { CounterBadge } from "~/app/(components)/counter-badge";
 import { Button } from "~/app/(components)/button";
 import { Markdown } from "~/app/(components)/markdown/markdown";
 import Link from "next/link";
-import { Cache } from "~/app/(components)/cache/cache.server";
+import { Cache } from "~/app/(components)/cache";
 import { Skeleton } from "~/app/(components)/skeleton";
 
 // utils

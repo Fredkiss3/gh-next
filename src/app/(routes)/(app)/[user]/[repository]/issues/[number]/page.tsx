@@ -3,7 +3,7 @@ import "server-only";
 // components
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { Markdown } from "~/app/(components)/markdown/markdown";
-import { Cache } from "~/app/(components)/cache/cache.server";
+import { Cache } from "~/app/(components)/cache";
 
 // utils
 import { notFound } from "next/navigation";

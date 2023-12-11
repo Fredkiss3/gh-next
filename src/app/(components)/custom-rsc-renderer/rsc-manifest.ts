@@ -13,6 +13,7 @@ export function getClientManifest() {
   }
   return clientManifest;
 }
+
 export function getSSRManifest() {
   let rscManifest: RSCManifest = {};
 

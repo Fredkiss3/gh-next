@@ -34,12 +34,12 @@ declare module "react-server-dom-webpack/client.edge" {
         moduleMap: any;
       };
     }
-  ): Promise<React.ReactNode>;
+  ): Promise<React.JSX.Element>;
 }
 
 declare module "react-server-dom-webpack/client" {
   export function createFromReadableStream(
     stream: ReadableStream,
     options?: Record<string, any>
-  ): Promise<React.ReactNode>;
+  ): Promise<React.JSX.Element>;
 }

@@ -23,17 +23,20 @@ import {
   ActionToolbar,
   type ActionToolbarItemGroups
 } from "~/app/(components)/action-toolbar";
-import { MarkdownPreviewer } from "~/app/(components)/markdown/markdown-previewer";
+import {
+  MarkdownPreviewer,
+  preloadMarkdownPreview
+} from "~/app/(components)/markdown/markdown-previewer";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
-import { useParams } from "next/navigation";
 import { z } from "zod";
 
 // types
 import type { TextareaProps } from "~/app/(components)/textarea";
+import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
 
-export type MarkdownTextAreaProps = Omit<TextareaProps, "value">;
+export type MarkdownTextareaProps = Omit<TextareaProps, "value">;
 
 const TABS = {
   PREVIEW: "PREVIEW",
@@ -41,21 +44,20 @@ const TABS = {
 } as const;
 type TabValue = (typeof TABS)[keyof typeof TABS];
 
-export function MarkdownTextArea({
+export function MarkdownTextarea({
   label,
   defaultValue,
   ...props
-}: MarkdownTextAreaProps) {
-  const _params = useParams();
+}: MarkdownTextareaProps) {
   const paramsSchema = z.object({
     user: z.string(),
     repository: z.string()
   });
-  const res = paramsSchema.safeParse(_params);
-  if (!res.success) {
-    throw new Error("This component should be used within a repository path");
-  }
-  const params = res.data;
+
+  const params = useTypedParams(
+    paramsSchema,
+    "This component should be used within a repository path"
+  );
 
   const [textContent, setTextContent] = React.useState(defaultValue ?? "");
   const [selectedTab, setSelectedTab] = React.useState<TabValue>(TABS.EDITOR);
@@ -107,6 +109,12 @@ export function MarkdownTextArea({
               </Tabs.Trigger>
               <Tabs.Trigger
                 value={TABS.PREVIEW}
+                onMouseEnter={() => {
+                  preloadMarkdownPreview(
+                    textContent,
+                    `${params.user}/${params.repository}`
+                  );
+                }}
                 className={clsx(
                   "px-3 py-2 border-b border-neutral",
                   "aria-[selected=true]:rounded-t-md aria-[selected=true]:border",

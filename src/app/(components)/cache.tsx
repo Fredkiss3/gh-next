@@ -1,12 +1,11 @@
 import "server-only";
 import * as React from "react";
-import * as RSDW from "react-server-dom-webpack/server.edge";
 
 // components
-import { CacheClient } from "~/app/(components)/cache/cache.client";
+import { RscClientRenderer } from "~/app/(components)/custom-rsc-renderer/rsc-client-renderer";
+import { renderRSCtoString } from "~/app/(components)/custom-rsc-renderer/render-rsc-to-string";
 
 // utils
-import { getClientManifest } from "~/app/(components)/cache/manifest";
 import { cache } from "react";
 import { kv } from "~/lib/server/kv/index.server";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
@@ -56,18 +55,8 @@ export async function Cache({
   const cacheHit = !!cachedPayload;
 
   if (!cachedPayload) {
-    const rscStream = RSDW.renderToReadableStream(
-      children,
-      // the client manifest is required for react to resolve
-      // all the clients components and where to import them
-      // they will be inlined into the RSC payload as references
-      // React will use those references during SSR to resolve
-      // the client components
-      getClientManifest()
-    );
-
     cachedPayload = {
-      rsc: await transformStreamToString(rscStream)
+      rsc: await renderRSCtoString(children)
     };
     await kv.set(fullKey, cachedPayload, ttl ?? DEFAULT_CACHE_TTL);
   }
@@ -86,27 +75,9 @@ export async function Cache({
     return <pre>{cachedPayload.rsc}</pre>;
   }
 
-  return <CacheClient payload={cachedPayload.rsc} />;
+  return <RscClientRenderer withSSR payloadOrPromise={cachedPayload.rsc} />;
 }
 
-async function transformStreamToString(stream: ReadableStream) {
-  const reader = stream.getReader();
-  const textDecoder = new TextDecoder();
-  let result = "";
-
-  async function read() {
-    const { done, value } = await reader.read();
-
-    if (done) {
-      return result;
-    }
-
-    result += textDecoder.decode(value, { stream: true });
-    return read();
-  }
-
-  return read();
-}
 export const getBuildId = cache(async () => {
   try {
     return await fs.readFile(".next/BUILD_ID", "utf-8");

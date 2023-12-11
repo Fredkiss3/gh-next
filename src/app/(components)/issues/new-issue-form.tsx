@@ -3,7 +3,7 @@ import * as React from "react";
 // components
 import { GearIcon, InfoIcon } from "@primer/octicons-react";
 import { Input } from "~/app/(components)/input";
-import { MarkdownTextArea } from "~/app/(components)/markdown/markdown-text-area";
+import { MarkdownTextarea } from "~/app/(components)/markdown/markdown-textarea";
 import { SubmitButton } from "~/app/(components)/submit-button";
 import { Avatar } from "~/app/(components)/avatar";
 
@@ -67,7 +67,7 @@ export function NewIssueForm({
               autoFocus
             />
 
-            <MarkdownTextArea
+            <MarkdownTextarea
               name="body"
               label="Add a description"
               placeholder="Add your description here..."
