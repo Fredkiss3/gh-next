@@ -6,7 +6,6 @@ import {
   EyeIcon,
   GlobeIcon,
   LinkIcon,
-  ListUnorderedIcon,
   PulseIcon,
   RepoForkedIcon,
   StarFillIcon,
@@ -418,14 +417,16 @@ async function ReadmeContent(props: {
           "sm:rounded-t-md"
         )}
       >
-        <button className="flex items-center justify-center rounded-md p-2 hover:bg-neutral/50">
-          <ListUnorderedIcon className="h-3.5 w-3.5 text-grey" />
-        </button>
-        <h2
-          className="scroll-mt-10 text-sm font-semibold hover:text-accent hover:underline"
-          id="readme"
-        >
-          <Link href="#readme">README.md</Link>
+        <h2 className="scroll-mt-10 text-sm font-semibold" id="readme">
+          <Button
+            href="#readme"
+            variant="neutral"
+            renderLeadingIcon={(cls) => (
+              <BookIcon className={clsx(cls, "text-grey")} />
+            )}
+          >
+            README.md
+          </Button>
         </h2>
       </div>
 
