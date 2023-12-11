@@ -44,16 +44,16 @@ const TABS = {
 } as const;
 type TabValue = (typeof TABS)[keyof typeof TABS];
 
+const paramsSchema = z.object({
+  user: z.string(),
+  repository: z.string()
+});
+
 export function MarkdownEditor({
   label,
   defaultValue,
   ...props
 }: MarkdownEditorProps) {
-  const paramsSchema = z.object({
-    user: z.string(),
-    repository: z.string()
-  });
-
   const params = useTypedParams(
     paramsSchema,
     "This component should be used within a repository path"
