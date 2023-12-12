@@ -73,7 +73,7 @@ export async function MarkdownA({
       <a
         {...props}
         target="_blank"
-        className="underline inline-flex gap-1 items-baseline text-accent"
+        className="underline inline-flex gap-1 items-baseline text-accent break-all"
       >
         {props.children}
       </a>
@@ -85,7 +85,7 @@ export async function MarkdownA({
     const repository = `${referenceFound.user}/${referenceFound.project}`;
 
     if (!issueFound) {
-      return <span>{props.children}</span>;
+      return <span className="break-all">{props.children}</span>;
     }
 
     return (
@@ -108,7 +108,7 @@ export async function MarkdownA({
         {issueFound.status === "NOT_PLANNED" && (
           <SkipIcon className="h-3.5 w-3.5 flex-shrink-0 text-grey relative top-0.5" />
         )}
-        <span>
+        <span className="break-all">
           <MarkdownTitle title={issueFound.title} className="font-semibold" />
           &nbsp;
           <span className="text-grey font-normal">
