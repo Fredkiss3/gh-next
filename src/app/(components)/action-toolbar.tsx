@@ -30,43 +30,16 @@ export type ActionToolbarProps = {
   itemGroups: Array<ActionToolbarItemGroups>;
   className?: string;
   title: string;
+  showItems?: boolean;
 };
-
-export function getVisibleAndHiddenItemGroups(
-  itemGroups: Array<ActionToolbarItemGroups>,
-  maxNumberOfItemsVisible: number
-): [
-  visible: Array<ActionToolbarItemGroups>,
-  hidden: Array<ActionToolbarItemGroups>
-] {
-  const visible: Array<ActionToolbarItemGroups> = [];
-  const hidden: Array<ActionToolbarItemGroups> = [];
-  let visibleItemCount = 0;
-
-  itemGroups.forEach((group) => {
-    if (visibleItemCount + group.length <= maxNumberOfItemsVisible) {
-      // If the entire group fits within the visible limit
-      visible.push(group);
-      visibleItemCount += group.length;
-    } else if (visibleItemCount < maxNumberOfItemsVisible) {
-      // Split the group between visible and hidden
-      const itemsRemaining = maxNumberOfItemsVisible - visibleItemCount;
-      visible.push(group.slice(0, itemsRemaining));
-      hidden.push(group.slice(itemsRemaining));
-      visibleItemCount = maxNumberOfItemsVisible;
-    } else {
-      // Add the entire group to hidden
-      hidden.push(group);
-    }
-  });
-
-  return [visible, hidden];
-}
 
 export const ActionToolbar = React.forwardRef<
   React.ElementRef<typeof Toolbar.Root>,
   ActionToolbarProps
->(function ActionToolbar({ itemGroups, className, title }, ref) {
+>(function ActionToolbar(
+  { itemGroups, className, title, showItems = true },
+  ref
+) {
   const [visibleItemGroups, setVisibleItemGroups] = React.useState(itemGroups);
   const [hiddenItemGroups, setHiddenItemGroups] = React.useState<
     Array<ActionToolbarItemGroups>
@@ -131,8 +104,10 @@ export const ActionToolbar = React.forwardRef<
                 {...item}
                 key={item.id}
                 className={clsx("transition-opacity duration-150", {
-                  "opacity-0": !hasComputedSize,
-                  "opacity-100": hasComputedSize
+                  "opacity-0 pointer-events-none":
+                    !hasComputedSize || !showItems,
+                  "opacity-100 pointer-events-auto":
+                    hasComputedSize && showItems
                 })}
               />
             ))}
@@ -144,8 +119,10 @@ export const ActionToolbar = React.forwardRef<
                   "h-4 self-center bg-neutral/40 w-[1px] mx-2 block flex-none",
                   "transition-opacity duration-150",
                   {
-                    "opacity-0": !hasComputedSize,
-                    "opacity-100": hasComputedSize
+                    "opacity-0 pointer-events-none":
+                      !hasComputedSize || !showItems,
+                    "opacity-100 pointer-events-auto":
+                      hasComputedSize && showItems
                   }
                 )}
               />
@@ -153,7 +130,7 @@ export const ActionToolbar = React.forwardRef<
           </React.Fragment>
         ))}
 
-        {hiddenItemGroups.length > 0 && (
+        {hiddenItemGroups.length > 0 && showItems && (
           <DropdownRoot open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <Toolbar.Button asChild>
               <DropdownTrigger>
@@ -228,3 +205,34 @@ const ActionToolbarButton = React.forwardRef<
     </Tooltip>
   );
 });
+
+export function getVisibleAndHiddenItemGroups(
+  itemGroups: Array<ActionToolbarItemGroups>,
+  maxNumberOfItemsVisible: number
+): [
+  visible: Array<ActionToolbarItemGroups>,
+  hidden: Array<ActionToolbarItemGroups>
+] {
+  const visible: Array<ActionToolbarItemGroups> = [];
+  const hidden: Array<ActionToolbarItemGroups> = [];
+  let visibleItemCount = 0;
+
+  itemGroups.forEach((group) => {
+    if (visibleItemCount + group.length <= maxNumberOfItemsVisible) {
+      // If the entire group fits within the visible limit
+      visible.push(group);
+      visibleItemCount += group.length;
+    } else if (visibleItemCount < maxNumberOfItemsVisible) {
+      // Split the group between visible and hidden
+      const itemsRemaining = maxNumberOfItemsVisible - visibleItemCount;
+      visible.push(group.slice(0, itemsRemaining));
+      hidden.push(group.slice(itemsRemaining));
+      visibleItemCount = maxNumberOfItemsVisible;
+    } else {
+      // Add the entire group to hidden
+      hidden.push(group);
+    }
+  });
+
+  return [visible, hidden];
+}

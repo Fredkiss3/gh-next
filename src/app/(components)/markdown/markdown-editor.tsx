@@ -35,6 +35,7 @@ import { z } from "zod";
 // types
 import type { TextareaProps } from "~/app/(components)/textarea";
 import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
+import { flushSync } from "react-dom";
 
 export type MarkdownEditorProps = Omit<TextareaProps, "value">;
 
@@ -73,12 +74,13 @@ export function MarkdownEditor({
       }
     });
 
-    const textarea = textAreaRef.current;
-    if (textarea) {
-      setTextAreaHeight(textarea.offsetHeight);
-      observer.observe(textarea);
+    const textAreaElement = textAreaRef.current;
+    if (textAreaElement) {
+      setTextAreaHeight(textAreaElement.offsetHeight);
+      observer.observe(textAreaElement);
+
       return () => {
-        observer.unobserve(textarea);
+        observer.unobserve(textAreaElement);
       };
     }
   }, [selectedTab]);
@@ -127,24 +129,18 @@ export function MarkdownEditor({
                 Preview
               </Tabs.Trigger>
 
-              <MarkdownTextAreaToolbar textAreaRef={textAreaRef} />
+              <MarkdownTextAreaToolbar
+                showItems={selectedTab === "EDITOR"}
+                textAreaRef={textAreaRef}
+                textContent={textContent}
+                onTextContentChange={(newValue) =>
+                  flushSync(() => setTextContent(newValue))
+                }
+              />
             </Tabs.List>
 
             <div className="p-2 bg-backdrop rounded-b-md">
-              {/* 
-              We do this because radix will not show the contents of the tab in DOM if it is not selected, 
-              whereas we want to submit the contents of the tab regardless of tab selection
-            */}
-              {selectedTab !== "EDITOR" && (
-                <textarea
-                  value={textContent}
-                  className="hidden"
-                  readOnly
-                  name={props.name}
-                />
-              )}
-
-              <Tabs.Content value={TABS.EDITOR}>
+              <Tabs.Content value={TABS.EDITOR} asChild>
                 <Textarea
                   rows={12}
                   {...props}
@@ -167,6 +163,17 @@ export function MarkdownEditor({
                 }}
                 className="text-sm p-4 max-w-full overflow-auto min-w-0 data-[state=active]:flex items-stretch justify-stretch"
               >
+                {/* 
+                  We do this because radix will not show the contents of the tab in DOM if it is not selected, 
+                  whereas we want to submit the contents of the tab regardless of tab selection
+                */}
+                <textarea
+                  value={textContent}
+                  className="hidden"
+                  readOnly
+                  name={props.name}
+                />
+
                 {textContent.trim().length > 0 ? (
                   <MarkdownPreviewer
                     content={textContent}
@@ -205,25 +212,66 @@ export function MarkdownEditor({
 }
 
 type MarkdownTextAreaToolbarProps = {
-  textAreaRef: React.Ref<React.ElementRef<"textarea">>;
+  textAreaRef: React.RefObject<React.ElementRef<"textarea">>;
+  onTextContentChange: (newText: string) => void;
+  textContent: string;
+  showItems?: boolean;
 };
 
 const MarkdownTextAreaToolbar = React.forwardRef<
   React.ElementRef<typeof ActionToolbar>,
   MarkdownTextAreaToolbarProps
->(function MarkdownTextAreaToolbar({ textAreaRef }, ref) {
+>(function MarkdownTextAreaToolbar(
+  { textAreaRef, onTextContentChange, textContent, showItems = true },
+  ref
+) {
+  const textArea = textAreaRef.current;
+  function addHeading() {
+    if (textArea) {
+      onTextContentChange(textContent + "### ");
+      textArea.focus();
+    }
+  }
+  function addBold() {
+    if (textArea) {
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+
+      // selectionned case
+      const isSelectingMultipleChars = selectionEnd - selectionStart > 0;
+
+      if (isSelectingMultipleChars) {
+        const untilSelectionStart = textContent.slice(0, selectionStart);
+        const fromSelectionEnd = textContent.slice(selectionEnd);
+        const selectedContent = textContent.slice(selectionStart, selectionEnd);
+        onTextContentChange(
+          untilSelectionStart + "**" + selectedContent + "**" + fromSelectionEnd
+        );
+
+        // keep the selection considering the bold stars added
+        textArea.setSelectionRange(selectionStart + 2, selectionEnd + 2);
+      } else {
+        // simplest case
+        onTextContentChange(textContent + "****");
+
+        textArea.setSelectionRange(selectionEnd - 2, selectionEnd - 2);
+      }
+      textArea.focus();
+    }
+  }
+
   const itemGroups = [
     [
       {
         id: "header",
         label: "Header",
         icon: HeadingIcon,
-        onClick: () => {}
+        onClick: addHeading
       },
       {
         id: "bold",
         label: "Bold",
-        onClick: () => {},
+        onClick: addBold,
         icon: BoldIcon
       },
       {
@@ -299,6 +347,7 @@ const MarkdownTextAreaToolbar = React.forwardRef<
       title="Formatting options"
       className="border-b border-neutral"
       itemGroups={itemGroups}
+      showItems={showItems}
     />
   );
 });
