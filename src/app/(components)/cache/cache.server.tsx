@@ -3,7 +3,10 @@ import * as React from "react";
 import * as RSDW from "react-server-dom-webpack/server.edge";
 
 // components
-import { CacheClient } from "~/app/(components)/cache/cache.client";
+import {
+  CacheClient,
+  CacheErrorBoundary
+} from "~/app/(components)/cache/cache.client";
 
 // utils
 import { getClientManifest } from "~/app/(components)/cache/manifest";
@@ -36,54 +39,70 @@ export async function Cache({
   children,
   updatedAt
 }: CacheProps) {
-  // FIXME : disabled for now
-  if (process.env.NODE_ENV === "production") {
+  try {
+    if (
+      bypass ||
+      (bypass === undefined && process.env.NODE_ENV === "development")
+    ) {
+      return <>{children}</>;
+    }
+
+    const fullKey = await computeCacheKey(id, updatedAt);
+
+    let cachedPayload = await kv.get<{
+      rsc: string;
+    }>(fullKey);
+
+    const cacheHit = !!cachedPayload;
+
+    if (!cachedPayload) {
+      const rscStream = RSDW.renderToReadableStream(
+        children,
+        // the client manifest is required for react to resolve
+        // all the clients components and where to import them
+        // they will be inlined into the RSC payload as references
+        // React will use those references during SSR to resolve
+        // the client components
+        getClientManifest(),
+        {
+          onError: (error: unknown) => {
+            throw error;
+          }
+        }
+      );
+
+      cachedPayload = {
+        rsc: await transformStreamToString(rscStream)
+      };
+      await kv.set(fullKey, cachedPayload, ttl);
+    }
+
+    if (cacheHit) {
+      console.log(
+        `\x1b[32mCACHE HIT \x1b[37mFOR key \x1b[90m"\x1b[33m${fullKey}\x1b[90m"\x1b[37m`
+      );
+    } else {
+      console.log(
+        `\x1b[31mCACHE MISS \x1b[37mFOR key \x1b[90m"\x1b[33m${fullKey}\x1b[90m"\x1b[37m`
+      );
+    }
+
+    if (debug) {
+      return <pre>{cachedPayload.rsc}</pre>;
+    }
+
+    return (
+      <CacheErrorBoundary fallback={children}>
+        <CacheClient payload={cachedPayload.rsc} />
+      </CacheErrorBoundary>
+    );
+  } catch (error) {
+    console.error(
+      `Error generating the payload for cache, failing back to rendering the component as is.`,
+      error
+    );
     return <>{children}</>;
   }
-  if (bypass || process.env.NODE_ENV === "development") {
-    return <>{children}</>;
-  }
-
-  const fullKey = await computeCacheKey(id, updatedAt);
-
-  let cachedPayload = await kv.get<{
-    rsc: string;
-  }>(fullKey);
-
-  const cacheHit = !!cachedPayload;
-
-  if (!cachedPayload) {
-    const rscStream = RSDW.renderToReadableStream(
-      children,
-      // the client manifest is required for react to resolve
-      // all the clients components and where to import them
-      // they will be inlined into the RSC payload as references
-      // React will use those references during SSR to resolve
-      // the client components
-      getClientManifest()
-    );
-
-    cachedPayload = {
-      rsc: await transformStreamToString(rscStream)
-    };
-    await kv.set(fullKey, cachedPayload, ttl);
-  }
-
-  if (cacheHit) {
-    console.log(
-      `\x1b[32mCACHE HIT \x1b[37mFOR key \x1b[90m"\x1b[33m${fullKey}\x1b[90m"\x1b[37m`
-    );
-  } else {
-    console.log(
-      `\x1b[31mCACHE MISS \x1b[37mFOR key \x1b[90m"\x1b[33m${fullKey}\x1b[90m"\x1b[37m`
-    );
-  }
-
-  if (debug) {
-    return <pre>{cachedPayload.rsc}</pre>;
-  }
-
-  return <CacheClient payload={cachedPayload.rsc} />;
 }
 
 async function transformStreamToString(stream: ReadableStream) {
