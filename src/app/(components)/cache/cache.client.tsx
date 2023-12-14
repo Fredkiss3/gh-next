@@ -50,15 +50,9 @@ export function CacheErrorBoundary({
     <ErrorBoundary
       FallbackComponent={({ error }) => {
         if (typeof window === "undefined") {
-          console.error(
-            `Error SSR'ing the cached component, failing back to rendering the component as is.`,
-            error
-          );
+          console.error(`Error SSR'ing the cached component :`, error);
         } else {
-          console.error(
-            `Error client rendering the cached component, failing back to rendering the component as is.`,
-            error
-          );
+          console.error(`Error client rendering the cached component :`, error);
         }
         return fallback;
       }}

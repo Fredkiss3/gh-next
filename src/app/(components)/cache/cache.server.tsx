@@ -22,6 +22,7 @@ export type CacheProps = {
   bypass?: boolean;
   debug?: boolean;
   children: React.ReactNode;
+  ssrErrorFallback?: React.ReactNode;
   updatedAt?: Date | number;
 };
 
@@ -37,7 +38,8 @@ export async function Cache({
   bypass = false,
   debug = false,
   children,
-  updatedAt
+  updatedAt,
+  ssrErrorFallback
 }: CacheProps) {
   try {
     if (
@@ -92,7 +94,7 @@ export async function Cache({
     }
 
     return (
-      <CacheErrorBoundary fallback={children}>
+      <CacheErrorBoundary fallback={ssrErrorFallback ?? <></>}>
         <CacheClient payload={cachedPayload.rsc} />
       </CacheErrorBoundary>
     );
