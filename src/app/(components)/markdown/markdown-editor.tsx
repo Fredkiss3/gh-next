@@ -64,6 +64,7 @@ export function MarkdownEditor({
   const [selectedTab, setSelectedTab] = React.useState<TabValue>(TABS.EDITOR);
   const [textAreaHeight, setTextAreaHeight] = React.useState(0);
   const textAreaRef = React.useRef<React.ElementRef<"textarea">>(null);
+  const lastTextareaSelectionRange = React.useRef({ start: -1, end: -1 });
 
   React.useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
@@ -95,7 +96,15 @@ export function MarkdownEditor({
         <div className={clsx("flex flex-col border border-neutral rounded-md")}>
           <Tabs.Root
             value={selectedTab}
-            onValueChange={(tab) => setSelectedTab(tab as TabValue)}
+            onValueChange={(tab) => {
+              setSelectedTab(tab as TabValue);
+              if (textAreaRef.current) {
+                lastTextareaSelectionRange.current = {
+                  start: textAreaRef.current.selectionStart,
+                  end: textAreaRef.current.selectionEnd
+                };
+              }
+            }}
           >
             <Tabs.List className="flex text-sm items-stretch bg-ghost/40">
               <Tabs.Trigger
@@ -106,6 +115,11 @@ export function MarkdownEditor({
                   "aria-[selected=true]:border-b-0 aria-[selected=true]:border-l-0",
                   "aria-[selected=true]:bg-backdrop"
                 )}
+                onFocus={() => {
+                  textAreaRef.current?.focus();
+                  const { start, end } = lastTextareaSelectionRange.current;
+                  textAreaRef.current?.setSelectionRange(start, end);
+                }}
               >
                 Write
               </Tabs.Trigger>
@@ -218,6 +232,77 @@ type MarkdownTextAreaToolbarProps = {
   showItems?: boolean;
 };
 
+function getSelectionStartAndSelectionEnd(
+  text: string,
+  cursorPosition: number
+) {
+  const nextWord = text.slice(cursorPosition).split(/[ \n]/)[0];
+  const previousWord = text
+    .slice(0, cursorPosition)
+    .split(/[ \n]/)
+    .reverse()[0];
+
+  const start = cursorPosition - previousWord.length;
+  const end = cursorPosition + nextWord.length;
+
+  return { start, end };
+}
+
+type SurroundTextWithArgs = {
+  text: string;
+  startIndex: number;
+  endIndex: number;
+  beforeText: string;
+  afterText?: string;
+};
+
+function surroundTextWith({
+  text,
+  startIndex,
+  endIndex,
+  beforeText,
+  afterText = beforeText
+}: SurroundTextWithArgs) {
+  const untilSelectionStart = text.slice(0, startIndex);
+  const fromSelectionEnd = text.slice(endIndex);
+  const selectedContent = text.slice(startIndex, endIndex);
+
+  return (
+    untilSelectionStart +
+    beforeText +
+    selectedContent +
+    afterText +
+    fromSelectionEnd
+  );
+}
+
+type StripSurroundTextWithArgs = {
+  text: string;
+  startIndex: number;
+  endIndex: number;
+  surroundingText: string;
+};
+
+function stripSurroundingText({
+  text,
+  startIndex,
+  endIndex,
+  surroundingText
+}: StripSurroundTextWithArgs) {
+  const untilSelectionStart = text.slice(0, startIndex);
+  const fromSelectionEnd = text.slice(endIndex);
+  const selectedContent = text.slice(startIndex, endIndex);
+
+  return (
+    untilSelectionStart +
+    selectedContent.slice(
+      surroundingText.length,
+      selectedContent.length - surroundingText.length
+    ) +
+    fromSelectionEnd
+  );
+}
+
 const MarkdownTextAreaToolbar = React.forwardRef<
   React.ElementRef<typeof ActionToolbar>,
   MarkdownTextAreaToolbarProps
@@ -225,36 +310,102 @@ const MarkdownTextAreaToolbar = React.forwardRef<
   { textAreaRef, onTextContentChange, textContent, showItems = true },
   ref
 ) {
-  const textArea = textAreaRef.current;
   function addHeading() {
+    const textArea = textAreaRef.current;
     if (textArea) {
       onTextContentChange(textContent + "### ");
       textArea.focus();
     }
   }
-  function addBold() {
+
+  function addOrRemoveSurroundingChars(chars: string) {
+    const textArea = textAreaRef.current;
     if (textArea) {
       const selectionStart = textArea.selectionStart;
       const selectionEnd = textArea.selectionEnd;
 
-      // selectionned case
       const isSelectingMultipleChars = selectionEnd - selectionStart > 0;
 
       if (isSelectingMultipleChars) {
-        const untilSelectionStart = textContent.slice(0, selectionStart);
-        const fromSelectionEnd = textContent.slice(selectionEnd);
-        const selectedContent = textContent.slice(selectionStart, selectionEnd);
-        onTextContentChange(
-          untilSelectionStart + "**" + selectedContent + "**" + fromSelectionEnd
+        const selectedContentBolded = textContent.slice(
+          selectionStart - chars.length,
+          selectionEnd + chars.length
         );
 
-        // keep the selection considering the bold stars added
-        textArea.setSelectionRange(selectionStart + 2, selectionEnd + 2);
-      } else {
-        // simplest case
-        onTextContentChange(textContent + "****");
+        const isTextAlreadyBolded =
+          selectedContentBolded.startsWith(chars) &&
+          selectedContentBolded.endsWith(chars);
 
-        textArea.setSelectionRange(selectionEnd - 2, selectionEnd - 2);
+        if (isTextAlreadyBolded) {
+          onTextContentChange(
+            stripSurroundingText({
+              text: textContent,
+              startIndex: selectionStart - chars.length,
+              endIndex: selectionEnd + chars.length,
+              surroundingText: chars
+            })
+          );
+          // keep the selection considering the bold stars removed
+          textArea.setSelectionRange(
+            selectionStart - chars.length,
+            selectionEnd - chars.length
+          );
+        } else {
+          onTextContentChange(
+            surroundTextWith({
+              text: textContent,
+              startIndex: selectionStart,
+              endIndex: selectionEnd,
+              beforeText: chars
+            })
+          );
+          // keep the selection considering the bold stars added
+          textArea.setSelectionRange(
+            selectionStart + chars.length,
+            selectionEnd + chars.length
+          );
+        }
+      } else {
+        const { start, end } = getSelectionStartAndSelectionEnd(
+          textContent,
+          selectionEnd
+        );
+
+        const selectedContent = textContent.slice(start, end);
+        const isTextAlreadyBolded =
+          selectedContent.startsWith(chars) && selectedContent.endsWith(chars);
+
+        if (isTextAlreadyBolded) {
+          onTextContentChange(
+            stripSurroundingText({
+              text: textContent,
+              startIndex: start,
+              endIndex: end,
+              surroundingText: chars
+            })
+          );
+
+          // keep the selection considering the bold stars removed
+          textArea.setSelectionRange(
+            selectionEnd - chars.length,
+            selectionEnd - chars.length
+          );
+        } else {
+          onTextContentChange(
+            surroundTextWith({
+              text: textContent,
+              startIndex: start,
+              endIndex: end,
+              beforeText: chars
+            })
+          );
+
+          // keep the selection considering the bold stars added
+          textArea.setSelectionRange(
+            selectionEnd + chars.length,
+            selectionEnd + chars.length
+          );
+        }
       }
       textArea.focus();
     }
@@ -271,13 +422,13 @@ const MarkdownTextAreaToolbar = React.forwardRef<
       {
         id: "bold",
         label: "Bold",
-        onClick: addBold,
+        onClick: () => addOrRemoveSurroundingChars("**"),
         icon: BoldIcon
       },
       {
         id: "italic",
         label: "Italic",
-        onClick: () => {},
+        onClick: () => addOrRemoveSurroundingChars("_"),
         icon: ItalicIcon
       },
       {
@@ -289,7 +440,7 @@ const MarkdownTextAreaToolbar = React.forwardRef<
       {
         id: "code",
         label: "Code",
-        onClick: () => {},
+        onClick: () => addOrRemoveSurroundingChars("`"),
         icon: CodeIcon
       },
       {
