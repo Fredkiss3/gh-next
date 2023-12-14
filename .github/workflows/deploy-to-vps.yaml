@@ -69,13 +69,9 @@ jobs:
           pnpm run build
           echo build success ✅
 
-          # Copy standalone static files
-          rsync -a .next/static/ .next/standalone/.next/static
-          cp .env.local .next/standalone/.env.local
-
           # Start 3 pm2 processes
           echo Starting processes...
-          pm2 startOrReload ecosystem.config.cjs --update-env
+          pm2 reload ecosystem.config.cjs --update-env
           echo processes succesfully started ✅
           "
         env:

@@ -2,12 +2,12 @@ module.exports = {
   apps: [
     {
       name: "gh-clone",
-      script: ".next/standalone/server.js",
+      script: "pnpm run start",
       time: true,
       instances: 2,
       autorestart: true,
       max_restarts: 5,
-      exec_mode: "cluster_mode",
+      exec_mode: "fork",
       watch: false,
       max_memory_restart: "1G",
       wait_ready: true,
