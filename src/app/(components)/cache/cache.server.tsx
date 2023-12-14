@@ -36,6 +36,10 @@ export async function Cache({
   children,
   updatedAt
 }: CacheProps) {
+  // FIXME : disabled for now
+  if (process.env.NODE_ENV === "production") {
+    return <>{children}</>;
+  }
   if (bypass || process.env.NODE_ENV === "development") {
     return <>{children}</>;
   }
