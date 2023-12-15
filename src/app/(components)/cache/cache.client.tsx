@@ -22,22 +22,52 @@ function transformStringToStream(input: string) {
 }
 
 export function CacheClient({ payload }: { payload: string }) {
-  let rscPromise: Promise<React.ReactNode> | null = null;
-  const rscStrem = transformStringToStream(payload);
+  return React.use(resolveElementCached(payload));
+}
+
+/**
+ * Custom `cache` function as `React.cache` doesn't work in the client
+ * @param fn
+ * @returns
+ */
+function fnCache<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map<string, any>();
+
+  return function cachedFn(...args: Parameters<T>): ReturnType<T> {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  } as T;
+}
+
+const resolveElementCached = fnCache(async function resolveElementCached(
+  payload: string
+) {
+  const rscStream = transformStringToStream(payload);
+  let rscPromise: Promise<React.JSX.Element> | null = null;
 
   // Render to HTML
   if (typeof window === "undefined") {
-    rscPromise = RSDWSSr.createFromReadableStream(rscStrem, getSSRManifest());
+    console.log("running cache client for SSR...");
+    // the SSR manifest contains all the client components that will be SSR'ed
+    // And also how to import them
+    rscPromise = RSDWSSr.createFromReadableStream(rscStream, getSSRManifest());
   }
 
   // Hydrate or CSR
-  if (!rscPromise) {
-    rscPromise = RSDW.createFromReadableStream(rscStrem, {});
+  if (rscPromise === null) {
+    console.log("running cache client for CSR...");
+
+    rscPromise = RSDW.createFromReadableStream(rscStream, {});
   }
 
-  const el = React.use(rscPromise);
-  return <>{el}</>;
-}
+  return await rscPromise;
+});
 
 export function CacheErrorBoundary({
   children,
