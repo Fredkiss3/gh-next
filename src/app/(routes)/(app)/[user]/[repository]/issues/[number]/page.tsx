@@ -102,7 +102,7 @@ export default async function IssueDetailPage({
         >
           <Markdown content={issue.body} />
         </Cache>
-        {/* <Cache id={"issue-test"} bypass>
+        {/* <Cache id={"issue-test"} bypassInDEV>
           <Markdown
             content={`
 ## Some references:
