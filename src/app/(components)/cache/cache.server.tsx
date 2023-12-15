@@ -19,7 +19,7 @@ type CacheId = string | number | (string | number)[];
 export type CacheProps = {
   id: CacheId;
   ttl?: number;
-  bypass?: boolean;
+  bypassInDEV?: boolean;
   debug?: boolean;
   children: React.ReactNode;
   ssrErrorFallback?: React.ReactNode;
@@ -35,16 +35,16 @@ export type CacheProps = {
 export async function Cache({
   id,
   ttl,
-  bypass = false,
-  debug = false,
+  bypassInDEV,
   children,
   updatedAt,
-  ssrErrorFallback
+  ssrErrorFallback,
+  debug = false
 }: CacheProps) {
   try {
     if (
-      bypass ||
-      (bypass === undefined && process.env.NODE_ENV === "development")
+      bypassInDEV ||
+      (bypassInDEV === undefined && process.env.NODE_ENV === "development")
     ) {
       return <>{children}</>;
     }
