@@ -129,7 +129,7 @@ export const getBuildId = cache(async () => {
   try {
     return await fs.readFile(".next/BUILD_ID", "utf-8");
   } catch (e) {
-    return "";
+    return null;
   }
 });
 
