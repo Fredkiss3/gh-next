@@ -42,9 +42,9 @@ export async function Cache({
   debug = false
 }: CacheProps) {
   // FIXME : we bypass the cache as of now, it just refuses to work
-  if (process.env.NODE_ENV === "production") {
-    return <>{children}</>;
-  }
+  // if (process.env.NODE_ENV === "production") {
+  //   return <>{children}</>;
+  // }
   try {
     if (
       bypassInDEV ||

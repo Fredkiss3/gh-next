@@ -22,7 +22,18 @@ function transformStringToStream(input: string) {
 }
 
 export function CacheClient({ payload }: { payload: string }) {
-  return React.use(resolveElementCached(payload));
+  if (typeof window === "undefined") {
+    console.time("running cache client for SSR...");
+  } else {
+    console.time("running cache client for CSR...");
+  }
+  const element = React.use(resolveElementCached(payload));
+  if (typeof window === "undefined") {
+    console.timeEnd("running cache client for SSR...");
+  } else {
+    console.timeEnd("running cache client for CSR...");
+  }
+  return element;
 }
 
 /**
@@ -53,7 +64,6 @@ const resolveElementCached = fnCache(async function resolveElementCached(
 
   // Render to HTML
   if (typeof window === "undefined") {
-    console.log("running cache client for SSR...");
     // the SSR manifest contains all the client components that will be SSR'ed
     // And also how to import them
     rscPromise = RSDWSSr.createFromReadableStream(rscStream, getSSRManifest());
@@ -61,8 +71,6 @@ const resolveElementCached = fnCache(async function resolveElementCached(
 
   // Hydrate or CSR
   if (rscPromise === null) {
-    console.log("running cache client for CSR...");
-
     rscPromise = RSDW.createFromReadableStream(rscStream, {});
   }
 
