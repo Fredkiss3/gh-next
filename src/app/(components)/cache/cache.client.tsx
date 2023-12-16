@@ -24,13 +24,17 @@ function transformStringToStream(input: string) {
 export function CacheClient({ payload }: { payload: string }) {
   if (typeof window === "undefined") {
     console.time("running cache client for SSR...");
+    console.log("[SSR] before `use`");
   } else {
+    console.log("[CSR] before `use`");
     console.time("running cache client for CSR...");
   }
   const element = React.use(resolveElementCached(payload));
   if (typeof window === "undefined") {
+    console.log("[SSR] after `use`");
     console.timeEnd("running cache client for SSR...");
   } else {
+    console.log("[CSR] after `use`");
     console.timeEnd("running cache client for CSR...");
   }
   return element;
