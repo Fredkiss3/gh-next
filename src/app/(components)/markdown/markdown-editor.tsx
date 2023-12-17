@@ -31,11 +31,11 @@ import {
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 import { z } from "zod";
+import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
+import { flushSync } from "react-dom";
 
 // types
 import type { TextareaProps } from "~/app/(components)/textarea";
-import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
-import { flushSync } from "react-dom";
 
 export type MarkdownEditorProps = Omit<TextareaProps, "value">;
 
@@ -313,7 +313,14 @@ const MarkdownTextAreaToolbar = React.forwardRef<
   function addHeading() {
     const textArea = textAreaRef.current;
     if (textArea) {
-      onTextContentChange(textContent + "### ");
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+
+      const untilSelectionStart = textContent.slice(0, selectionStart);
+      const fromSelectionStart = textContent.slice(selectionStart);
+
+      onTextContentChange(untilSelectionStart + "### " + fromSelectionStart);
+      textArea.setSelectionRange(selectionStart + 4, selectionEnd + 4);
       textArea.focus();
     }
   }
