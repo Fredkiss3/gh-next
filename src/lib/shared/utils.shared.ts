@@ -275,20 +275,26 @@ export function getExcerpt(str: string, maxChars: number): string {
 }
 
 const issueSearchFiltersSchema = z.object({
-  in: preprocess((arg) => {
-    if (Array.isArray(arg)) {
-      return new Set(arg);
-    }
-    return arg;
-  }, z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).nullish()),
+  in: preprocess(
+    (arg) => {
+      if (Array.isArray(arg)) {
+        return new Set(arg);
+      }
+      return arg;
+    },
+    z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).nullish()
+  ),
   is: z.enum(STATUS_FILTERS).default("open").nullish().catch(null),
   reason: z.enum(REASON_FILTERS).nullish().catch(null),
-  no: preprocess((arg) => {
-    if (Array.isArray(arg)) {
-      return [...new Set(arg)];
-    }
-    return arg;
-  }, z.array(z.enum(NO_METADATA_FILTERS)).catch([]).default([]).nullish()),
+  no: preprocess(
+    (arg) => {
+      if (Array.isArray(arg)) {
+        return [...new Set(arg)];
+      }
+      return arg;
+    },
+    z.array(z.enum(NO_METADATA_FILTERS)).catch([]).default([]).nullish()
+  ),
   label: z.array(z.string()).catch([]).default([]).nullish(),
   "-label": z.array(z.string()).catch([]).default([]).nullish(),
   assignee: z.array(z.string()).catch([]).default([]).nullish(),
@@ -425,7 +431,7 @@ export function parseIssueFilterTokens(input: string): IssueSearchFilters {
 export function formatSearchFiltersToString(
   filters: IssueSearchFilters
 ): string {
-  let terms: string[] = [];
+  const terms: string[] = [];
   for (const key in filters) {
     let value = filters[key as keyof IssueSearchFilters];
     if (key === "query") {
@@ -487,7 +493,7 @@ export function formatSearchFiltersToString(
  *    debouncedLog() // only this one will be logged
  *
  */
-export function debounce(callback: Function, delay: number = 500) {
+export function debounce(callback: Function, delay = 500) {
   let timer: number | undefined;
   return (...args: any[]) => {
     clearTimeout(timer);
@@ -581,4 +587,26 @@ export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
   }
 
   return chunkedArray;
+}
+
+/**
+ * Custom `cache` function as `React.cache` doesn't work in the client
+ * @param fn
+ * @returns
+ */
+export function fnCache<T extends (...args: any[]) => any>(fn: T): T {
+  if (typeof window === "undefined") return fn;
+
+  const cache = new Map<string, any>();
+
+  return function cachedFn(...args: Parameters<T>): ReturnType<T> {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  } as T;
 }

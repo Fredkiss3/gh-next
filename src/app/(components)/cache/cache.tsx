@@ -84,7 +84,11 @@ export async function Cache({
         errorFallback ?? <>An error occurred while rendering the cached value</>
       }
     >
-      <RscClientRenderer withSSR payloadOrPromise={cachedPayload.rsc} />
+      <RscClientRenderer
+        withSSR
+        payloadOrPromise={cachedPayload.rsc}
+        rscCacheKey={fullKey}
+      />
     </CacheErrorBoundary>
   );
 }

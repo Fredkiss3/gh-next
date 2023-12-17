@@ -4,21 +4,28 @@ import * as RSDWSSr from "react-server-dom-webpack/client.edge";
 import * as RSDW from "react-server-dom-webpack/client";
 
 import { getSSRManifest } from "./rsc-manifest";
+import { useRSCCacheContext } from "~/app/(components)/custom-rsc-renderer/rsc-cache-context";
 
 export type RscClientRendererProps = {
   payloadOrPromise: string | Promise<string>;
   withSSR?: boolean;
+  rscCacheKey: string;
 };
 
 export function RscClientRenderer({
   payloadOrPromise,
+  rscCacheKey,
   withSSR: ssr = false
 }: RscClientRendererProps) {
-  const rscPromiseRef = React.useRef<Promise<React.JSX.Element> | null>(null);
-  if (!rscPromiseRef.current) {
-    rscPromiseRef.current = resolveElement(ssr, payloadOrPromise);
+  let rscPromise: Promise<React.JSX.Element> | null = null;
+  const rscCache = useRSCCacheContext();
+  if (rscCache.has(rscCacheKey)) {
+    rscPromise = rscCache.get(rscCacheKey)!;
+  } else {
+    rscPromise = resolveElement(ssr, payloadOrPromise);
+    rscCache.set(rscCacheKey, rscPromise);
   }
-  return React.use(rscPromiseRef.current);
+  return React.use(rscPromise);
 }
 
 async function resolveElement(
