@@ -14,10 +14,11 @@ export function RscClientRenderer({
   payloadOrPromise,
   withSSR: ssr = false
 }: RscClientRendererProps) {
-  if (ssr && typeof window === "undefined") {
-    return React.use(resolveElement(true, payloadOrPromise));
+  const rscPromiseRef = React.useRef<Promise<React.JSX.Element> | null>(null);
+  if (!rscPromiseRef.current) {
+    rscPromiseRef.current = resolveElement(ssr, payloadOrPromise);
   }
-  return <>{React.use(resolveElementCached(ssr, payloadOrPromise))}</>;
+  return React.use(rscPromiseRef.current);
 }
 
 async function resolveElement(
@@ -45,8 +46,6 @@ async function resolveElement(
 
   return await rscPromise;
 }
-
-const resolveElementCached = React.cache(resolveElement);
 
 export function transformStringToReadableStream(input: string) {
   // Using Flight to deserialize the args from the string.

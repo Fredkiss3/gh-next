@@ -3,7 +3,7 @@ import "server-only";
 // components
 import { MarkdownTitle } from "~/app/(components)/markdown/markdown-title";
 import { Markdown } from "~/app/(components)/markdown/markdown";
-import { Cache } from "~/app/(components)/cache/cache.server";
+import { Cache } from "~/app/(components)/cache/cache";
 import { Skeleton } from "~/app/(components)/skeleton";
 
 // utils
@@ -88,7 +88,7 @@ export default async function IssueDetailPage({
             repo: params.repository,
             number: issueNo
           })}
-          ssrErrorFallback={
+          errorFallback={
             <div className="flex flex-col gap-4 sm:rounded-b-md w-full">
               <span className="sr-only">loading preview...</span>
               <Skeleton className="h-8 w-full" />

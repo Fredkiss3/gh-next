@@ -10,16 +10,18 @@ import { cache } from "react";
 import { kv } from "~/lib/server/kv/index.server";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 import fs from "fs/promises";
+import { CacheErrorBoundary } from "~/app/(components)/cache/cache-error-boundary";
 
 // types
 type CacheId = string | number | (string | number)[];
 export type CacheProps = {
   id: CacheId;
   ttl?: number;
-  bypass?: boolean;
+  bypassInDEV?: boolean;
   debug?: boolean;
   children: React.ReactNode;
   updatedAt?: Date | number;
+  errorFallback?: React.ReactNode;
 };
 
 /**
@@ -31,16 +33,17 @@ export type CacheProps = {
 export async function Cache({
   id,
   ttl,
-  bypass,
-  debug = false,
+  bypassInDEV,
   children,
-  updatedAt
+  updatedAt,
+  debug = false,
+  errorFallback
 }: CacheProps) {
   const fullKey = await computeCacheKey(id, updatedAt);
 
   if (
-    bypass ||
-    (bypass === undefined && process.env.NODE_ENV === "development")
+    bypassInDEV ||
+    (bypassInDEV === undefined && process.env.NODE_ENV === "development")
   ) {
     console.log(
       `\x1b[33mBYPASSING CACHE\x1b[37m FOR key "\x1b[34m${fullKey}\x1b[90m"\x1b[37m`
@@ -75,7 +78,15 @@ export async function Cache({
     return <pre>{cachedPayload.rsc}</pre>;
   }
 
-  return <RscClientRenderer withSSR payloadOrPromise={cachedPayload.rsc} />;
+  return (
+    <CacheErrorBoundary
+      fallback={
+        errorFallback ?? <>An error occurred while rendering the cached value</>
+      }
+    >
+      <RscClientRenderer withSSR payloadOrPromise={cachedPayload.rsc} />
+    </CacheErrorBoundary>
+  );
 }
 
 export const getBuildId = cache(async () => {
