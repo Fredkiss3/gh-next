@@ -440,7 +440,6 @@ async function ReadmeContent(props: {
           id={CacheKeys.readme(props.user, props.repository)}
           updatedAt={updatedAt}
           ttl={THIRTY_MINUTES_IN_SECONDS}
-          bypassInDEV={false}
         >
           <Markdown
             linkHeaders

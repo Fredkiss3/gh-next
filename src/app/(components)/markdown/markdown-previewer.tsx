@@ -9,15 +9,35 @@ import { RscClientRenderer } from "~/app/(components)/custom-rsc-renderer/rsc-cl
 import { getIssueHoverCard } from "~/app/(actions)/issue.action";
 import { getMarkdownPreview } from "~/app/(actions)/markdown.action";
 
-const loadMarkdownPreview = React.cache(getMarkdownPreview);
+/**
+ * Custom `cache` function as `React.cache` doesn't work in the client
+ * @param fn
+ * @returns
+ */
+function fnCache<T extends (...args: any[]) => any>(fn: T): T {
+  if (typeof window === "undefined") return fn;
 
-export function preloadMarkdownPreview(
+  const cache = new Map<string, any>();
+
+  return function cachedFn(...args: Parameters<T>): ReturnType<T> {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  } as T;
+}
+
+const loadMarkdownPreview = fnCache(getMarkdownPreview);
+
+export async function preloadMarkdownPreview(
   content: string,
   repositoryPath: `${string}/${string}`
 ) {
-  React.startTransition(() => {
-    loadMarkdownPreview(content, repositoryPath);
-  });
+  await loadMarkdownPreview(content, repositoryPath);
 }
 
 export type MarkdownPreviewerProps = {
