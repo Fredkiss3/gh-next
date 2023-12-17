@@ -5,7 +5,7 @@ import * as RSDW from "react-server-dom-webpack/client";
 
 import { getSSRManifest } from "~/app/(components)/cache/manifest";
 import { ErrorBoundary } from "react-error-boundary";
-import { useRSCCacheContext } from "~/app/(components)/cache/cache-provider";
+import { useRSCCacheContext } from "~/app/(components)/cache/cache-context";
 
 function transformStringToStream(input: string) {
   // Using Flight to deserialize the args from the string.

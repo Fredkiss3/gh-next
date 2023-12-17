@@ -4,7 +4,7 @@ import * as React from "react";
 // components
 import { RouterProvider } from "react-aria-components";
 import { ReactQueryProvider } from "~/app/(components)/react-query-provider";
-import { RSCCacheProvider } from "~/app/(components)/cache/cache-provider";
+import { RSCCacheProvider } from "~/app/(components)/cache/cache-context";
 
 // utils
 import { useRouter } from "next/navigation";
