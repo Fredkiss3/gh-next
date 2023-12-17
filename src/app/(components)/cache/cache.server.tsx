@@ -94,12 +94,14 @@ export async function Cache({
     }
 
     if (debug) {
-      return <pre>{cachedPayload.rsc}</pre>;
+      return (
+        <pre className="max-w-full overflow-scroll">{cachedPayload.rsc}</pre>
+      );
     }
 
     return (
       <CacheErrorBoundary fallback={ssrErrorFallback ?? <></>}>
-        <CacheClient payload={cachedPayload.rsc} />
+        <CacheClient payload={cachedPayload.rsc} cacheKey={fullKey} />
       </CacheErrorBoundary>
     );
   } catch (error) {

@@ -17,6 +17,9 @@ export function nextCache<T extends Callback>(
   return cache(unstable_cache(cb, options.tags, options));
 }
 
+/**
+ * This function is only used in `DEV` because fetch-cache is bypassed by nextjs on DEV
+ */
 function cacheForDev<T extends Callback>(
   cb: T,
   options: {
@@ -30,16 +33,12 @@ function cacheForDev<T extends Callback>(
       cached: ReturnType<T>;
     }>(key);
 
-    if (!cachedValue) {
-      cachedValue = await cb(...args);
-      await kv.set(
-        key,
-        {
-          cached: cachedValue
-        },
-        options.revalidate
-      );
+    if (!cachedValue?.cached) {
+      cachedValue = {
+        cached: await cb(...args)
+      };
+      await kv.set(key, cachedValue, options.revalidate);
     }
-    return cachedValue!.cached;
+    return cachedValue.cached;
   };
 }

@@ -30,7 +30,9 @@ export function MarkdownH({ as, showLink, ...props }: MarkdownHProps) {
           href={`#${props.id}`}
           className={clsx(
             "absolute -left-6 -top-1.5 opacity-100 transition duration-150",
-            "md:opacity-0 md:group-hover:opacity-100"
+            "md:opacity-0 md:group-hover:opacity-100",
+            "focus:opacity-100 focus:ring-2 focus:ring-accent focus:outline-none",
+            "rounded-md"
           )}
         >
           <LinkIcon className="h-5 w-5" />
