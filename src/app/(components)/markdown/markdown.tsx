@@ -20,6 +20,7 @@ import {
 import remarkGfm from "remark-gfm";
 import remarkGithub from "remark-github";
 import remarkGemoji from "remark-gemoji";
+import remarkBreaks from "remark-breaks";
 import rehypeSlug from "rehype-slug";
 import { clsx } from "~/lib/shared/utils.shared";
 import githubDark from "~/lib/server/themes/github-dark.json";
@@ -148,7 +149,7 @@ async function processMarkdownContentAndGetReferences(
       // @ts-expect-error
       rehypeSlug
     ],
-    remarkPlugins: [remarkGfm, remarkGemoji],
+    remarkPlugins: [remarkGfm, remarkGemoji, remarkBreaks],
     format: "md"
   });
 
