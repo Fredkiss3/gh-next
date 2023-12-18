@@ -291,7 +291,7 @@ async function getComponents({
     p: (props) => {
       const key = ++noOfKeys;
       return (
-        <p suppressHydrationWarning {...props} key={key} className={"my-4"}>
+        <p suppressHydrationWarning {...props} key={key} className="mb-4">
           {props.children}
         </p>
       );
@@ -358,7 +358,7 @@ async function getComponents({
         // they don't contains '\n' and they don't have a lang defined
         if (lang === undefined && !props.children.toString().includes("\n")) {
           return (
-            <code className="rounded-md bg-neutral px-1.5 py-1">
+            <code className="rounded-md bg-neutral px-1.5 py-1 text-sm">
               {props.children}
             </code>
           );
@@ -371,7 +371,7 @@ async function getComponents({
           >
             <Code
               lang={lang}
-              codeClassName="bg-neutral/30 rounded-md py-[16px] px-[2px] overflow-auto !min-w-0"
+              codeClassName="bg-neutral/30 rounded-md py-[16px] px-[2px] overflow-auto !min-w-0 text-sm"
               className="overflow-scroll rounded-md p-0 text-sm !min-w-0"
             >
               {props.children.toString().trimEnd()}

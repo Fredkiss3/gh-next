@@ -175,7 +175,7 @@ export function MarkdownEditor({
                 style={{
                   minHeight: `${textAreaHeight}px`
                 }}
-                className="text-sm p-4 max-w-full overflow-auto min-w-0 data-[state=active]:flex items-stretch justify-stretch"
+                className="text-sm px-3 py-1 max-w-full overflow-auto min-w-0 data-[state=active]:flex items-stretch justify-stretch"
               >
                 {/* 
                   We do this because radix will not show the contents of the tab in DOM if it is not selected, 
