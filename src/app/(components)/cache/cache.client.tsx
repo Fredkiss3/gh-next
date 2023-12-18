@@ -5,8 +5,7 @@ import * as RSDW from "react-server-dom-webpack/client";
 
 import { getSSRManifest } from "~/app/(components)/cache/manifest";
 import { ErrorBoundary } from "react-error-boundary";
-import { useRSCCacheContext } from "~/app/(components)/cache/cache-context";
-import { wait } from "~/lib/shared/utils.shared";
+import { LRUCache } from "~/lib/shared/lru-cache";
 
 function transformStringToStream(input: string) {
   // Using Flight to deserialize the args from the string.
@@ -36,16 +35,7 @@ export function CacheClient({
     console.log("[CSR] before `use`");
   }
 
-  let rscPromise: Promise<React.JSX.Element> | null = null;
-  const rscCache = useRSCCacheContext();
-  if (rscCache.has(cacheKey)) {
-    rscPromise = rscCache.get(cacheKey)!;
-  } else {
-    rscPromise = resolveElement(payload);
-    rscCache.set(cacheKey, rscPromise);
-  }
-
-  const element = React.use(rscPromise);
+  const element = React.use(resolveElementCached(payload));
   if (typeof window === "undefined") {
     console.log("[SSR] after `use`");
   } else {
@@ -54,7 +44,25 @@ export function CacheClient({
   return element;
 }
 
-async function resolveElement(payload: string) {
+/**
+ * Custom `cache` function as `React.cache` doesn't work in the client
+ * @param fn
+ * @returns
+ */
+function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T): T {
+  const cache = new LRUCache<Awaited<ReturnType<T>>>(100);
+
+  return function cachedFn(
+    ...args: Parameters<T>
+  ): Promise<Awaited<ReturnType<T>>> {
+    const key = JSON.stringify(args);
+    return cache.get(key, async () => await fn(...args));
+  } as T;
+}
+
+const resolveElementCached = fnCache(async function resolveElement(
+  payload: string
+) {
   const rscStream = transformStringToStream(payload);
   let rscPromise: Promise<React.JSX.Element> | null = null;
 
@@ -74,7 +82,8 @@ async function resolveElement(payload: string) {
   }
 
   return await rscPromise;
-}
+});
+
 export function CacheErrorBoundary({
   children
 }: {
