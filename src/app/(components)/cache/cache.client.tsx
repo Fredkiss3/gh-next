@@ -41,26 +41,7 @@ export function CacheClient({
   if (rscCache.has(cacheKey)) {
     rscPromise = rscCache.get(cacheKey)!;
   } else {
-    const rscStream = transformStringToStream(payload);
-    // Render to HTML
-    if (typeof window === "undefined") {
-      // the SSR manifest contains all the client components that will be SSR'ed
-      // And also how to import them
-      rscPromise = Promise.race([
-        RSDWSSr.createFromReadableStream(rscStream, getSSRManifest()),
-        wait(2000).then(() => {
-          throw new Error("[SSR] RSC CLIENT RENDERER timeout");
-        })
-      ]);
-    } else {
-      // Hydrate or CSR
-      rscPromise = Promise.race([
-        RSDW.createFromReadableStream(rscStream, {}),
-        wait(2000).then(() => {
-          throw new Error("[CSR] RSC CLIENT RENDERER timeout");
-        })
-      ]);
-    }
+    rscPromise = resolveElement(payload);
     rscCache.set(cacheKey, rscPromise);
   }
 
@@ -73,6 +54,27 @@ export function CacheClient({
   return element;
 }
 
+async function resolveElement(payload: string) {
+  const rscStream = transformStringToStream(payload);
+  let rscPromise: Promise<React.JSX.Element> | null = null;
+
+  // Render to HTML
+  if (typeof window === "undefined") {
+    console.log("running cache client for SSR...");
+    // the SSR manifest contains all the client components that will be SSR'ed
+    // And also how to import them
+    rscPromise = RSDWSSr.createFromReadableStream(rscStream, getSSRManifest());
+  }
+
+  // Hydrate or CSR
+  if (rscPromise === null) {
+    console.log("running cache client for CSR...");
+
+    rscPromise = RSDW.createFromReadableStream(rscStream, {});
+  }
+
+  return await rscPromise;
+}
 export function CacheErrorBoundary({
   children
 }: {
