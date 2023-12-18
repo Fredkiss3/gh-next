@@ -3,26 +3,28 @@ import * as React from "react";
 // components
 import { ErrorBoundary } from "react-error-boundary";
 import { Skeleton } from "~/app/(components)/skeleton";
-import { RscClientRenderer } from "~/app/(components)/custom-rsc-renderer/rsc-client-renderer";
+import {
+  RscClientRenderer,
+  renderPayloadOrPromiseToJSX
+} from "~/app/(components)/custom-rsc-renderer/rsc-client-renderer";
 
 // utils
 import { getIssueHoverCard } from "~/app/(actions)/issue.action";
 import { getMarkdownPreview } from "~/app/(actions)/markdown.action";
-import { md5 } from "js-md5";
-import { fnCache } from "~/lib/shared/utils.shared";
+import { fnCache } from "~/lib/shared/fn-cache";
 
 const loadMarkdownPreview = fnCache(getMarkdownPreview);
-const getContentHash = fnCache(
-  async (content: string, repositoryPath: string) => {
-    return md5(content + repositoryPath);
-  }
-);
 
-export async function preloadMarkdownPreview(
+export async function prerenderMarkdownPreview(
   content: string,
   repositoryPath: `${string}/${string}`
 ) {
-  await loadMarkdownPreview(content, repositoryPath);
+  React.startTransition(() => {
+    renderPayloadOrPromiseToJSX(
+      loadMarkdownPreview(content, repositoryPath),
+      false
+    );
+  });
 }
 
 export type MarkdownPreviewerProps = {
@@ -30,15 +32,10 @@ export type MarkdownPreviewerProps = {
   content: string;
 };
 
-export function MarkdownPreviewer({
-  repositoryPath,
-  content
-}: MarkdownPreviewerProps) {
+export function MarkdownPreviewer(props: MarkdownPreviewerProps) {
   // this is so that the action is included in the client manifest of this page and the hovercard
   // in the preview works
   const _ = getIssueHoverCard;
-  const contentHash = getContentHash(content, repositoryPath);
-
   return (
     <>
       <ErrorBoundary
@@ -66,8 +63,10 @@ export function MarkdownPreviewer({
           }
         >
           <RscClientRenderer
-            rscCacheKey={contentHash}
-            payloadOrPromise={loadMarkdownPreview(content, repositoryPath)}
+            payloadOrPromise={loadMarkdownPreview(
+              props.content,
+              props.repositoryPath
+            )}
           />
         </React.Suspense>
       </ErrorBoundary>

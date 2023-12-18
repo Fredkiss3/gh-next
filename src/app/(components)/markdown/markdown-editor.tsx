@@ -25,7 +25,7 @@ import {
 } from "~/app/(components)/action-toolbar";
 import {
   MarkdownPreviewer,
-  preloadMarkdownPreview
+  prerenderMarkdownPreview
 } from "~/app/(components)/markdown/markdown-previewer";
 
 // utils
@@ -127,7 +127,7 @@ export function MarkdownEditor({
                 value={TABS.PREVIEW}
                 onMouseEnter={() => {
                   if (textContent.trim().length > 0) {
-                    preloadMarkdownPreview(
+                    prerenderMarkdownPreview(
                       textContent,
                       `${params.user}/${params.repository}`
                     );

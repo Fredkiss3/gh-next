@@ -2,15 +2,15 @@ import "server-only";
 import * as React from "react";
 
 // components
+import { CacheErrorBoundary } from "~/app/(components)/cache/cache-error-boundary";
 import { RscClientRenderer } from "~/app/(components)/custom-rsc-renderer/rsc-client-renderer";
-import { renderRSCtoString } from "~/app/(components)/custom-rsc-renderer/render-rsc-to-string";
 
 // utils
+import { renderRSCtoString } from "~/app/(components)/custom-rsc-renderer/render-rsc-to-string";
 import { cache } from "react";
 import { kv } from "~/lib/server/kv/index.server";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 import fs from "fs/promises";
-import { CacheErrorBoundary } from "~/app/(components)/cache/cache-error-boundary";
 
 // types
 type CacheId = string | number | (string | number)[];
@@ -78,11 +78,7 @@ export async function Cache({
 
   return (
     <CacheErrorBoundary>
-      <RscClientRenderer
-        withSSR
-        payloadOrPromise={cachedPayload.rsc}
-        rscCacheKey={fullKey}
-      />
+      <RscClientRenderer withSSR payloadOrPromise={cachedPayload.rsc} />
     </CacheErrorBoundary>
   );
 }

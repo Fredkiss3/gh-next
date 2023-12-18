@@ -4,56 +4,51 @@ import * as RSDWSSr from "react-server-dom-webpack/client.edge";
 import * as RSDW from "react-server-dom-webpack/client";
 
 import { getSSRManifest } from "./rsc-manifest";
-// import { useRSCCacheContext } from "~/app/(components)/custom-rsc-renderer/rsc-cache-context";
-import { fnCache } from "~/lib/shared/utils.shared";
+import { fnCache } from "~/lib/shared/fn-cache";
 
 export type RscClientRendererProps = {
   payloadOrPromise: string | Promise<string>;
   withSSR?: boolean;
-  rscCacheKey: string;
 };
 
 export function RscClientRenderer({
   payloadOrPromise,
-  rscCacheKey,
-  withSSR: ssr = false
+  withSSR = false
 }: RscClientRendererProps) {
-  // let rscPromise: Promise<React.JSX.Element> | null = null;
-  // const rscCache = useRSCCacheContext();
-  // if (rscCache.has(rscCacheKey)) {
-  //   rscPromise = rscCache.get(rscCacheKey)!;
-  // } else {
-  //   rscPromise = resolveElementCached(ssr, payloadOrPromise);
-  //   rscCache.set(rscCacheKey, rscPromise);
-  // }
-  return React.use(resolveElementCached(ssr, payloadOrPromise));
+  return React.use(renderPayloadOrPromiseToJSX(payloadOrPromise, withSSR));
 }
 
-const resolveElementCached = fnCache(async function resolveElement(
-  ssr: boolean,
-  payloadOrPromise: string | Promise<string>
-) {
-  const payload =
-    typeof payloadOrPromise === "string"
-      ? payloadOrPromise
-      : await payloadOrPromise;
-  const rscStream = transformStringToReadableStream(payload);
-  let rscPromise: Promise<React.JSX.Element> | null = null;
+export const renderPayloadOrPromiseToJSX = fnCache(
+  async function resolveElement(
+    payloadOrPromise: string | Promise<string>,
+    ssr = false
+  ) {
+    console.log("Render payload to JSX");
+    const payload =
+      typeof payloadOrPromise === "string"
+        ? payloadOrPromise
+        : await payloadOrPromise;
+    const rscStream = transformStringToReadableStream(payload);
+    let rscPromise: Promise<React.JSX.Element> | null = null;
 
-  // Render to HTML
-  if (ssr && typeof window === "undefined") {
-    // the SSR manifest contains all the client components that will be SSR'ed
-    // And also how to import them
-    rscPromise = RSDWSSr.createFromReadableStream(rscStream, getSSRManifest());
+    // Render to HTML
+    if (ssr && typeof window === "undefined") {
+      // the SSR manifest contains all the client components that will be SSR'ed
+      // And also how to import them
+      rscPromise = RSDWSSr.createFromReadableStream(
+        rscStream,
+        getSSRManifest()
+      );
+    }
+
+    // Hydrate or CSR
+    if (rscPromise === null) {
+      rscPromise = RSDW.createFromReadableStream(rscStream, {});
+    }
+
+    return await rscPromise;
   }
-
-  // Hydrate or CSR
-  if (rscPromise === null) {
-    rscPromise = RSDW.createFromReadableStream(rscStream, {});
-  }
-
-  return await rscPromise;
-});
+);
 
 export function transformStringToReadableStream(input: string) {
   // Using Flight to deserialize the args from the string.

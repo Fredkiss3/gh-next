@@ -10,7 +10,6 @@ import {
   STATUS_FILTERS
 } from "./constants";
 import { twMerge } from "tailwind-merge";
-import { LRUCache } from "~/lib/shared/lru-cache";
 
 /**
  * Petit utilitaire pour chainer les classes css en react tout en évitant
@@ -588,20 +587,4 @@ export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
   }
 
   return chunkedArray;
-}
-
-/**
- * Custom `cache` function as `React.cache` doesn't work in the client
- * @param fn
- * @returns
- */
-export function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T): T {
-  const cache = new LRUCache<Awaited<ReturnType<T>>>(200);
-
-  return function cachedFn(
-    ...args: Parameters<T>
-  ): Promise<Awaited<ReturnType<T>>> {
-    const key = JSON.stringify(args);
-    return cache.get(key, async () => await fn(...args));
-  } as T;
 }
