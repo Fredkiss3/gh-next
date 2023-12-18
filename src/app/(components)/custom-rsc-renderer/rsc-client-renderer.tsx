@@ -4,7 +4,8 @@ import * as RSDWSSr from "react-server-dom-webpack/client.edge";
 import * as RSDW from "react-server-dom-webpack/client";
 
 import { getSSRManifest } from "./rsc-manifest";
-import { useRSCCacheContext } from "~/app/(components)/custom-rsc-renderer/rsc-cache-context";
+// import { useRSCCacheContext } from "~/app/(components)/custom-rsc-renderer/rsc-cache-context";
+import { fnCache } from "~/lib/shared/utils.shared";
 
 export type RscClientRendererProps = {
   payloadOrPromise: string | Promise<string>;
@@ -17,18 +18,18 @@ export function RscClientRenderer({
   rscCacheKey,
   withSSR: ssr = false
 }: RscClientRendererProps) {
-  let rscPromise: Promise<React.JSX.Element> | null = null;
-  const rscCache = useRSCCacheContext();
-  if (rscCache.has(rscCacheKey)) {
-    rscPromise = rscCache.get(rscCacheKey)!;
-  } else {
-    rscPromise = resolveElement(ssr, payloadOrPromise);
-    rscCache.set(rscCacheKey, rscPromise);
-  }
-  return React.use(rscPromise);
+  // let rscPromise: Promise<React.JSX.Element> | null = null;
+  // const rscCache = useRSCCacheContext();
+  // if (rscCache.has(rscCacheKey)) {
+  //   rscPromise = rscCache.get(rscCacheKey)!;
+  // } else {
+  //   rscPromise = resolveElementCached(ssr, payloadOrPromise);
+  //   rscCache.set(rscCacheKey, rscPromise);
+  // }
+  return React.use(resolveElementCached(ssr, payloadOrPromise));
 }
 
-async function resolveElement(
+const resolveElementCached = fnCache(async function resolveElement(
   ssr: boolean,
   payloadOrPromise: string | Promise<string>
 ) {
@@ -52,7 +53,7 @@ async function resolveElement(
   }
 
   return await rscPromise;
-}
+});
 
 export function transformStringToReadableStream(input: string) {
   // Using Flight to deserialize the args from the string.

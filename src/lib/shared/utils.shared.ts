@@ -10,6 +10,7 @@ import {
   STATUS_FILTERS
 } from "./constants";
 import { twMerge } from "tailwind-merge";
+import { LRUCache } from "~/lib/shared/lru-cache";
 
 /**
  * Petit utilitaire pour chainer les classes css en react tout en évitant
@@ -594,19 +595,13 @@ export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
  * @param fn
  * @returns
  */
-export function fnCache<T extends (...args: any[]) => any>(fn: T): T {
-  if (typeof window === "undefined") return fn;
+export function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T): T {
+  const cache = new LRUCache<Awaited<ReturnType<T>>>(200);
 
-  const cache = new Map<string, any>();
-
-  return function cachedFn(...args: Parameters<T>): ReturnType<T> {
+  return function cachedFn(
+    ...args: Parameters<T>
+  ): Promise<Awaited<ReturnType<T>>> {
     const key = JSON.stringify(args);
-    if (cache.has(key)) {
-      return cache.get(key);
-    }
-
-    const result = fn(...args);
-    cache.set(key, result);
-    return result;
+    return cache.get(key, async () => await fn(...args));
   } as T;
 }

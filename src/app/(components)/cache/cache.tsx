@@ -21,7 +21,6 @@ export type CacheProps = {
   debug?: boolean;
   children: React.ReactNode;
   updatedAt?: Date | number;
-  errorFallback?: React.ReactNode;
 };
 
 /**
@@ -36,8 +35,7 @@ export async function Cache({
   bypassInDEV,
   children,
   updatedAt,
-  debug = false,
-  errorFallback
+  debug = false
 }: CacheProps) {
   const fullKey = await computeCacheKey(id, updatedAt);
 
@@ -79,11 +77,7 @@ export async function Cache({
   }
 
   return (
-    <CacheErrorBoundary
-      fallback={
-        errorFallback ?? <>An error occurred while rendering the cached value</>
-      }
-    >
+    <CacheErrorBoundary>
       <RscClientRenderer
         withSSR
         payloadOrPromise={cachedPayload.rsc}

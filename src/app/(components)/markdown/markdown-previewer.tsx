@@ -12,9 +12,11 @@ import { md5 } from "js-md5";
 import { fnCache } from "~/lib/shared/utils.shared";
 
 const loadMarkdownPreview = fnCache(getMarkdownPreview);
-const getContentHash = fnCache((content: string, repositoryPath: string) => {
-  return md5(content + repositoryPath);
-});
+const getContentHash = fnCache(
+  async (content: string, repositoryPath: string) => {
+    return md5(content + repositoryPath);
+  }
+);
 
 export async function preloadMarkdownPreview(
   content: string,
