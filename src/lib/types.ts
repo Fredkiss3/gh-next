@@ -104,5 +104,3 @@ export type EventFor<
   | undefined
   ? TEvent
   : never;
-
-export type Primitive = string | number | boolean | symbol | null | undefined;
