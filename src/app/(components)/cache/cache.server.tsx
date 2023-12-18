@@ -100,7 +100,7 @@ export async function Cache({
     }
 
     return (
-      <CacheErrorBoundary fallback={ssrErrorFallback ?? <></>}>
+      <CacheErrorBoundary>
         <CacheClient payload={cachedPayload.rsc} cacheKey={fullKey} />
       </CacheErrorBoundary>
     );
