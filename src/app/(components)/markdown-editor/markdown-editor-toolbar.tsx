@@ -33,7 +33,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
   { textAreaRef, onTextContentChange, textContent, showItems = true },
   ref
 ) {
-  function addHeading() {
+  function addOrRemoveHeading() {
     const textArea = textAreaRef.current;
     if (textArea) {
       const selectionStart = textArea.selectionStart;
@@ -42,8 +42,39 @@ export const MarkdownEditorToolbar = React.forwardRef<
       const untilSelectionStart = textContent.slice(0, selectionStart);
       const fromSelectionStart = textContent.slice(selectionStart);
 
-      onTextContentChange(untilSelectionStart + "### " + fromSelectionStart);
-      textArea.setSelectionRange(selectionStart + 4, selectionEnd + 4);
+      const allPreviousLines = untilSelectionStart.split("\n");
+      const currentLine = allPreviousLines.pop();
+
+      const headingRegex = /^(#+ ?)/;
+      const match = (currentLine ?? "").match(headingRegex);
+      const isHeading = !!match;
+
+      if (isHeading) {
+        const totalMatchedChars = match[0].length;
+        const newLineWithoutHeading = (currentLine ?? "").replace(
+          /^(#+ ?)/,
+          ""
+        );
+
+        const result =
+          [...allPreviousLines, newLineWithoutHeading].join("\n") +
+          fromSelectionStart;
+
+        onTextContentChange(result);
+        textArea.setSelectionRange(
+          selectionStart - totalMatchedChars,
+          selectionEnd - totalMatchedChars
+        );
+      } else {
+        const newLineWithHeading = "### " + (currentLine ?? "");
+
+        const result =
+          [...allPreviousLines, newLineWithHeading].join("\n") +
+          fromSelectionStart;
+
+        onTextContentChange(result);
+        textArea.setSelectionRange(selectionStart + 4, selectionEnd + 4);
+      }
       textArea.focus();
     }
   }
@@ -147,7 +178,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
         id: "header",
         label: "Header",
         icon: HeadingIcon,
-        onClick: addHeading
+        onClick: addOrRemoveHeading
       },
       {
         id: "bold",

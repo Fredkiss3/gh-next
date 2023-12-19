@@ -17,6 +17,7 @@ import { KebabHorizontalIcon } from "@primer/octicons-react";
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
 
+// types
 export type ActionToolbarItem = {
   id: string;
   label: string;
@@ -62,7 +63,7 @@ export const ActionToolbar = React.forwardRef<
         (width - TOOLBAR_PADDING * 2) / ITEM_SIZE // we multiply the padding x2 to account for the left & right position
       );
 
-      const [visible, hidden] = getVisibleAndHiddenItemGroups(
+      const [visible, hidden] = getVisibleAndHiddenToolbarItemGroups(
         itemGroups,
         // we remove 1 because of the dropdown itself which will take one seat
         // and we remove another just to have some margin
@@ -79,7 +80,6 @@ export const ActionToolbar = React.forwardRef<
 
     const toolbar = toolbarRef?.current;
     if (toolbar) {
-      // setTextAreaHeight(textarea.offsetHeight);
       observer.observe(toolbar);
       return () => {
         observer.unobserve(toolbar);
@@ -206,7 +206,7 @@ const ActionToolbarButton = React.forwardRef<
   );
 });
 
-export function getVisibleAndHiddenItemGroups(
+export function getVisibleAndHiddenToolbarItemGroups(
   itemGroups: Array<ActionToolbarItemGroups>,
   maxNumberOfItemsVisible: number
 ): [
