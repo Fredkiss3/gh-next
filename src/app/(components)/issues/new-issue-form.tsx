@@ -3,7 +3,7 @@ import * as React from "react";
 // components
 import { GearIcon, InfoIcon } from "@primer/octicons-react";
 import { Input } from "~/app/(components)/input";
-import { MarkdownEditor } from "~/app/(components)/markdown/markdown-editor";
+import { MarkdownEditor } from "~/app/(components)/markdown-editor/markdown-editor";
 import { SubmitButton } from "~/app/(components)/submit-button";
 import { Avatar } from "~/app/(components)/avatar";
 

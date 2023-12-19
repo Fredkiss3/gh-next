@@ -13,26 +13,12 @@ import { getIssueHoverCard } from "~/app/(actions)/issue.action";
 import { getMarkdownPreview } from "~/app/(actions)/markdown.action";
 import { fnCache } from "~/lib/shared/fn-cache";
 
-const loadMarkdownPreview = fnCache(getMarkdownPreview);
-
-export async function prerenderMarkdownPreview(
-  content: string,
-  repositoryPath: `${string}/${string}`
-) {
-  React.startTransition(() => {
-    renderPayloadOrPromiseToJSX(
-      loadMarkdownPreview(content, repositoryPath),
-      false
-    );
-  });
-}
-
-export type MarkdownPreviewerProps = {
+export type MarkdownEditorPreviewProps = {
   repositoryPath: `${string}/${string}`;
   content: string;
 };
 
-export function MarkdownPreviewer(props: MarkdownPreviewerProps) {
+export function MarkdownEditorPreview(props: MarkdownEditorPreviewProps) {
   // this is so that the action is included in the client manifest of this page and the hovercard
   // in the preview works
   const _ = getIssueHoverCard;
@@ -72,4 +58,18 @@ export function MarkdownPreviewer(props: MarkdownPreviewerProps) {
       </ErrorBoundary>
     </>
   );
+}
+
+const loadMarkdownPreview = fnCache(getMarkdownPreview);
+
+export async function prerenderMarkdownPreview(
+  content: string,
+  repositoryPath: `${string}/${string}`
+) {
+  React.startTransition(() => {
+    renderPayloadOrPromiseToJSX(
+      loadMarkdownPreview(content, repositoryPath),
+      false
+    );
+  });
 }
