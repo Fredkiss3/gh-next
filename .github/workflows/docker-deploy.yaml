@@ -1,0 +1,61 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI/CD For Express API
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches:
+      - main
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build-push-docker:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: "${{ secrets.DCR_USER }}"
+          password: "${{ secrets.DCR_PASSWD }}"
+          image_name: gh-next
+          image_tag: latest
+          push_git_tag: true
+          registry: dcr.fredkiss.dev
+          dockerfile: Dockerfile.api
+          context: .
+          build_extra_args: "--build-arg MONGO_URI=${{ secrets.MONGO_URI }}  --build-arg ISSUER_BASE_URL=${{ secrets.ISSUER_BASE_URL }}  --build-arg OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}  --build-arg OAUTH_REDIRECT_URI=${{ secrets.OAUTH_REDIRECT_URI }}  --build-arg UNSPLASH_API_KEY=${{ secrets.UNSPLASH_API_KEY }}  --build-arg OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}  --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }}  --build-arg CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}   --build-arg CLOUDINARY_ASSET_URL=${{ secrets.CLOUDINARY_ASSET_URL }}"
+
+  deploy:
+    # The type of runner that the job will run on
+    needs:
+      - build-push-docker
+    runs-on: ubuntu-latest
+    environment: dev
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_SERVER_KEY }}
+          name: id_rsa # optional
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Deploy to Server
+        run: make deploy-api
+        env:
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
+          DCR_USER: ${{ secrets.DCR_USER }}

@@ -50,3 +50,7 @@ export const _envObject = createEnv({
     GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN
   }
 });
+
+console.log({
+  _envObject
+})
