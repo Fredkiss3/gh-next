@@ -7,7 +7,7 @@ import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
  * use it to memoize function calls.
  */
 export function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T) {
-  const cache = new LRUCache<Awaited<ReturnType<T>>>(200);
+  const cache = new LRUCache<Awaited<ReturnType<T>>>(500);
 
   return function cachedFn(
     ...args: Parameters<T>
