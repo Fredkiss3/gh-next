@@ -11,7 +11,7 @@
 
     {
       "http_basic_auth": "user:password",
-      "enabled": ["GET", "SET", "DEL", "SETEX"]
+      "enabled": ["GET", "SET", "DEL", "SETEX", "HSET", "HGETALL"]
     }
   ],
 

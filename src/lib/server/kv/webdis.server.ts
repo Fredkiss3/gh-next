@@ -1,4 +1,4 @@
-import { _envObject as env } from "~/env-config.mjs";
+import { _envObject as env } from "~/env-config.js";
 import type { KVStore } from "./index.server";
 
 type RedisCommand = "GET" | "SET" | "SETEX" | "DEL";
@@ -38,6 +38,8 @@ export class WebdisKV implements KVStore {
         )
         .join("/");
 
+    const time = new Date().getTime();
+    console.time(`[${time} webdis] ${fullURL}`);
     return await fetch(fullURL, {
       method: command === "GET" ? "GET" : "PUT",
       cache: "no-store",
@@ -45,7 +47,13 @@ export class WebdisKV implements KVStore {
         Authorization: `Basic ${btoa(authString)}`
       },
       body: body ?? undefined
-    }).then((r) => r.text().then((text) => JSON.parse(text)) as Promise<T>);
+    }).then(
+      (r) =>
+        r.text().then((text) => {
+          console.timeEnd(`[${time} webdis] ${fullURL}`);
+          return JSON.parse(text);
+        }) as Promise<T>
+    );
   }
 
   async set<T extends Record<string, any> = {}>(
