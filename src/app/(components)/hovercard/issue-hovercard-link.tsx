@@ -8,7 +8,7 @@ import { IssueHoverCardSkeleton } from "~/app/(components)/hovercard/issue-hover
 import { ErrorBoundary } from "react-error-boundary";
 
 // utils
-import { getIssueHoverCard } from "~/app/(actions)/issue.action";
+import { getIssueHoverCard } from "~/app/(actions)/issue";
 
 export type IssueHoverCardLinkProps = {
   user: string;
