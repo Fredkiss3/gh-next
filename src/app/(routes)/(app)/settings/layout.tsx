@@ -4,10 +4,7 @@ import { Avatar } from "~/app/(components)/avatar";
 import { VerticalNavlist } from "~/app/(components)/vertical-navlist";
 
 // utils
-import {
-  getAuthedUser,
-  redirectIfNotAuthed
-} from "~/app/(actions)/auth.action";
+import { getAuthedUser, redirectIfNotAuthed } from "~/app/(actions)/auth";
 import { clsx } from "~/lib/shared/utils.shared";
 
 export default async function SettingsLayout({

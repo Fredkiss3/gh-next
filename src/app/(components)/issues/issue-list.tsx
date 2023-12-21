@@ -23,7 +23,7 @@ import {
   pluralize
 } from "~/lib/shared/utils.shared";
 import { preprocess, z } from "zod";
-import { getIssueList } from "~/app/(actions)/issue.action";
+import { getIssueList } from "~/app/(actions)/issue";
 import {
   DEFAULT_ISSUE_SEARCH_QUERY,
   MAX_ITEMS_PER_PAGE
@@ -31,7 +31,7 @@ import {
 
 // types
 import type { EmojiSortKey } from "./issue-row";
-import { getAuthedUser } from "~/app/(actions)/auth.action";
+import { getAuthedUser } from "~/app/(actions)/auth";
 import { getRepositoryByOwnerAndName } from "~/app/(models)/repository";
 
 export type IssueListProps = {
@@ -51,7 +51,7 @@ export async function IssueList({
     (arg) => Number(arg),
     z.number().int().min(1).catch(1)
   );
-  const currentPage = pageSchema.parse(page);
+  let currentPage = pageSchema.parse(page);
 
   const filters = parseIssueFilterTokens(
     searchQuery ?? DEFAULT_ISSUE_SEARCH_QUERY

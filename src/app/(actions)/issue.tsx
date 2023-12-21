@@ -12,7 +12,7 @@ import {
 import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search-output-validator";
 import { searchIssues } from "~/app/(models)/issues/search";
 
-import { getAuthedUser } from "./auth.action";
+import { getAuthedUser } from "./auth";
 import { cache } from "react";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";

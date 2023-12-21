@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { Theme } from "~/app/(actions)/theme.action";
+import type { Theme } from "~/app/(actions)/theme";
 
 function updateIcons(theme: Theme) {
   const userDefinedTheme = document.documentElement.dataset.theme !== "system";

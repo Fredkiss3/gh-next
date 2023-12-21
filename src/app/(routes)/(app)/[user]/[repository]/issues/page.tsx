@@ -13,7 +13,7 @@ import { IssueList } from "~/app/(components)/issues/issue-list";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
-import { getAuthedUser } from "~/app/(actions)/auth.action";
+import { getAuthedUser } from "~/app/(actions)/auth";
 import { getLabelsCount } from "~/app/(models)/label";
 
 // types

@@ -8,7 +8,7 @@ import { Textarea } from "./textarea";
 import { SubmitButton } from "./submit-button";
 
 // utils
-import { updateUserProfile } from "~/app/(actions)/user.action";
+import { updateUserProfile } from "~/app/(actions)/user";
 
 // types
 import type { UpdateUserProfileInfosInput } from "~/app/(models)/dto/update-profile-info-input-validator";

@@ -17,7 +17,7 @@ import {
 } from "@primer/octicons-react";
 
 // utils
-import { logoutUser } from "~/app/(actions)/auth.action";
+import { logoutUser } from "~/app/(actions)/auth";
 
 // types
 export type UserDropdownProps = {

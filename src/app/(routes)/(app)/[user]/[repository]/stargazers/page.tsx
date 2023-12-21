@@ -10,7 +10,7 @@ import { Pagination } from "~/app/(components)/pagination";
 import { Skeleton } from "~/app/(components)/skeleton";
 
 // utils
-import { getGithubRepoData } from "~/app/(actions)/github.action";
+import { getGithubRepoData } from "~/app/(actions)/github";
 import { formatDate, range, reversePaginate } from "~/lib/shared/utils.shared";
 
 // types
@@ -68,7 +68,6 @@ async function StargazersPageContent({ currentPage }: { currentPage: number }) {
                 <a
                   href={`https://github.com/${stargazer.login}`}
                   target="_blank"
-                  rel="noreferrer"
                 >
                   {stargazer.login}
                 </a>

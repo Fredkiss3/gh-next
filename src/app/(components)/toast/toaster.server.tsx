@@ -1,7 +1,7 @@
 import * as React from "react";
 
 // utils
-import { getSession } from "~/app/(actions)/auth.action";
+import { getSession } from "~/app/(actions)/auth";
 import { ToasterClient } from "./toaster.client";
 import { headers } from "next/headers";
 

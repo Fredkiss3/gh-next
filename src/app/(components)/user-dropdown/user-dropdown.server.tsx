@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getAuthedUser } from "~/app/(actions)/auth.action";
+import { getAuthedUser } from "~/app/(actions)/auth";
 import { UserDropdown as UserDropdownClient } from "./user-dropdown.client";
 
 export async function UserDropdown() {

@@ -5,7 +5,7 @@ import { Card } from "~/app/(components)/card";
 import Link from "next/link";
 
 // utils
-import { authenticateWithGithub } from "~/app/(actions)/auth.action";
+import { authenticateWithGithub } from "~/app/(actions)/auth";
 
 // types
 import type { PageProps } from "~/lib/types";
@@ -85,7 +85,6 @@ export default function LoginPage({
             href="https://fredkiss.dev"
             target="_blank"
             className="text-accent"
-            rel="noreferrer"
           >
             Fredkiss3
           </a>
@@ -94,7 +93,6 @@ export default function LoginPage({
             href="https://github.com/Fredkiss3/gh-next"
             target="_blank"
             className="text-accent"
-            rel="noreferrer"
           >
             source code
           </a>
