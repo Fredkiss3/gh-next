@@ -17,6 +17,7 @@ export class CloudfareKV implements KVStore {
 
   constructor() {
     CloudfarekvNamespaceSchema.parse(env);
+    // @ts-expect-error
     this.#client = env.KV as KVNamespace;
   }
 
