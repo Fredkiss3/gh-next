@@ -1,6 +1,6 @@
 ##### DEPENDENCIES
 
-FROM --platform=linux/amd64 node:20-alpine3.19 AS deps
+FROM node:20-alpine3.19 AS deps
 RUN apk add --no-cache libc6-compat 
 RUN apk update && apk upgrade openssl
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN \
 
 ##### BUILDER
 
-FROM --platform=linux/amd64 node:20-alpine3.19 AS builder
+FROM node:20-alpine3.19 AS builder
 
 ARG SESSION_SECRET
 ARG DATABASE_URL
@@ -27,11 +27,11 @@ ARG GITHUB_CLIENT_ID
 ARG GITHUB_SECRET
 ARG GITHUB_PERSONAL_ACCESS_TOKEN
 ARG KV_PREFIX
-ARG NEXT_PUBLIC_VERCEL_URL="localhost:3000"
-ARG REDIS_HTTP_URL="http://webdis:7379"
-ARG REDIS_HTTP_USERNAME="user"
-ARG REDIS_HTTP_PASSWORD="password"
-ARG GITHUB_REDIRECT_URI="http://localhost:3000/api/auth/callback"
+ARG REDIS_HTTP_URL
+ARG REDIS_HTTP_USERNAME
+ARG REDIS_HTTP_PASSWORD
+ARG NEXT_PUBLIC_VERCEL_URL="gh.fredkiss.dev"
+ARG GITHUB_REDIRECT_URI="https://gh.fredkiss.dev/api/auth/callback"
 
 ENV NEXT_PUBLIC_VERCEL_URL=$NEXT_PUBLIC_VERCEL_URL
 ENV SESSION_SECRET=$SESSION_SECRET
@@ -60,7 +60,7 @@ RUN \
 
 ##### RUNNER
 
-FROM --platform=linux/amd64 node:20-alpine3.19 AS runner
+FROM node:20-alpine3.19 AS runner
 WORKDIR /app
 
 ARG SESSION_SECRET
@@ -104,6 +104,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 EXPOSE 3000
 ENV PORT 3000
+ENV NODE_ENV=production
 ENV HOSTNAME 0.0.0.0
 
 CMD [ "node", "server.js"]

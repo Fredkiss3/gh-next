@@ -1,6 +1,6 @@
 ##### DEPENDENCIES
 
-FROM --platform=linux/amd64 node:20-alpine3.19 AS deps
+FROM node:20-alpine3.19 AS deps
 RUN apk add --no-cache libc6-compat 
 RUN apk update && apk upgrade openssl
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN \
 
 ##### BUILDER
 
-FROM --platform=linux/amd64 node:20-alpine3.19 AS builder
+FROM node:20-alpine3.19 AS builder
 
 ARG SESSION_SECRET
 ARG DATABASE_URL
@@ -60,7 +60,7 @@ RUN \
 
 ##### RUNNER
 
-FROM --platform=linux/amd64 node:20-alpine3.19 AS runner
+FROM node:20-alpine3.19 AS runner
 WORKDIR /app
 
 ARG SESSION_SECRET
@@ -104,6 +104,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 EXPOSE 3000
 ENV PORT 3000
+ENV NODE_ENV=production
 ENV HOSTNAME 0.0.0.0
 
 CMD [ "node", "server.js"]
