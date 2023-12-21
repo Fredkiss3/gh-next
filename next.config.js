@@ -7,11 +7,11 @@ module.exports = {
   output: "standalone",
   experimental: {
     isrMemoryCacheSize: 0,
-    taint: true
-    // incrementalCacheHandlerPath:
-    //   process.env.NODE_ENV === "production"
-    //     ? require.resolve("./webdis-cache-handler.js")
-    //     : undefined
+    taint: true,
+    incrementalCacheHandlerPath:
+      process.env.NODE_ENV === "production"
+        ? require.resolve("./webdis-cache-handler.js")
+        : undefined
   },
   logging: {
     fetches: {
