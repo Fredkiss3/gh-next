@@ -2,21 +2,21 @@ import "./globals.css";
 import * as React from "react";
 
 // components
-import { TailwindIndicator } from "~/app/(components)/tailwind-indicator";
-import { Toaster } from "~/app/(components)/toast/toaster.server";
-import { IconSwitcher } from "~/app/(components)/icon-switcher";
-import { TopLoader } from "~/app/(components)/top-loader";
-import { SkipToMainButton } from "~/app/(components)/skip-to-main-button";
-import { XMasDecorations } from "~/app/(components)/x-mas-decorations";
+import { TailwindIndicator } from "~/components/tailwind-indicator";
+import { Toaster } from "~/components/toast/toaster.server";
+import { IconSwitcher } from "~/components/icon-switcher";
+import { TopLoader } from "~/components/top-loader";
+import { SkipToMainButton } from "~/components/skip-to-main-button";
+import { XMasDecorations } from "~/components/x-mas-decorations";
+import { ClientProviders } from "./client-providers";
 
 // utils
-import { GeistSans } from "geist/font";
-import { getTheme } from "~/app/(actions)/theme";
+import { GeistSans } from "geist/font/sans";
+import { getTheme } from "~/actions/theme.action";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
 import type { Metadata } from "next";
-import { ClientProviders } from "~/app/(components)/providers";
 
 export const metadata: Metadata = {
   title: {

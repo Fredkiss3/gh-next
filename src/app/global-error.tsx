@@ -3,7 +3,7 @@ import * as React from "react";
 
 // components
 import { HomeIcon } from "@primer/octicons-react";
-import { Button } from "~/app/(components)/button";
+import { Button } from "~/components/button";
 
 // utils
 import { Inter } from "next/font/google";
