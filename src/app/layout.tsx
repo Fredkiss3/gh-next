@@ -12,7 +12,7 @@ import { ClientProviders } from "./client-providers";
 
 // utils
 import { GeistSans } from "geist/font/sans";
-import { getTheme } from "~/app/(actions)/theme";
+import { getTheme } from "~/app/(actions)/theme.action";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types

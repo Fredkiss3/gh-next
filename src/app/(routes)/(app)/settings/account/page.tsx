@@ -5,7 +5,10 @@ import { UpdateUserInfosForm } from "~/app/(components)/update-user-infos-form";
 import { Button } from "~/app/(components)/button";
 
 // utils
-import { getAuthedUser, redirectIfNotAuthed } from "~/app/(actions)/auth";
+import {
+  getAuthedUser,
+  redirectIfNotAuthed
+} from "~/app/(actions)/auth.action";
 import { updateUserProfileInfosInputValidator } from "~/app/(models)/dto/update-profile-info-input-validator";
 
 // types
