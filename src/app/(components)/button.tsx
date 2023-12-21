@@ -18,7 +18,8 @@ export type CommonButtonProps = {
     | "ghost"
     | "danger"
     | "invisible"
-    | "subtle";
+    | "subtle"
+    | "neutral";
   isSquared?: boolean;
   isBlock?: boolean;
 };
@@ -84,6 +85,9 @@ export const Button = React.forwardRef<
       "bg-transparent text-grey border-neutral border": variant === "invisible",
       "hover:bg-subtle hover:border-grey aria-[current]:bg-subtle aria-[current]:border-grey focus-visible:ring-2 focus-visible:ring-accent focus:ring-2 focus:ring-accent":
         variant === "invisible" && !isDisabled,
+      "bg-transparent border-transparent": variant === "neutral",
+      "hover:bg-ghost focus:border-accent":
+        variant === "neutral" && !isDisabled,
       "bg-ghost text-foreground/70 border-neutral border shadow-sm":
         variant === "subtle",
       "hover:border-grey aria-[current]:border-grey":
@@ -129,10 +133,8 @@ export const Button = React.forwardRef<
     } = restProps;
 
     return (
-      // @ts-expect-error formAction is defined, but react aria don't take it as an argument
-      <ReactAriaButton
+      <button
         ref={ref as React.Ref<HTMLButtonElement>}
-        isDisabled={disabled || isLoading}
         className={clsx(commonClasses, {
           "focus-visible:outline focus-visible:-outline-offset-2":
             !isLoading && !disabled,
@@ -153,7 +155,7 @@ export const Button = React.forwardRef<
         {!isLoading && renderLeadingIcon?.("h-4 w-4 flex-shrink-0")}
         {children}
         {renderTrailingIcon?.("h-4 w-4 flex-shrink-0")}
-      </ReactAriaButton>
+      </button>
     );
   }
 

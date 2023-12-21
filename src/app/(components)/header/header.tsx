@@ -16,11 +16,11 @@ import { Button } from "~/app/(components)/button";
 
 import {
   UserDropdown,
-  UserDropdownSkeleton
+  preloadAuthedUser
 } from "~/app/(components)/user-dropdown/user-dropdown.server";
 
 // utils
-import { getAuthedUser, getSession } from "~/app/(actions)/auth.action";
+import { getSession } from "~/app/(actions)/auth.action";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
@@ -35,7 +35,7 @@ export async function Header({ children, pageTitle }: HeaderProps) {
 
   if (user) {
     // preload the user so that it is accessed faster in <UserDropdown />
-    getAuthedUser();
+    preloadAuthedUser();
   }
 
   return (
@@ -107,9 +107,7 @@ export async function Header({ children, pageTitle }: HeaderProps) {
           </ul>
 
           {user ? (
-            <React.Suspense fallback={<UserDropdownSkeleton />}>
-              <UserDropdown />
-            </React.Suspense>
+            <UserDropdown />
           ) : (
             <Button
               className="flex-shrink-0 min-w-max !border-foreground !text-foreground"

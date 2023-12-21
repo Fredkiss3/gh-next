@@ -163,31 +163,46 @@ export function IssueRow({
               &nbsp;&nbsp;
               <span className="inline-flex flex-wrap gap-2">
                 {labels.map(({ id, name, color, description }) => (
-                  <Tooltip
-                    key={id}
-                    disabled={!description}
-                    content={
-                      <p className="max-w-[250px] text-center text-sm">
-                        {description}
-                      </p>
-                    }
-                    delayInMs={500}
-                    closeDelayInMs={500}
-                    placement="bottom end"
-                  >
-                    <IssueSearchLink
-                      className={clsx(
-                        "transition duration-150",
-                        "focus:ring-2 ring-accent focus:outline-none rounded-md"
-                      )}
-                      filters={{
-                        label: [name]
-                      }}
-                      conserveCurrentFilters
-                    >
-                      <LabelBadge color={color} title={name} />
-                    </IssueSearchLink>
-                  </Tooltip>
+                  <React.Fragment key={id}>
+                    {!description ? (
+                      <IssueSearchLink
+                        className={clsx(
+                          "transition duration-150",
+                          "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                        )}
+                        filters={{
+                          label: [name]
+                        }}
+                        conserveCurrentFilters
+                      >
+                        <LabelBadge color={color} title={name} />
+                      </IssueSearchLink>
+                    ) : (
+                      <Tooltip
+                        content={
+                          <p className="max-w-[200px] text-center text-xs">
+                            {description}
+                          </p>
+                        }
+                        delayInMs={500}
+                        side="bottom"
+                        align="end"
+                      >
+                        <IssueSearchLink
+                          className={clsx(
+                            "transition duration-150",
+                            "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                          )}
+                          filters={{
+                            label: [name]
+                          }}
+                          conserveCurrentFilters
+                        >
+                          <LabelBadge color={color} title={name} />
+                        </IssueSearchLink>
+                      </Tooltip>
+                    )}
+                  </React.Fragment>
                 ))}
               </span>
             </>

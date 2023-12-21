@@ -31,8 +31,8 @@ export function IssueRowAvatarStack({
         </span>
       }
       delayInMs={500}
-      closeDelayInMs={500}
-      placement="bottom end"
+      side="bottom"
+      align="end"
     >
       <ul className={clsx(className, "group flex gap-1")}>
         {users.map((u, index) => (

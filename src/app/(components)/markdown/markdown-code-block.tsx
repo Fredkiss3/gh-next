@@ -22,7 +22,7 @@ export function MarkdownCodeBlock({
     <div className="relative">
       {children}
 
-      <Tooltip content="Copied!" placement="left" isOpen={isPending}>
+      <Tooltip content="Copied!" side="left" isOpen={isPending}>
         <Button
           className={clsx(className, "transition duration-150")}
           variant="subtle"
