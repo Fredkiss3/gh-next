@@ -51,7 +51,8 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Deploy to Server
-        run: make deploy-api
+        run: |
+          docker stack deploy --compose-file docker-compose.prod.yaml gh-stack
         env:
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
