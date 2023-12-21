@@ -5,8 +5,8 @@ import * as React from "react";
 import { ThemeForm } from "~/app/(components)/theme-form";
 
 // utils
-import { redirectIfNotAuthed } from "~/app/(actions)/auth";
-import { getTheme } from "~/app/(actions)/theme";
+import { redirectIfNotAuthed } from "~/app/(actions)/auth.action";
+import { getTheme } from "~/app/(actions)/theme.action";
 
 // types
 import type { Metadata } from "next";

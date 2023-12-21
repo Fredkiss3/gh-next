@@ -5,10 +5,10 @@ import * as React from "react";
 import { ThemeCard } from "./theme-card";
 
 // utils
-import { updateTheme } from "~/app/(actions)/theme";
+import { updateTheme } from "~/app/(actions)/theme.action";
 
 // types
-import type { Theme } from "~/app/(actions)/theme";
+import type { Theme } from "~/app/(actions)/theme.action";
 import { SubmitButton } from "./submit-button";
 
 export type ThemeFormProps = {

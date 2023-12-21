@@ -23,8 +23,8 @@ import { Markdown } from "~/app/(components)/markdown/markdown";
 import { Cache } from "~/app/(components)/cache/cache";
 
 // utils
-import { getSession } from "~/app/(actions)/auth";
-import { getGithubRepoData } from "~/app/(actions)/github";
+import { getSession } from "~/app/(actions)/auth.action";
+import { getGithubRepoData } from "~/app/(actions)/github.action";
 import { getRepositoryByOwnerAndName } from "~/app/(models)/repository";
 import {
   AUTHOR_AVATAR_URL,

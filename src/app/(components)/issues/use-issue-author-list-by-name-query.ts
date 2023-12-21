@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { filterIssueAuthorsByName } from "~/app/(actions)/issue";
+import { filterIssueAuthorsByName } from "~/app/(actions)/issue.action";
 
 export function useIssueAuthorListByNameQuery({
   name = ""
