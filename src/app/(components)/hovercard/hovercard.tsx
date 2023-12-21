@@ -1,84 +1,65 @@
 "use client";
 import * as React from "react";
-// components
-import {
-  OverlayArrow,
-  Tooltip as ReactAriaTooltip,
-  TooltipTrigger
-} from "react-aria-components";
-
-// utils
+import * as RadixHoverCard from "@radix-ui/react-hover-card";
 import { clsx } from "~/lib/shared/utils.shared";
 import { useMediaQuery } from "~/lib/client/hooks/use-media-query";
-
-// types
-import type { TooltipProps as ReactAriaTooltipProps } from "react-aria-components";
-import { TriangleDownIcon } from "@primer/octicons-react";
 
 export type HoverCardProps = {
   children: React.ReactNode;
   content: React.ReactNode;
   delayInMs?: number;
+  onOpenChange?: (isOpen: boolean) => void;
+  className?: string;
+  isOpen?: boolean;
   closeDelayInMs?: number;
-  onOpenChange?: (arg: boolean) => void;
-} & Pick<ReactAriaTooltipProps, "placement">;
+} & Pick<RadixHoverCard.HoverCardContentProps, "align" | "side">;
 
-export function HoverCard({
-  content,
-  children,
-  onOpenChange,
-  delayInMs = 150,
-  closeDelayInMs = 150,
-  placement = "top right"
-}: HoverCardProps) {
-  const isTooltipEnabled = useMediaQuery(`(min-width: 768px)`);
+export const HoverCard = React.forwardRef<
+  React.ElementRef<typeof RadixHoverCard.Content>,
+  HoverCardProps
+>(function HoverCard(
+  {
+    className,
+    children,
+    content,
+    isOpen,
+    onOpenChange,
+    delayInMs = 150,
+    closeDelayInMs = 150,
+    ...contentProps
+  },
+  ref
+) {
+  const isHoverCardEnabled = useMediaQuery(`(min-width: 768px)`);
   return (
-    <TooltipTrigger
-      delay={delayInMs}
+    <RadixHoverCard.Root
+      openDelay={delayInMs}
       closeDelay={closeDelayInMs}
-      isDisabled={!isTooltipEnabled}
+      open={isHoverCardEnabled ? isOpen : false}
       onOpenChange={onOpenChange}
     >
-      {children}
-
-      <ReactAriaTooltip
-        offset={10}
-        placement={placement}
-        className={clsx(
-          "relative hidden md:block",
-          "z-20 w-max",
-          "rounded-md border border-neutral bg-tooltip-light shadow-lg",
-          "group/row-title-tooltip"
-
-          // these horribles styles are for the little arrow
-          // TODO : reuse these styles but for the <Comment /> component
-          // "after:absolute after:-bottom-3 after:left-10 after:rotate-180",
-          // "after:h-3 after:w-6 after:bg-neutral",
-          // "after:[clip-path:polygon(50%_0%,_0%_100%,_100%_100%)]",
-          // "before:z-10 before:absolute before:-bottom-2.5 before:left-10 before:rotate-180",
-          // "before:h-3 before:w-6 before:bg-subtle",
-          // "before:[clip-path:polygon(50%_0%,_0%_100%,_100%_100%)]"
-        )}
-      >
-        <OverlayArrow className="relative">
-          <TriangleDownIcon
-            className={clsx(
-              "absolute -top-2.5 h-6 w-6 text-neutral",
-              "group-data-[placement=bottom]/row-title-tooltip:rotate-180",
-              "group-data-[placement=bottom]/row-title-tooltip:-bottom-2.5 group-data-[placement=bottom]/row-title-tooltip:top-auto"
-            )}
-          />
-          <TriangleDownIcon
-            className={clsx(
-              "absolute -top-3 h-6 w-6 text-subtle",
-              "group-data-[placement=bottom]/row-title-tooltip:rotate-180",
-              "group-data-[placement=bottom]/row-title-tooltip:-bottom-3 group-data-[placement=bottom]/row-title-tooltip:top-auto"
-            )}
-          />
-        </OverlayArrow>
-
-        {content}
-      </ReactAriaTooltip>
-    </TooltipTrigger>
+      <RadixHoverCard.Trigger asChild>{children}</RadixHoverCard.Trigger>
+      <RadixHoverCard.Portal>
+        <RadixHoverCard.Content
+          ref={ref}
+          sideOffset={10}
+          className={clsx(
+            "data-[side=top]:animate-slideDownAndFade",
+            "data-[side=right]:animate-slideLeftAndFade",
+            "data-[side=left]:animate-slideRightAndFade",
+            "data-[side=bottom]:animate-slideUpAndFade",
+            "will-change-[transform,opacity]",
+            "relative hidden md:block",
+            "z-20 w-max",
+            "rounded-md border border-neutral bg-tooltip-light shadow-lg",
+            className
+          )}
+          {...contentProps}
+        >
+          {content}
+          <RadixHoverCard.Arrow className="fill-neutral stroke-neutral stroke-1" />
+        </RadixHoverCard.Content>
+      </RadixHoverCard.Portal>
+    </RadixHoverCard.Root>
   );
-}
+});

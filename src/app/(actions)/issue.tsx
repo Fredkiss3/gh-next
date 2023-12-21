@@ -6,10 +6,9 @@ import {
   getIssueAssigneesByUsernameOrName,
   getIssueAuthorsByName,
   getIssueAuthorsByUsername,
-  getSingleIssue
+  getSingleIssueWithLabelAndUser
 } from "~/app/(models)/issues";
 
-import { AsyncIssueHoverCardContents } from "~/app/(components)/hovercard/async-issue-hovercard-contents";
 import { issueSearchListOutputValidator } from "~/app/(models)/dto/issue-search-output-validator";
 import { searchIssues } from "~/app/(models)/issues/search";
 
@@ -17,6 +16,7 @@ import { getAuthedUser } from "./auth";
 import { cache } from "react";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
+import { IssueHoverCardContents } from "~/app/(components)/hovercard/issue-hovercard-contents";
 
 /**
  * We use `promise` because server actions are not batched,
@@ -78,10 +78,49 @@ export async function filterLabelsByName(name: string) {
   };
 }
 
-export async function getIssueHoverCardContents(
+export async function getIssueHoverCard(
   user: string,
   repo: string,
   no: number
 ) {
   return <AsyncIssueHoverCardContents user={user} repo={repo} no={no} />;
+}
+
+async function AsyncIssueHoverCardContents({
+  user,
+  repo,
+  no
+}: {
+  user: string;
+  repo: string;
+  no: number;
+}) {
+  const authedUser = await getAuthedUser();
+  const issueFound = await getSingleIssueWithLabelAndUser(
+    {
+      no,
+      user,
+      project: repo
+    },
+    authedUser
+  );
+
+  if (!issueFound) {
+    return <div className="p-5 text-sm">Unable to fetch this issue</div>;
+  }
+
+  return (
+    <IssueHoverCardContents
+      id={issueFound.number}
+      status={issueFound.status}
+      title={issueFound.title}
+      excerpt={issueFound.excerpt}
+      createdAt={issueFound.createdAt}
+      labels={issueFound.labels}
+      isAuthor={authedUser?.id === issueFound.author.id}
+      isMentioned={authedUser?.username === issueFound.mentioned_user}
+      hasCommented={authedUser?.username === issueFound.commented_user}
+      userAvatarURL={authedUser?.avatar_url}
+    />
+  );
 }

@@ -3,7 +3,6 @@ import * as React from "react";
 // components
 import { Avatar } from "~/app/(components)/avatar";
 import { Tooltip } from "~/app/(components)/tooltip";
-import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 
 // utils
 import { clsx } from "~/lib/shared/utils.shared";
@@ -32,8 +31,8 @@ export function IssueRowAvatarStack({
         </span>
       }
       delayInMs={500}
-      closeDelayInMs={500}
-      placement="bottom end"
+      side="bottom"
+      align="end"
     >
       <ul className={clsx(className, "group flex gap-1")}>
         {users.map((u, index) => (
@@ -43,21 +42,19 @@ export function IssueRowAvatarStack({
               "-mr-4 group-hover:mr-0": index !== users.length - 1
             })}
           >
-            <ReactAriaLink>
-              <IssueSearchLink
-                filters={{
-                  is: "open",
-                  assignee: [u.username]
-                }}
-              >
-                <Avatar
-                  src={u.avatar_url}
-                  username={u.username}
-                  size={size}
-                  className="border border-background"
-                />
-              </IssueSearchLink>
-            </ReactAriaLink>
+            <IssueSearchLink
+              filters={{
+                is: "open",
+                assignee: [u.username]
+              }}
+            >
+              <Avatar
+                src={u.avatar_url}
+                username={u.username}
+                size={size}
+                className="border border-background"
+              />
+            </IssueSearchLink>
           </li>
         ))}
       </ul>

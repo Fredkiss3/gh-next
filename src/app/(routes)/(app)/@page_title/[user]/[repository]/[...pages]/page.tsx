@@ -2,7 +2,6 @@ import * as React from "react";
 // components
 import Link from "next/link";
 import { HoverCard } from "~/app/(components)/hovercard/hovercard";
-import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 
 // utils
@@ -31,7 +30,8 @@ export async function RepositoryPageTitle({
   return (
     <div className={clsx("md:text-lg", "flex flex-wrap items-center")}>
       <HoverCard
-        placement="bottom start"
+        side="bottom"
+        align="start"
         delayInMs={700}
         content={
           <UserHoverCardContents
@@ -43,19 +43,17 @@ export async function RepositoryPageTitle({
           />
         }
       >
-        <ReactAriaLink>
-          <Link
-            href={`/${repository.owner.username}`}
-            className={clsx(
-              "font-medium text-grey",
-              "md:font-normal md:text-foreground",
-              "hover:bg-neutral/50",
-              "rounded-md px-2 py-1 transition duration-150 text-sm"
-            )}
-          >
-            {repository.owner.username}
-          </Link>
-        </ReactAriaLink>
+        <Link
+          href={`/${repository.owner.username}`}
+          className={clsx(
+            "font-medium text-grey",
+            "md:font-normal md:text-foreground",
+            "hover:bg-neutral/50",
+            "rounded-md px-2 py-1 transition duration-150 text-sm"
+          )}
+        >
+          {repository.owner.username}
+        </Link>
       </HoverCard>
       <span className="text-grey">/</span>
       <Link

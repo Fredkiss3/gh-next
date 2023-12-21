@@ -10,8 +10,7 @@ export async function UserDropdown() {
     <UserDropdownClient avatar_url={user.avatar_url} username={user.username} />
   );
 }
-export async function UserDropdownSkeleton() {
-  return (
-    <div className="h-10 w-10 flex-shrink-0 animate-pulse rounded-full bg-grey" />
-  );
+
+export function preloadAuthedUser() {
+  getAuthedUser();
 }

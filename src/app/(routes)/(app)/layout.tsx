@@ -1,6 +1,6 @@
 // components
 import { Footer } from "~/app/(components)/footer";
-import { Header } from "~/app/(components)/header";
+import { Header } from "~/app/(components)/header/header";
 import { clsx } from "~/lib/shared/utils.shared";
 
 export default async function AppLayout({

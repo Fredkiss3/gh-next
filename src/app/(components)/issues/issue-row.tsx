@@ -11,7 +11,6 @@ import Link from "next/link";
 import { IssueRowAvatarStack } from "~/app/(components)/issues/issue-row-avatar-stack";
 import { LabelBadge } from "~/app/(components)/label-badge";
 import { HoverCard } from "~/app/(components)/hovercard/hovercard";
-import { ReactAriaLink } from "~/app/(components)/react-aria-button";
 import { IssueHoverCardContents } from "~/app/(components)/hovercard/issue-hovercard-contents";
 import { UserHoverCardContents } from "~/app/(components)/hovercard/user-hovercard-contents";
 import { Tooltip } from "~/app/(components)/tooltip";
@@ -143,7 +142,7 @@ export function IssueRow({
                 />
               }
             >
-              <ReactAriaLink
+              <Link
                 href={`/${repository_owner}/${repository_name}/issues/${number}`}
                 className={clsx(
                   "inline break-words text-lg font-semibold text-foreground",
@@ -156,7 +155,7 @@ export function IssueRow({
                   title={title}
                   className="font-semibold text-base"
                 />
-              </ReactAriaLink>
+              </Link>
             </HoverCard>
           </span>
           {labels.length > 0 && (
@@ -164,31 +163,46 @@ export function IssueRow({
               &nbsp;&nbsp;
               <span className="inline-flex flex-wrap gap-2">
                 {labels.map(({ id, name, color, description }) => (
-                  <Tooltip
-                    key={id}
-                    disabled={!description}
-                    content={
-                      <p className="max-w-[250px] text-center text-sm">
-                        {description}
-                      </p>
-                    }
-                    delayInMs={500}
-                    closeDelayInMs={500}
-                    placement="bottom end"
-                  >
-                    <IssueSearchLink
-                      className={clsx(
-                        "transition duration-150",
-                        "focus:ring-2 ring-accent focus:outline-none rounded-md"
-                      )}
-                      filters={{
-                        label: [name]
-                      }}
-                      conserveCurrentFilters
-                    >
-                      <LabelBadge color={color} title={name} />
-                    </IssueSearchLink>
-                  </Tooltip>
+                  <React.Fragment key={id}>
+                    {!description ? (
+                      <IssueSearchLink
+                        className={clsx(
+                          "transition duration-150",
+                          "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                        )}
+                        filters={{
+                          label: [name]
+                        }}
+                        conserveCurrentFilters
+                      >
+                        <LabelBadge color={color} title={name} />
+                      </IssueSearchLink>
+                    ) : (
+                      <Tooltip
+                        content={
+                          <p className="max-w-[200px] text-center text-xs">
+                            {description}
+                          </p>
+                        }
+                        delayInMs={500}
+                        side="bottom"
+                        align="end"
+                      >
+                        <IssueSearchLink
+                          className={clsx(
+                            "transition duration-150",
+                            "focus:ring-2 ring-accent focus:outline-none rounded-md"
+                          )}
+                          filters={{
+                            label: [name]
+                          }}
+                          conserveCurrentFilters
+                        >
+                          <LabelBadge color={color} title={name} />
+                        </IssueSearchLink>
+                      </Tooltip>
+                    )}
+                  </React.Fragment>
                 ))}
               </span>
             </>
@@ -203,7 +217,8 @@ export function IssueRow({
           })}
           {author.id ? (
             <HoverCard
-              placement="top start"
+              side="top"
+              align="start"
               delayInMs={700}
               content={
                 <UserHoverCardContents
