@@ -2,25 +2,20 @@
 import { HomeIcon } from "@primer/octicons-react";
 import { Button } from "~/components/button";
 
-import type { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Page not found - Fredkiss3/gh-next"
-};
-
-export default function RootNotFound() {
+export default function AppNotFound() {
   return (
     <>
-      <section className="flex h-screen flex-col items-center justify-center gap-6 text-foreground">
+      <section className="flex h-[80vh] flex-col items-center justify-center gap-6 text-foreground">
         <div className="relative flex w-full items-end justify-center gap-4">
           <img
             alt="404 “This is not the web page you are looking for”"
             src="/404-text.png"
             width="271"
             height="249"
-            className="z-2 relative lg:bottom-20 lg:right-10"
+            className="z-2 relative bottom-20 right-10"
           />
 
-          <div className="z-2 relative bottom-20 right-10 hidden lg:block">
+          <div className="z-2 relative bottom-20 right-10">
             <img
               alt=""
               src="/octostar.png"
@@ -38,7 +33,7 @@ export default function RootNotFound() {
             />
           </div>
 
-          <div className="z-1 absolute bottom-24 left-1/2 hidden translate-x-[20%] lg:block">
+          <div className="z-1 absolute bottom-24 left-1/2 translate-x-[20%]">
             <img
               alt=""
               src="/spaceship.png"
