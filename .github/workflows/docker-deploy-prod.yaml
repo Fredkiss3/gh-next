@@ -8,7 +8,6 @@ on:
   push:
     branches:
       - main
-      - refactor/docker-swarm
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -26,7 +25,7 @@ jobs:
           username: fredkiss3
           password: ${{ secrets.DCR_PASSWD }}
           image_name: gh-next
-          image_tag: latest
+          image_tag: dev
           push_git_tag: true
           registry: dcr.fredkiss.dev
           dockerfile: docker/Dockerfile.prod

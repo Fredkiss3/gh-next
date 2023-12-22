@@ -1,0 +1,60 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI/CD For docker deploy
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  pull_request:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build-push-docker:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: fredkiss3
+          password: ${{ secrets.DCR_PASSWD }}
+          image_name: gh-next
+          image_tag: dev
+          push_git_tag: true
+          registry: dcr.fredkiss.dev
+          dockerfile: docker/Dockerfile.prod
+          context: .
+          build_extra_args: "--build-arg NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_URL=${{ secrets.REDIS_HTTP_URL }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_"
+
+  # deploy:
+  #   # The type of runner that the job will run on
+  #   needs:
+  #     - build-push-docker
+  #   runs-on: ubuntu-latest
+  #   environment: dev
+
+  #   # Steps represent a sequence of tasks that will be executed as part of the job
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Install SSH key
+  #       uses: shimataro/ssh-key-action@v2
+  #       with:
+  #         key: ${{ secrets.SSH_SERVER_KEY }}
+  #         name: id_rsa # optional
+  #         known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+  #     - name: Deploy to Server
+  #       run: |
+  #         docker stack deploy --compose-file docker-compose.prod.yaml gh-stack
+  #       env:
+  #         DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+  #         DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+  #         DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
+  #         DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+  #         DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
+  #         DCR_USER: ${{ secrets.DCR_USER }}
