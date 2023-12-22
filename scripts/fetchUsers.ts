@@ -1,11 +1,10 @@
 import { users } from "~/lib/server/db/schema/user.sql";
 import { fetchFromGithubAPI } from "~/lib/server/utils.server";
-import { _envObject as env } from "~/env-config.mjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { eq } from "drizzle-orm";
 
-const db = drizzle(postgres(env.DATABASE_URL));
+const db = drizzle(postgres(process.env.DATABASE_URL!));
 
 const dbUsers = await db.select().from(users);
 

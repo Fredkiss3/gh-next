@@ -16,11 +16,10 @@ import {
 } from "~/lib/server/db/schema/issue.sql";
 import { fetchFromGithubAPI } from "~/lib/server/utils.server";
 import { faker } from "@faker-js/faker/locale/en_US";
-import { _envObject as env } from "~/env-config.mjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { users, type User } from "~/lib/server/db/schema/user.sql";
-import { and, eq, like, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import {
   labels,
   type LabelInsert,
@@ -49,14 +48,14 @@ import remarkGfm from "remark-gfm";
 import remarkGithub from "remark-github";
 import { VFile } from "vfile";
 
-const db = drizzle(postgres(env.DATABASE_URL));
+const db = drizzle(postgres(process.env.DATABASE_URL!));
 
 const GITHUB_REPO_SOURCE = {
   owner: "vercel",
   name: "next.js"
 } as const;
 const MAX_ISSUES_TO_FETCH =
-  (env.NEXT_PUBLIC_VERCEL_URL.startsWith("http://localhost") ? 1 : 5) *
+  (process.env.NEXT_PUBLIC_VERCEL_URL!.startsWith("http://localhost") ? 1 : 5) *
   MAX_ITEMS_PER_PAGE;
 
 type Actor = {
@@ -532,9 +531,9 @@ async function insertSingleIssue(issue: GithubIssue) {
   const dbUser = await db
     .select()
     .from(users)
-    .where(sql`${users.username} ILIKE ${issue.author.login}`);
+    .where(sql`${users.username} = ${issue.author.login}`);
 
-  let currentUser = dbUser[0];
+  const currentUser = dbUser[0];
 
   type IssueLinkingValues = {
     user: string;
@@ -645,9 +644,9 @@ async function insertSingleIssue(issue: GithubIssue) {
     const dbUser = await db
       .select()
       .from(users)
-      .where(sql`${users.username} ILIKE ${edition.editor.login}`);
+      .where(sql`${users.username} = ${edition.editor.login}`);
 
-    let currentUser = dbUser[0];
+    const currentUser = dbUser[0];
     const revisionPayload = {
       issue_id: issueInsertQueryResult.issue_id,
       revised_by_username: currentUser
@@ -720,9 +719,9 @@ async function insertSingleIssue(issue: GithubIssue) {
     const dbUser = await db
       .select()
       .from(users)
-      .where(sql`${users.username} ILIKE ${assignee.login}`);
+      .where(sql`${users.username} = ${assignee.login}`);
 
-    let currentUser = dbUser[0];
+    const currentUser = dbUser[0];
 
     const issueToAssigneePayload = {
       issue_id: issueInsertQueryResult.issue_id,
@@ -817,7 +816,7 @@ async function insertSingleIssue(issue: GithubIssue) {
         const dbUser = await db
           .select()
           .from(users)
-          .where(sql`${users.username} ILIKE ${event.actor.login}`);
+          .where(sql`${users.username} = ${event.actor.login}`);
         currentUser = dbUser[0];
       }
 
@@ -858,9 +857,9 @@ async function insertSingleIssue(issue: GithubIssue) {
         const dbUser = await db
           .select()
           .from(users)
-          .where(sql`${users.username} ILIKE ${comment.actor.login}`);
+          .where(sql`${users.username} = ${comment.actor.login}`);
 
-        let currentUser = dbUser[0];
+        const currentUser = dbUser[0];
         const commentPayload = {
           content: comment.body,
           issue_id: issueInsertQueryResult.issue_id,
@@ -988,7 +987,7 @@ async function insertSingleIssue(issue: GithubIssue) {
         const dbUser = await db
           .select()
           .from(users)
-          .where(sql`${users.username} ILIKE ${event.assignee.login}`);
+          .where(sql`${users.username} = ${event.assignee.login}`);
         const currentUser = dbUser[0];
 
         eventPayload = {
@@ -1088,7 +1087,7 @@ async function insertSingleIssue(issue: GithubIssue) {
   for (const event of linkingEvents.filter(
     (event) => event.type === "issue"
   ) as IssueLinkingValues[]) {
-    let dbIssues = await db
+    const dbIssues = await db
       .select({
         id: issues.id
       })
@@ -1136,25 +1135,26 @@ async function insertSingleIssue(issue: GithubIssue) {
   return issueInsertQueryResult.issue_id;
 }
 
-do {
-  const {
-    repository: {
-      // @ts-expect-error
-      issues: { pageInfo, nodes }
+async function main() {
+  do {
+    const {
+      repository: {
+        issues: { pageInfo, nodes }
+      }
+    } = await fetchFromGithubAPI<IssueReponse>(issuesQuery, {
+      repoOwner: GITHUB_REPO_SOURCE.owner,
+      repoName: GITHUB_REPO_SOURCE.name,
+      cursor: nextCursor
+    });
+  
+    nextCursor = pageInfo.endCursor;
+    hasNextPage = pageInfo.hasNextPage;
+    totalIssuesFetched += nodes.length;
+  
+    for (const issue of nodes) {
+      await insertSingleIssue(issue);
     }
-  } = await fetchFromGithubAPI<IssueReponse>(issuesQuery, {
-    repoOwner: GITHUB_REPO_SOURCE.owner,
-    repoName: GITHUB_REPO_SOURCE.name,
-    cursor: nextCursor
-  });
-
-  nextCursor = pageInfo.endCursor;
-  hasNextPage = pageInfo.hasNextPage;
-  totalIssuesFetched += nodes.length;
-
-  for (const issue of nodes) {
-    await insertSingleIssue(issue);
-  }
-} while (hasNextPage && totalIssuesFetched < MAX_ISSUES_TO_FETCH);
-
-process.exit();
+  } while (hasNextPage && totalIssuesFetched < MAX_ISSUES_TO_FETCH);
+  process.exit(0);
+}
+main();

@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { HomeIcon } from "@primer/octicons-react";
-import { Button } from "~/app/(components)/button";
+import { Button } from "~/components/button";
 
 import type { Metadata } from "next";
 

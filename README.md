@@ -113,40 +113,40 @@ A quick look at the top-level files and directories you will see in this project
 ```plaintext
   .
   ├── src/
-  │    ├── app/
-  │    │   ├── (actions)
-  │    │   ├── (components)
-  │    │   ├── (models)
-  │    │   └── (routes)
-  │    └──lib/
-  │        ├── db/schema
-  │        └── hooks
-  ├── .prettierrc
+  │    ├── app
+  │    ├── actions
+  │    ├── components
+  │    ├── models
+  │    └── lib/
+  │         ├── client
+  │         ├── server
+  │         └── shared
+  ├── biome.json
   ├── pnpm-lock.yaml
   └── tsconfig.json
 ```
 
-1. `src/app/`: this folder contains the source code to our app :
+1. `src/app/`: this folder contains all the routes & pages of our app.
 
-   1. `(actions)` : this folder contains all the logic of our app.
+2. `src/actions` : this folder contains all the logic of our app.
 
-   2. `(components)` : this folder contains all the components of our app.
+3. `src/components` : this folder contains all the components of our app.
 
-   3. `(models)` : this folder contains all the DB models of our app.
+4. `src/models` : this folder contains all the DB models of our app.
 
-   4. `(routes)` : this folder contains all the routes & pages of our app.
+5. `src/lib/`: this folder contains utils & helpers used throughout our app :
 
-2. `src/lib/`: this folder contains utils & helpers used throughout our app :
+   1. `client` : this folder contains all the utilities that are client-only, usually used by client components. It contains mainly hooks
 
-   1. `db/schema` : this folder contains all the drizzle sqlite schema for our DB.
+   2. `server` : this folder contains all the utilities that are server-only, for use within server components and server actions. It also contains the DB schemas inside `db/schema`
 
-   2. `hooks` : this folder contains all the react custom hooks used in the app.
+   3. `shared` : this folder contains all the utilities that are shared between the server & client, these can be used anywhere in the app. 
 
-3. `.prettierrc`: this file contains the configuration for prettier to enable autoformatting.
+6. `biome.json`: this file contains the configuration for biome to enable autoformatting.
 
-4. `pnpm-lock.yaml`: this file contains the dependencies lock for the repo.
+7. `pnpm-lock.yaml`: this file contains the dependencies lock for the repo.
 
-5. `tsconfig.json`: this file contains the configuration for typescript, that are used by the all the underlying packages
+8. `tsconfig.json`: this file contains the configuration for typescript, that are used by the all the underlying packages
 
 ## 🍳 ENV VARIABLES USED
 

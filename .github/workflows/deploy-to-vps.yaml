@@ -5,9 +5,9 @@ name: CI/CD For the Deployment
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
   # Allows you to run this workflow manually from the Actions tab+1
   workflow_dispatch:

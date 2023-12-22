@@ -1,4 +1,3 @@
-import type { FulfilledThenable, RejectedThenable } from "react";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
 
 /**
@@ -7,7 +6,7 @@ import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
  * use it to memoize function calls.
  */
 export function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T) {
-  const cache = new LRUCache<Awaited<ReturnType<T>>>(500);
+  const cache = new PromiseCache<Awaited<ReturnType<T>>>(500);
 
   return function cachedFn(
     ...args: Parameters<T>
@@ -19,18 +18,16 @@ export function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T) {
 /**
  * LRU Cache utility for usage with fnCache
  */
-class LRUCache<T> {
+class PromiseCache<T> {
   #cache: Map<
     any[],
     { value: Promise<T>; timestamp: number; fetchFn: () => Promise<T> }
   >;
   #maxSize: number;
-  #ttl: number;
 
-  constructor(maxSize: number, ttl = DEFAULT_CACHE_TTL) {
+  constructor(maxSize: number) {
     this.#cache = new Map();
     this.#maxSize = maxSize;
-    this.#ttl = ttl;
   }
 
   get(args: any[], fetchFn: () => Promise<T>): Promise<T> {
@@ -44,7 +41,7 @@ class LRUCache<T> {
     const cachedItem = existingKey ? this.#cache.get(existingKey) : null;
     const now = Date.now();
 
-    if (cachedItem && now - cachedItem.timestamp <= this.#ttl * 1000) {
+    if (cachedItem && now - cachedItem.timestamp <= DEFAULT_CACHE_TTL * 1000) {
       // Return the cached value if it's not stale
       return cachedItem.value;
     }
