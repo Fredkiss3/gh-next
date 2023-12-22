@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   app:
-    image: gh-next:latest
+    image: dcr.fredkiss.dev/gh-next:latest
     ports:
       - "3000:3000"
     deploy:
