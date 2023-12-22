@@ -5,7 +5,7 @@ import { UpdateUserInfosForm } from "~/components/update-user-infos-form";
 import { Button } from "~/components/button";
 
 // utils
-import { getAuthedUser, redirectIfNotAuthed } from "~/actions/auth.action";
+import { getAuthedUser, getUserOrRedirect } from "~/actions/auth.action";
 import { updateUserProfileInfosInputValidator } from "~/models/dto/update-profile-info-input-validator";
 
 // types
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await redirectIfNotAuthed("/settings/account");
+  await getUserOrRedirect("/settings/account");
 
   const user = (await getAuthedUser())!;
   return (

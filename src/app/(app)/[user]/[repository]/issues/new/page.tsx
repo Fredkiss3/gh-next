@@ -1,10 +1,10 @@
 // components
-import { NewIssueForm } from "~/app/(components)/issues/new-issue-form";
+import { NewIssueForm } from "~/components/issues/new-issue-form";
 
 // utils
 import { notFound } from "next/navigation";
-import { getUserOrRedirect } from "~/app/(actions)/auth.action";
-import { getRepositoryByOwnerAndName } from "~/app/(models)/repository";
+import { getUserOrRedirect } from "~/actions/auth.action";
+import { getRepositoryByOwnerAndName } from "~/models/repository";
 
 // types
 import type { Metadata } from "next";

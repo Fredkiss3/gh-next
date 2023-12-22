@@ -4,7 +4,7 @@ import { Avatar } from "~/components/avatar";
 import { VerticalNavlist } from "~/components/vertical-navlist";
 
 // utils
-import { getAuthedUser, redirectIfNotAuthed } from "~/actions/auth.action";
+import { getAuthedUser, getUserOrRedirect } from "~/actions/auth.action";
 import { clsx } from "~/lib/shared/utils.shared";
 
 export default async function SettingsLayout({
@@ -12,7 +12,7 @@ export default async function SettingsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await redirectIfNotAuthed("/settings/account");
+  await getUserOrRedirect("/settings/account");
   const user = (await getAuthedUser())!;
   return (
     <>

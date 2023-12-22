@@ -60,7 +60,7 @@ export default async function RootLayout({
           {/* only on december */}
           {new Date().getMonth() === 11 && <XMasDecorations />}
           <SkipToMainButton />
-          <FavIconSwitcher />
+          <IconSwitcher />
           <TopLoader />
           {children}
           {process.env.NODE_ENV !== "production" && <TailwindIndicator />}

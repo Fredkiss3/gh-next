@@ -105,7 +105,7 @@ export const getSession = cache(async function getSession(): Promise<Session> {
   return session;
 });
 
-export const redirectIfNotAuthed = cache(async function getUserOrRedirect(
+export const getUserOrRedirect = cache(async function getUserOrRedirect(
   redirectToPath?: string
 ) {
   const session = await getSession();
