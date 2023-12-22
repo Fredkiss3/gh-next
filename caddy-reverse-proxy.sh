@@ -1,1 +1,0 @@
-addy reverse-proxy --from gh.local --to :3000
