@@ -18,16 +18,20 @@ async function measureLatency(url: string, label: string) {
 
 Promise.all([
   measureLatency(
-    "https://gh.fredkiss.dev/Fredkiss3/gh-next/issues",
+    "https://gh.fredkiss.dev/Fredkiss3/gh-next/issues/58248",
     "production"
   ),
-  measureLatency("http://localhost:3001/Fredkiss3/gh-next/issues", "docker"),
   measureLatency(
-    "http://localhost:3000/Fredkiss3/gh-next/issues",
-    "docker swarm"
-  ),
-  measureLatency(
-    "http://localhost:3002/Fredkiss3/gh-next/issues",
-    "npm run start"
+    "https://gh-dev.fredkiss.dev/Fredkiss3/gh-next/issues/58248",
+    "staging"
   )
+  // measureLatency("http://localhost:3001/Fredkiss3/gh-next/issues", "docker"),
+  // measureLatency(
+  //   "http://localhost:3000/Fredkiss3/gh-next/issues",
+  //   "docker swarm"
+  // ),
+  // measureLatency(
+  //   "http://localhost:3002/Fredkiss3/gh-next/issues",
+  //   "npm run start"
+  // )
 ]).catch(console.error);
