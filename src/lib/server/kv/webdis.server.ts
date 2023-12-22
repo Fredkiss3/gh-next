@@ -50,6 +50,16 @@ export class WebdisKV implements KVStore {
     }).then(
       (r) =>
         r.text().then((text) => {
+          if (!r.ok) {
+            console.log(
+              "Couldn't start webdis KV, received this response from server : ",
+              {
+                text,
+                status: r.status,
+                statusText: r.statusText
+              }
+            );
+          }
           console.timeEnd(`[${time} webdis] ${fullURL}`);
           return JSON.parse(text);
         }) as Promise<T>
