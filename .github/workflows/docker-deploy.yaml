@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - refactor/docker-swarm
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -28,35 +29,35 @@ jobs:
           image_tag: latest
           push_git_tag: true
           registry: dcr.fredkiss.dev
-          dockerfile: Dockerfile.api
+          dockerfile: docker/Dockerfile.prod
           context: .
-          build_extra_args: "--build-arg MONGO_URI=${{ secrets.MONGO_URI }}  --build-arg ISSUER_BASE_URL=${{ secrets.ISSUER_BASE_URL }}  --build-arg OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}  --build-arg OAUTH_REDIRECT_URI=${{ secrets.OAUTH_REDIRECT_URI }}  --build-arg UNSPLASH_API_KEY=${{ secrets.UNSPLASH_API_KEY }}  --build-arg OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}  --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }}  --build-arg CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}   --build-arg CLOUDINARY_ASSET_URL=${{ secrets.CLOUDINARY_ASSET_URL }}"
+          build_extra_args: "--build-arg NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_URL=${{ secrets.REDIS_HTTP_URL }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }}"
 
-  deploy:
-    # The type of runner that the job will run on
-    needs:
-      - build-push-docker
-    runs-on: ubuntu-latest
-    environment: dev
+  # deploy:
+  #   # The type of runner that the job will run on
+  #   needs:
+  #     - build-push-docker
+  #   runs-on: ubuntu-latest
+  #   environment: dev
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - uses: actions/checkout@v2
+  #   # Steps represent a sequence of tasks that will be executed as part of the job
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_SERVER_KEY }}
-          name: id_rsa # optional
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+  #     - name: Install SSH key
+  #       uses: shimataro/ssh-key-action@v2
+  #       with:
+  #         key: ${{ secrets.SSH_SERVER_KEY }}
+  #         name: id_rsa # optional
+  #         known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: Deploy to Server
-        run: |
-          docker stack deploy --compose-file docker-compose.prod.yaml gh-stack
-        env:
-          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-          DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
-          DCR_USER: ${{ secrets.DCR_USER }}
+  #     - name: Deploy to Server
+  #       run: |
+  #         docker stack deploy --compose-file docker-compose.prod.yaml gh-stack
+  #       env:
+  #         DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+  #         DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+  #         DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
+  #         DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+  #         DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
+  #         DCR_USER: ${{ secrets.DCR_USER }}
