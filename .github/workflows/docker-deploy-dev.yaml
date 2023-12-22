@@ -21,7 +21,6 @@ jobs:
       - name: Get github branch name
         id: get-github-ref
         run: |
-          ls -l ./.next/cache 2> /dev/null || true
           echo "github_ref=${{ github.head_ref }}" >> $GITHUB_OUTPUT
         shell: bash
 
@@ -48,14 +47,13 @@ jobs:
 
       - name: copy build cache
         run: |
+          ls -l ./.next/cache 2> /dev/null || true
           echo ${{ secrets.DCR_PASSWD }} | docker login  --username=fredkiss3 --password-stdin dcr.fredkiss.dev
           docker pull dcr.fredkiss.dev/gh-next:dev
           CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:dev)
           mkdir -p .next/
-          echo $CONTAINER_ID
           docker cp ${CONTAINER_ID}:/app/.next/cache .next/
           docker rm ${CONTAINER_ID}
-          ls -l ./.next/cache
 
   # deploy:
   #   # The type of runner that the job will run on

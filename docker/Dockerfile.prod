@@ -48,6 +48,7 @@ ENV KV_PREFIX=$KV_PREFIX
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN ls -l .next/cache 2> /dev/null || true
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
