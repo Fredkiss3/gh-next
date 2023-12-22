@@ -76,6 +76,7 @@ jobs:
 
   #     - name: Deploy to Server
   #       run: |
+  #         rsync -arvzP -e 'ssh -p $(DEPLOY_PORT)' ./dist/ $(server):$(dir)
   #         docker stack deploy --compose-file docker-compose.prod.yaml gh-stack
   #       env:
   #         DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
