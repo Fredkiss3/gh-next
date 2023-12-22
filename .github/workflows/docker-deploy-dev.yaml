@@ -52,8 +52,9 @@ jobs:
           docker pull dcr.fredkiss.dev/gh-next:dev
           CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:dev)
           mkdir -p .next/
-          docker cp ${CONTAINER_ID}:/app/.next/cache .next/
+          docker cp ${CONTAINER_ID}:/app/.next/cache .next/cache/
           docker rm ${CONTAINER_ID}
+          ls -l ./.next/cache
 
   # deploy:
   #   # The type of runner that the job will run on
