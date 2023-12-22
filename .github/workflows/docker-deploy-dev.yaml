@@ -18,27 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # - name: Deploy to Server
-      #   run: |
-      #     echo login from docker...🔄
-      #     echo ${{ secrets.DCR_PASSWD }} | docker login --username=fredkiss3 --password-stdin dcr.fredkiss.dev
-      #     echo login succesful ✅
-
-      #     # Pass env variables
-      #     BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_URL=${{ secrets.REDIS_HTTP_URL }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_"
-
-      #     # This is the full image name, including the registry
-      #     IMAGE="dcr.fredkiss.dev/gh-next"
-
-      #     echo pulling latest image from the registry...🔄
-      #     # Pull an older, existing version from the registry
-      #     docker pull ${IMAGE}:dev
-      #     echo image pulled in succesfully ✅
-
-      #     echo Building docker image...🔄
-      #     docker build $BUILD_ARGS --cache-from ${IMAGE}:dev -t ${IMAGE}:dev -t ${IMAGE}:${GITHUB_REF##*/}-${GITHUB_SHA} -f docker/Dockerfile.prod .
-      #     echo image built succesfully ✅
-
       - name: Get github branch name
         id: get-github-ref
         run: |
@@ -65,7 +44,15 @@ jobs:
           dockerfile: docker/Dockerfile.prod
           context: .
           build_extra_args: "--build-arg NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_URL=${{ secrets.REDIS_HTTP_URL }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_"
-          push_image_and_stages: "CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:dev) && docker cp ${CONTAINER_ID}:/app/.next/cache ./.next/cache && docker rm ${CONTAINER_ID}"
+
+      - name: copy build cache
+        run: |
+          echo ${{ secrets.DCR_PASSWD }} | docker login  --username=fredkiss3 --password-stdin dcr.fredkiss.dev
+          ls -l ./.next/cache
+          CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:dev)
+          docker cp ${CONTAINER_ID}:/app/.next/cache ./.next/cache
+          docker rm ${CONTAINER_ID}
+          ls -l ./.next/cache
 
   # deploy:
   #   # The type of runner that the job will run on
