@@ -83,7 +83,7 @@ jobs:
           cd $DCR_DEPLOY_DIR
           echo updating docker services for dev environment...
           echo ${{ secrets.DCR_PASSWD }} | docker login  --username=fredkiss3 --password-stdin dcr.fredkiss.dev
-          docker stack deploy --compose-file ./docker-stack.prod.yaml gh-stack-prod
+          docker stack deploy --with-registry-auth --compose-file ./docker-stack.prod.yaml gh-stack-prod
           echo services updated succesfully ✅
           "
         env:
