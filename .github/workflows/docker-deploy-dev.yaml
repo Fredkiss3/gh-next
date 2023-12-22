@@ -39,14 +39,20 @@ jobs:
       #     docker build $BUILD_ARGS --cache-from ${IMAGE}:dev -t ${IMAGE}:dev -t ${IMAGE}:${GITHUB_REF##*/}-${GITHUB_SHA} -f docker/Dockerfile.prod .
       #     echo image built succesfully ✅
 
+      - name: Get github branch name
+        id: get-github-ref
+        run: |
+          echo "github_ref=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Cache build output
         id: next-build-cache
         uses: actions/cache@v3
         with:
           path: .next/cache
-          key: ${{ runner.os }}-next-build-cache-${GITHUB_REF##*/}
+          key: ${{ runner.os }}-next-build-cache-${{ steps.get-github-ref.outputs.github_ref }}
           restore-keys: |
-            ${{ runner.os }}-next-build-cache-${GITHUB_REF##*/}
+            ${{ runner.os }}-next-build-cache-${{ steps.get-github-ref.outputs.github_ref }}
 
       - uses: whoan/docker-build-with-cache-action@v5
         with:
@@ -59,7 +65,7 @@ jobs:
           dockerfile: docker/Dockerfile.prod
           context: .
           build_extra_args: "--build-arg NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_URL=${{ secrets.REDIS_HTTP_URL }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_"
-          ush_image_and_stages: |
+          push_image_and_stages: |
             ls -l ./.next/cache
             CONTAINER_ID=$(docker create dcr.fredkiss.dev:dev)
             # Grab that artifact sweetness
