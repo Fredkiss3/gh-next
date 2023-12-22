@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  app:
+    image: dcr.fredkiss.dev/gh-next:dev
+    ports:
+      - "8989:3000"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+  webdis:
+    image: nicolas/webdis:latest
+    volumes: # mount volume containing the config file
+      - ./webdis.json:/etc/webdis.prod.json

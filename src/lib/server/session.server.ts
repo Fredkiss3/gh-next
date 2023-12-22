@@ -7,7 +7,7 @@ import {
   SESSION_COOKIE_KEY,
   LOGGED_OUT_SESSION_TTL
 } from "~/lib/shared/constants";
-import { _envObject as env } from "~/env-config.mjs";
+import { _envObject as env } from "~/env-config.js";
 import { nanoid } from "nanoid";
 
 import { users } from "~/lib/server/db/schema/user.sql";
@@ -71,7 +71,7 @@ export class Session {
     return new Session(serializedPayload);
   }
 
-  public static async create(isBot: boolean = false) {
+  public static async create(isBot = false) {
     return Session.#fromPayload(
       await Session.#create({
         isBot
@@ -264,8 +264,8 @@ export class Session {
 
   static #arrayBufferToBase64(buffer: ArrayBuffer) {
     let binary = "";
-    let bytes = new Uint8Array(buffer);
-    let len = bytes.byteLength;
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
       binary += String.fromCharCode(bytes[i]);
     }

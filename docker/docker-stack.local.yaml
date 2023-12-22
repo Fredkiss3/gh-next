@@ -1,0 +1,44 @@
+version: "3.4"
+
+services:
+  app:
+    image: dcr.fredkiss.dev/gh-next:latest
+    ports:
+      - "3000:3000"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 5s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    depends_on:
+      - db
+      - webdis
+  webdis:
+    image: nicolas/webdis:latest
+    volumes: # mount volume containing the config file
+      - ./webdis.json:/etc/webdis.prod.json
+    ports:
+      - "6380:7379"
+  adminer:
+    image: adminer
+    ports:
+      - 8081:8080
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gh_next
+    ports:
+      - "5433:5432"
+volumes:
+  db-data:
