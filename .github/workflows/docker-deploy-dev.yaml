@@ -28,7 +28,7 @@ jobs:
         id: next-build-cache
         uses: actions/cache@v3
         with:
-          path: .next/cache
+          path: .next
           key: ${{ runner.os }}-next-build-cache-${{ steps.get-github-ref.outputs.github_ref }}
           restore-keys: |
             ${{ runner.os }}-next-build-cache-${{ steps.get-github-ref.outputs.github_ref }}
@@ -56,32 +56,38 @@ jobs:
           docker rm ${CONTAINER_ID}
           ls -l ./.next/cache
 
-  # deploy:
-  #   # The type of runner that the job will run on
-  #   needs:
-  #     - build-push-docker
-  #   runs-on: ubuntu-latest
-  #   environment: dev
+  deploy:
+    # The type of runner that the job will run on
+    needs:
+      - build-push-docker
+    runs-on: ubuntu-latest
+    environment: dev
 
-  #   # Steps represent a sequence of tasks that will be executed as part of the job
-  #   steps:
-  #     - uses: actions/checkout@v2
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Install SSH key
-  #       uses: shimataro/ssh-key-action@v2
-  #       with:
-  #         key: ${{ secrets.SSH_SERVER_KEY }}
-  #         name: id_rsa # optional
-  #         known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_SERVER_KEY }}
+          name: id_rsa # optional
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-  #     - name: Deploy to Server
-  #       run: |
-  #         rsync -arvzP -e 'ssh -p $(DEPLOY_PORT)' ./dist/ $(server):$(dir)
-  #         docker stack deploy --compose-file docker-compose.prod.yaml gh-stack
-  #       env:
-  #         DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
-  #         DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-  #         DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
-  #         DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-  #         DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
-  #         DCR_USER: ${{ secrets.DCR_USER }}
+      - name: Restart docker-stack
+        run: |
+          scp -P $DEPLOY_PORT ./docker/docker-stack.dev.yaml $DEPLOY_USER@$DEPLOY_DOMAIN:$DCR_DEPLOY_DIR/docker-stack.dev.yaml
+          ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_DOMAIN " 
+          cd $DCR_DEPLOY_DIR
+          echo updating docker services for dev environment...
+          echo ${{ secrets.DCR_PASSWD }} | docker login  --username=fredkiss3 --password-stdin dcr.fredkiss.dev
+          docker stack deploy --compose-file ./docker-stack.dev.yaml gh-stack-dev
+          echo services updated succesfully ✅
+          "
+        env:
+          DCR_DEPLOY_DIR: ${{ secrets.DCR_DEPLOY_DIR }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DCR_PASSWD: ${{ secrets.DCR_PASSWD }}
+          DCR_USER: ${{ secrets.DCR_USER }}
