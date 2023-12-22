@@ -51,9 +51,9 @@ jobs:
           echo ${{ secrets.DCR_PASSWD }} | docker login  --username=fredkiss3 --password-stdin dcr.fredkiss.dev
           docker pull dcr.fredkiss.dev/gh-next:dev
           CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:dev)
-          mkdir -p .next/cache
+          mkdir -p .next/
           echo $CONTAINER_ID
-          docker cp ${CONTAINER_ID}:/app/.next/cache .next/cache
+          docker cp ${CONTAINER_ID}:/app/.next/cache .next/
           docker rm ${CONTAINER_ID}
           ls -l ./.next/cache
 
