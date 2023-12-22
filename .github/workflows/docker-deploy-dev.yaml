@@ -52,7 +52,7 @@ jobs:
           docker pull dcr.fredkiss.dev/gh-next:dev
           CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:dev)
           mkdir -p .next/
-          docker cp ${CONTAINER_ID}:/app/.next/cache .next/cache/
+          docker cp ${CONTAINER_ID}:/app/.next/cache .next/
           docker rm ${CONTAINER_ID}
           ls -l ./.next/cache
 
