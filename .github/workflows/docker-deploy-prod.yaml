@@ -15,7 +15,7 @@ on:
 jobs:
   build-push-docker:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: production
 
     steps:
       - uses: actions/checkout@v2
