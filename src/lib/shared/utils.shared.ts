@@ -275,26 +275,20 @@ export function getExcerpt(str: string, maxChars: number): string {
 }
 
 const issueSearchFiltersSchema = z.object({
-  in: preprocess(
-    (arg) => {
-      if (Array.isArray(arg)) {
-        return new Set(arg);
-      }
-      return arg;
-    },
-    z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).nullish()
-  ),
+  in: preprocess((arg) => {
+    if (Array.isArray(arg)) {
+      return new Set(arg);
+    }
+    return arg;
+  }, z.set(z.enum(IN_FILTERS)).catch(new Set(IN_FILTERS)).nullish()),
   is: z.enum(STATUS_FILTERS).default("open").nullish().catch(null),
   reason: z.enum(REASON_FILTERS).nullish().catch(null),
-  no: preprocess(
-    (arg) => {
-      if (Array.isArray(arg)) {
-        return [...new Set(arg)];
-      }
-      return arg;
-    },
-    z.array(z.enum(NO_METADATA_FILTERS)).catch([]).default([]).nullish()
-  ),
+  no: preprocess((arg) => {
+    if (Array.isArray(arg)) {
+      return [...new Set(arg)];
+    }
+    return arg;
+  }, z.array(z.enum(NO_METADATA_FILTERS)).catch([]).default([]).nullish()),
   label: z.array(z.string()).catch([]).default([]).nullish(),
   "-label": z.array(z.string()).catch([]).default([]).nullish(),
   assignee: z.array(z.string()).catch([]).default([]).nullish(),

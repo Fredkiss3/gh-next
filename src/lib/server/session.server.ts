@@ -230,8 +230,8 @@ export class Session {
       expiry: options?.isBot
         ? new Date(Date.now() + 5 * 1000) // only five seconds for temporary session
         : options?.init?.user
-        ? new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000)
-        : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
+          ? new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000)
+          : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
       signature,
       flashMessages: options?.init?.flashMessages,
       additionnalData: options?.init?.additionnalData,
