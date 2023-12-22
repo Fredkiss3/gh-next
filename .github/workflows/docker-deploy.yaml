@@ -23,8 +23,8 @@ jobs:
 
       - uses: whoan/docker-build-with-cache-action@v5
         with:
-          username: "${{ secrets.DCR_USER }}"
-          password: "${{ secrets.DCR_PASSWD }}"
+          username: fredkiss3
+          password: ${{ secrets.DCR_PASSWD }}
           image_name: gh-next
           image_tag: latest
           push_git_tag: true
