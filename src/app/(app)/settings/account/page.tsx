@@ -16,9 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await getUserOrRedirect("/settings/account");
-
-  const user = (await getAuthedUser())!;
+  const user = await getUserOrRedirect("/settings/account");
   return (
     <div className="flex flex-col gap-24">
       <section className="flex flex-col gap-4 md:gap-8">

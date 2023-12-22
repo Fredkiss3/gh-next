@@ -12,8 +12,7 @@ export default async function SettingsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await getUserOrRedirect("/settings/account");
-  const user = (await getAuthedUser())!;
+  const user = await getUserOrRedirect("/settings/account");
   return (
     <>
       <main

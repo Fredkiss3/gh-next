@@ -108,15 +108,17 @@ export const getSession = cache(async function getSession(): Promise<Session> {
 export const getUserOrRedirect = cache(async function getUserOrRedirect(
   redirectToPath?: string
 ) {
-  const session = await getSession();
+  const user = await getAuthedUser();
 
-  if (!session.user) {
+  if (!user) {
     const searchParams = new URLSearchParams();
     if (redirectToPath) {
       searchParams.set("nextUrl", redirectToPath);
     }
     redirect("/login?" + searchParams.toString());
   }
+
+  return user;
 });
 
 export const getAuthedUser = cache(async function getUser() {
