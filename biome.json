@@ -4,7 +4,7 @@
   },
   "formatter": {
     "enabled": true,
-    "formatWithErrors": false,
+    "formatWithErrors": true,
     "indentStyle": "tab",
     "indentWidth": 2,
     "lineWidth": 80,
