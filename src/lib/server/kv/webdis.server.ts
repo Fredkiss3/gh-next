@@ -38,8 +38,8 @@ export class WebdisKV implements KVStore {
         )
         .join("/");
 
-    const time = new Date().getTime();
-    console.time(`[${time} webdis] ${fullURL}`);
+    const rand = Math.ceil(Math.random() * 10e15);
+    console.time(`[${rand} webdis] ${fullURL}`);
     return await fetch(fullURL, {
       method: command === "GET" ? "GET" : "PUT",
       cache: "no-store",
@@ -52,7 +52,7 @@ export class WebdisKV implements KVStore {
         r.text().then((text) => {
           if (!r.ok) {
             console.log(
-              "Couldn't start webdis KV, received this response from server : ",
+              "Couldn't fetch from webdis KV, received this response from server : ",
               {
                 text,
                 status: r.status,
@@ -60,7 +60,7 @@ export class WebdisKV implements KVStore {
               }
             );
           }
-          console.timeEnd(`[${time} webdis] ${fullURL}`);
+          console.timeEnd(`[${rand} webdis] ${fullURL}`);
           return JSON.parse(text);
         }) as Promise<T>
     );
