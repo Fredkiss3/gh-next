@@ -20,7 +20,7 @@ import { Button } from "~/components/button";
 import Link from "next/link";
 import { Skeleton } from "~/components/skeleton";
 import { Markdown } from "~/components/markdown/markdown";
-import { Cache } from "~/components/cache/cache";
+import { Cache } from "~/components/cache";
 
 // utils
 import { getSession } from "~/actions/auth.action";
