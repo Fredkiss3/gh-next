@@ -19,8 +19,7 @@ export const Cache = createCacheComponent({
 
     if (!cachedPayload) {
       cachedPayload = { rsc: await generatePayload() };
-      // TODO : set cache to TTL or default cache
-      await kv.set(cacheKey, cachedPayload, 30);
+      await kv.set(cacheKey, cachedPayload, ttl ?? DEFAULT_CACHE_TTL);
     }
 
     if (cacheHit) {
