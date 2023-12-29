@@ -436,8 +436,7 @@ async function ReadmeContent(props: {
         )}
       >
         <Cache
-          id={CacheKeys.readme(props.user, props.repository)}
-          updatedAt={updatedAt}
+          id={CacheKeys.readme(props.user, props.repository, updatedAt)}
           ttl={THIRTY_MINUTES_IN_SECONDS}
         >
           <Markdown

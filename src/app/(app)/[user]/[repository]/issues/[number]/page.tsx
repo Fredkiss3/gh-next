@@ -85,9 +85,9 @@ export default async function IssueDetailPage({
           id={CacheKeys.issues({
             user: params.user,
             repo: params.repository,
-            number: issueNo
+            number: issueNo,
+            updatedAt: issue.updated_at
           })}
-          updatedAt={issue.updated_at}
         >
           <Markdown content={issue.body} />
         </Cache>
