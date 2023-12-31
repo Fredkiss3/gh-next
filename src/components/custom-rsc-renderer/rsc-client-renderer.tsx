@@ -4,7 +4,7 @@ import * as RSDWSSr from "react-server-dom-webpack/client.edge";
 import * as RSDW from "react-server-dom-webpack/client";
 
 import { getSSRManifest } from "./rsc-manifest";
-import { fnCache } from "~/lib/shared/fn-cache";
+import { lifetimeCache } from "~/lib/shared/lifetime-cache";
 
 export type RscClientRendererProps = {
   payloadOrPromise: string | Promise<string>;
@@ -18,7 +18,7 @@ export function RscClientRenderer({
   return React.use(renderPayloadOrPromiseToJSX(payloadOrPromise, withSSR));
 }
 
-export const renderPayloadOrPromiseToJSX = fnCache(
+export const renderPayloadOrPromiseToJSX = lifetimeCache(
   async function resolveElement(
     payloadOrPromise: string | Promise<string>,
     ssr = false

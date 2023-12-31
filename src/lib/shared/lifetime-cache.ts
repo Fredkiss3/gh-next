@@ -1,16 +1,15 @@
-import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
-
 /**
- * Custom `cache` function as `React.cache` doesn't work in the server,
- * this function is intended to be used with `React.use` but you can
- * use it to memoize function calls.
+ * Custom `cache` but for caching items for the scope for the lifetime of the server,
+ * on the client it will cache the result until the tab is refreshed.
  */
-export function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T) {
+export function lifetimeCache<T extends (...args: any[]) => Promise<any>>(
+  fn: T
+) {
   const cache = new PromiseCache<Awaited<ReturnType<T>>>(500);
 
   return function cachedFn(
     ...args: Parameters<T>
-  ): Promise<Awaited<ReturnType<T>>> {
+  ): Thenable<Awaited<ReturnType<T>>> {
     return cache.get(args, async () => await fn(...args));
   };
 }
@@ -21,7 +20,10 @@ export function fnCache<T extends (...args: any[]) => Promise<any>>(fn: T) {
 class PromiseCache<T> {
   #cache: Map<
     any[],
-    { value: Promise<T>; timestamp: number; fetchFn: () => Promise<T> }
+    {
+      value: Thenable<T>;
+      fetchFn: () => Promise<T>;
+    }
   >;
   #maxSize: number;
 
@@ -30,7 +32,7 @@ class PromiseCache<T> {
     this.#maxSize = maxSize;
   }
 
-  get(args: any[], fetchFn: () => Promise<T>): Promise<T> {
+  get(args: any[], fetchFn: () => Promise<T>): Thenable<T> {
     const existingKey = Array.from(this.#cache.keys()).find((key) => {
       return (
         args.length === key.length &&
@@ -39,10 +41,8 @@ class PromiseCache<T> {
     });
 
     const cachedItem = existingKey ? this.#cache.get(existingKey) : null;
-    const now = Date.now();
 
-    if (cachedItem && now - cachedItem.timestamp <= DEFAULT_CACHE_TTL * 1000) {
-      // Return the cached value if it's not stale
+    if (cachedItem) {
       return cachedItem.value;
     }
 
@@ -51,37 +51,37 @@ class PromiseCache<T> {
      * so that if used with `React.use`,
      * the component doesn't suspend if the function is preloaded.
      */
-    const pending = fetchFn()
+    const thenableValue = fetchFn() as Thenable<T>;
+
+    thenableValue
       .then((value) => {
-        // @ts-expect-error
-        if (pending.status === "pending") {
-          const fulfilledThenable = pending as any;
+        if (thenableValue.status === "pending") {
+          const fulfilledThenable =
+            thenableValue as unknown as FulfilledThenable<T>;
           fulfilledThenable.status = "fulfilled";
           fulfilledThenable.value = value;
         }
         return value;
       })
       .catch((error) => {
-        // @ts-expect-error
-        if (pending.status === "pending") {
-          const rejectedThenable = pending as any;
+        if (thenableValue.status === "pending") {
+          const rejectedThenable =
+            thenableValue as unknown as RejectedThenable<T>;
           rejectedThenable.status = "rejected";
           rejectedThenable.reason = error;
         }
         throw error;
       });
-    // @ts-expect-error
-    pending.status = "pending";
+    thenableValue.status = "pending";
 
     // Fetch or revalidate the data
-    const value = pending;
-    this.set(args, value, fetchFn);
-    return value;
+    this.set(args, thenableValue, fetchFn);
+    return thenableValue;
   }
 
   private set(
     key: any[],
-    valuePromise: Promise<T>,
+    valuePromise: Thenable<T>,
     fetchFn: () => Promise<T>
   ): void {
     if (this.#cache.size >= this.#maxSize && !this.#cache.has(key)) {
@@ -92,8 +92,29 @@ class PromiseCache<T> {
 
     this.#cache.set(key, {
       value: valuePromise,
-      timestamp: Date.now(),
       fetchFn
     });
   }
 }
+
+/**
+ * From the React `use` internals
+ */
+interface FulfilledThenable<T> extends Promise<T> {
+  status: "fulfilled";
+  value: T;
+}
+
+interface PendingThenable<T> extends Promise<T> {
+  status: "pending";
+}
+
+interface RejectedThenable<T> extends Promise<T> {
+  status: "rejected";
+  reason: any;
+}
+
+export type Thenable<T> =
+  | FulfilledThenable<T>
+  | PendingThenable<T>
+  | RejectedThenable<T>;
