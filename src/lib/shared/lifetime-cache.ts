@@ -1,6 +1,13 @@
 /**
  * Custom `cache` but for caching items for the scope for the lifetime of the server,
  * on the client it will cache the result until the tab is refreshed.
+ *
+ * It has the same behavior as React `cache`, when called with the same arguments, it will
+ * return the cached result, if you give it other arguments, it will return a different result
+ * and cache that.
+ *
+ * However this cache is not limitless, it acts as an LRU cache with only a limited set of items in it
+ * and evicts the least recently used items.
  */
 export function lifetimeCache<T extends (...args: any[]) => Promise<any>>(
   fn: T
