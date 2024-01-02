@@ -75,7 +75,8 @@ jobs:
           echo 'copying build cache...🔄'
           docker pull dcr.fredkiss.dev/gh-next:latest
           mkdir -p .next/
-          CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:latest)
+          CONTAINER_ID=\$(docker create dcr.fredkiss.dev/gh-next:latest)
+          echo CID=\$CONTAINER_ID
           docker cp \${CONTAINER_ID}:/app/.next/cache .next/
           docker rm \${CONTAINER_ID}
           echo 'Build cached copied succesfully ✅'
