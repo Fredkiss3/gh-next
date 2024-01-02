@@ -59,7 +59,19 @@ jobs:
           export DOCKER_BUILDKIT=1
 
           # Use cache from remote repository, tag as latest, keep cache metadata
-          docker buildx build --push -f ./docker/Dockerfile.prod -t dcr.fredkiss.dev/gh-next:${GITHUB_SHA} -t dcr.fredkiss.dev/gh-next:latest --build-arg NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_prod_ --cache-from type=registry,ref=dcr.fredkiss.dev/gh-next:prod-buildcache,mode=max --cache-to type=registry,ref=dcr.fredkiss.dev/gh-next:prod-buildcache,mode=max .
+          docker buildx build --push -f ./docker/Dockerfile.prod -t dcr.fredkiss.dev/gh-next:${GITHUB_SHA} -t dcr.fredkiss.dev/gh-next:latest \
+          --build-arg="NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev" \
+          --build-arg="GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback" \
+          --build-arg="SESSION_SECRET=${{ secrets.SESSION_SECRET }}" \
+          --build-arg="DATABASE_URL=${{ secrets.POSTGRES_DB_URL }}" \
+          --build-arg="GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}" \
+          --build-arg="GITHUB_SECRET=${{ secrets.GH_SECRET }}" \
+          --build-arg="GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}" \
+          --build-arg="REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }}" \
+          --build-arg="REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }}" \
+          --build-arg="KV_PREFIX=__gh_next__cache_prod_" \
+          --cache-from type=registry,ref=dcr.fredkiss.dev/gh-next:prod-buildcache,mode=max \
+          --cache-to type=registry,ref=dcr.fredkiss.dev/gh-next:prod-buildcache,mode=max .
 
           echo 'build successful ✅'
 
