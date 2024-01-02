@@ -5,9 +5,7 @@ name: CI/CD For docker deploy
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches:
-      - main
+  pull_request:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -15,7 +13,7 @@ on:
 jobs:
   build-push-docker:
     runs-on: ubuntu-latest
-    environment: production
+    environment: dev
 
     steps:
       - uses: actions/checkout@v2
@@ -29,7 +27,7 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_prod_"
+          BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh-dev.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh-dev.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_dev_"
           ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_DOMAIN "
           source ~/.zshrc
           set -e -o errexit
@@ -49,26 +47,14 @@ jobs:
           export DOCKER_BUILDKIT=1
 
           # Use cache from remote repository, tag as latest, keep cache metadata
-          docker buildx build --push $BUILD_ARGS -f ./docker/Dockerfile.prod -t dcr.fredkiss.dev/gh-next:${GITHUB_SHA} -t dcr.fredkiss.dev/gh-next:latest \
-            --cache-from type=registry,ref=dcr.fredkiss.dev/gh-next:prod-buildcache,mode=max \
-            --cache-to type=registry,ref=dcr.fredkiss.dev/gh-next:prod-buildcache,mode=max .
+          docker buildx build --push $BUILD_ARGS -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:${GITHUB_SHA} -t dcr.fredkiss.dev/gh-next:dev .
 
           echo 'build successful ✅'
 
           # Start docker instances
           echo 'updating docker services...🔄'
-          docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.prod.yaml gh-stack-prod
+          docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.dev.yaml gh-stack-dev
           echo 'services updated succesfully ✅'
-
-          # Copying the build cache for faster builds
-          echo 'copying build cache...🔄'
-          docker pull dcr.fredkiss.dev/gh-next:latest
-          mkdir -p .next/
-          CONTAINER_ID=\$(docker create dcr.fredkiss.dev/gh-next:latest)
-          echo CID=\$CONTAINER_ID
-          docker cp \${CONTAINER_ID}:/app/.next/cache .next/
-          docker rm \${CONTAINER_ID}
-          echo 'Build cached copied succesfully ✅'
           "
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}

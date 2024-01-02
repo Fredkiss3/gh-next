@@ -20,4 +20,4 @@ services:
   webdis:
     image: nicolas/webdis:latest
     volumes: # mount volume containing the config file
-      - ./webdis.json:/etc/webdis.prod.json
+      - ../../gh/webdis.json:/etc/webdis.prod.json
