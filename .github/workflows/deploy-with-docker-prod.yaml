@@ -45,9 +45,9 @@ jobs:
           set -e -o errexit
           cd $DEPLOY_DIR
 
-          echo Login to docker registry...
+          echo 'Login to docker registry...'
           echo ${{ secrets.DCR_PASSWD }} | docker login  --username=fredkiss3 --password-stdin dcr.fredkiss.dev
-          echo succesfully logged in to registry dcr.fredkiss.dev ✅
+          echo 'succesfully logged in to registry dcr.fredkiss.dev ✅'
 
           echo use node version 20
           nvm use 20
@@ -55,7 +55,7 @@ jobs:
           echo Pulling latest version...
           git pull origin ${GITHUB_REF##*/}
 
-          echo Build with docker (and cache)...🔄 
+          echo 'Build with docker (and cache)...🔄' 
           export DOCKER_BUILDKIT=1
 
           # Use cache from remote repository, tag as latest, keep cache metadata
@@ -74,26 +74,27 @@ jobs:
             --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} \
             --build-arg KV_PREFIX=__gh_next__cache_prod_
 
-          echo build successful ✅
+          echo 'build successful ✅'
 
-          echo Pushing docker tags...🔄 
+          echo 'Pushing docker tags...🔄' 
           docker push dcr.fredkiss.dev/gh-next:${GITHUB_SHA}
           docker push dcr.fredkiss.dev/gh-next:latest
-          echo docker tags pushed succesfully .✅
+          echo 'docker tags pushed succesfully ✅'
 
 
           # Start docker instances
-          echo updating docker services...🔄
+          echo 'updating docker services...🔄'
           docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.prod.yaml gh-stack-prod
-          echo services updated succesfully ✅
+          echo 'services updated succesfully ✅'
 
           # Copying the build cache for faster builds
-          echo copying build cache...🔄
+          echo 'copying build cache...🔄'
           docker pull dcr.fredkiss.dev/gh-next:latest
           CONTAINER_ID=$(docker create dcr.fredkiss.dev/gh-next:latest)
           mkdir -p .next/
           docker cp ${CONTAINER_ID}:/app/.next/cache .next/
           docker rm ${CONTAINER_ID}
+          echo 'Build cached copied succesfully ✅'
           "
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
