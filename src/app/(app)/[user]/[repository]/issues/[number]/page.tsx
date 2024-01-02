@@ -82,6 +82,7 @@ export default async function IssueDetailPage({
 
       <section className="px-5 flex flex-col gap-5">
         <Cache
+          debugLogs
           id={CacheKeys.issues({
             user: params.user,
             repo: params.repository,
