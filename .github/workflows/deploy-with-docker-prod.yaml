@@ -59,7 +59,7 @@ jobs:
           export DOCKER_BUILDKIT=1
 
           # Use cache from remote repository, tag as latest, keep cache metadata
-          docker buildx build . -f docker/Dockerfile.prod \
+          docker buildx build --push -f docker/Dockerfile.prod \
             -t dcr.fredkiss.dev/gh-next:${GITHUB_SHA} -t dcr.fredkiss.dev/gh-next:latest \
             --cache-from type=registry,ref=dcr.fredkiss.dev/gh-next:tag-buildcache,mode=max \
             --cache-to type=registry,ref=dcr.fredkiss.dev/gh-next:tag-buildcache,mode=max \ 
@@ -72,15 +72,9 @@ jobs:
             --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} \
             --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} \
             --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} \
-            --build-arg KV_PREFIX=__gh_next__cache_prod_
+            --build-arg KV_PREFIX=__gh_next__cache_prod_ .
 
           echo 'build successful ✅'
-
-          echo 'Pushing docker tags...🔄' 
-          docker push dcr.fredkiss.dev/gh-next:${GITHUB_SHA}
-          docker push dcr.fredkiss.dev/gh-next:latest
-          echo 'docker tags pushed succesfully ✅'
-
 
           # Start docker instances
           echo 'updating docker services...🔄'
