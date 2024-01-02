@@ -41,8 +41,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.18)(@types/react@18.2.46)(react-dom@18.2.0)(react@18.2.0)
   '@rsc-cache/next':
-    specifier: ^1.1.0
-    version: 1.1.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^1.1.1
+    version: 1.1.1(react-dom@18.2.0)(react@18.2.0)
   '@t3-oss/env-nextjs':
     specifier: ^0.6.1
     version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
@@ -1662,8 +1662,8 @@ packages:
       '@redis/client': 1.5.13
     dev: false
 
-  /@rsc-cache/next@1.1.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-sdeu1Wz3RC7Qwc8BKe4etP9jMmkcYu8jOwZGIpC5NiBdMWy9el6gKxNCDfFGuSVral6KpXQ6mlYV8O2oM7x6Pw==}
+  /@rsc-cache/next@1.1.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-JtsNVKqh+KiaEG5gJHDqqihqWtey+vMj/SoIShT9bLT/5hyckzYxhrzSFtMxTilY50mZ30dUiHDKR8dgt7mGQA==}
     peerDependencies:
       react: '>= 18.2.0'
       react-dom: '>= 18.2.0'

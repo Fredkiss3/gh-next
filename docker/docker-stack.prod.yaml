@@ -6,7 +6,7 @@ services:
     ports:
       - "8988:3000"
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 5s
