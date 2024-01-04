@@ -1,8 +1,8 @@
 // @ts-check
-require("./src/env-config.js");
+import "./src/env-config.mjs";
 
 /** @type {import('next').NextConfig} */
-module.exports = {
+const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
   experimental: {
@@ -10,7 +10,7 @@ module.exports = {
     taint: true,
     incrementalCacheHandlerPath:
       process.env.NODE_ENV === "production"
-        ? require.resolve("./webdis-cache-handler.js")
+        ? "./custom-incremental-cache-handler.mjs"
         : undefined
   },
   logging: {
@@ -28,3 +28,5 @@ module.exports = {
     ]
   }
 };
+
+export default nextConfig;

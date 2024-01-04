@@ -1,7 +1,7 @@
 // @ts-check
 
-const { createEnv } = require("@t3-oss/env-nextjs");
-const { preprocess, z } = require("zod");
+import { createEnv } from "@t3-oss/env-nextjs";
+import { preprocess, z } from "zod";
 
 /**
  * BEWARE !!!
@@ -9,7 +9,7 @@ const { preprocess, z } = require("zod");
  * You should import from `src/env`.
  * Modify this file if you want to add more env variables
  */
-const _envObject = createEnv({
+export const _envObject = createEnv({
   server: {
     SESSION_SECRET: z.string().min(32).max(32),
     GITHUB_SECRET: z.string(),
@@ -48,6 +48,3 @@ const _envObject = createEnv({
     GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN
   }
 });
-module.exports = {
-  _envObject
-};

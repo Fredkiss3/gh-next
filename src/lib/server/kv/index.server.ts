@@ -1,5 +1,5 @@
 import "server-only";
-import { WebdisKV } from "./webdis.server";
+import { WebdisKV } from "./webdis.server.mjs";
 
 export interface KVStore {
   set<T extends Record<string, any> = {}>(
