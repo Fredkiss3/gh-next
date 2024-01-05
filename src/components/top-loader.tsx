@@ -20,5 +20,22 @@ function FinishingLoader() {
   React.useEffect(() => {
     NProgress.done();
   }, [pathname, router, searchParams]);
+  React.useEffect(() => {
+    const linkClickListener = (ev: MouseEvent) => {
+      const element = ev.target as HTMLElement;
+      const closestlink = element.closest("a");
+      const isOpenToNewTabClick =
+        ev.ctrlKey ||
+        ev.shiftKey ||
+        ev.metaKey || // apple
+        (ev.button && ev.button == 1); // middle click, >IE9 + everyone else
+
+      if (closestlink && isOpenToNewTabClick) {
+        NProgress.done();
+      }
+    };
+    window.addEventListener("click", linkClickListener);
+    return () => window.removeEventListener("click", linkClickListener);
+  }, []);
   return null;
 }
