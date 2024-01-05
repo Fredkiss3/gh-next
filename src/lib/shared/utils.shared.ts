@@ -302,7 +302,7 @@ const issueSearchFiltersSchema = z.object({
     .default("created-desc")
     .nullish()
     .catch("created-desc"),
-  query: z.string().nullish()
+  query: z.string().trim().nullish()
 });
 
 export type IssueSearchFilters = z.infer<typeof issueSearchFiltersSchema>;
@@ -425,7 +425,7 @@ export function parseIssueFilterTokens(input: string): IssueSearchFilters {
 export function formatSearchFiltersToString(
   filters: IssueSearchFilters
 ): string {
-  let terms: string[] = [];
+  const terms: string[] = [];
   for (const key in filters) {
     let value = filters[key as keyof IssueSearchFilters];
     if (key === "query") {
@@ -487,7 +487,7 @@ export function formatSearchFiltersToString(
  *    debouncedLog() // only this one will be logged
  *
  */
-export function debounce(callback: Function, delay: number = 500) {
+export function debounce(callback: Function, delay = 500) {
   let timer: number | undefined;
   return (...args: any[]) => {
     clearTimeout(timer);

@@ -165,6 +165,7 @@ export async function searchIssues(
 
   if (process.env.NODE_ENV === "development") {
     console.log({
+      filters,
       sql: issueQuery.toSQL()
     });
   }
@@ -242,19 +243,18 @@ export async function searchIssues(
  */
 function issueSearchfiltersToSQLConditions(
   filters: IssueSearchFilters,
-  includeStatusFilter: boolean = true,
+  includeStatusFilter = true,
   currentUser?: User | null
 ) {
-  const query = filters.query;
   let queryFilters: SQL<unknown> | undefined = undefined;
 
   if (!filters.in) {
     filters.in = new Set(IN_FILTERS);
   }
 
-  if (filters.in) {
+  if (filters.in && filters.query) {
     const inFilters = [];
-    const searchQuery = `%${query ?? ""}%`;
+    const searchQuery = `%${filters.query ?? ""}%`;
     if (filters.in.has("title")) {
       inFilters.push(ilike(issues.title, searchQuery));
     }
