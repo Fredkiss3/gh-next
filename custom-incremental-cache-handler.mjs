@@ -1,17 +1,23 @@
 // @ts-check
-const {
+import {
   reviveFromBase64Representation,
   replaceJsonWithBase64
-} = require("@neshca/json-replacer-reviver");
-const { IncrementalCache } = require("@neshca/cache-handler");
-const { WebdisKV } = require("./webdis-kv");
+} from "@neshca/json-replacer-reviver";
+import { IncrementalCache } from "@neshca/cache-handler";
+import { WebdisKV } from "./src/lib/server/kv/webdis.server.mjs";
 
+/** @type {{ version: number, items: Record<string, {revalidatedAt: number}>}} */
 const localTagsManifest = {
   version: 1,
   items: {}
 };
 
 const TAGS_MANIFEST_KEY = "sharedTagsManifest";
+const CACHE_HANDLER_KEY = "incrementalCache";
+
+/**
+ * @typedef {typeof CACHE_HANDLER_KEY} CACHE_HANDLER_KEY
+ */
 
 const client = new WebdisKV();
 IncrementalCache.onCreation(() => {
@@ -20,14 +26,19 @@ IncrementalCache.onCreation(() => {
     cache: {
       async get(key) {
         try {
-          const result = await client.get(key);
+          const result = /** @type {{ [CACHE_HANDLER_KEY]: string }} */ (
+            await client.get(key)
+          );
 
           if (!result) {
             return null;
           }
 
           // use reviveFromBase64Representation to restore binary data from Base64
-          return JSON.parse(result, reviveFromBase64Representation);
+          return JSON.parse(
+            result[CACHE_HANDLER_KEY],
+            reviveFromBase64Representation
+          );
         } catch (error) {
           return null;
         }
@@ -35,7 +46,9 @@ IncrementalCache.onCreation(() => {
       async set(key, value) {
         try {
           // use replaceJsonWithBase64 to store binary data in Base64 and save space
-          await client.set(key, JSON.stringify(value, replaceJsonWithBase64));
+          await client.set(key, {
+            [CACHE_HANDLER_KEY]: JSON.stringify(value, replaceJsonWithBase64)
+          });
         } catch (error) {
           // ignore because value will be written to disk
         }
@@ -73,4 +86,4 @@ IncrementalCache.onCreation(() => {
     }
   };
 });
-module.exports = IncrementalCache;
+export default IncrementalCache;

@@ -1,5 +1,5 @@
 import { experimental_taintUniqueValue as taintUniqueValue } from "react";
-import { _envObject } from "./env-config.js";
+import { _envObject } from "./env-config.mjs";
 
 /**
  * taintUniqueValue is undefined outside of server components :

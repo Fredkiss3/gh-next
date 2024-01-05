@@ -1,10 +1,17 @@
 // @ts-check
-const { _envObject: env } = require("./src/env-config.js");
+import { _envObject as env } from "../../../env-config.mjs";
+
+/**
+ * @typedef {import("./index.server").KVStore} KVStore
+ */
+
 /**
  * Represents a key-value store using Webdis.
  * For strict usage within `webdis-cache-handler.js`
+ *
+ * @implements {KVStore}
  */
-class WebdisKV {
+export class WebdisKV {
   /**
    * Fetches data from the KV store.
    * @param {("GET"|"SET"|"SETEX"|"DEL"|"HSET"|"HGETALL")} command The Redis command to execute.
@@ -36,12 +43,13 @@ class WebdisKV {
       partsForTheURL
         .map((arg) =>
           typeof arg === "string"
-            ? // @ts-expect-error
-              encodeURIComponent(arg.replaceAll("/", "-"))
+            ? encodeURIComponent(arg.replaceAll("/", "-"))
             : arg
         )
         .join("/");
 
+    const rand = Math.ceil(Math.random() * 10e15);
+    console.time(`[${rand} webdis] ${fullURL}`);
     return await fetch(fullURL, {
       method: ["GET", "HGETALL"].includes(command) ? "GET" : "PUT",
       cache: "no-store",
@@ -49,7 +57,22 @@ class WebdisKV {
         Authorization: `Basic ${btoa(authString)}`
       },
       body: body ?? undefined
-    }).then((r) => r.text().then((text) => JSON.parse(text)));
+    }).then((r) =>
+      r.text().then((text) => {
+        if (!r.ok) {
+          console.log(
+            "Couldn't fetch from webdis KV, received this response from server : ",
+            {
+              text,
+              status: r.status,
+              statusText: r.statusText
+            }
+          );
+        }
+        console.timeEnd(`[${rand} webdis] ${fullURL}`);
+        return JSON.parse(text);
+      })
+    );
   }
 
   /**
@@ -73,27 +96,31 @@ class WebdisKV {
 
   /**
    * Sets a value in the KV store.
+   * @template T
    * @param {string} key The key under which to store the value.
-   * @param {string} value The value to store.
+   * @param {T} value The value to store.
    * @param {number} [ttl_in_seconds] Optional time-to-live in seconds.
    * @returns {Promise<void>}
    */
   async set(key, value, ttl_in_seconds) {
+    const serializedValue = JSON.stringify(value);
+
     if (ttl_in_seconds) {
-      await this.#fetch("SETEX", key, ttl_in_seconds, value);
+      await this.#fetch("SETEX", key, ttl_in_seconds, serializedValue);
     } else {
-      await this.#fetch("SET", key, value);
+      await this.#fetch("SET", key, serializedValue);
     }
   }
 
   /**
    * Gets a value from the KV store.
-   * @param {string} key The key of the value to retrieve.
-   * @returns {Promise<string|null>} The value found at the key, or null if not found.
+   * @template T
+   * @param {string} key
+   * @returns {Promise<T | null>}
    */
   async get(key) {
     const value = await this.#fetch("GET", key);
-    return value.GET ?? null;
+    return value.GET ? JSON.parse(value.GET) : null;
   }
 
   /**
@@ -105,5 +132,3 @@ class WebdisKV {
     await this.#fetch("DEL", key);
   }
 }
-
-module.exports = { WebdisKV };
