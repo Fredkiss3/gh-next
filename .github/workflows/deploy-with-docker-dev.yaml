@@ -41,6 +41,7 @@ jobs:
           nvm use 20
 
           echo Pulling latest version...
+          echo git branch=${GITHUB_REF##*/}
           git pull origin ${GITHUB_REF##*/}
 
           echo 'Build with docker (and cache)...🔄' 
