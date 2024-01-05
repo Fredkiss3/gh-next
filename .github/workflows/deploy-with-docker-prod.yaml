@@ -45,6 +45,7 @@ jobs:
           echo Pulling latest version...
           git fetch origin main
           git checkout main
+          git pull
 
           echo 'Build with docker (and cache)...🔄' 
           export DOCKER_BUILDKIT=1
