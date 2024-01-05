@@ -43,8 +43,7 @@ jobs:
           nvm use 20
 
           echo Pulling latest version...
-          git checkout main
-          git pull origin main
+          git checkout origin/main
 
           echo 'Build with docker (and cache)...🔄' 
           export DOCKER_BUILDKIT=1

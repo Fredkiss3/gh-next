@@ -43,8 +43,7 @@ jobs:
           echo Pulling latest version...
           GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo git branch=\$GIT_BRANCH
-          git checkout \$GIT_BRANCH
-          git pull origin \$GIT_BRANCH
+          git checkout origin/\$GIT_BRANCH
 
           echo 'Build with docker (and cache)...🔄' 
           export DOCKER_BUILDKIT=1
