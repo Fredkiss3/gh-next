@@ -163,11 +163,12 @@ export async function searchIssues(
   }
   issueQuery = issueQuery.orderBy(orderBy);
 
-  if (process.env.NODE_ENV === "development") {
-    console.log({
-      sql: issueQuery.toSQL()
-    });
-  }
+  // if (process.env.NODE_ENV === "development") {
+  console.log({
+    filters,
+    sql: issueQuery.toSQL()
+  });
+  // }
 
   const date = Date.now();
   console.time(`\n[${date}] Select Issues`);
