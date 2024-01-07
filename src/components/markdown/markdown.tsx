@@ -36,6 +36,7 @@ import {
   PRODUCTION_DOMAIN
 } from "~/lib/shared/constants";
 import { getMultipleUserByUsername } from "~/models/user";
+import remarkBreaks from "remark-breaks";
 
 // types
 import type { UseMdxComponents } from "@mdx-js/mdx";
@@ -47,7 +48,7 @@ export type MarkdownProps = {
   linkHeaders?: boolean;
   className?: string;
   editableCheckboxes?: boolean;
-  repository?: string;
+  repository?: `${string}/${string}`;
 };
 
 export async function Markdown(props: MarkdownProps) {
@@ -85,7 +86,12 @@ export async function MarkdownContent({
   console.timeEnd(`\n\x1b[34m[${dt}] \x1b[33m Markdown Rendering \x1b[37m`);
 
   return (
-    <article className={clsx("break-words leading-normal text-sm", className)}>
+    <article
+      className={clsx(
+        "break-words leading-normal text-sm max-w-full w-full",
+        className
+      )}
+    >
       {generatedMdxModule.default({ components })}
     </article>
   );
@@ -142,7 +148,7 @@ async function processMarkdownContentAndGetReferences(
       // @ts-expect-error
       rehypeSlug
     ],
-    remarkPlugins: [remarkGfm, remarkGemoji],
+    remarkPlugins: [remarkGfm, remarkGemoji, remarkBreaks],
     format: "md"
   });
 
@@ -265,7 +271,7 @@ async function getComponents({
           {...props}
           key={key}
           className={clsx({
-            "pl-12": props.className === "contains-task-list",
+            "pl-4": props.className === "contains-task-list",
             "list-disc pl-10": props.className !== "contains-task-list"
           })}
         />
@@ -284,7 +290,7 @@ async function getComponents({
     p: (props) => {
       const key = ++noOfKeys;
       return (
-        <p suppressHydrationWarning {...props} key={key} className={"my-4"}>
+        <p suppressHydrationWarning {...props} key={key} className="mb-4">
           {props.children}
         </p>
       );
@@ -351,7 +357,7 @@ async function getComponents({
         // they don't contains '\n' and they don't have a lang defined
         if (lang === undefined && !props.children.toString().includes("\n")) {
           return (
-            <code className="rounded-md bg-neutral px-1.5 py-1">
+            <code className="rounded-md bg-neutral px-1.5 py-1 text-sm">
               {props.children}
             </code>
           );
@@ -364,8 +370,8 @@ async function getComponents({
           >
             <Code
               lang={lang}
-              codeClassName="bg-neutral/30 rounded-md py-[16px] px-[2px] overflow-auto w-full"
-              className="w-full overflow-auto rounded-md p-0"
+              codeClassName="bg-neutral/30 rounded-md py-[16px] px-[2px] overflow-auto w-full !min-w-0 text-sm"
+              className="w-full overflow-scroll rounded-md p-0 text-sm !min-w-0"
             >
               {props.children.toString().trimEnd()}
             </Code>
