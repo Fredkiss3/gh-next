@@ -103,6 +103,7 @@ export const ActionToolbar = React.forwardRef<
               <ActionToolbarButton
                 {...item}
                 key={item.id}
+                disabled={!showItems}
                 className={clsx("transition-opacity duration-150", {
                   "opacity-0 pointer-events-none":
                     !hasComputedSize || !showItems,
@@ -188,7 +189,7 @@ const ActionToolbarButton = React.forwardRef<
   ref
 ) {
   return (
-    <Tooltip content={label} side="bottom" className="text-xs" delayInMs={500}>
+    <Tooltip content={label} side="top" className="text-xs" delayInMs={500}>
       <Toolbar.Button {...props} asChild ref={ref}>
         <Button
           value={id}
