@@ -33,6 +33,7 @@
     "@t3-oss/env-nextjs": "^0.6.1",
     "@tanstack/react-query": "^5.0.0",
     "bright": "^0.8.4",
+    "client-only": "^0.0.1",
     "cmdk": "^0.2.0",
     "dayjs": "^1.11.9",
     "drizzle-orm": "^0.28.6",

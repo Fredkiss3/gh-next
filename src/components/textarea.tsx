@@ -25,7 +25,6 @@ export const Textarea = React.forwardRef<
   TextareaProps
 >(function Textarea(
   {
-    onChange,
     label,
     className,
     validationText,
