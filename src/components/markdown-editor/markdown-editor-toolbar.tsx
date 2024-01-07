@@ -22,7 +22,6 @@ import type { ActionToolbarItemGroups } from "~/components/action-toolbar";
 type MarkdownEditorToolbarProps = {
   textAreaRef: React.RefObject<React.ElementRef<"textarea">>;
   onTextContentChange: (newText: string) => void;
-  textContent: string;
   showItems?: boolean;
 };
 
@@ -30,12 +29,13 @@ export const MarkdownEditorToolbar = React.forwardRef<
   React.ElementRef<typeof ActionToolbar>,
   MarkdownEditorToolbarProps
 >(function MarkdownTextAreaToolbar(
-  { textAreaRef, onTextContentChange, textContent, showItems = true },
+  { textAreaRef, onTextContentChange, showItems = true },
   ref
 ) {
   function addOrRemoveHeading() {
     const textArea = textAreaRef.current;
     if (textArea) {
+      const textContent = textArea.value;
       const selectionStart = textArea.selectionStart;
       const selectionEnd = textArea.selectionEnd;
 
@@ -82,6 +82,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
   function addOrRemoveSurroundingChars(chars: string) {
     const textArea = textAreaRef.current;
     if (textArea) {
+      const textContent = textArea.value;
       const selectionStart = textArea.selectionStart;
       const selectionEnd = textArea.selectionEnd;
 

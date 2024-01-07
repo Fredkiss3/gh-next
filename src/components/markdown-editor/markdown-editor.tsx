@@ -13,8 +13,9 @@ import { MarkdownEditorToolbar } from "~/components/markdown-editor/markdown-edi
 import { clsx } from "~/lib/shared/utils.shared";
 import { z } from "zod";
 import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
-import { flushSync } from "react-dom";
 import { prerenderMarkdownPreview } from "~/components/markdown-editor/markdown-editor-preview";
+import { setFieldText } from "text-field-edit";
+import { enableTabToIndent } from "indent-textarea";
 
 // types
 import type { TextareaProps } from "~/components/textarea";
@@ -42,10 +43,12 @@ export function MarkdownEditor({
     "This component should be used within a repository path"
   );
 
-  const [textContent, setTextContent] = React.useState(defaultValue ?? "");
+  const [lastSavedTextContent, setLastSavedTextContent] = React.useState(
+    defaultValue ?? ""
+  );
   const [selectedTab, setSelectedTab] = React.useState<TabValue>(TABS.EDITOR);
   const [textAreaHeight, setTextAreaHeight] = React.useState(0);
-  const textAreaRef = React.useRef<React.ElementRef<"textarea">>(null);
+  const textAreaRef = React.useRef<React.ElementRef<"textarea"> | null>(null);
   const lastTextareaSelectionRange = React.useRef({ start: -1, end: -1 });
 
   React.useEffect(() => {
@@ -81,6 +84,7 @@ export function MarkdownEditor({
             onValueChange={(tab) => {
               setSelectedTab(tab as TabValue);
               if (textAreaRef.current) {
+                setLastSavedTextContent(textAreaRef.current.value);
                 lastTextareaSelectionRange.current = {
                   start: textAreaRef.current.selectionStart,
                   end: textAreaRef.current.selectionEnd
@@ -108,9 +112,9 @@ export function MarkdownEditor({
               <Tabs.Trigger
                 value={TABS.PREVIEW}
                 onMouseEnter={() => {
-                  if (textContent.trim().length > 0) {
+                  if (lastSavedTextContent.trim().length > 0) {
                     prerenderMarkdownPreview(
-                      textContent,
+                      lastSavedTextContent,
                       `${params.user}/${params.repository}`
                     );
                   }
@@ -128,10 +132,11 @@ export function MarkdownEditor({
               <MarkdownEditorToolbar
                 showItems={selectedTab === "EDITOR"}
                 textAreaRef={textAreaRef}
-                textContent={textContent}
-                onTextContentChange={(newValue) =>
-                  flushSync(() => setTextContent(newValue))
-                }
+                onTextContentChange={(newValue) => {
+                  if (textAreaRef.current) {
+                    setFieldText(textAreaRef.current, newValue);
+                  }
+                }}
               />
             </Tabs.List>
 
@@ -140,13 +145,17 @@ export function MarkdownEditor({
                 <Textarea
                   rows={12}
                   {...props}
-                  value={textContent}
-                  onChange={(e) => setTextContent(e.target.value)}
+                  defaultValue={lastSavedTextContent}
                   label={label}
                   className="text-sm"
                   name={selectedTab === "EDITOR" ? props.name : ""}
                   hideLabel
-                  ref={textAreaRef}
+                  ref={(ref) => {
+                    textAreaRef.current = ref;
+                    if (ref) {
+                      enableTabToIndent(ref);
+                    }
+                  }}
                   style={{
                     height: textAreaHeight > 0 ? `${textAreaHeight}px` : "auto"
                   }}
@@ -165,15 +174,15 @@ export function MarkdownEditor({
                   whereas we want to submit the contents of the tab regardless of tab selection
                 */}
                 <textarea
-                  value={textContent}
+                  value={lastSavedTextContent}
                   className="hidden"
                   readOnly
                   name={props.name}
                 />
 
-                {textContent.trim().length > 0 ? (
+                {lastSavedTextContent.trim().length > 0 ? (
                   <MarkdownEditorPreview
-                    content={textContent}
+                    content={lastSavedTextContent}
                     repositoryPath={`${params.user}/${params.repository}`}
                   />
                 ) : (

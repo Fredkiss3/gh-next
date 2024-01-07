@@ -76,6 +76,9 @@ dependencies:
   geist:
     specifier: ^1.0.0
     version: 1.2.0(next@14.0.5-canary.38)
+  indent-textarea:
+    specifier: ^4.0.0
+    version: 4.0.0
   isbot:
     specifier: ^3.6.13
     version: 3.7.1
@@ -139,6 +142,9 @@ dependencies:
   tailwind-merge:
     specifier: ^1.14.0
     version: 1.14.0
+  text-field-edit:
+    specifier: ^4.0.0
+    version: 4.0.0
   vfile:
     specifier: ^6.0.1
     version: 6.0.1
@@ -3623,6 +3629,13 @@ packages:
     engines: {node: '>=0.8.19'}
     dev: false
 
+  /indent-textarea@4.0.0:
+    resolution: {integrity: sha512-klZ+UIsxLAkctG8nci8N+FOnAfoL7VzXdoJvsUwx0trgP9mH291lC0N7QzNGCjX/Rid5C+NCeRobCrhWDDdfKQ==}
+    engines: {node: '>=18'}
+    dependencies:
+      text-field-edit: 4.0.0
+    dev: false
+
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     dependencies:
@@ -6009,6 +6022,11 @@ packages:
       b4a: 1.6.4
       fast-fifo: 1.3.2
       streamx: 2.15.6
+    dev: false
+
+  /text-field-edit@4.0.0:
+    resolution: {integrity: sha512-m6TZTY9UkPP2wcXOtvqFebGakfVNbrJIzk7bCC3p2YJfyb6gKy2jN3NIpDD6FN/On9yiqSGfOy7fvxDx1+U3/Q==}
+    engines: {node: '>=18'}
     dev: false
 
   /text-table@0.2.0:
