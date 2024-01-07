@@ -5,13 +5,14 @@ import { AlertFillIcon, CheckCircleFillIcon } from "@primer/octicons-react";
 
 export type InputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  "size" | "defaultValue" | "value"
+  "size" | "defaultValue" | "value" | "name"
 > & {
   label: React.ReactNode;
   defaultValue?: string | number | ReadonlyArray<string> | undefined | null;
   value?: string | number | ReadonlyArray<string> | undefined | null;
   inputClassName?: string;
   helpText?: string;
+  name: string;
   renderLeadingIcon?: (classNames: string) => JSX.Element;
   renderTrailingIcon?: (classNames: string) => JSX.Element;
   size?: "small" | "medium" | "large";
