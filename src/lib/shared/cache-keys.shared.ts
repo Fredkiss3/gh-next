@@ -25,5 +25,9 @@ export const CacheKeys = {
     props.user,
     props.repo,
     props.number
-  ]
+  ],
+  markdownPreview: (props: {
+    repositoryPath: `${string}/${string}`;
+    content: string;
+  }) => ["MARKDOWN_PREVIEW", props.repositoryPath, props.content]
 } as const;
