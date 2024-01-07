@@ -112,9 +112,12 @@ export function MarkdownEditor({
               <Tabs.Trigger
                 value={TABS.PREVIEW}
                 onMouseEnter={() => {
-                  if (lastSavedTextContent.trim().length > 0) {
+                  if (
+                    textAreaRef.current &&
+                    textAreaRef.current.value.trim().length > 0
+                  ) {
                     prerenderMarkdownPreview(
-                      lastSavedTextContent,
+                      textAreaRef.current.value.trim(),
                       `${params.user}/${params.repository}`
                     );
                   }
@@ -182,7 +185,7 @@ export function MarkdownEditor({
 
                 {lastSavedTextContent.trim().length > 0 ? (
                   <MarkdownEditorPreview
-                    content={lastSavedTextContent}
+                    content={lastSavedTextContent.trim()}
                     repositoryPath={`${params.user}/${params.repository}`}
                   />
                 ) : (

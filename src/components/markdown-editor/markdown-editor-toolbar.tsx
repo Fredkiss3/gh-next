@@ -47,12 +47,12 @@ export const MarkdownEditorToolbar = React.forwardRef<
 
       const headingRegex = /^(#+ ?)/;
       const match = (currentLine ?? "").match(headingRegex);
-      const isHeading = !!match;
+      const currentLineIsHeading = !!match;
 
-      if (isHeading) {
+      if (currentLineIsHeading) {
         const totalMatchedChars = match[0].length;
         const newLineWithoutHeading = (currentLine ?? "").replace(
-          /^(#+ ?)/,
+          headingRegex,
           ""
         );
 
@@ -74,6 +74,51 @@ export const MarkdownEditorToolbar = React.forwardRef<
 
         onTextContentChange(result);
         textArea.setSelectionRange(selectionStart + 4, selectionEnd + 4);
+      }
+      textArea.focus();
+    }
+  }
+  function addOrRemoveQuote() {
+    const textArea = textAreaRef.current;
+    if (textArea) {
+      const textContent = textArea.value;
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+
+      const untilSelectionStart = textContent.slice(0, selectionStart);
+      const fromSelectionStart = textContent.slice(selectionStart);
+
+      const allPreviousLines = untilSelectionStart.split("\n");
+      const currentLine = allPreviousLines.pop();
+
+      const quoteRegex = /^(> ?)/;
+      const match = (currentLine ?? "").match(quoteRegex);
+      const currentLineIsQuote = !!match;
+
+      if (currentLineIsQuote) {
+        const totalMatchedChars = match[0].length;
+        const newLineWithoutQuote = (currentLine ?? "")
+          .replace(quoteRegex, "")
+          .trimStart();
+
+        const result =
+          [...allPreviousLines, newLineWithoutQuote].join("\n") +
+          fromSelectionStart;
+
+        onTextContentChange(result);
+        textArea.setSelectionRange(
+          selectionStart - totalMatchedChars,
+          selectionEnd - totalMatchedChars
+        );
+      } else {
+        const newLineWithQuote = "> " + (currentLine ?? "");
+
+        const result =
+          [...allPreviousLines, newLineWithQuote].join("\n") +
+          fromSelectionStart;
+
+        onTextContentChange(result);
+        textArea.setSelectionRange(selectionStart + 2, selectionEnd + 2);
       }
       textArea.focus();
     }
@@ -196,7 +241,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
       {
         id: "quote",
         label: "Quote",
-        onClick: () => {},
+        onClick: addOrRemoveQuote,
         icon: QuoteIcon
       },
       {
