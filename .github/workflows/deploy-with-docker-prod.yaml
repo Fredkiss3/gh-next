@@ -64,7 +64,6 @@ jobs:
 
           # Copying the build cache for faster builds
           echo 'copying build cache...🔄'
-          docker pull dcr.fredkiss.dev/gh-next:latest
           mkdir -p .next/
           CONTAINER_ID=\$(docker create dcr.fredkiss.dev/gh-next:latest)
           echo CID=\$CONTAINER_ID
