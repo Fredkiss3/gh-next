@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { loginUser } from "~/actions/auth.action";
 import { env } from "~/env";
 import { isValidURLPathname } from "~/lib/shared/utils.shared";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     console.error({
       error: response.error
     });
-    return redirect("/");
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   const githubUser = await fetch("https://api.github.com/user", {
@@ -49,8 +49,8 @@ export async function GET(req: NextRequest) {
   const nextURL = await loginUser(githubUser);
 
   if (isValidURLPathname(nextURL)) {
-    return redirect(nextURL);
+    return NextResponse.redirect(new URL(nextURL, req.url));
   }
 
-  return redirect("/");
+  return NextResponse.redirect(new URL("/", req.url));
 }
