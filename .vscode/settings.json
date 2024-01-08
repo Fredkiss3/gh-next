@@ -1,6 +1,7 @@
 {
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.workspaceSymbols.excludeLibrarySymbols": true,
   "editor.defaultFormatter": "biomejs.biome",
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"

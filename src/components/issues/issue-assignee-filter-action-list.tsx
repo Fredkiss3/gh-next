@@ -137,6 +137,7 @@ export function IssueAssigneeFilterActionList({
       title="Filter by who’s assigned"
       header={
         <Input
+          name=""
           value={inputQuery}
           onChange={(e) => setInputQuery(e.target.value)}
           label="name or username"

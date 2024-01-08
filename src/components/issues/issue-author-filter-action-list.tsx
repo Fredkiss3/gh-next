@@ -80,6 +80,7 @@ export function IssueAuthorFilterActionList({
       title="Filter by author"
       header={
         <Input
+          name=""
           value={inputQuery}
           onChange={(e) => setInputQuery(e.target.value)}
           label="Author name or username"

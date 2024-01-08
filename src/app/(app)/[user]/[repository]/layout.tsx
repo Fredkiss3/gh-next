@@ -22,8 +22,8 @@ export async function generateMetadata(
 
   return {
     title: {
-      template: `%s · ${repository.name}`,
-      default: `${repository.name} · ${repository.description}`
+      template: `%s · ${repository.owner.username}/${repository.name}`,
+      default: `${repository.owner.username}/${repository.name} · ${repository.description}`
     }
   };
 }

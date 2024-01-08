@@ -1,4 +1,4 @@
-"use client";
+import "client-only";
 import * as React from "react";
 // components
 import { Command as CommandPrimitive } from "cmdk";

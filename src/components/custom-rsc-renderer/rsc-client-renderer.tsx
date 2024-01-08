@@ -5,59 +5,13 @@ import * as RSDW from "react-server-dom-webpack/client";
 
 import { getSSRManifest } from "./rsc-manifest";
 
-export type RscClientRendererProps = {
-  payloadOrPromise: string | Promise<string>;
-  withSSR?: boolean;
-};
-
-export function RscClientRenderer({
-  payloadOrPromise,
-  withSSR = false
-}: RscClientRendererProps) {
-  const renderPromise = React.useMemo(() => {
-    /**
-     * This is to fix a bug that happens sometimes in the SSR phase,
-     * calling `use` seems to suspend indefinitely resulting in
-     * your app not responding.
-     *
-     * We override the promise result and add `status` & `value`,
-     * these fields are used internally by `use` and are what's
-     * prevent `use` from suspending indefinitely.
-     */
-    const pendingPromise = resolveElement(payloadOrPromise, withSSR)
-      .then((value) => {
-        // @ts-expect-error
-        if (pendingPromise.status === "pending") {
-          const fulfilledThenable = pendingPromise as any;
-          fulfilledThenable.status = "fulfilled";
-          fulfilledThenable.value = value;
-        }
-        return value;
-      })
-      .catch((error) => {
-        // @ts-expect-error
-        if (pendingPromise.status === "pending") {
-          const rejectedThenable = pendingPromise as any;
-          rejectedThenable.status = "rejected";
-          rejectedThenable.reason = error;
-        }
-        throw error;
-      });
-    // @ts-expect-error
-    pendingPromise.status = "pending";
-    return pendingPromise;
-  }, [payloadOrPromise, withSSR]);
-
-  return <RscClientRendererUse promise={renderPromise} />;
-}
-
-function RscClientRendererUse(props: {
+export function RscClientRenderer(props: {
   promise: Promise<React.JSX.Element>;
 }) {
   return React.use(props.promise);
 }
 
-async function resolveElement(
+export async function renderPayloadOrPromiseToJSX(
   payloadOrPromise: string | Promise<string>,
   ssr = false
 ) {

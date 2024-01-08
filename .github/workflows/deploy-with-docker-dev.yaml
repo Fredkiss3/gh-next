@@ -51,7 +51,7 @@ jobs:
           export DOCKER_BUILDKIT=1
 
           # Use cache from remote repository, tag as latest, keep cache metadata
-          docker buildx build --push $BUILD_ARGS -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:${GITHUB_SHA} -t dcr.fredkiss.dev/gh-next:dev .
+          docker buildx build --push $BUILD_ARGS -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:dev .
 
           echo 'build successful ✅'
 
