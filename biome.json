@@ -14,7 +14,7 @@
     "formatter": {
       "arrowParentheses": "always",
       "indentStyle": "space",
-      "trailingComma": "all",
+      "trailingComma": "none",
       "indentWidth": 2
     }
   },

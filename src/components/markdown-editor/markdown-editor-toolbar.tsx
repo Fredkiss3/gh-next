@@ -13,7 +13,7 @@ import {
   MentionIcon,
   CrossReferenceIcon,
   DiffIgnoredIcon,
-  StrikethroughIcon,
+  StrikethroughIcon
 } from "@primer/octicons-react";
 import { ActionToolbar } from "~/components/action-toolbar";
 
@@ -34,7 +34,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
   MarkdownEditorToolbarProps
 >(function MarkdownTextAreaToolbar(
   { textAreaRef, onTextContentChange, showItems = true },
-  ref,
+  ref
 ) {
   function addOrRemoveHeading() {
     const textArea = textAreaRef.current;
@@ -57,7 +57,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
         const totalMatchedChars = match[0].length;
         const newLineWithoutHeading = (currentLine ?? "").replace(
           headingRegex,
-          "",
+          ""
         );
 
         const result =
@@ -67,7 +67,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
         onTextContentChange(result);
         textArea.setSelectionRange(
           selectionStart - totalMatchedChars,
-          selectionEnd - totalMatchedChars,
+          selectionEnd - totalMatchedChars
         );
       } else {
         const newLineWithHeading = "### " + (currentLine ?? "");
@@ -112,7 +112,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
         onTextContentChange(result);
         textArea.setSelectionRange(
           selectionStart - totalMatchedChars,
-          selectionEnd - totalMatchedChars,
+          selectionEnd - totalMatchedChars
         );
       } else {
         const newLineWithQuote = "> " + (currentLine ?? "");
@@ -139,7 +139,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
       if (isSelectingMultipleChars) {
         const selectedContentBolded = textContent.slice(
           selectionStart - chars.length,
-          selectionEnd + chars.length,
+          selectionEnd + chars.length
         );
 
         const isTextAlreadyBolded =
@@ -152,13 +152,13 @@ export const MarkdownEditorToolbar = React.forwardRef<
               text: textContent,
               startIndex: selectionStart - chars.length,
               endIndex: selectionEnd + chars.length,
-              surroundingText: chars,
-            }),
+              surroundingText: chars
+            })
           );
           // keep the selection considering the bold stars removed
           textArea.setSelectionRange(
             selectionStart - chars.length,
-            selectionEnd - chars.length,
+            selectionEnd - chars.length
           );
         } else {
           onTextContentChange(
@@ -166,19 +166,19 @@ export const MarkdownEditorToolbar = React.forwardRef<
               text: textContent,
               startIndex: selectionStart,
               endIndex: selectionEnd,
-              beforeText: chars,
-            }),
+              beforeText: chars
+            })
           );
           // keep the selection considering the bold stars added
           textArea.setSelectionRange(
             selectionStart + chars.length,
-            selectionEnd + chars.length,
+            selectionEnd + chars.length
           );
         }
       } else {
         const { start, end } = getSelectionStartAndSelectionEnd(
           textContent,
-          selectionEnd,
+          selectionEnd
         );
 
         const selectedContent = textContent.slice(start, end);
@@ -191,14 +191,14 @@ export const MarkdownEditorToolbar = React.forwardRef<
               text: textContent,
               startIndex: start,
               endIndex: end,
-              surroundingText: chars,
-            }),
+              surroundingText: chars
+            })
           );
 
           // keep the selection considering the bold stars removed
           textArea.setSelectionRange(
             selectionEnd - chars.length,
-            selectionEnd - chars.length,
+            selectionEnd - chars.length
           );
         } else {
           onTextContentChange(
@@ -206,21 +206,20 @@ export const MarkdownEditorToolbar = React.forwardRef<
               text: textContent,
               startIndex: start,
               endIndex: end,
-              beforeText: chars,
-            }),
+              beforeText: chars
+            })
           );
 
           // keep the selection considering the bold stars added
           textArea.setSelectionRange(
             selectionEnd + chars.length,
-            selectionEnd + chars.length,
+            selectionEnd + chars.length
           );
         }
       }
       textArea.focus();
     }
   }
-
   function addLink() {
     const textArea = textAreaRef.current;
     if (textArea) {
@@ -251,7 +250,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
           onTextContentChange(newTextContent);
           textArea.setSelectionRange(
             AFTER_URL_START_QUOTE,
-            BEFORE_URL_END_QUOTE,
+            BEFORE_URL_END_QUOTE
           );
         }
       } else {
@@ -273,85 +272,85 @@ export const MarkdownEditorToolbar = React.forwardRef<
         id: "header",
         label: "Header",
         icon: HeadingIcon,
-        onClick: addOrRemoveHeading,
+        onClick: addOrRemoveHeading
       },
       {
         id: "bold",
         label: "Bold",
         onClick: () => addOrRemoveSurroundingChars("**"),
-        icon: BoldIcon,
+        icon: BoldIcon
       },
       {
         id: "italic",
         label: "Italic",
         onClick: () => addOrRemoveSurroundingChars("_"),
-        icon: ItalicIcon,
+        icon: ItalicIcon
       },
       {
         id: "quote",
         label: "Quote",
         onClick: addOrRemoveQuote,
-        icon: QuoteIcon,
+        icon: QuoteIcon
       },
       {
         id: "code",
         label: "Code",
         onClick: () => addOrRemoveSurroundingChars("`"),
-        icon: CodeIcon,
+        icon: CodeIcon
       },
       {
         id: "strike-through",
         label: "Strike through",
         onClick: () => addOrRemoveSurroundingChars("~~"),
-        icon: StrikethroughIcon,
+        icon: StrikethroughIcon
       },
       {
         id: "link",
         label: "Link",
         onClick: addLink,
-        icon: LinkIcon,
-      },
+        icon: LinkIcon
+      }
     ],
     [
       {
         id: "ordered-list",
         label: "Numbered list",
         onClick: () => {},
-        icon: ListOrderedIcon,
+        icon: ListOrderedIcon
       },
       {
         id: "unordered-list",
         label: "Unordered list",
         onClick: () => {},
-        icon: ListUnorderedIcon,
+        icon: ListUnorderedIcon
       },
       {
         id: "task-list",
         label: "Task list",
         onClick: () => {},
-        icon: TasklistIcon,
-      },
+        icon: TasklistIcon
+      }
     ],
     [
       {
         id: "mentions",
         label: "Mentions",
         onClick: () => {},
-        icon: MentionIcon,
+        icon: MentionIcon
       },
       {
         id: "references",
         label: "References",
         onClick: () => {},
-        icon: CrossReferenceIcon,
+        icon: CrossReferenceIcon
       },
       {
         id: "commands",
         label: "Slash commands",
         onClick: () => {},
-        icon: DiffIgnoredIcon,
-      },
-    ],
+        icon: DiffIgnoredIcon
+      }
+    ]
   ] satisfies Array<ActionToolbarItemGroups>;
 
   return (
@@ -367,7 +366,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
 
 function getSelectionStartAndSelectionEnd(
   text: string,
-  cursorPosition: number,
+  cursorPosition: number
 ) {
   const nextWord = text.slice(cursorPosition).split(/[ \n]/)[0];
   const previousWord = text
@@ -394,7 +393,7 @@ function surroundTextWith({
   startIndex,
   endIndex,
   beforeText,
-  afterText = beforeText,
+  afterText = beforeText
 }: SurroundTextWithArgs) {
   const untilSelectionStart = text.slice(0, startIndex);
   const fromSelectionEnd = text.slice(endIndex);
@@ -420,7 +419,7 @@ function stripSurroundingText({
   text,
   startIndex,
   endIndex,
-  surroundingText,
+  surroundingText
 }: StripSurroundTextWithArgs) {
   const untilSelectionStart = text.slice(0, startIndex);
   const fromSelectionEnd = text.slice(endIndex);
@@ -430,7 +429,7 @@ function stripSurroundingText({
     untilSelectionStart +
     selectedContent.slice(
       surroundingText.length,
-      selectedContent.length - surroundingText.length,
+      selectedContent.length - surroundingText.length
     ) +
     fromSelectionEnd
   );
