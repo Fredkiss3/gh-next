@@ -16,6 +16,9 @@ import {
 } from "@primer/octicons-react";
 import { ActionToolbar } from "~/components/action-toolbar";
 
+// utils
+import { isValidURL } from "~/lib/shared/utils.shared";
+
 // types
 import type { ActionToolbarItemGroups } from "~/components/action-toolbar";
 
@@ -218,6 +221,52 @@ export const MarkdownEditorToolbar = React.forwardRef<
     }
   }
 
+  function addLink() {
+    const textArea = textAreaRef.current;
+    if (textArea) {
+      const textContent = textArea.value;
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+
+      const isSelectingMultipleChars = selectionEnd - selectionStart > 0;
+
+      if (isSelectingMultipleChars) {
+        const untilSelectionStart = textContent.slice(0, selectionStart);
+        const fromSelectionEnd = textContent.slice(selectionEnd);
+        const selectedText = textContent.slice(selectionStart, selectionEnd);
+
+        if (isValidURL(selectedText)) {
+          const newTextContent =
+            untilSelectionStart + `[](${selectedText})` + fromSelectionEnd;
+
+          onTextContentChange(newTextContent);
+
+          textArea.setSelectionRange(selectionStart + 1, selectionStart + 1);
+        } else {
+          const newTextContent =
+            untilSelectionStart + `[${selectedText}](url)` + fromSelectionEnd;
+
+          const AFTER_URL_START_QUOTE = selectionEnd + 3;
+          const BEFORE_URL_END_QUOTE = selectionEnd + 6;
+          onTextContentChange(newTextContent);
+          textArea.setSelectionRange(
+            AFTER_URL_START_QUOTE,
+            BEFORE_URL_END_QUOTE
+          );
+        }
+      } else {
+        const untilSelectionEnd = textContent.slice(0, selectionEnd);
+        const fromSelectionEnd = textContent.slice(selectionEnd);
+        const newTextContent = untilSelectionEnd + "[](url)" + fromSelectionEnd;
+
+        onTextContentChange(newTextContent);
+        textArea.setSelectionRange(selectionEnd + 1, selectionEnd + 1);
+      }
+
+      textArea.focus();
+    }
+  }
+
   const itemGroups = [
     [
       {
@@ -253,7 +302,7 @@ export const MarkdownEditorToolbar = React.forwardRef<
       {
         id: "link",
         label: "Link",
-        onClick: () => {},
+        onClick: addLink,
         icon: LinkIcon
       }
     ],

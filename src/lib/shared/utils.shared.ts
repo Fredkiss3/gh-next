@@ -72,12 +72,6 @@ export function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Check if a URL is a valid pathname
- * @param url
- * @param base
- * @returns
- */
 export function isValidURLPathname(url: any): url is string {
   try {
     const _ = new URL(url, "http://localhost");
@@ -85,6 +79,17 @@ export function isValidURLPathname(url: any): url is string {
   } catch (_) {
     return false;
   }
+}
+
+export function isValidURL(url: string) {
+  const urlSchema = preprocess((arg) => {
+    if (!arg || typeof arg !== "string") return arg;
+    if (!arg.includes(".")) return arg; // we only accept urls with a domain
+    const protocol = arg.startsWith("localhost") ? "http" : "https";
+    return `${protocol}://${arg}`;
+  }, z.string().url());
+
+  return urlSchema.safeParse(url).success;
 }
 
 /**

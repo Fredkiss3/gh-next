@@ -381,8 +381,12 @@ async function getComponents({
         return <></>;
       }
     },
-    // eslint-disable-next-line @next/next/no-img-element
-    img: (props) => <img {...props} loading="lazy" alt={props.alt ?? ""} />,
+    img: (props) => (
+      <a href={props.src} target="_blank" rel="noreferrer">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img {...props} loading="lazy" alt={props.alt ?? ""} />
+      </a>
+    ),
     input: (props) => {
       if (props.type !== "checkbox") {
         return null;
