@@ -10,7 +10,7 @@ import { MarkdownEditorPreview } from "~/components/markdown-editor/markdown-edi
 import { MarkdownEditorToolbar } from "~/components/markdown-editor/markdown-editor-toolbar";
 
 // utils
-import { clsx } from "~/lib/shared/utils.shared";
+import { clsx, isValidURL } from "~/lib/shared/utils.shared";
 import { z } from "zod";
 import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
 import { prerenderMarkdownPreview } from "~/components/markdown-editor/markdown-editor-preview";
@@ -70,6 +70,35 @@ export function MarkdownEditor({
       };
     }
   }, [selectedTab]);
+
+  function pasteLinkToTextarea(text: string) {
+    const textArea = textAreaRef.current;
+    if (textArea && isValidURL(text)) {
+      const textContent = textArea.value;
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+
+      const isSelectingMultipleChars = selectionEnd - selectionStart > 0;
+
+      if (isSelectingMultipleChars) {
+        const untilSelectionStart = textContent.slice(0, selectionStart);
+        const fromSelectionEnd = textContent.slice(selectionEnd);
+        const selectedText = textContent.slice(selectionStart, selectionEnd);
+
+        const linkText = `[${selectedText}](${text})`;
+        const newTextContent =
+          untilSelectionStart + linkText + fromSelectionEnd;
+
+        setFieldText(textArea, newTextContent);
+        textArea.setSelectionRange(
+          selectionStart + linkText.length,
+          selectionStart + linkText.length
+        );
+        return true;
+      }
+    }
+    return false;
+  }
 
   return (
     <>
@@ -150,6 +179,13 @@ export function MarkdownEditor({
                   {...props}
                   defaultValue={lastSavedTextContent}
                   label={label}
+                  onPaste={(ev) => {
+                    const isEventHandled = pasteLinkToTextarea(
+                      ev.clipboardData.getData("text/plain")
+                    );
+
+                    if (isEventHandled) ev.preventDefault();
+                  }}
                   className="text-sm"
                   name={selectedTab === "EDITOR" ? props.name : ""}
                   hideLabel
