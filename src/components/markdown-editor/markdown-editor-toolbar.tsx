@@ -266,6 +266,68 @@ export const MarkdownEditorToolbar = React.forwardRef<
     }
   }
 
+  function addOrRemoveList(type: "unordered" | "ordered" | "tasks") {
+    const textArea = textAreaRef.current;
+    if (textArea) {
+      const textContent = textArea.value;
+      const selectionStart = textArea.selectionStart;
+      const selectionEnd = textArea.selectionEnd;
+
+      const isSelectingMultipleChars = selectionEnd - selectionStart > 0;
+
+      if (isSelectingMultipleChars) {
+        // todo...
+      } else {
+        const untilSelectionStart = textContent.slice(0, selectionStart);
+        const fromSelectionStart = textContent.slice(selectionStart);
+
+        const allPreviousLines = untilSelectionStart.split("\n");
+        const currentLine = allPreviousLines.pop();
+
+        const listRegex =
+          type === "unordered"
+            ? /^([-*] ?)/
+            : type === "ordered"
+              ? /^(1\. ?)/
+              : /^(- \[ \] ?)/;
+
+        const match = (currentLine ?? "").match(listRegex);
+        const currentLineIsList = !!match;
+
+        if (currentLineIsList) {
+          const totalMatchedChars = match[0].length;
+          const newLineWithoutQuote = (currentLine ?? "")
+            .replace(listRegex, "")
+            .trimStart();
+
+          const result =
+            [...allPreviousLines, newLineWithoutQuote].join("\n") +
+            fromSelectionStart;
+
+          onTextContentChange(result);
+          textArea.setSelectionRange(
+            selectionStart - totalMatchedChars,
+            selectionEnd - totalMatchedChars
+          );
+        } else {
+          const listStartText =
+            type === "ordered" ? "1. " : type === "unordered" ? "- " : "- [ ] ";
+          const newLineWithList = listStartText + (currentLine ?? "");
+
+          const result =
+            [...allPreviousLines, newLineWithList].join("\n") +
+            fromSelectionStart;
+
+          onTextContentChange(result);
+          textArea.setSelectionRange(
+            selectionStart + listStartText.length,
+            selectionEnd + listStartText.length
+          );
+        }
+      }
+    }
+  }
+
   const itemGroups = [
     [
       {
@@ -315,19 +377,19 @@ export const MarkdownEditorToolbar = React.forwardRef<
       {
         id: "ordered-list",
         label: "Numbered list",
-        onClick: () => {},
+        onClick: () => addOrRemoveList("ordered"),
         icon: ListOrderedIcon
       },
       {
         id: "unordered-list",
         label: "Unordered list",
-        onClick: () => {},
+        onClick: () => addOrRemoveList("unordered"),
         icon: ListUnorderedIcon
       },
       {
         id: "task-list",
         label: "Task list",
-        onClick: () => {},
+        onClick: () => addOrRemoveList("tasks"),
         icon: TasklistIcon
       }
     ],

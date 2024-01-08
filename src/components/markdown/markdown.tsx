@@ -148,7 +148,7 @@ async function processMarkdownContentAndGetReferences(
       // @ts-expect-error
       rehypeSlug
     ],
-    remarkPlugins: [remarkGfm, remarkGemoji, remarkBreaks],
+    remarkPlugins: [remarkGemoji, remarkBreaks, remarkGfm],
     format: "md"
   });
 
@@ -270,10 +270,24 @@ async function getComponents({
         <ul
           {...props}
           key={key}
-          className={clsx({
-            "pl-4": props.className === "contains-task-list",
-            "list-disc pl-10": props.className !== "contains-task-list"
-          })}
+          {...{
+            "data-task-list":
+              props.className === "contains-task-list" ? "true" : undefined
+          }}
+          className={clsx(
+            {
+              "pl-4": props.className === "contains-task-list",
+              "list-disc pl-10": props.className !== "contains-task-list"
+            },
+            `[&>li:not([data-task-item])]:before:mx-1`,
+            `[&>li:not([data-task-item])]:before:inline-block`,
+            `[&>li:not([data-task-item])]:before:h-4`,
+            `[&>li:not([data-task-item])]:before:font-extrabold`,
+            `[&>li:not([data-task-item])]:before:text-foreground`,
+            `[&>li:not([data-task-item])]:before:content-["•"]`,
+            `[&>li:not([data-task-item])]:relative`,
+            `[&>li:not([data-task-item])]:-left-4`
+          )}
         />
       );
     },
@@ -283,7 +297,7 @@ async function getComponents({
         <ol
           {...props}
           key={key}
-          className={"list-decimal pl-10 [&_ol]:list-[lower-roman]"}
+          className={"list-decimal pl-4 [&_ol]:list-[lower-roman]"}
         />
       );
     },
@@ -331,8 +345,12 @@ async function getComponents({
         <li
           {...props}
           key={key}
+          {...{
+            "data-task-item":
+              props.className === "task-list-item" ? "true" : undefined
+          }}
           className={clsx({
-            "mt-1.5": props.className === "task-list-item",
+            "mt-1.5 relative -left-4": props.className === "task-list-item",
             "my-2": props.className !== "task-list-item"
           })}
         />
