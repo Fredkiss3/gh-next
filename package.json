@@ -40,7 +40,6 @@
     "eslint": "8.48.0",
     "eslint-config-next": "14.0.0",
     "geist": "^1.0.0",
-    "isbot": "^3.6.13",
     "nanoid": "^4.0.2",
     "next": "14.0.5-canary.38",
     "nextjs-toploader": "^1.6.4",
