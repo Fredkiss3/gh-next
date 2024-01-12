@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, userAgent } from "next/server";
 import {
   GITHUB_AUTHOR_USERNAME,
   GITHUB_REPOSITORY_NAME,
   SESSION_COOKIE_KEY
 } from "./lib/shared/constants";
 import { Session } from "./lib/server/session.server";
-import isbot from "isbot";
 
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
@@ -64,7 +63,8 @@ export default async function middleware(request: NextRequest) {
   // Ensure a session is attached to each user
   const sessionId = request.cookies.get(SESSION_COOKIE_KEY)?.value;
   let session = sessionId ? await Session.get(sessionId) : null;
-  const isBot = isbot(request.headers.get("User-Agent"));
+  const { isBot } = userAgent(request);
+  console.log({ isBot });
   if (!session) {
     session = await Session.create(isBot);
     return setRequestAndResponseCookies(request, session.getCookie());
