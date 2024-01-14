@@ -14,7 +14,7 @@ import { _envObject as env } from "../../../env-config.mjs";
 export class WebdisKV {
   /**
    * Fetches data from the KV store.
-   * @param {("GET"|"SET"|"SETEX"|"DEL"|"HSET"|"HGETALL"|"HMSET"|"SADD"|"EXPIRES"|"SMEMBERS"|"SREM")} command The Redis command to execute.
+   * @param {("GET"|"SET"|"SETEX"|"DEL"|"HSET"|"HGETALL"|"HMSET"|"SADD"|"EXPIRE"|"SMEMBERS"|"SREM")} command The Redis command to execute.
    * @param {Array<string|number>} args Arguments for the command.
    * @returns {Promise<any>} The result of the fetch operation.
    */
@@ -176,7 +176,7 @@ export class WebdisKV {
    * @param {number} ttl
    * @returns {Promise<void>}
    */
-  async expires(key, ttl) {
-    await this.#fetch("EXPIRES", key, ttl);
+  async expire(key, ttl) {
+    await this.#fetch("EXPIRE", key, ttl);
   }
 }
