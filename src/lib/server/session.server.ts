@@ -139,7 +139,11 @@ export class Session {
           1000
     );
     // saving the session in the storage will reset the TTL
-    await Session.#save({ ...this.#_session, ip: options.newIp });
+    await Session.#save({
+      ...this.#_session,
+      ip: options.newIp,
+      lastAccess: new Date()
+    });
   }
 
   public getCookie(): ResponseCookie {
