@@ -150,7 +150,7 @@ async function AllSessions({ userId }: { userId: number }) {
                 }
               )}
             >
-              <div className="flex justify-between items-start">
+              <div className="flex flex-col gap-2 md:flex-row justify-stretch  md:items-start md:justify-between">
                 <div className="flex gap-3 items-start">
                   {/* Activity indicator */}
                   <span
@@ -204,11 +204,11 @@ async function AllSessions({ userId }: { userId: number }) {
                   </div>
                 </div>
 
-                <div>
+                <div className="w-full md:w-auto">
                   <Button
                     href={`/settings/sessions/${session.id}`}
                     variant="subtle"
-                    className="bg-ghost px-3 py-1"
+                    className="bg-ghost px-3 py-1 w-full"
                   >
                     See more
                   </Button>
