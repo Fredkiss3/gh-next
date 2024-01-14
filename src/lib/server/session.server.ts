@@ -1,6 +1,7 @@
 import "server-only";
-import { kv } from "~/lib/server/kv/index.server";
-import { preprocess, z } from "zod";
+import { WebdisKV } from "~/lib/server/kv/webdis.server.mjs";
+import superjson from "superjson";
+import { z } from "zod";
 
 import {
   LOGGED_IN_SESSION_TTL,
@@ -18,7 +19,7 @@ import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 const sessionSchema = z.object({
   id: z.string(),
-  expiry: preprocess((arg) => new Date(arg as any), z.date()),
+  expiry: z.coerce.date(),
   user: createSelectSchema(users)
     .pick({
       id: true,
@@ -31,7 +32,17 @@ const sessionSchema = z.object({
     .optional(),
   signature: z.string(),
   additionnalData: z.record(z.string(), z.any()).nullish(),
-  bot: z.boolean().optional().default(false)
+  bot: z.coerce.boolean().optional().default(false),
+  userAgent: z.string(),
+  device: z.enum([
+    "console",
+    "mobile",
+    "tablet",
+    "smarttv",
+    "wearable",
+    "embedded",
+    "unknown"
+  ])
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;
@@ -44,16 +55,31 @@ export type SessionFlash = {
   message: Required<DefinedSession["flashMessages"]>[DefinedSessionKeys];
 };
 
+const SESSION_KEY_PREFIX = "session";
+const USER_SESSION_KEY_PREFIX = "user_session";
 export class Session {
   #_session: SerializedSession;
+  static #kv = new WebdisKV();
 
   public static async get(signedSessionId: string) {
     try {
       const verifiedSessionId = await this.#verifySessionId(signedSessionId);
 
-      const sessionObject = await kv.get(`session:${verifiedSessionId}`);
+      const sessionObject = await Session.#kv.hGetAll(
+        `${SESSION_KEY_PREFIX}:${verifiedSessionId}`
+      );
+
       if (sessionObject) {
-        return this.#fromPayload(sessionSchema.parse(sessionObject));
+        return this.#fromPayload(
+          sessionSchema.parse({
+            ...sessionObject,
+            bot: superjson.parse(sessionObject.bot),
+            expiry: Number(sessionObject.expiry),
+            user: superjson.parse(sessionObject.user),
+            flashMessages: superjson.parse(sessionObject.flashMessages),
+            additionnalData: superjson.parse(sessionObject.additionnalData)
+          })
+        );
       } else {
         return null;
       }
@@ -71,10 +97,20 @@ export class Session {
     return new Session(serializedPayload);
   }
 
-  public static async create(isBot = false) {
+  public static async create({
+    isBot = false,
+    userAgent,
+    device
+  }: {
+    isBot?: boolean;
+    userAgent: string;
+    device: SerializedSession["device"];
+  }) {
     return Session.#fromPayload(
       await Session.#create({
-        isBot
+        isBot,
+        userAgent,
+        device
       })
     );
   }
@@ -108,7 +144,7 @@ export class Session {
       throw new Error("cannot set theme if the user is not set");
     }
 
-    this.#_session.user["preferred_theme"] = theme;
+    this.#_session.user.preferred_theme = theme;
     await Session.#save(this.#_session);
     return this;
   }
@@ -127,7 +163,9 @@ export class Session {
           preferred_theme: user.preferred_theme,
           github_id: user.github_id
         }
-      }
+      },
+      userAgent: this.#_session.userAgent,
+      device: this.#_session.device
     });
 
     await Session.#save(this.#_session);
@@ -135,6 +173,9 @@ export class Session {
   }
 
   public async invalidate(): Promise<this> {
+    const userAgent = this.#_session.userAgent;
+    const device = this.#_session.device;
+
     // delete the old session
     await Session.#delete(this.#_session);
 
@@ -143,7 +184,9 @@ export class Session {
       init: {
         flashMessages: this.#_session.flashMessages,
         additionnalData: this.#_session.additionnalData
-      }
+      },
+      userAgent,
+      device
     });
 
     return this;
@@ -208,16 +251,49 @@ export class Session {
     return this.#_session.user;
   }
 
+  public get userAgent() {
+    return this.#_session.userAgent;
+  }
+
+  public get device() {
+    return this.#_session.device;
+  }
+
+  public get id() {
+    return this.#_session.id;
+  }
+
+  public async getUserSessions(userId: number) {
+    return await Session.#kv
+      .sMembers(`${USER_SESSION_KEY_PREFIX}:${userId}`)
+      .then((sessionIds) =>
+        Promise.all(sessionIds.map(Session.get)).then(
+          (sessions) =>
+            sessions.filter((session) => session !== null) as Session[]
+        )
+      );
+  }
+
+  public static async endUserSession(userId: number, sessionId: string) {
+    const session = await Session.get(sessionId);
+    if (session && session.user?.id === userId) {
+      await this.#kv.sRem(`${USER_SESSION_KEY_PREFIX}:${userId}`, sessionId);
+      await this.#delete(session.#_session);
+    }
+  }
+
   /***********************************/
   /*        PRIVATE METHODS          */
   /***********************************/
 
-  static async #create(options?: {
+  static async #create(options: {
     init?: Pick<
       SerializedSession,
       "flashMessages" | "additionnalData" | "user"
     >;
     isBot?: boolean;
+    userAgent: string;
+    device: SerializedSession["device"];
   }) {
     const { sessionId, signature } = await Session.#generateSessionId();
 
@@ -229,10 +305,12 @@ export class Session {
           ? new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000)
           : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
       signature,
-      flashMessages: options?.init?.flashMessages,
-      additionnalData: options?.init?.additionnalData,
-      bot: Boolean(options?.isBot),
-      user: options?.init?.user
+      flashMessages: options.init?.flashMessages,
+      additionnalData: options.init?.additionnalData,
+      bot: Boolean(options.isBot),
+      user: options.init?.user,
+      userAgent: options.userAgent,
+      device: options.device
     } satisfies SerializedSession;
 
     await Session.#save(sessionObject);
@@ -252,14 +330,30 @@ export class Session {
       sessionTTL = 5; // only 5 seconds for bot sessions
     }
 
-    await kv.set(`session:${session.id}`, { ...session, expiry }, sessionTTL);
+    await Promise.all([
+      this.#kv.hmSet(`${SESSION_KEY_PREFIX}:${session.id}`, {
+        ...session,
+        expiry,
+        bot: superjson.stringify(session.bot),
+        user: superjson.stringify(session.user),
+        flashMessages: superjson.stringify(session.flashMessages),
+        additionnalData: superjson.stringify(session.additionnalData)
+      }),
+      this.#kv.expire(`${SESSION_KEY_PREFIX}:${session.id}`, sessionTTL),
+      session.user
+        ? this.#kv.sAdd(
+            `${USER_SESSION_KEY_PREFIX}:${session.user.id}`,
+            session.id
+          )
+        : null
+    ]);
   }
 
   static async #delete(session: SerializedSession) {
     const verifiedSessionId = await Session.#verifySessionId(
       `${session.id}.${session.signature}`
     );
-    await kv.delete(`session:${verifiedSessionId}`);
+    await this.#kv.delete(`${SESSION_KEY_PREFIX}:${verifiedSessionId}`);
   }
 
   static #arrayBufferToBase64(buffer: ArrayBuffer) {

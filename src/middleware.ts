@@ -4,7 +4,7 @@ import {
   GITHUB_REPOSITORY_NAME,
   SESSION_COOKIE_KEY
 } from "./lib/shared/constants";
-import { Session } from "./lib/server/session.server";
+import { Session, type SerializedSession } from "./lib/server/session.server";
 
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
@@ -63,10 +63,13 @@ export default async function middleware(request: NextRequest) {
   // Ensure a session is attached to each user
   const sessionId = request.cookies.get(SESSION_COOKIE_KEY)?.value;
   let session = sessionId ? await Session.get(sessionId) : null;
-  const { isBot } = userAgent(request);
-  console.log({ isBot });
+  const { isBot, device } = userAgent(request);
   if (!session) {
-    session = await Session.create(isBot);
+    session = await Session.create({
+      isBot,
+      userAgent: request.headers.get("user-agent") ?? "unknown",
+      device: (device.type as SerializedSession["device"]) ?? "unknown"
+    });
     return setRequestAndResponseCookies(request, session.getCookie());
   }
 
@@ -76,7 +79,10 @@ export default async function middleware(request: NextRequest) {
     try {
       await session.extendValidity();
     } catch (error) {
-      session = await Session.create();
+      session = await Session.create({
+        userAgent: request.headers.get("user-agent") ?? "unknown",
+        device: (device.type as SerializedSession["device"]) ?? "unknown"
+      });
     } finally {
       return setRequestAndResponseCookies(request, session.getCookie());
     }
