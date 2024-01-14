@@ -33,6 +33,30 @@ function setRequestAndResponseCookies(
   return response;
 }
 
+function isPrivateOrLocalIP(ip: string): boolean {
+  const privateIPv4Regex =
+    /^(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})|(127\.\d{1,3}\.\d{1,3}\.\d{1,3})$/;
+  const privateIPv6Regex = /^(fc00::\/7|fd[0-9a-f]{2})/;
+  const localIPv6Regex = /^::1$/;
+
+  return (
+    privateIPv4Regex.test(ip) ||
+    privateIPv6Regex.test(ip) ||
+    localIPv6Regex.test(ip)
+  );
+}
+
+async function getPublicIP(request: NextRequest) {
+  let publicIP = request.headers.get("X-Forwarded-For")!;
+
+  if (isPrivateOrLocalIP(publicIP)) {
+    publicIP = await fetch("https://ipinfo.io/ip", {
+      cache: "force-cache"
+    }).then((r) => r.text());
+  }
+  return publicIP;
+}
+
 export default async function middleware(request: NextRequest) {
   // Ignore images in PUBLIC FOLDER
   if (
@@ -86,7 +110,7 @@ export default async function middleware(request: NextRequest) {
       isBot,
       userAgent: request.headers.get("user-agent") ?? "unknown",
       device: userDevice,
-      ip: request.headers.get("X-Forwarded-For")!
+      ip: await getPublicIP(request)
     });
     return setRequestAndResponseCookies(request, session.getCookie());
   }
@@ -96,13 +120,13 @@ export default async function middleware(request: NextRequest) {
   if (request.headers.get("accept")?.includes("text/html") && !isBot) {
     try {
       await session.extendValidity({
-        newIp: request.headers.get("X-Forwarded-For")!
+        newIp: await getPublicIP(request)
       });
     } catch (error) {
       session = await Session.create({
         userAgent: request.headers.get("user-agent") ?? "unknown",
         device: userDevice,
-        ip: request.headers.get("X-Forwarded-For")!
+        ip: await getPublicIP(request)
       });
     } finally {
       return setRequestAndResponseCookies(request, session.getCookie());

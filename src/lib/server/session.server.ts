@@ -49,7 +49,8 @@ const sessionSchema = z.object({
       "unknown"
     ])
     .default("unknown"),
-  ip: z.string()
+  ip: z.string(),
+  lastAccess: z.coerce.date().optional().catch(undefined)
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;
@@ -68,9 +69,11 @@ export class Session {
   #_session: SerializedSession;
   static #kv = new WebdisKV();
 
-  public static async get(signedSessionId: string) {
+  public static async get(signedSessionId: string, verify = true) {
     try {
-      const verifiedSessionId = await this.#verifySessionId(signedSessionId);
+      const verifiedSessionId = verify
+        ? await this.#verifySessionId(signedSessionId)
+        : signedSessionId;
 
       const sessionObject = await Session.#kv.hGetAll(
         `${SESSION_KEY_PREFIX}:${verifiedSessionId}`
@@ -82,6 +85,7 @@ export class Session {
             ...sessionObject,
             bot: superjson.parse(sessionObject.bot),
             expiry: Number(sessionObject.expiry),
+            lastAccess: Number(sessionObject.lastAccess),
             user: superjson.parse(sessionObject.user),
             flashMessages: superjson.parse(sessionObject.flashMessages),
             additionnalData: superjson.parse(sessionObject.additionnalData)
@@ -108,19 +112,22 @@ export class Session {
     isBot = false,
     userAgent,
     device,
-    ip
+    ip,
+    lastAccess
   }: {
     isBot?: boolean;
     userAgent: string;
     device: SerializedSession["device"];
     ip: string;
+    lastAccess: Date;
   }) {
     return Session.#fromPayload(
       await Session.#create({
         isBot,
         userAgent,
         device,
-        ip
+        ip,
+        lastAccess
       })
     );
   }
@@ -177,7 +184,8 @@ export class Session {
       },
       userAgent: this.#_session.userAgent,
       device: this.#_session.device,
-      ip: this.#_session.ip
+      ip: this.#_session.ip,
+      lastAccess: new Date()
     });
 
     await Session.#save(this.#_session);
@@ -186,8 +194,15 @@ export class Session {
 
   public async invalidate(): Promise<this> {
     const userAgent = this.#_session.userAgent;
-    const device = this.#_session.device;
-    const ip = this.#_session.ip;
+    const device = this.device;
+    const ip = this.ip;
+
+    if (this.user) {
+      await Session.#kv.sRem(
+        `${USER_SESSION_KEY_PREFIX}:${this.user.id}`,
+        this.id
+      );
+    }
 
     // delete the old session
     await Session.#delete(this.#_session);
@@ -200,7 +215,8 @@ export class Session {
       },
       userAgent,
       device,
-      ip
+      ip,
+      lastAccess: new Date()
     });
 
     return this;
@@ -281,11 +297,20 @@ export class Session {
     return this.#_session.ip;
   }
 
-  public async getUserSessions(userId: number) {
+  public get lastLogin() {
+    return this.#_session.user?.lastLogin;
+  }
+  public get lastAccessed() {
+    return this.#_session.lastAccess;
+  }
+
+  public static async getUserSessions(userId: number) {
     return await Session.#kv
       .sMembers(`${USER_SESSION_KEY_PREFIX}:${userId}`)
       .then((sessionIds) =>
-        Promise.all(sessionIds.map(Session.get)).then(
+        Promise.all(
+          sessionIds.map((sessionId) => Session.get(sessionId, false))
+        ).then(
           (sessions) =>
             sessions.filter((session) => session !== null) as Session[]
         )
@@ -313,6 +338,7 @@ export class Session {
     userAgent: string;
     device: SerializedSession["device"];
     ip: string;
+    lastAccess: Date;
   }) {
     const { sessionId, signature } = await Session.#generateSessionId();
 
@@ -330,7 +356,8 @@ export class Session {
       user: options.init?.user,
       userAgent: options.userAgent,
       device: options.device,
-      ip: options.ip
+      ip: options.ip,
+      lastAccess: options.lastAccess
     } satisfies SerializedSession;
 
     await Session.#save(sessionObject);
@@ -339,9 +366,6 @@ export class Session {
 
   static async #save(session: SerializedSession) {
     await Session.#verifySessionId(`${session.id}.${session.signature}`);
-
-    // don't store expiry as a date, but a timestamp instead
-    const expiry = session.expiry.getTime();
 
     let sessionTTL = session.user
       ? LOGGED_IN_SESSION_TTL
@@ -353,7 +377,8 @@ export class Session {
     await Promise.all([
       this.#kv.hmSet(`${SESSION_KEY_PREFIX}:${session.id}`, {
         ...session,
-        expiry,
+        expiry: session.expiry.getTime(),
+        lastAccess: session.lastAccess?.getTime() ?? new Date().getTime(),
         bot: superjson.stringify(session.bot),
         user: superjson.stringify(session.user),
         flashMessages: superjson.stringify(session.flashMessages),

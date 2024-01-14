@@ -32,7 +32,7 @@ export function SettingsVerticalNavlist({
           </li>
           <li>
             <VerticalNavLink href="/settings/sessions" icon={BroadcastIcon}>
-              Sesssions
+              Sessions
             </VerticalNavLink>
           </li>
         </ul>
