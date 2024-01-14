@@ -27,7 +27,7 @@ export const metadata = {
   title: "Sessions"
 };
 
-export default async function SessionsPage() {
+export default async function SessionListPage() {
   const user = await getUserOrRedirect("/settings/sessions");
 
   return (
@@ -110,6 +110,17 @@ async function AllSessions({ userId }: { userId: number }) {
             return -1;
           }
           if (sessionB.id === currentSesssion.id) {
+            return 1;
+          }
+          if (sessionA.lastAccessed && sessionB.lastAccessed) {
+            if (sessionA.lastAccessed > sessionB.lastAccessed) {
+              return -1;
+            } else {
+              return 1;
+            }
+          } else if (sessionA.lastAccessed) {
+            return -1;
+          } else if (sessionB.lastAccessed) {
             return 1;
           }
           return 0;
