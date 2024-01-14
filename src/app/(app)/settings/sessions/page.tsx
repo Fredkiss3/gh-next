@@ -59,7 +59,7 @@ export default async function SessionListPage() {
                     }
                   )}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col gap-3 md:flex-row justify-stretch md:justify-between md:items-start">
                     <div className="flex gap-3 items-start">
                       {/* Activity indicator */}
                       <Skeleton
@@ -78,7 +78,7 @@ export default async function SessionListPage() {
                     </div>
 
                     {/* Button */}
-                    <Skeleton className="w-20 h-7" />
+                    <Skeleton className="w-full h-6 md:w-20 md:h-7" />
                   </div>
                   <Skeleton className="w-40 h-3" />
                 </li>

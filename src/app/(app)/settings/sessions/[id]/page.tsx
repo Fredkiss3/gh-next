@@ -70,7 +70,7 @@ export default async function SessionDetailPage({
                 "rounded-md"
               )}
             >
-              <div className="flex justify-between items-start">
+              <div className="flex flex-col gap-3 justify-stretch md:justify-between md:items-start md:flex-row">
                 <div className="flex gap-3 items-start">
                   {/* Activity indicator */}
                   <Skeleton
@@ -89,7 +89,7 @@ export default async function SessionDetailPage({
                 </div>
 
                 {/* Button */}
-                <Skeleton className="w-32 h-7" />
+                <Skeleton className="h-7 w-full md:w-32" />
               </div>
               <Skeleton className="w-20 h-3" />
 
