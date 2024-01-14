@@ -22,7 +22,8 @@
         "HMGET",
         "SREM",
         "SADD",
-        "SMEMBERS"
+        "SMEMBERS",
+        "EXPIRE"
       ]
     }
   ],
