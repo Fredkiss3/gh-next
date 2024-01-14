@@ -47,7 +47,9 @@ function isPrivateOrLocalIP(ip: string): boolean {
 }
 
 async function getPublicIP(request: NextRequest) {
-  let publicIP = request.headers.get("X-Forwarded-For")!;
+  let publicIP =
+    request.headers.get("CF-Connecting-IP") ??
+    request.headers.get("X-Forwarded-For")!;
 
   console.log({
     publicIP
