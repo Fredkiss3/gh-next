@@ -75,22 +75,12 @@ export class Session {
         ? await this.#verifySessionId(signedSessionId)
         : signedSessionId;
 
-      const sessionObject = await Session.#kv.hGetAll(
+      const sessionObject: any = await Session.#kv.get(
         `${SESSION_KEY_PREFIX}:${verifiedSessionId}`
       );
 
       if (sessionObject) {
-        return this.#fromPayload(
-          sessionSchema.parse({
-            ...sessionObject,
-            bot: superjson.parse(sessionObject.bot),
-            expiry: Number(sessionObject.expiry),
-            lastAccess: Number(sessionObject.lastAccess),
-            user: superjson.parse(sessionObject.user),
-            flashMessages: superjson.parse(sessionObject.flashMessages),
-            additionnalData: superjson.parse(sessionObject.additionnalData)
-          })
-        );
+        return this.#fromPayload(sessionSchema.parse(sessionObject));
       } else {
         return null;
       }
@@ -386,16 +376,16 @@ export class Session {
     const { userAgent, ...remainingSession } = session;
 
     await Promise.all([
-      this.#kv.hmSet(`${SESSION_KEY_PREFIX}:${session.id}`, {
-        ...remainingSession,
-        expiry: session.expiry.getTime(),
-        lastAccess: session.lastAccess?.getTime() ?? new Date().getTime(),
-        bot: superjson.stringify(session.bot),
-        user: superjson.stringify(session.user),
-        flashMessages: superjson.stringify(session.flashMessages),
-        additionnalData: superjson.stringify(session.additionnalData)
-      }),
-      this.#kv.expire(`${SESSION_KEY_PREFIX}:${session.id}`, sessionTTL),
+      this.#kv.set(
+        `${SESSION_KEY_PREFIX}:${session.id}`,
+        {
+          ...remainingSession,
+          expiry: session.expiry.getTime(),
+          lastAccess: session.lastAccess?.getTime() ?? new Date().getTime(),
+          userAgent
+        },
+        sessionTTL
+      ),
       session.user
         ? this.#kv.sAdd(
             `${USER_SESSION_KEY_PREFIX}:${session.user.id}`,
@@ -403,12 +393,6 @@ export class Session {
           )
         : null
     ]);
-
-    await this.#kv.hSet(
-      `${SESSION_KEY_PREFIX}:${session.id}`,
-      "userAgent",
-      userAgent
-    );
   }
 
   static async #delete(session: SerializedSession, verify = true) {
