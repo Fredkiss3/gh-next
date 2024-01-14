@@ -26,6 +26,9 @@ const sessionSchema = z.object({
       preferred_theme: true,
       github_id: true
     })
+    .extend({
+      lastLogin: z.coerce.date()
+    })
     .nullish(),
   flashMessages: z
     .record(z.enum(["success", "error", "info", "warning"]), z.string())
@@ -45,7 +48,8 @@ const sessionSchema = z.object({
       "desktop",
       "unknown"
     ])
-    .default("unknown")
+    .default("unknown"),
+  ip: z.string()
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;
@@ -103,29 +107,32 @@ export class Session {
   public static async create({
     isBot = false,
     userAgent,
-    device
+    device,
+    ip
   }: {
     isBot?: boolean;
     userAgent: string;
     device: SerializedSession["device"];
+    ip: string;
   }) {
     return Session.#fromPayload(
       await Session.#create({
         isBot,
         userAgent,
-        device
+        device,
+        ip
       })
     );
   }
 
-  public async extendValidity() {
+  public async extendValidity(options: { newIp: string }) {
     this.#_session.expiry = new Date(
       Date.now() +
         (this.#_session.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) *
           1000
     );
     // saving the session in the storage will reset the TTL
-    await Session.#save(this.#_session);
+    await Session.#save({ ...this.#_session, ip: options.newIp });
   }
 
   public getCookie(): ResponseCookie {
@@ -164,11 +171,13 @@ export class Session {
         user: {
           id: user.id,
           preferred_theme: user.preferred_theme,
-          github_id: user.github_id
+          github_id: user.github_id,
+          lastLogin: new Date()
         }
       },
       userAgent: this.#_session.userAgent,
-      device: this.#_session.device
+      device: this.#_session.device,
+      ip: this.#_session.ip
     });
 
     await Session.#save(this.#_session);
@@ -178,6 +187,7 @@ export class Session {
   public async invalidate(): Promise<this> {
     const userAgent = this.#_session.userAgent;
     const device = this.#_session.device;
+    const ip = this.#_session.ip;
 
     // delete the old session
     await Session.#delete(this.#_session);
@@ -189,7 +199,8 @@ export class Session {
         additionnalData: this.#_session.additionnalData
       },
       userAgent,
-      device
+      device,
+      ip
     });
 
     return this;
@@ -266,6 +277,10 @@ export class Session {
     return this.#_session.id;
   }
 
+  public get ip() {
+    return this.#_session.ip;
+  }
+
   public async getUserSessions(userId: number) {
     return await Session.#kv
       .sMembers(`${USER_SESSION_KEY_PREFIX}:${userId}`)
@@ -297,6 +312,7 @@ export class Session {
     isBot?: boolean;
     userAgent: string;
     device: SerializedSession["device"];
+    ip: string;
   }) {
     const { sessionId, signature } = await Session.#generateSessionId();
 
@@ -313,7 +329,8 @@ export class Session {
       bot: Boolean(options.isBot),
       user: options.init?.user,
       userAgent: options.userAgent,
-      device: options.device
+      device: options.device,
+      ip: options.ip
     } satisfies SerializedSession;
 
     await Session.#save(sessionObject);

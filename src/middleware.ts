@@ -85,7 +85,8 @@ export default async function middleware(request: NextRequest) {
     session = await Session.create({
       isBot,
       userAgent: request.headers.get("user-agent") ?? "unknown",
-      device: userDevice
+      device: userDevice,
+      ip: request.headers.get("X-Forwarded-For")!
     });
     return setRequestAndResponseCookies(request, session.getCookie());
   }
@@ -94,11 +95,14 @@ export default async function middleware(request: NextRequest) {
   // only if the request doesn't come from a bot
   if (request.headers.get("accept")?.includes("text/html") && !isBot) {
     try {
-      await session.extendValidity();
+      await session.extendValidity({
+        newIp: request.headers.get("X-Forwarded-For")!
+      });
     } catch (error) {
       session = await Session.create({
         userAgent: request.headers.get("user-agent") ?? "unknown",
-        device: userDevice
+        device: userDevice,
+        ip: request.headers.get("X-Forwarded-For")!
       });
     } finally {
       return setRequestAndResponseCookies(request, session.getCookie());
