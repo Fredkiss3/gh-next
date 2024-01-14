@@ -49,6 +49,10 @@ function isPrivateOrLocalIP(ip: string): boolean {
 async function getPublicIP(request: NextRequest) {
   let publicIP = request.headers.get("X-Forwarded-For")!;
 
+  console.log({
+    publicIP
+  });
+
   if (isPrivateOrLocalIP(publicIP)) {
     publicIP = await fetch("https://ipinfo.io/ip", {
       cache: "force-cache"
