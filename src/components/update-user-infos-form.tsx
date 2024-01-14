@@ -34,7 +34,7 @@ export function UpdateUserInfosForm({ defaultValues }: UpdateUserInfosProps) {
     >
       <Input
         name="name"
-        label="New name"
+        label="Full Name"
         placeholder="ex: Sha-dcn"
         defaultValue={defaultValues.name}
         validationStatus={!!errors?.name ? "error" : undefined}

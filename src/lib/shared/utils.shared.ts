@@ -255,6 +255,13 @@ export function formatDate(date: Date | string): string {
   }
 }
 
+export function isDateLessThanAnHourAgo(date: Date | string) {
+  date = new Date(date);
+  const now = dayjs();
+
+  return now.diff(date, "hours") === 0;
+}
+
 /**
  * Returns an excerpt of the input string. If the string is longer than `maxChars`,
  * it's cut off and '...' is appended to it.

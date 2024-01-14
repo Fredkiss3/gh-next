@@ -25,5 +25,6 @@ export const CacheKeys = {
     props.user,
     props.repo,
     props.number
-  ]
+  ],
+  geo: (ip: string) => ["GEO", ip]
 } as const;

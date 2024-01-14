@@ -5,7 +5,7 @@ import { UpdateUserInfosForm } from "~/components/update-user-infos-form";
 import { Button } from "~/components/button";
 
 // utils
-import { getAuthedUser, redirectIfNotAuthed } from "~/actions/auth.action";
+import { getUserOrRedirect } from "~/actions/auth.action";
 import { updateUserProfileInfosInputValidator } from "~/models/dto/update-profile-info-input-validator";
 
 // types
@@ -16,9 +16,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await redirectIfNotAuthed("/settings/account");
+  const user = await getUserOrRedirect("/settings/account");
 
-  const user = (await getAuthedUser())!;
   return (
     <div className="flex flex-col gap-24">
       <section className="flex flex-col gap-4 md:gap-8">

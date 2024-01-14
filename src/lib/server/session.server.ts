@@ -1,6 +1,6 @@
 import "server-only";
-import { kv } from "~/lib/server/kv/index.server";
-import { preprocess, z } from "zod";
+import { WebdisKV } from "~/lib/server/kv/webdis.server.mjs";
+import { z } from "zod";
 
 import {
   LOGGED_IN_SESSION_TTL,
@@ -18,12 +18,15 @@ import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 const sessionSchema = z.object({
   id: z.string(),
-  expiry: preprocess((arg) => new Date(arg as any), z.date()),
+  expiry: z.coerce.date(),
   user: createSelectSchema(users)
     .pick({
       id: true,
       preferred_theme: true,
       github_id: true
+    })
+    .extend({
+      lastLogin: z.coerce.date()
     })
     .nullish(),
   flashMessages: z
@@ -31,7 +34,22 @@ const sessionSchema = z.object({
     .optional(),
   signature: z.string(),
   additionnalData: z.record(z.string(), z.any()).nullish(),
-  bot: z.boolean().optional().default(false)
+  bot: z.coerce.boolean().optional().default(false),
+  userAgent: z.string(),
+  device: z
+    .enum([
+      "console",
+      "mobile",
+      "tablet",
+      "smarttv",
+      "wearable",
+      "embedded",
+      "desktop",
+      "unknown"
+    ])
+    .default("unknown"),
+  ip: z.string(),
+  lastAccess: z.coerce.date().optional().catch(undefined)
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;
@@ -44,14 +62,22 @@ export type SessionFlash = {
   message: Required<DefinedSession["flashMessages"]>[DefinedSessionKeys];
 };
 
+const SESSION_KEY_PREFIX = "session";
+const USER_SESSION_KEY_PREFIX = "user_session";
 export class Session {
   #_session: SerializedSession;
+  static #kv = new WebdisKV();
 
-  public static async get(signedSessionId: string) {
+  public static async get(signedSessionId: string, verify = true) {
     try {
-      const verifiedSessionId = await this.#verifySessionId(signedSessionId);
+      const verifiedSessionId = verify
+        ? await this.#verifySessionId(signedSessionId)
+        : signedSessionId;
 
-      const sessionObject = await kv.get(`session:${verifiedSessionId}`);
+      const sessionObject: any = await Session.#kv.get(
+        `${SESSION_KEY_PREFIX}:${verifiedSessionId}`
+      );
+
       if (sessionObject) {
         return this.#fromPayload(sessionSchema.parse(sessionObject));
       } else {
@@ -71,22 +97,42 @@ export class Session {
     return new Session(serializedPayload);
   }
 
-  public static async create(isBot = false) {
+  public static async create({
+    isBot = false,
+    userAgent,
+    device,
+    ip,
+    lastAccess
+  }: {
+    isBot?: boolean;
+    userAgent: string;
+    device: SerializedSession["device"];
+    ip: string;
+    lastAccess: Date;
+  }) {
     return Session.#fromPayload(
       await Session.#create({
-        isBot
+        isBot,
+        userAgent,
+        device,
+        ip,
+        lastAccess
       })
     );
   }
 
-  public async extendValidity() {
+  public async extendValidity(options: { newIp: string }) {
     this.#_session.expiry = new Date(
       Date.now() +
         (this.#_session.user ? LOGGED_IN_SESSION_TTL : LOGGED_OUT_SESSION_TTL) *
           1000
     );
     // saving the session in the storage will reset the TTL
-    await Session.#save(this.#_session);
+    await Session.#save({
+      ...this.#_session,
+      ip: options.newIp,
+      lastAccess: new Date()
+    });
   }
 
   public getCookie(): ResponseCookie {
@@ -108,7 +154,7 @@ export class Session {
       throw new Error("cannot set theme if the user is not set");
     }
 
-    this.#_session.user["preferred_theme"] = theme;
+    this.#_session.user.preferred_theme = theme;
     await Session.#save(this.#_session);
     return this;
   }
@@ -125,9 +171,14 @@ export class Session {
         user: {
           id: user.id,
           preferred_theme: user.preferred_theme,
-          github_id: user.github_id
+          github_id: user.github_id,
+          lastLogin: new Date()
         }
-      }
+      },
+      userAgent: this.#_session.userAgent,
+      device: this.#_session.device,
+      ip: this.#_session.ip,
+      lastAccess: new Date()
     });
 
     await Session.#save(this.#_session);
@@ -135,6 +186,17 @@ export class Session {
   }
 
   public async invalidate(): Promise<this> {
+    const userAgent = this.#_session.userAgent;
+    const device = this.device;
+    const ip = this.ip;
+
+    if (this.user) {
+      await Session.#kv.sRem(
+        `${USER_SESSION_KEY_PREFIX}:${this.user.id}`,
+        this.id
+      );
+    }
+
     // delete the old session
     await Session.#delete(this.#_session);
 
@@ -143,7 +205,11 @@ export class Session {
       init: {
         flashMessages: this.#_session.flashMessages,
         additionnalData: this.#_session.additionnalData
-      }
+      },
+      userAgent,
+      device,
+      ip,
+      lastAccess: new Date()
     });
 
     return this;
@@ -208,16 +274,69 @@ export class Session {
     return this.#_session.user;
   }
 
+  public get userAgent() {
+    return this.#_session.userAgent;
+  }
+
+  public get device() {
+    return this.#_session.device;
+  }
+
+  public get id() {
+    return this.#_session.id;
+  }
+
+  public get ip() {
+    return this.#_session.ip;
+  }
+
+  public get lastLogin() {
+    return this.#_session.user?.lastLogin;
+  }
+  public get lastAccessed() {
+    return this.#_session.lastAccess;
+  }
+
+  public static async getUserSessions(userId: number) {
+    return await Session.#kv
+      .sMembers(`${USER_SESSION_KEY_PREFIX}:${userId}`)
+      .then((sessionIds) =>
+        Promise.all(
+          sessionIds.map((sessionId) => Session.get(sessionId, false))
+        ).then(
+          (sessions) =>
+            sessions.filter((session) => session !== null) as Session[]
+        )
+      );
+  }
+
+  public static async getUserSession(userId: number, sessionId: string) {
+    const session = await Session.get(sessionId, false);
+    return session?.user?.id === userId ? session : null;
+  }
+
+  public static async endUserSession(userId: number, sessionId: string) {
+    const session = await Session.get(sessionId, false);
+    if (session && session.user?.id === userId) {
+      await this.#kv.sRem(`${USER_SESSION_KEY_PREFIX}:${userId}`, sessionId);
+      await this.#delete(session.#_session, false);
+    }
+  }
+
   /***********************************/
   /*        PRIVATE METHODS          */
   /***********************************/
 
-  static async #create(options?: {
+  static async #create(options: {
     init?: Pick<
       SerializedSession,
       "flashMessages" | "additionnalData" | "user"
     >;
     isBot?: boolean;
+    userAgent: string;
+    device: SerializedSession["device"];
+    ip: string;
+    lastAccess: Date;
   }) {
     const { sessionId, signature } = await Session.#generateSessionId();
 
@@ -229,10 +348,14 @@ export class Session {
           ? new Date(Date.now() + LOGGED_IN_SESSION_TTL * 1000)
           : new Date(Date.now() + LOGGED_OUT_SESSION_TTL * 1000),
       signature,
-      flashMessages: options?.init?.flashMessages,
-      additionnalData: options?.init?.additionnalData,
-      bot: Boolean(options?.isBot),
-      user: options?.init?.user
+      flashMessages: options.init?.flashMessages,
+      additionnalData: options.init?.additionnalData,
+      bot: Boolean(options.isBot),
+      user: options.init?.user,
+      userAgent: options.userAgent,
+      device: options.device,
+      ip: options.ip,
+      lastAccess: options.lastAccess
     } satisfies SerializedSession;
 
     await Session.#save(sessionObject);
@@ -242,9 +365,6 @@ export class Session {
   static async #save(session: SerializedSession) {
     await Session.#verifySessionId(`${session.id}.${session.signature}`);
 
-    // don't store expiry as a date, but a timestamp instead
-    const expiry = session.expiry.getTime();
-
     let sessionTTL = session.user
       ? LOGGED_IN_SESSION_TTL
       : LOGGED_OUT_SESSION_TTL;
@@ -252,14 +372,33 @@ export class Session {
       sessionTTL = 5; // only 5 seconds for bot sessions
     }
 
-    await kv.set(`session:${session.id}`, { ...session, expiry }, sessionTTL);
+    const { userAgent, ...remainingSession } = session;
+
+    await Promise.all([
+      this.#kv.set(
+        `${SESSION_KEY_PREFIX}:${session.id}`,
+        {
+          ...remainingSession,
+          expiry: session.expiry.getTime(),
+          lastAccess: session.lastAccess?.getTime() ?? new Date().getTime(),
+          userAgent
+        },
+        sessionTTL
+      ),
+      session.user
+        ? this.#kv.sAdd(
+            `${USER_SESSION_KEY_PREFIX}:${session.user.id}`,
+            session.id
+          )
+        : null
+    ]);
   }
 
-  static async #delete(session: SerializedSession) {
-    const verifiedSessionId = await Session.#verifySessionId(
-      `${session.id}.${session.signature}`
-    );
-    await kv.delete(`session:${verifiedSessionId}`);
+  static async #delete(session: SerializedSession, verify = true) {
+    const verifiedSessionId = verify
+      ? await Session.#verifySessionId(`${session.id}.${session.signature}`)
+      : session.id;
+    await this.#kv.delete(`${SESSION_KEY_PREFIX}:${verifiedSessionId}`);
   }
 
   static #arrayBufferToBase64(buffer: ArrayBuffer) {
