@@ -96,16 +96,20 @@ export default async function SessionListPage() {
 async function AllSessions({ userId }: { userId: number }) {
   const [currentSesssion, userSessions] = await Promise.all([
     getSession(),
-    Session.getUserSessions(userId)
+    Session.getUserSessions(userId).then((sessions) =>
+      Promise.all(
+        sessions.map(async (session) => {
+          const location = await getLocationData(session);
+          return { session, location };
+        })
+      )
+    )
   ]);
-  const sessionLocationData = await Promise.all(
-    userSessions.map(getLocationData)
-  );
 
   return (
     <ul>
       {userSessions
-        .sort((sessionA, sessionB) => {
+        .sort(({ session: sessionA }, { session: sessionB }) => {
           if (sessionA.id === currentSesssion.id) {
             return -1;
           }
@@ -125,12 +129,9 @@ async function AllSessions({ userId }: { userId: number }) {
           }
           return 0;
         })
-        .map((session, index) => {
-          let location: SuccessfulLocationData | null = null;
-          const locationData = sessionLocationData[index];
-          if (locationData.status === "success") {
-            location = locationData;
-          }
+        .map(({ session, location: locationData }, index) => {
+          const location =
+            locationData.status === "success" ? locationData : null;
 
           const isActiveSession = session.lastAccessed
             ? isDateLessThanAnHourAgo(session.lastAccessed)
@@ -199,6 +200,7 @@ async function AllSessions({ userId }: { userId: number }) {
                           : session.lastLogin
                             ? `Last login ${formatDate(session.lastLogin)}`
                             : null}
+                      - {session.id}
                     </small>
                   </div>
                 </div>
