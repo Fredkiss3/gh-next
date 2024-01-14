@@ -110,7 +110,8 @@ export default async function middleware(request: NextRequest) {
       isBot,
       userAgent: request.headers.get("user-agent") ?? "unknown",
       device: userDevice,
-      ip: await getPublicIP(request)
+      ip: await getPublicIP(request),
+      lastAccess: new Date()
     });
     return setRequestAndResponseCookies(request, session.getCookie());
   }
@@ -126,7 +127,8 @@ export default async function middleware(request: NextRequest) {
       session = await Session.create({
         userAgent: request.headers.get("user-agent") ?? "unknown",
         device: userDevice,
-        ip: await getPublicIP(request)
+        ip: await getPublicIP(request),
+        lastAccess: new Date()
       });
     } finally {
       return setRequestAndResponseCookies(request, session.getCookie());
