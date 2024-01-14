@@ -200,7 +200,6 @@ async function AllSessions({ userId }: { userId: number }) {
                           : session.lastLogin
                             ? `Last login ${formatDate(session.lastLogin)}`
                             : null}
-                      - {session.id}
                     </small>
                   </div>
                 </div>
