@@ -321,11 +321,16 @@ export class Session {
       );
   }
 
+  public static async getUserSession(userId: number, sessionId: string) {
+    const session = await Session.get(sessionId, false);
+    return session?.user?.id === userId ? session : null;
+  }
+
   public static async endUserSession(userId: number, sessionId: string) {
-    const session = await Session.get(sessionId);
+    const session = await Session.get(sessionId, false);
     if (session && session.user?.id === userId) {
       await this.#kv.sRem(`${USER_SESSION_KEY_PREFIX}:${userId}`, sessionId);
-      await this.#delete(session.#_session);
+      await this.#delete(session.#_session, false);
     }
   }
 
@@ -378,9 +383,11 @@ export class Session {
       sessionTTL = 5; // only 5 seconds for bot sessions
     }
 
+    const { userAgent, ...remainingSession } = session;
+
     await Promise.all([
       this.#kv.hmSet(`${SESSION_KEY_PREFIX}:${session.id}`, {
-        ...session,
+        ...remainingSession,
         expiry: session.expiry.getTime(),
         lastAccess: session.lastAccess?.getTime() ?? new Date().getTime(),
         bot: superjson.stringify(session.bot),
@@ -396,12 +403,18 @@ export class Session {
           )
         : null
     ]);
+
+    await this.#kv.hSet(
+      `${SESSION_KEY_PREFIX}:${session.id}`,
+      "userAgent",
+      userAgent
+    );
   }
 
-  static async #delete(session: SerializedSession) {
-    const verifiedSessionId = await Session.#verifySessionId(
-      `${session.id}.${session.signature}`
-    );
+  static async #delete(session: SerializedSession, verify = true) {
+    const verifiedSessionId = verify
+      ? await Session.#verifySessionId(`${session.id}.${session.signature}`)
+      : session.id;
     await this.#kv.delete(`${SESSION_KEY_PREFIX}:${verifiedSessionId}`);
   }
 
