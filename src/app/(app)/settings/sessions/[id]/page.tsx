@@ -185,8 +185,8 @@ async function SessionDetails({
 
           {/* Location & IP */}
           <div>
-            <h3 className="font-semibold">
-              {lastLocation?.city ?? "Unknown city"} {sessionData.ip}
+            <h3 className="font-semibold break-all">
+              {lastLocation?.city ?? "Unknown city"}&nbsp;{sessionData.ip}
             </h3>
             <small className="text-sm">
               {currentUserSesssion.id === sessionData.id

@@ -189,8 +189,8 @@ async function AllSessions({ userId }: { userId: number }) {
 
                   {/* Location & IP */}
                   <div>
-                    <h3 className="font-semibold">
-                      {location?.city ?? "Unknown city"} {session.ip}
+                    <h3 className="font-semibold break-all">
+                      {location?.city ?? "Unknown city"}&nbsp;{session.ip}
                     </h3>
                     <small className="text-sm">
                       {currentSesssion.id === session.id
