@@ -34,7 +34,7 @@ export type LocationData = SuccessfulLocationData | FailedLocationData;
 export async function getLocationData(session: Session) {
   const fn = nextCache(
     (ip: string) =>
-      jsonFetch<LocationData>(`http://ip-api.com/json/${session.ip}`, {
+      jsonFetch<LocationData>(`http://ip-api.com/json/${ip}`, {
         cache: "force-cache"
       }),
     {
