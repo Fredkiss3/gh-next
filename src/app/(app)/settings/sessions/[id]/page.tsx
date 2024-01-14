@@ -155,7 +155,7 @@ async function SessionDetails({
         "rounded-md"
       )}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-stretch flex-col gap-2 md:flex-row md:justify-between md:items-start">
         <div className="flex gap-3 items-start">
           {/* Activity indicator */}
           <span
@@ -201,10 +201,10 @@ async function SessionDetails({
         </div>
 
         {sessionData.id !== currentUserSesssion.id && (
-          <form action={revokeSessionBound}>
+          <form action={revokeSessionBound} className="w-full md:w-auto">
             <SubmitButton
               variant="danger"
-              className="bg-ghost px-3 py-1"
+              className="bg-ghost px-3 py-1 w-full"
               loadingMessage={"Revoking session..."}
             >
               Revoke session
