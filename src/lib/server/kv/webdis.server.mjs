@@ -14,7 +14,7 @@ import { _envObject as env } from "../../../env-config.mjs";
 export class WebdisKV {
   /**
    * Fetches data from the KV store.
-   * @param {("GET"|"SET"|"SETEX"|"DEL"|"HSET"|"HGETALL"|"HMSET"|"SADD"|"EXPIRE"|"SMEMBERS"|"SREM")} command The Redis command to execute.
+   * @param {("GET"|"SET"|"SETEX"|"DEL"|"HSET"|"HGETALL"|"SADD"|"SMEMBERS"|"SREM")} command The Redis command to execute.
    * @param {Array<string|number>} args Arguments for the command.
    * @returns {Promise<any>} The result of the fetch operation.
    */
@@ -137,15 +137,6 @@ export class WebdisKV {
 
   /**
    * @param {string} key
-   * @param {Record<string, string|number>} fields
-   * @returns {Promise<void>}
-   */
-  async hmSet(key, fields) {
-    await this.#fetch("HMSET", key, ...Object.entries(fields).flat());
-  }
-
-  /**
-   * @param {string} key
    * @param {string|number} value
    * @returns {Promise<void>}
    */
@@ -169,14 +160,5 @@ export class WebdisKV {
    */
   async sRem(key, value) {
     await this.#fetch("SREM", key, value);
-  }
-
-  /**
-   * @param {string} key
-   * @param {number} ttl
-   * @returns {Promise<void>}
-   */
-  async expire(key, ttl) {
-    await this.#fetch("EXPIRE", key, ttl);
   }
 }
