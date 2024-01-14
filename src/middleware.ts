@@ -52,7 +52,8 @@ async function getPublicIP(request: NextRequest) {
     request.headers.get("X-Forwarded-For")!;
 
   console.log({
-    publicIP
+    publicIP,
+    cf_ip: request.headers.get("CF-Connecting-IP")
   });
 
   if (isPrivateOrLocalIP(publicIP)) {
