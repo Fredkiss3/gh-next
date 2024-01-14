@@ -34,15 +34,18 @@ const sessionSchema = z.object({
   additionnalData: z.record(z.string(), z.any()).nullish(),
   bot: z.coerce.boolean().optional().default(false),
   userAgent: z.string(),
-  device: z.enum([
-    "console",
-    "mobile",
-    "tablet",
-    "smarttv",
-    "wearable",
-    "embedded",
-    "unknown"
-  ])
+  device: z
+    .enum([
+      "console",
+      "mobile",
+      "tablet",
+      "smarttv",
+      "wearable",
+      "embedded",
+      "desktop",
+      "unknown"
+    ])
+    .default("unknown")
 });
 
 export type SerializedSession = z.TypeOf<typeof sessionSchema>;

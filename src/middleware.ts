@@ -64,11 +64,28 @@ export default async function middleware(request: NextRequest) {
   const sessionId = request.cookies.get(SESSION_COOKIE_KEY)?.value;
   let session = sessionId ? await Session.get(sessionId) : null;
   const { isBot, device } = userAgent(request);
+  let userDevice = device.type as SerializedSession["device"] | undefined;
+  if (!userDevice) {
+    const uaString = (
+      request.headers.get("user-agent") ?? "unknown"
+    ).toLowerCase();
+
+    if (
+      uaString.includes("mozilla") ||
+      uaString.includes("chrome") ||
+      uaString.includes("safari")
+    ) {
+      userDevice = "desktop";
+    } else {
+      userDevice = "unknown";
+    }
+  }
+
   if (!session) {
     session = await Session.create({
       isBot,
       userAgent: request.headers.get("user-agent") ?? "unknown",
-      device: (device.type as SerializedSession["device"]) ?? "unknown"
+      device: userDevice
     });
     return setRequestAndResponseCookies(request, session.getCookie());
   }
@@ -81,7 +98,7 @@ export default async function middleware(request: NextRequest) {
     } catch (error) {
       session = await Session.create({
         userAgent: request.headers.get("user-agent") ?? "unknown",
-        device: (device.type as SerializedSession["device"]) ?? "unknown"
+        device: userDevice
       });
     } finally {
       return setRequestAndResponseCookies(request, session.getCookie());
