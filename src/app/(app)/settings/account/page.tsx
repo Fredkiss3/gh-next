@@ -5,7 +5,7 @@ import { UpdateUserInfosForm } from "~/components/update-user-infos-form";
 import { Button } from "~/components/button";
 
 // utils
-import { getAuthedUser, getUserOrRedirect } from "~/actions/auth.action";
+import { getUserOrRedirect } from "~/actions/auth.action";
 import { updateUserProfileInfosInputValidator } from "~/models/dto/update-profile-info-input-validator";
 
 // types

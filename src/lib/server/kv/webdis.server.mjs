@@ -14,11 +14,14 @@ import { _envObject as env } from "../../../env-config.mjs";
 export class WebdisKV {
   /**
    * Fetches data from the KV store.
-   * @param {("GET"|"SET"|"SETEX"|"DEL"|"HSET"|"HGETALL")} command The Redis command to execute.
+   * @param {("GET"|"SET"|"SETEX"|"DEL"|"HSET"|"HGETALL"|"SADD"|"SMEMBERS"|"SREM")} command The Redis command to execute.
    * @param {Array<string|number>} args Arguments for the command.
    * @returns {Promise<any>} The result of the fetch operation.
    */
   async #fetch(command, ...args) {
+    /** @type Array<(typeof command)> */
+    const commandsWithSingleBody = ["SET", "HSET", "SETEX"];
+
     const authString = `${env.REDIS_HTTP_USERNAME}:${env.REDIS_HTTP_PASSWORD}`;
     const [key, ...restArgs] = args;
 
@@ -31,7 +34,7 @@ export class WebdisKV {
 
       if (
         i === urlParts.length - 1 &&
-        (command === "SET" || command === "HSET" || command === "SETEX")
+        commandsWithSingleBody.includes(command)
       ) {
         body = part.toString();
         continue;
@@ -51,7 +54,7 @@ export class WebdisKV {
     const rand = Math.ceil(Math.random() * 10e15);
     console.time(`[${rand} webdis] ${fullURL}`);
     return await fetch(fullURL, {
-      method: ["GET", "HGETALL"].includes(command) ? "GET" : "PUT",
+      method: "PUT",
       cache: "no-store",
       headers: {
         Authorization: `Basic ${btoa(authString)}`
@@ -130,5 +133,32 @@ export class WebdisKV {
    */
   async delete(key) {
     await this.#fetch("DEL", key);
+  }
+
+  /**
+   * @param {string} key
+   * @param {string|number} value
+   * @returns {Promise<void>}
+   */
+  async sAdd(key, value) {
+    await this.#fetch("SADD", key, value);
+  }
+
+  /**
+   * @param {string} key
+   * @returns {Promise<Array<string>>}
+   */
+  async sMembers(key) {
+    const value = await this.#fetch("SMEMBERS", key);
+    return value.SMEMBERS;
+  }
+
+  /**
+   * @param {string} key
+   * @param {string|number} value
+   * @returns {Promise<void>}
+   */
+  async sRem(key, value) {
+    await this.#fetch("SREM", key, value);
   }
 }

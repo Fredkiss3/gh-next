@@ -2,14 +2,20 @@
 import * as React from "react";
 // components
 import { VerticalNavLink } from "./vertical-nav-link";
-import { GearIcon, PaintbrushIcon } from "@primer/octicons-react";
+import {
+  BroadcastIcon,
+  GearIcon,
+  PaintbrushIcon
+} from "@primer/octicons-react";
 import { clsx } from "~/lib/shared/utils.shared";
 
-export type VerticalNavlistProps = {
+export type SettingsVerticalNavlistProps = {
   className?: string;
 };
 
-export function VerticalNavlist({ className }: VerticalNavlistProps) {
+export function SettingsVerticalNavlist({
+  className
+}: SettingsVerticalNavlistProps) {
   return (
     <aside className={clsx(className)}>
       <nav className="sticky top-10">
@@ -22,6 +28,11 @@ export function VerticalNavlist({ className }: VerticalNavlistProps) {
           <li>
             <VerticalNavLink href="/settings/appearance" icon={PaintbrushIcon}>
               Appearance
+            </VerticalNavLink>
+          </li>
+          <li>
+            <VerticalNavLink href="/settings/sessions" icon={BroadcastIcon}>
+              Sessions
             </VerticalNavLink>
           </li>
         </ul>
