@@ -26,13 +26,9 @@ export const CacheKeys = {
     props.repo,
     props.number
   ],
-  geo: (ip: string) => ["GEO", ip]
-],
-  markdownPreview: (props:
-{
-  repositoryPath: `${string}/${string}`;
-  content: string;
-}
-) => ["MARKDOWN_PREVIEW", props.repositoryPath, props.content]
-} as
-const;
+  geo: (ip: string) => ["GEO", ip],
+  markdownPreview: (props: {
+    repositoryPath: `${string}/${string}`;
+    content: string;
+  }) => ["MARKDOWN_PREVIEW", props.repositoryPath, props.content]
+} as const;
