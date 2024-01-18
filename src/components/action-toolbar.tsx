@@ -49,6 +49,7 @@ export const ActionToolbar = React.forwardRef<
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
   const toolbarRef = React.useRef<React.ElementRef<"div">>(null);
+  const lastItemActionRef = React.useRef<(() => void) | null>();
 
   React.useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
@@ -154,14 +155,26 @@ export const ActionToolbar = React.forwardRef<
               </DropdownTrigger>
             </Toolbar.Button>
 
-            <DropdownContent align="end" aria-label={title}>
+            <DropdownContent
+              align="end"
+              aria-label={title}
+              onCloseAutoFocus={(e) => {
+                e.preventDefault();
+                if (lastItemActionRef.current) {
+                  lastItemActionRef.current();
+                  lastItemActionRef.current = null;
+                }
+              }}
+            >
               {hiddenItemGroups.map((items, index) => (
                 <React.Fragment key={index}>
                   {items.map((item) => (
                     <DropdownItem
                       key={item.id}
                       text={item.label}
-                      onClick={item.onClick}
+                      onClick={() => {
+                        lastItemActionRef.current = item.onClick;
+                      }}
                       icon={item.icon}
                     />
                   ))}
