@@ -220,7 +220,8 @@ async function getComponents({
     plaintext: () => null,
     noframes: () => null,
     noembed: () => null,
-    xmp: () => null
+    xmp: () => null,
+    button: () => null
   } satisfies MDXComponents;
 
   let noOfKeys = 0;
