@@ -275,9 +275,10 @@ async function getComponents({
               props.className === "contains-task-list" ? "true" : undefined
           }}
           className={clsx(
+            "my-2",
             {
-              "pl-4": props.className === "contains-task-list",
-              "list-disc pl-10": props.className !== "contains-task-list"
+              "pl-6": props.className === "contains-task-list",
+              "pl-4": props.className !== "contains-task-list"
             },
             `[&>li:not([data-task-item])]:before:mx-1`,
             `[&>li:not([data-task-item])]:before:inline-block`,
@@ -297,7 +298,7 @@ async function getComponents({
         <ol
           {...props}
           key={key}
-          className={"list-decimal pl-4 [&_ol]:list-[lower-roman]"}
+          className="list-decimal pl-4 [&_ol]:list-[lower-roman] my-2"
         />
       );
     },
@@ -349,9 +350,8 @@ async function getComponents({
             "data-task-item":
               props.className === "task-list-item" ? "true" : undefined
           }}
-          className={clsx({
-            "mt-1.5 relative -left-4": props.className === "task-list-item",
-            "my-2": props.className !== "task-list-item"
+          className={clsx("mt-1.5", {
+            "relative -left-4": props.className === "task-list-item"
           })}
         />
       );
