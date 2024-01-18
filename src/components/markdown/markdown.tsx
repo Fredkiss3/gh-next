@@ -221,7 +221,12 @@ async function getComponents({
     noframes: () => null,
     noembed: () => null,
     xmp: () => null,
-    button: () => null
+    dialog: () => null,
+    link: () => null,
+    html: () => null,
+    select: () => null,
+    option: () => null,
+    object: () => null
   } satisfies MDXComponents;
 
   let noOfKeys = 0;
@@ -414,6 +419,7 @@ async function getComponents({
         <input {...props} type="checkbox" disabled={!editableCheckboxes} />
       );
     },
+    button: (props) => <>{props.children}</>,
     ...disallowedTags
   } satisfies MDXComponents;
 }
