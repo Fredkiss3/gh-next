@@ -275,8 +275,54 @@ export const MarkdownEditorToolbar = React.forwardRef<
 
       const isSelectingMultipleChars = selectionEnd - selectionStart > 0;
 
+      const unorderedListRegex = "([\\-*] ?)";
+      const orderedListRegex = "(\\d\\. ?)";
+      const checkboxListRegex = "(\\- \\[ \\] ?)";
+
       if (isSelectingMultipleChars) {
-        // todo...
+        const textContent = textArea.value;
+        const untilSelectionStart = textContent.slice(0, selectionStart);
+        const fromSelectionEnd = textContent.slice(selectionEnd);
+
+        const selectectedLines = textContent
+          .slice(selectionStart, selectionEnd)
+          .split("\n");
+
+        const combinedRegex = new RegExp(
+          `^${checkboxListRegex}|${unorderedListRegex}|${orderedListRegex}`
+        );
+
+        const newLines = selectectedLines.map((line, index) => {
+          let linePrefix;
+          switch (type) {
+            case "unordered":
+              linePrefix = "- ";
+              break;
+            case "tasks":
+              linePrefix = "- [ ] ";
+              break;
+            case "ordered":
+              linePrefix = `${index + 1}. `;
+              break;
+          }
+
+          // when a line matches the regex it is replaced by the list type
+          // else we add list markers
+          if (!line.match(combinedRegex)) {
+            return linePrefix + line;
+          } else {
+            return line.replace(combinedRegex, linePrefix);
+          }
+        });
+
+        const replacedString = newLines.join("\n");
+        const result = untilSelectionStart + replacedString + fromSelectionEnd;
+        onTextContentChange(result);
+
+        textArea.setSelectionRange(
+          selectionStart,
+          selectionStart + replacedString.length
+        );
       } else {
         const untilSelectionStart = textContent.slice(0, selectionStart);
         const fromSelectionStart = textContent.slice(selectionStart);
@@ -284,12 +330,15 @@ export const MarkdownEditorToolbar = React.forwardRef<
         const allPreviousLines = untilSelectionStart.split("\n");
         const currentLine = allPreviousLines.pop();
 
-        const listRegex =
-          type === "unordered"
-            ? /^([-*] ?)/
-            : type === "ordered"
-              ? /^(1\. ?)/
-              : /^(- \[ \] ?)/;
+        const listRegex = new RegExp(
+          `^${
+            type === "unordered"
+              ? unorderedListRegex
+              : type === "ordered"
+                ? orderedListRegex
+                : checkboxListRegex
+          }`
+        );
 
         const match = (currentLine ?? "").match(listRegex);
         const currentLineIsList = !!match;
