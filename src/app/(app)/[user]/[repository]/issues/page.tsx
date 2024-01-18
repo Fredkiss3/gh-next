@@ -5,7 +5,6 @@ import { CounterBadge } from "~/components/counter-badge";
 import { IssuesListHeaderForm } from "~/components/issues/issues-list-header-form";
 import { SegmentedLayout } from "~/components/segmented-layout";
 import { ClearSearchButtonSection } from "~/components/issues/clear-search-button";
-import { ReactQueryProvider } from "~/components/react-query-provider";
 import { LightBulbIcon, MilestoneIcon, TagIcon } from "@primer/octicons-react";
 import { IssueListSkeleton } from "~/components/issues/issue-list-skeleton";
 import { IssueSearchLink } from "~/components/issues/issue-search-link";
