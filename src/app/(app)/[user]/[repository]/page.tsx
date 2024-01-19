@@ -435,19 +435,19 @@ async function ReadmeContent(props: {
           "sm:rounded-b-md"
         )}
       >
-        <Cache
+        {/* <Cache
           debugLogs
           debugPayload
           cacheInDEV
           id={CacheKeys.readme(props.user, props.repository, updatedAt)}
           ttl={THIRTY_MINUTES_IN_SECONDS}
-        >
-          <Markdown
-            linkHeaders
-            content={readmeContent}
-            className="w-full max-w-full px-8 pb-8 pt-4 text-base"
-          />
-        </Cache>
+        > */}
+        <Markdown
+          linkHeaders
+          content={readmeContent}
+          className="w-full max-w-full px-8 pb-8 pt-4 text-base"
+        />
+        {/* </Cache> */}
       </div>
     </div>
   );
