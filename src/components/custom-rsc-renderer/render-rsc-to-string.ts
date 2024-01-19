@@ -2,8 +2,10 @@ import "server-only";
 import * as RSDW from "react-server-dom-webpack/server.edge";
 import * as React from "react";
 import { getClientManifest } from "./rsc-manifest";
+import { evaluateClientReferences } from "./load-client-references";
 
 export async function renderRSCtoString(component: React.ReactNode) {
+  await evaluateClientReferences();
   const rscPayload = RSDW.renderToReadableStream(
     component,
     // the client manifest is required for react to resolve
