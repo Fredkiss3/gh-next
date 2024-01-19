@@ -17,7 +17,3 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-  webdis:
-    image: nicolas/webdis:latest
-    volumes: # mount volume containing the config file
-      - ../../gh/webdis.json:/etc/webdis.prod.json
