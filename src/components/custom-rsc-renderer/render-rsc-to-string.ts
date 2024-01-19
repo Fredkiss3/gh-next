@@ -11,7 +11,7 @@ export async function renderRSCtoString(component: React.ReactNode) {
     // they will be inlined into the RSC payload as references
     // React will use those references during SSR to resolve
     // the client components
-    await getClientManifest()
+    getClientManifest()
   );
   return await transformStreamToString(rscPayload);
 }

@@ -1,7 +1,4 @@
-import { evaluateClientReferences } from "~/components/cache";
-
-export async function getClientManifest() {
-  await evaluateClientReferences();
+export function getClientManifest() {
   let clientManifest: ClientManifest = {};
 
   // we concatennate all the manifest for all pages
