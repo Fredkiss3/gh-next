@@ -36,7 +36,6 @@ import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 
 // types
 import type { PageProps } from "~/lib/types";
-import { Cache } from "~/components/cache";
 
 export default async function RepositoryHomePage(
   props: PageProps<{
