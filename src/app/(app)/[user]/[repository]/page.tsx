@@ -437,6 +437,8 @@ async function ReadmeContent(props: {
       >
         <Cache
           debugLogs
+          debugPayload
+          cacheInDEV
           id={CacheKeys.readme(props.user, props.repository, updatedAt)}
           ttl={THIRTY_MINUTES_IN_SECONDS}
         >
