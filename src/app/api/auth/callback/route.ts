@@ -3,6 +3,7 @@ import { loginUser } from "~/actions/auth.action";
 import { env } from "~/env";
 import { kv } from "~/lib/server/kv/index.server";
 import type { NextRequest } from "next/server";
+import { SHARED_KEY_PREFIX } from "~/lib/shared/constants";
 
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
@@ -18,14 +19,14 @@ export async function GET(req: NextRequest) {
   const stateData = await kv.get<{
     nextUrl: string | undefined;
     origin: string;
-  }>(state);
+  }>(state, SHARED_KEY_PREFIX);
 
   // refuse auth request, it didn't originate from our server
   if (!stateData) {
     redirect("/");
   }
   // delete state data to prevent this state from being reused again
-  await kv.delete(state);
+  await kv.delete(state, SHARED_KEY_PREFIX);
 
   const response: any = await fetch(
     "https://github.com/login/oauth/access_token",

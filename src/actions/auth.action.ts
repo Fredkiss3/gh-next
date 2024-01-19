@@ -3,7 +3,7 @@ import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env";
-import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
+import { SESSION_COOKIE_KEY, SHARED_KEY_PREFIX } from "~/lib/shared/constants";
 import { Session } from "~/lib/server/session.server";
 import {
   getUserById,
@@ -38,7 +38,8 @@ export async function authenticateWithGithub(nextUrl: string | undefined) {
       nextUrl,
       origin
     },
-    FIVE_MINUTES
+    FIVE_MINUTES,
+    SHARED_KEY_PREFIX
   );
 
   searchParams.append("client_id", env.GITHUB_CLIENT_ID);
