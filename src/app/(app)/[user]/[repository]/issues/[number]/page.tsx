@@ -80,17 +80,15 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        {/* <Cache
-          debugLogs
-          id={CacheKeys.issues({
+        <Markdown
+          cacheKey={CacheKeys.issues({
             user: params.user,
             repo: params.repository,
             number: issueNo,
             updatedAt: issue.updated_at
           })}
-        > */}
-        <Markdown content={issue.body} />
-        {/* </Cache> */}
+          content={issue.body}
+        />
         {/* <Cache id={"issue-test"} bypassInDEV>
           <Markdown
             content={`
