@@ -58,6 +58,7 @@ export class WebdisKV {
 
     const rand = Math.ceil(Math.random() * 10e15);
     console.time(`[${rand} webdis] ${fullURL}`);
+    console.log(`[${rand} webdis] ${fullURL}`);
     return await fetch(fullURL, {
       method: "PUT",
       cache: "no-store",
