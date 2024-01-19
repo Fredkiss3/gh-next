@@ -58,12 +58,6 @@ export class WebdisKV {
 
     const rand = Math.ceil(Math.random() * 10e15);
     console.time(`[${rand} webdis] ${fullURL}`);
-    console.log({
-      fullURL,
-      REDIS_HTTP_USERNAME: env.REDIS_HTTP_USERNAME,
-      REDIS_HTTP_URL: env.REDIS_HTTP_URL,
-      REDIS_HTTP_PASSWORD: env.REDIS_HTTP_PASSWORD
-    });
     return await fetch(fullURL, {
       method: "PUT",
       cache: "no-store",
