@@ -1,6 +1,6 @@
 "use server";
 import { cache } from "react";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env";
 import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
@@ -13,20 +13,37 @@ import {
 import { experimental_taintObjectReference as taintObjectReference } from "react";
 import { revalidatePath } from "next/cache";
 import { withAuth, type AuthState } from "./middlewares";
+import { nanoid } from "nanoid";
+import { kv } from "~/lib/server/kv/index.server";
 
 export async function authenticateWithGithub(nextUrl: string | undefined) {
   const searchParams = new URLSearchParams();
 
+  const origin = headers().get("Origin");
+
+  if (!origin) {
+    const session = await getSession();
+    session.addFlash({
+      message: "Please login from the proper website",
+      type: "warning"
+    });
+    return revalidatePath("/login");
+  }
+
+  const stateParam = nanoid(24);
+  const FIVE_MINUTES = 5 * 60;
+  await kv.set(
+    stateParam,
+    {
+      nextUrl,
+      origin
+    },
+    FIVE_MINUTES
+  );
+
   searchParams.append("client_id", env.GITHUB_CLIENT_ID);
   searchParams.append("redirect_uri", env.GITHUB_REDIRECT_URI);
-
-  // save the url to redirect after login in session
-  if (nextUrl) {
-    const session = await getSession();
-    await session.addAdditionnalData({
-      nextUrl
-    });
-  }
+  searchParams.append("state", stateParam);
 
   redirect(
     `https://github.com/login/oauth/authorize?${searchParams.toString()}`
@@ -77,11 +94,6 @@ export async function loginUser(user: any) {
     message: "Logged in successfully."
   });
   cookies().set(session.getCookie());
-
-  const data = (await session.popAdditionnalData()) as
-    | { nextUrl?: string }
-    | undefined;
-  return data?.nextUrl;
 }
 
 export const getSession = cache(async function getSession(): Promise<Session> {
