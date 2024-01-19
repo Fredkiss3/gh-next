@@ -20,7 +20,6 @@ import { Button } from "~/components/button";
 import Link from "next/link";
 import { Skeleton } from "~/components/skeleton";
 import { Markdown } from "~/components/markdown/markdown";
-import { Cache } from "~/components/cache";
 
 // utils
 import { getSession } from "~/actions/auth.action";
@@ -37,6 +36,7 @@ import { CacheKeys } from "~/lib/shared/cache-keys.shared";
 
 // types
 import type { PageProps } from "~/lib/types";
+import { Cache } from "~/components/cache";
 
 export default async function RepositoryHomePage(
   props: PageProps<{
@@ -435,19 +435,17 @@ async function ReadmeContent(props: {
           "sm:rounded-b-md"
         )}
       >
-        <Cache
-          debugLogs
-          debugPayload
-          cacheInDEV
+        {/* FIXME: Investigate why this hangs (at least it also hangs on DEV now) */}
+        {/* <Cache
           id={CacheKeys.readme(props.user, props.repository, updatedAt)}
           ttl={THIRTY_MINUTES_IN_SECONDS}
-        >
-          <Markdown
-            linkHeaders
-            content={readmeContent}
-            className="w-full max-w-full px-8 pb-8 pt-4 text-base"
-          />
-        </Cache>
+        > */}
+        <Markdown
+          linkHeaders
+          content={readmeContent}
+          className="w-full max-w-full px-8 pb-8 pt-4 text-base"
+        />
+        {/* </Cache> */}
       </div>
     </div>
   );
