@@ -17,3 +17,8 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    networks:
+      - gh-next
+networks:
+  gh-next:
+    external: true

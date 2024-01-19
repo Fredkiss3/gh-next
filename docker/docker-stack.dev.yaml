@@ -17,5 +17,8 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - gh-next
+networks:
+  gh-next:
+    external: true
