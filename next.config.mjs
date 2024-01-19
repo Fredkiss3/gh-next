@@ -5,18 +5,17 @@ import "./src/env-config.mjs";
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
+  cacheHandler:
+    process.env.NODE_ENV === "production"
+      ? "./custom-incremental-cache-handler.mjs"
+      : undefined,
+  cacheMaxMemorySize: 0,
   experimental: {
-    isrMemoryCacheSize: 0,
-    taint: true,
-    incrementalCacheHandlerPath:
-      process.env.NODE_ENV === "production"
-        ? "./custom-incremental-cache-handler.mjs"
-        : undefined
+    taint: true
   },
   logging: {
     fetches: {
-      // this is not yet supported by turbopack
-      // fullUrl: true
+      fullUrl: true
     }
   },
   images: {

@@ -73,21 +73,6 @@ export function wait(ms: number): Promise<void> {
 }
 
 /**
- * Check if a URL is a valid pathname
- * @param url
- * @param base
- * @returns
- */
-export function isValidURLPathname(url: any): url is string {
-  try {
-    const _ = new URL(url, "http://localhost");
-    return url.startsWith("/") && true;
-  } catch (_) {
-    return false;
-  }
-}
-
-/**
  * Adds a `/` at the end of a path if it does not already contains it
  * @param href
  * @returns

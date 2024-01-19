@@ -1,4 +1,5 @@
 import * as ReactDOM from "react-dom";
+import * as React from "react";
 
 declare global {
   namespace NodeJS {
@@ -25,4 +26,8 @@ declare global {
   };
 
   var __RSC_MANIFEST: Record<string, RSCManifest> | null;
+}
+
+declare module "react" {
+  export function unstable_postpone(reason?: string): never;
 }
