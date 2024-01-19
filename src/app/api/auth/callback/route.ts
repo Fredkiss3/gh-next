@@ -1,18 +1,32 @@
 import { redirect } from "next/navigation";
 import { loginUser } from "~/actions/auth.action";
 import { env } from "~/env";
-import { isValidURLPathname } from "~/lib/shared/utils.shared";
+import { kv } from "~/lib/server/kv/index.server";
 import type { NextRequest } from "next/server";
+import { SHARED_KEY_PREFIX } from "~/lib/shared/constants";
 
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
+  const state = req.nextUrl.searchParams.get("state");
 
-  if (!code) {
+  if (!state || !code) {
     redirect("/");
   }
+
+  const stateData = await kv.get<{
+    nextUrl: string | undefined;
+    origin: string;
+  }>(state, SHARED_KEY_PREFIX);
+
+  // refuse auth request, it didn't originate from our server
+  if (!stateData) {
+    redirect("/");
+  }
+  // delete state data to prevent this state from being reused again
+  await kv.delete(state, SHARED_KEY_PREFIX);
 
   const response: any = await fetch(
     "https://github.com/login/oauth/access_token",
@@ -46,10 +60,17 @@ export async function GET(req: NextRequest) {
     }
   }).then((r) => r.json());
 
-  const nextURL = await loginUser(githubUser);
+  await loginUser(githubUser);
 
-  if (isValidURLPathname(nextURL)) {
-    return redirect(nextURL);
+  let url;
+  try {
+    url = new URL(stateData.nextUrl ?? "/", stateData.origin);
+  } catch (error) {
+    // pass
+  }
+
+  if (url) {
+    return redirect(url.toString());
   }
 
   return redirect("/");
