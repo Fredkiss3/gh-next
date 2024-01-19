@@ -435,8 +435,10 @@ async function ReadmeContent(props: {
           "sm:rounded-b-md"
         )}
       >
-        {/* FIXME: Investigate why this hangs (at least it also hangs on DEV now) */}
         {/* <Cache
+          debugLogs
+          debugPayload
+          cacheInDEV
           id={CacheKeys.readme(props.user, props.repository, updatedAt)}
           ttl={THIRTY_MINUTES_IN_SECONDS}
         > */}

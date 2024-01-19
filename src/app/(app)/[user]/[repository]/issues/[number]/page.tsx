@@ -81,8 +81,8 @@ export default async function IssueDetailPage({
       </section>
 
       <section className="px-5 flex flex-col gap-5">
-        {/* FIXME: Investigate why this hangs (at least it also hangs on DEV now) */}
         {/* <Cache
+          debugLogs
           id={CacheKeys.issues({
             user: params.user,
             repo: params.repository,
