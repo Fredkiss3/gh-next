@@ -2,7 +2,7 @@ services:
   proxy:
     image: dcr.fredkiss.dev/caddy:2.6.4-with-sablier
     ports:
-      - "8999:3000"
+      - "127.0.0.1:8999:80"
     volumes:
       - ./caddyfile.pr:/etc/caddy/Caddyfile:ro
   # -- NEW SERVICES GO HERE --

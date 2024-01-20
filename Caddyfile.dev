@@ -1,0 +1,8 @@
+*.gh.fredkiss.dev {
+    reverse_proxy http://127.0.0.1:8999 {
+        header_up Host {http.request.host}
+    }
+    tls hello@fredkiss.dev {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+}
