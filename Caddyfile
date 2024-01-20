@@ -7,6 +7,6 @@ gh.fredkiss.dev {
 
     # Logging
     log {
-        output file /var/www/gh-next/gh.access.log
+        output file /var/log/caddy/gh.access.log
     }
 }
