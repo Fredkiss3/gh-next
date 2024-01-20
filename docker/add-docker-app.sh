@@ -47,13 +47,12 @@ EOM
 
 # Add each line of the new service configuration above the placeholder
 while IFS= read -r line; do
-    echo line=${line}
-    sed -i '' "s|${PLACEHOLDER}|${line}\\n  ${PLACEHOLDER}|" "${COMPOSE_FILE_PATH}"
+    sed -i '.bak' "s|${PLACEHOLDER}|${line}\\n\ \ ${PLACEHOLDER}|" "${COMPOSE_FILE_PATH}"
 done <<< "${NEW_SERVICE}"
 
 if grep -q "app-pr-${PR_ID}" "$COMPOSE_FILE_PATH"; then
   echo "Service for PR_ID ${PR_ID} has been added."
 else
-  echo "An Error occured when appending new configuration for PR_ID ${PR_ID} to Caddyfile."
+  echo "An Error occured when appending new configuration for PR_ID ${PR_ID} to docker-compose file."
   exit 1
 fi

@@ -50,7 +50,7 @@ jobs:
           echo 'Build with docker (and cache)...🔄' 
           export DOCKER_BUILDKIT=1
 
-          # Use cache from remote repository, tag as latest, keep cache metadata
+          # Build & push docker image
           docker buildx build --push ${BUILD_ARGS} -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:pr-${GITHUB_PR_NUMBER} .
 
           echo 'build successful ✅'
