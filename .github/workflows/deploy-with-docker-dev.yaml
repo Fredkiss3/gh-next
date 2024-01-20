@@ -69,11 +69,17 @@ jobs:
               echo "$DEST_FILE already exists."
           fi
 
+          # Add services
+          chmod a+x ./docker/add-caddy.sh 
+          chmod a+x ./docker/add-docker-app.sh
+
+          ./docker/add-caddy.sh $GITHUB_PR_NUMBER
+          ./docker/add-docker-app.sh $GITHUB_PR_NUMBER
+
           # Start docker instances
           echo 'updating docker services...🔄'
           docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.pr.yaml gh-stack-pr
           echo 'services updated succesfully ✅'
-          git reset --hard origin/\$GIT_BRANCH
           "
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}

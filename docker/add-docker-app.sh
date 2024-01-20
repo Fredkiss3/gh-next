@@ -26,7 +26,7 @@ fi
 # Service configuration lines
 read -r -d '' NEW_SERVICE << EOM
   # app service configuration for ${PR_ID}
-  app-${PR_ID}:
+  app-pr-${PR_ID}:
     image: dcr.fredkiss.dev/gh-next:pr-${PR_ID}
     deploy:
       replicas: 0

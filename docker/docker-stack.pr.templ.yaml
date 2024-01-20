@@ -1,6 +1,6 @@
 services:
   proxy:
-    image: caddy:2.6.4-with-sablier
+    image: dcr.fredkiss.dev/caddy:2.6.4-with-sablier
     ports:
       - "8999:3000"
     volumes:
