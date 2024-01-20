@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e -o errexit
 
 # Check if PR ID is provided
 if [ "$#" -ne 1 ]; then
