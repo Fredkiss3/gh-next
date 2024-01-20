@@ -1,0 +1,18 @@
+services:
+  proxy:
+    image: caddy:2.6.4-with-sablier
+    ports:
+      - "8999:3000"
+    volumes:
+      - ./caddyfile.pr:/etc/caddy/Caddyfile:ro
+  # -- NEW SERVICES GO HERE --
+  sablier:
+    image: acouvreur/sablier:1.4.0
+    command:
+      - start
+      - --provider.name=swarm
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+networks:
+  gh-next:
+    external: true

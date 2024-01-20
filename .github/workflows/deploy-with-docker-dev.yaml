@@ -51,17 +51,33 @@ jobs:
           export DOCKER_BUILDKIT=1
 
           # Use cache from remote repository, tag as latest, keep cache metadata
-          docker buildx build --push $BUILD_ARGS -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:dev .
+          docker buildx build --push ${BUILD_ARGS} -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:pr-${GITHUB_PR_NUMBER} .
 
           echo 'build successful ✅'
 
+          # Create docker-stack PR file 
+          SOURCE_FILE="./docker/docker-stack.pr.templ.yaml"
+          DEST_FILE="./docker/docker-stack.pr.yaml"
+
+          # Check if the destination file does not exist
+          if [ ! -f "$DEST_FILE" ]; then
+              # Copy the source file to the destination
+              cp "$SOURCE_FILE" "$DEST_FILE"
+              echo "Copied $SOURCE_FILE to $DEST_FILE."
+          else
+              # File already exists
+              echo "$DEST_FILE already exists."
+          fi
+
           # Start docker instances
           echo 'updating docker services...🔄'
-          docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.dev.yaml gh-stack-dev
+          docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.pr.yaml gh-stack-pr
           echo 'services updated succesfully ✅'
+          git reset --hard origin/\$GIT_BRANCH
           "
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
           DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}

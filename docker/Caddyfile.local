@@ -1,0 +1,13 @@
+gh.local {
+    route {
+      sablier  {
+        group codex_pr_123
+        session_duration 5m 
+        dynamic {
+            display_name codex_pr_123
+        }
+      }
+      reverse_proxy app:3000
+    }
+}
+

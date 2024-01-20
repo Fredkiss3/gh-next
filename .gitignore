@@ -39,3 +39,7 @@ next-env.d.ts
 .wrangler/
 /cache/
 .idea/
+
+# Docker 
+docker-stack.pr.yaml
+caddyfile.pr
