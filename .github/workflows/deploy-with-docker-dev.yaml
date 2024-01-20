@@ -60,13 +60,13 @@ jobs:
           DEST_FILE="./docker/docker-stack.pr.yaml"
 
           # Check if the destination file does not exist
-          if [ ! -f "$DEST_FILE" ]; then
+          if [ ! -f "\$DEST_FILE" ]; then
               # Copy the source file to the destination
-              cp "$SOURCE_FILE" "$DEST_FILE"
-              echo "Copied $SOURCE_FILE to $DEST_FILE."
+              cp "\$SOURCE_FILE" "\$DEST_FILE"
+              echo "Copied \$SOURCE_FILE to \$DEST_FILE."
           else
               # File already exists
-              echo "$DEST_FILE already exists."
+              echo "\$DEST_FILE already exists."
           fi
 
           # Add services
