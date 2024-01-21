@@ -28,6 +28,8 @@ jobs:
       - name: Deploy to Server
         run: |
           BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh-dev.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh-dev.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.DEV_LOCAL_POSTGRES_DB_URL }} --build-arg REMOTE_DATABASE_URL=${{ secrets.DEV_REMOTE_POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_dev_"
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          GITHUB_BRANCH_SLUG="${GIT_BRANCH//[^a-zA-Z0-9]/-}"
           ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_DOMAIN "
           source ~/.zshrc
           set -e -o errexit
@@ -41,11 +43,10 @@ jobs:
           nvm use 20
 
           echo Pulling latest version...
-          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-          echo git branch=\$GIT_BRANCH
-          git fetch origin \$GIT_BRANCH
-          git checkout \$GIT_BRANCH
-          git pull origin \$GIT_BRANCH
+          echo git branch=$GIT_BRANCH
+          git fetch origin $GIT_BRANCH
+          git checkout $GIT_BRANCH
+          git pull origin $GIT_BRANCH
 
           echo 'Build with docker (and cache)...🔄' 
           export DOCKER_BUILDKIT=1
@@ -73,7 +74,9 @@ jobs:
           chmod a+x ./docker/add-caddy.sh 
           chmod a+x ./docker/add-docker-app.sh
 
-          ./docker/add-caddy.sh $GITHUB_PR_NUMBER
+          # Get PR branch with special symbols replaced with `-`
+
+          ./docker/add-caddy.sh $GITHUB_PR_NUMBER $GITHUB_BRANCH_SLUG
           ./docker/add-docker-app.sh $GITHUB_PR_NUMBER
 
           # Start docker instances
