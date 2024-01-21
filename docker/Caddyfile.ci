@@ -1,0 +1,31 @@
+http://1.gh.local {
+    route {
+      sablier  {
+       group whoami-1
+       session_duration 30s 
+       dynamic {
+          theme ghost
+          show_details true
+          display_name whoami-1
+          refresh_frequency 5s
+       }
+      }
+      reverse_proxy whoami-1:80
+    }
+}
+
+http://2.gh.local {
+    route {
+      sablier  {
+       group whoami-2
+       session_duration 30s 
+       dynamic {
+          theme ghost
+          show_details true
+          display_name whoami-2
+          refresh_frequency 5s
+       }
+      }
+      reverse_proxy whoami-2:80
+    }
+}

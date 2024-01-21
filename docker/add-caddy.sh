@@ -11,24 +11,28 @@ fi
 PR_ID="$1"
 
 # Path to the global Caddyfile
-CADDYFILE_PATH="docker/caddyfile.pr"
+CADDYFILE_PATH="docker/pr.caddyfile"
 touch $CADDYFILE_PATH
 
 # Template content with placeholders replaced
-TEMPLATE_CONTENT="${PR_ID}.gh.fredkiss.dev {
+TEMPLATE_CONTENT="http://${PR_ID}.gh.fredkiss.dev {
     route {
        sablier  {
-         group codex-pr-${PR_ID}
-         session_duration 5m 
-         blocking
+         group gh-next-${PR_ID}
+         session_duration 30m 
+         dynamic {
+            theme ghost
+            display_name gh-next-${PR_ID}
+            refresh_frequency 5s
+         }
        }
 
-      reverse_proxy app-pr-${PR_ID}:3000
+      reverse_proxy gh-next-${PR_ID}:3000
     }
 }"
 
 # Check if the Caddyfile already contains this PR's configuration
-if grep -q "${PR_ID}.gh.fredkiss.dev" "$CADDYFILE_PATH"; then
+if grep -q "http://${PR_ID}.gh.fredkiss.dev" "$CADDYFILE_PATH"; then
     echo "Configuration for PR_ID ${PR_ID} already exists in Caddyfile."
 else
     echo "Appending new configuration for PR_ID ${PR_ID} to Caddyfile."

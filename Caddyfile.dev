@@ -1,17 +1,7 @@
 *.gh.fredkiss.dev {
     route {
-       sablier  {
-           # Capture the first label of the hostname (the * in *.gh.fredkiss.dev)
-           group codex-pr-{labels.0}
-           session_duration 5m 
-           blocking
-       }
-        
-        reverse_proxy app-pr-{labels.0}:3000 {
+        reverse_proxy 127.0.0.1:8999 {
             header_up Host {http.request.host}
         }
-    }
-    tls hello@fredkiss.dev {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
 }

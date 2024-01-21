@@ -16,7 +16,7 @@ COMPOSE_FILE_PATH="docker/docker-stack.pr.yaml"
 PLACEHOLDER="# -- NEW SERVICES GO HERE --"
 
 # Check if the service already exists
-if grep -q "app-pr-${PR_ID}" "$COMPOSE_FILE_PATH"; then
+if grep -q "gh-next-${PR_ID}" "$COMPOSE_FILE_PATH"; then
     echo "Service for PR_ID ${PR_ID} already exists in the Docker Compose file."
     exit 0
 fi
@@ -24,7 +24,7 @@ fi
 # Service configuration lines
 read -r -d '' NEW_SERVICE << EOM
 # app service configuration for ${PR_ID}
-app-pr-${PR_ID}:
+gh-next-${PR_ID}:
   image: dcr.fredkiss.dev/gh-next:pr-${PR_ID}
   deploy:
     replicas: 0
@@ -40,7 +40,7 @@ app-pr-${PR_ID}:
       window: 120s
     labels:
       - sablier.enable=true
-      - sablier.group=codex_pr_${PR_ID}
+      - sablier.group=gh-next-${PR_ID}
   networks:
     - gh-next
 EOM
@@ -50,7 +50,7 @@ while IFS= read -r line; do
     sed -i "s|${PLACEHOLDER}|${line}\\n\ \ ${PLACEHOLDER}|" "${COMPOSE_FILE_PATH}"
 done <<< "${NEW_SERVICE}"
 
-if grep -q "app-pr-${PR_ID}" "$COMPOSE_FILE_PATH"; then
+if grep -q "gh-next-${PR_ID}" "$COMPOSE_FILE_PATH"; then
   echo "Service for PR_ID ${PR_ID} has been added."
 else
   echo "An Error occured when appending new configuration for PR_ID ${PR_ID} to docker-compose file."

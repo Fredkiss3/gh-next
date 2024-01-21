@@ -4,7 +4,7 @@ services:
     ports:
       - "127.0.0.1:8999:80"
     volumes:
-      - ./caddyfile.pr:/etc/caddy/Caddyfile:ro
+      - ./pr.caddyfile:/etc/caddy/Caddyfile:ro
   # -- NEW SERVICES GO HERE --
   sablier:
     image: acouvreur/sablier:1.4.0

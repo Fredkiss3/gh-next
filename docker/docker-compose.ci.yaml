@@ -3,32 +3,44 @@ services:
     image: caddy:2.6.4-with-sablier
     ports:
       - "8082:80"
-      - "443:80"
+      # - "443:80"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-  app:
-    image: dcr.fredkiss.dev/gh-next:dev
-    deploy:
-      replicas: 0
-      update_config:
-        parallelism: 1
-        delay: 5s
-        order: start-first
-        failure_action: rollback
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-      labels:
-        - sablier.enable=true
-        - sablier.group=codex_pr_123
-  # whoami:
-  #   image: containous/whoami:v1.5.0
+      - ./Caddyfile.ci:/etc/caddy/Caddyfile:ro
+  # app:
+  #   image: dcr.fredkiss.dev/gh-next:dev
   #   deploy:
+  #     replicas: 0
+  #     update_config:
+  #       parallelism: 1
+  #       delay: 5s
+  #       order: start-first
+  #       failure_action: rollback
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 5s
+  #       max_attempts: 3
+  #       window: 120s
   #     labels:
   #       - sablier.enable=true
-  #       - sablier.group=demo
+  #       - sablier.group=codex_pr_123
+  whoami-1:
+    image: containous/whoami:v1.5.0
+    deploy:
+      replicas: 0
+      labels:
+        - sablier.enable=true
+        - sablier.group=whoami-1
+    command:
+      - --name=whoami-1
+  whoami-2:
+    image: containous/whoami:v1.5.0
+    deploy:
+      replicas: 0
+      labels:
+        - sablier.enable=true
+        - sablier.group=whoami-2
+    command:
+      - --name=whoami-2
 
   sablier:
     image: acouvreur/sablier:1.4.0
