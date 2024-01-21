@@ -27,9 +27,9 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh-dev.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh-dev.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.DEV_LOCAL_POSTGRES_DB_URL }} --build-arg REMOTE_DATABASE_URL=${{ secrets.DEV_REMOTE_POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_dev_"
-          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh-${GITHUB_PR_NUMBER}.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.DEV_LOCAL_POSTGRES_DB_URL }} --build-arg REMOTE_DATABASE_URL=${{ secrets.DEV_REMOTE_POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_dev_"
           GITHUB_BRANCH_SLUG="${GIT_BRANCH//[^a-zA-Z0-9]/-}"
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_DOMAIN "
           source ~/.zshrc
           set -e -o errexit

@@ -16,7 +16,7 @@ CADDYFILE_PATH="docker/pr.caddyfile"
 touch $CADDYFILE_PATH
 
 # Template content with placeholders replaced
-TEMPLATE_CONTENT="http://pr-${PR_ID}.gh.fredkiss.dev, http://pr-${PR_BRANCH}.gh.fredkiss.dev {
+TEMPLATE_CONTENT="http://gh-${PR_ID}.gh.fredkiss.dev, http://gh-${PR_BRANCH}.gh.fredkiss.dev {
     route {
        sablier  {
          group gh-next-${PR_ID}
@@ -34,7 +34,7 @@ TEMPLATE_CONTENT="http://pr-${PR_ID}.gh.fredkiss.dev, http://pr-${PR_BRANCH}.gh.
 }"
 
 # Check if the Caddyfile already contains this PR's configuration
-if grep -q "http://pr-${PR_ID}.gh.fredkiss.dev" "$CADDYFILE_PATH"; then
+if grep -q "http://gh-${PR_ID}.gh.fredkiss.dev" "$CADDYFILE_PATH"; then
     echo "Configuration for PR_ID ${PR_ID} already exists in Caddyfile."
 else
     echo "Appending new configuration for PR_ID ${PR_ID} to Caddyfile."
