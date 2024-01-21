@@ -1,13 +1,3 @@
-{
-    email hello@fredkiss.dev
-    admin off
-    on_demand_tls {
-        ask http://127.0.0.1:9001
-        interval 2m
-        burst 5
-    }
-}
-
 *.gh.fredkiss.dev {
     handle {
         reverse_proxy 127.0.0.1:8999 {

@@ -5,10 +5,6 @@ services:
       - "127.0.0.1:8999:80"
     volumes:
       - ./pr.caddyfile:/etc/caddy/Caddyfile:ro
-  whoami:
-    image: containous/whoami:v1.5.0
-    ports:
-      - "127.0.0.1:9001:80"
   # -- NEW SERVICES GO HERE --
   sablier:
     image: acouvreur/sablier:1.4.0
