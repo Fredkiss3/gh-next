@@ -30,6 +30,7 @@ TEMPLATE_CONTENT="http://pr-${PR_ID}.gh.fredkiss.dev, http://pr-${PR_BRANCH}.gh.
 
       reverse_proxy gh-next-${PR_ID}:3000
     }
+    log
 }"
 
 # Check if the Caddyfile already contains this PR's configuration
