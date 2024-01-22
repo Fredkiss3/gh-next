@@ -15,6 +15,17 @@ import { _envObject as env } from "../../../env-config.mjs";
  * @implements {KVStore}
  */
 export class WebdisKV {
+  timeoutMs = 2000;
+
+  /**
+   * Create a Webdis Key-Value store.
+   *
+   * @param {Object} [options] - The options for the Webdis.
+   * @param {number} [options.timeoutMs] - The timeout in milliseconds for cache store operations.
+   */
+  constructor({ timeoutMs = 2000 } = {}) {
+    this.timeoutMs = timeoutMs;
+  }
   /**
    * Fetches data from the KV store.
    * @param {RedisCommand|{ command: RedisCommand, key_prefix: string|undefined }} config The Redis command to execute.
@@ -64,7 +75,8 @@ export class WebdisKV {
       headers: {
         Authorization: `Basic ${btoa(authString)}`
       },
-      body: body ?? undefined
+      body: body ?? undefined,
+      signal: AbortSignal.timeout(this.timeoutMs)
     }).then((r) =>
       r.text().then((text) => {
         if (!r.ok) {

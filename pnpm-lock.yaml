@@ -17,8 +17,8 @@ dependencies:
     specifier: ^3.0.0
     version: 3.0.0
   '@neshca/cache-handler':
-    specifier: ^0.6.2
-    version: 0.6.2(next@14.1.0)(redis@4.6.12)
+    specifier: ^0.6.7
+    version: 0.6.7(next@14.1.0)(redis@4.6.12)
   '@neshca/json-replacer-reviver':
     specifier: ^1.1.0
     version: 1.1.0
@@ -609,8 +609,8 @@ packages:
       - supports-color
     dev: false
 
-  /@neshca/cache-handler@0.6.2(next@14.1.0)(redis@4.6.12):
-    resolution: {integrity: sha512-tL0ykvUF+EFcVTqbxduCxkNAUxyAaTvhqFLD9vC1PJIhOjQuxF7AeQjBV3n1CzuJ81iYXQCOPdVGKb0z7fRcEw==}
+  /@neshca/cache-handler@0.6.7(next@14.1.0)(redis@4.6.12):
+    resolution: {integrity: sha512-9xHcTMCQ8Ad08Xd9ALywA46i0SnQgB9hFrJMhk0BsgbXF0ZXKY0DuBSqahTsVzwCgf0gu+Rt1bmNJqt6Md3E5Q==}
     peerDependencies:
       next: '>=13.5.1'
       redis: '>=4.6'
