@@ -2,7 +2,7 @@ gh.fredkiss.dev {
     root * /var/www/gh-next
     # Reverse proxy to localhost:8988
     reverse_proxy 127.0.0.1:8988 {
-        header_up Host {http.request.host}
+        flush_interval -1
     }
 
     # Logging
