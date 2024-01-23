@@ -1,4 +1,4 @@
-http://1.gh.local {
+1.gh.local {
     route {
       sablier  {
        group whoami-1
@@ -10,11 +10,11 @@ http://1.gh.local {
           refresh_frequency 5s
        }
       }
-      reverse_proxy whoami-1:80
+      reverse_proxy localhost:9101
     }
 }
 
-http://2.gh.local {
+2.gh.local {
     route {
       sablier  {
        group whoami-2
@@ -26,6 +26,6 @@ http://2.gh.local {
           refresh_frequency 5s
        }
       }
-      reverse_proxy whoami-2:80
+      reverse_proxy localhost:9102
     }
 }
