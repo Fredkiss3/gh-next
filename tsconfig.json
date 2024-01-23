@@ -35,6 +35,7 @@
   ],
   "exclude": [
     "node_modules",
+    "pr-preview-workflow/**/*.ts",
     "scripts/github-query-builder-element.ts",
     "scripts/github-action-list-element.ts"
   ]
