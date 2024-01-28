@@ -12,6 +12,8 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-push-docker:
+    permissions: 
+      deployments: write
     runs-on: ubuntu-latest
     environment: preview-${{ github.event.pull_request.number }}
 
