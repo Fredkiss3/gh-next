@@ -18,6 +18,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: preview-${{ github.event.pull_request.number }}
+
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -69,3 +77,14 @@ jobs:
           DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+      
+      - name: update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: gh-${{ github.event.pull_request.number }}.gh.fredkiss.dev
