@@ -5,7 +5,7 @@ name: CI/CD For docker deploy
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  # pull_request:
+  pull_request:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -55,35 +55,10 @@ jobs:
           # Build & push docker image
           docker buildx build --push ${BUILD_ARGS} -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:pr-${GITHUB_PR_NUMBER} .
 
-          echo 'build successful ✅'
-
-          # Create docker-stack PR file 
-          SOURCE_FILE="./docker/docker-stack.pr.templ.yaml"
-          DEST_FILE="./docker/docker-stack.pr.yaml"
-
-          # Check if the destination file does not exist
-          if [ ! -f "\$DEST_FILE" ]; then
-              # Copy the source file to the destination
-              cp "\$SOURCE_FILE" "\$DEST_FILE"
-              echo "Copied \$SOURCE_FILE to \$DEST_FILE."
-          else
-              # File already exists
-              echo "\$DEST_FILE already exists."
-          fi
-
-          # Add services
-          chmod a+x ./docker/add-caddy.sh 
-          chmod a+x ./docker/add-docker-app.sh
-
-          # Get PR branch with special symbols replaced with `-`
-
-          ./docker/add-caddy.sh $GITHUB_PR_NUMBER $GITHUB_BRANCH_SLUG
-          ./docker/add-docker-app.sh $GITHUB_PR_NUMBER
-
-          # Start docker instances
-          echo 'updating docker services...🔄'
-          docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.pr.yaml gh-stack-pr
-          echo 'services updated succesfully ✅'
+          echo 'Docker build successful ✅'
+          cd pr-preview-workflow
+          bun install --frozen-lockfile
+          bun run index.ts
           "
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
