@@ -21,6 +21,11 @@ export async function authenticateWithGithub(nextUrl: string | undefined) {
 
   const origin = headers().get("Origin");
 
+  console.log({
+    origin,
+    host: headers().get("Host")
+  });
+
   if (!origin) {
     const session = await getSession();
     session.addFlash({
