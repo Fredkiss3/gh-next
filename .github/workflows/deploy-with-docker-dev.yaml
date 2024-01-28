@@ -15,7 +15,6 @@ jobs:
     permissions: 
       deployments: write
     runs-on: ubuntu-latest
-    environment: preview-${{ github.event.pull_request.number }}
 
     steps:
       - uses: actions/checkout@v2
