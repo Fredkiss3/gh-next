@@ -36,9 +36,11 @@ import {
   PRODUCTION_DOMAIN
 } from "~/lib/shared/constants";
 import { getMultipleUserByUsername } from "~/models/user";
+import { ttlCache } from "~/lib/server/rsc-utils.server";
 import remarkBreaks from "remark-breaks";
 
 // types
+import type { CacheId } from "~/lib/server/rsc-utils.server";
 import type { UseMdxComponents } from "@mdx-js/mdx";
 import type { IssueQueryResult } from "~/models/issues";
 import type { UserQueryResult } from "~/models/user";
@@ -49,26 +51,34 @@ export type MarkdownProps = {
   className?: string;
   editableCheckboxes?: boolean;
   repository?: `${string}/${string}`;
+  cacheKey?: CacheId;
+  cacheTTL?: number;
 };
 
-export async function Markdown(props: MarkdownProps) {
-  return <MarkdownContent {...props} />;
-}
-
-export async function MarkdownContent({
+export async function Markdown({
   content,
   className,
   linkHeaders = false,
   editableCheckboxes = false,
-  repository: currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`
+  repository: currentRepository = `${GITHUB_AUTHOR_USERNAME}/${GITHUB_REPOSITORY_NAME}`,
+  cacheKey,
+  cacheTTL
 }: MarkdownProps) {
   const dt = new Date().getTime();
 
   console.time(`\n\x1b[34m[${dt}] \x1b[33m Markdown Rendering \x1b[37m`);
 
-  const { processedContent, references } =
-    await processMarkdownContentAndGetReferences(content, currentRepository);
-  const resolvedReferences = await resolveReferences(references);
+  const processFn = cacheKey
+    ? ttlCache(processMarkdownContentAndResolveReferences, {
+        id: cacheKey,
+        ttl: cacheTTL
+      })
+    : processMarkdownContentAndResolveReferences;
+
+  const { processedContent, resolvedReferences } = await processFn(
+    content,
+    currentRepository
+  );
 
   const generatedMdxModule = await run(processedContent, {
     Fragment: React.Fragment,
@@ -97,7 +107,7 @@ export async function MarkdownContent({
   );
 }
 
-async function processMarkdownContentAndGetReferences(
+async function processMarkdownContentAndResolveReferences(
   content: string,
   repository: string
 ) {
@@ -152,8 +162,9 @@ async function processMarkdownContentAndGetReferences(
     format: "md"
   });
 
+  const resolvedReferences = await resolveReferences(references);
   return {
-    references,
+    resolvedReferences,
     processedContent: String(processedContent)
   };
 }

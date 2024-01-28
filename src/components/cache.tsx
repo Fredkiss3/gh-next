@@ -1,16 +1,12 @@
 import { createCacheComponent } from "@rsc-cache/next";
-import fs from "fs/promises";
+import {
+  evaluateClientReferences,
+  getBuildId
+} from "~/components/custom-rsc-renderer/load-client-references";
 import { kv } from "~/lib/server/kv/index.server";
 import { DEFAULT_CACHE_TTL } from "~/lib/shared/constants";
-import { lifetimeCache } from "~/lib/shared/lifetime-cache";
 
-const getBuildId = lifetimeCache(async () => {
-  return process.env.NODE_ENV === "development"
-    ? new Date().getTime().toString()
-    : await fs.readFile(".next/BUILD_ID", "utf-8");
-});
-
-export const Cache = createCacheComponent({
+const NextRscCacheComponent = createCacheComponent({
   async cacheFn(generatePayload, cacheKey, ttl) {
     let cachedPayload = await kv.get<{ rsc: string }>(cacheKey);
     const cacheHit = !!cachedPayload;
@@ -33,3 +29,10 @@ export const Cache = createCacheComponent({
   },
   getBuildId
 });
+
+export async function Cache(
+  props: React.ComponentProps<typeof NextRscCacheComponent>
+) {
+  await evaluateClientReferences();
+  return <NextRscCacheComponent {...props} />;
+}

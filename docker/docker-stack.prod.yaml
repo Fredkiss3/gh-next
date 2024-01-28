@@ -6,7 +6,7 @@ services:
     ports:
       - "8988:3000"
     deploy:
-      replicas: 1
+      replicas: 2
       update_config:
         parallelism: 1
         delay: 5s
@@ -17,7 +17,8 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-  webdis:
-    image: nicolas/webdis:latest
-    volumes: # mount volume containing the config file
-      - ../../gh/webdis.json:/etc/webdis.prod.json
+    networks:
+      - gh-next
+networks:
+  gh-next:
+    external: true

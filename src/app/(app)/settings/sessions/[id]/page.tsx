@@ -14,7 +14,8 @@ import { Skeleton } from "~/components/skeleton";
 
 // utils
 import { redirect } from "next/navigation";
-import { getSession, getUserOrRedirect } from "~/actions/auth.action";
+import { getUserOrRedirect } from "~/actions/auth.action";
+import { getSession } from "~/actions/session.action";
 import {
   getLocationData,
   revokeSession,

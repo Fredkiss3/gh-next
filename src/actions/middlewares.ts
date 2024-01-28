@@ -1,7 +1,8 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
-import { getSession, getAuthedUser } from "~/actions/auth.action";
-import type { FunctionWithoutLastArg, OmitLastItemInArray } from "~/lib/types";
+import { getAuthedUser } from "./auth.action";
+import { getSession } from "./session.action";
+import type { FunctionWithoutLastArg } from "~/lib/types";
 import type { Session } from "~/lib/server/session.server";
 import type { User } from "~/lib/server/db/schema/user.sql";
 

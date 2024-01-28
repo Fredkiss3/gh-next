@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { getSession } from "./auth.action";
+import { getSession } from "./session.action";
 import { cache } from "react";
 import { updateUserTheme } from "~/models/user";
 import { revalidatePath } from "next/cache";
