@@ -12,7 +12,12 @@ export async function addDockerApp(
   const composeFile = file(COMPOSE_FILE_PATH);
 
   if (await composeFile.exists()) {
-    await $`echo '[ℹ️  Docker] docker stack config for pull request #${PR_ID} already exists, skipping work.'`;
+    await $`echo '[ℹ️ Docker] docker stack config for pull request #${PR_ID} already exists, skipping work.'`;
+    if (shouldReloadDockerStack) {
+      await $`echo '[🔄 Docker] updating docker services...'`;
+      await $`docker stack deploy --with-registry-auth --compose-file ${COMPOSE_FILE_PATH} gh-stack-pr-${PR_ID}`;
+      await $`echo '[✅ Docker] docker services updated succesfully'`;
+    }
     return;
   }
 
@@ -49,7 +54,7 @@ export async function addDockerApp(
     );
 
     await $`echo '[🔄 Docker] docker stack config for pull request #${leastRecentPullRequestID} is too old, deleting it...'`;
-    await $`echo '[ℹ️  Docker] you can still recreate it by deploying the associated pull request'`;
+    await $`echo '[ℹ️ Docker] you can still recreate it by deploying the associated pull request'`;
 
     await $`echo '[🔄 Docker] Removing associated docker stack services...'`;
     await $`docker stack rm gh-stack-pr-${PR_ID}`;

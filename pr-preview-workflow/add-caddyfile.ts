@@ -14,7 +14,7 @@ export async function addCaddyfile(
   );
 
   if (await caddyfileToAdd.exists()) {
-    await $`echo '[ℹ️  Caddy] Configuration for preview branch pull request #${PR_ID} already exists, skipping work.'`;
+    await $`echo '[ℹ️ Caddy] Configuration for preview branch pull request #${PR_ID} already exists, skipping work.'`;
     return;
   }
 
@@ -45,7 +45,7 @@ export async function addCaddyfile(
     );
 
     await $`echo '[🔄 Caddy] preview environment config for pull request #${leastRecentPullRequestID} is too old, deleting it...'`;
-    await $`echo '[ℹ️  Caddy] you can still redeploy this env by deploying the associated pull request'`;
+    await $`echo '[ℹ️ Caddy] you can still redeploy this env by deploying the associated pull request'`;
 
     // delete the least recent Pull Request
     await $`rm '${pathWithoutSlash(
