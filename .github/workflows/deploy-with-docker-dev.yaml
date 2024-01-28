@@ -58,7 +58,10 @@ jobs:
           echo 'Docker build successful ✅'
           cd pr-preview-workflow
           bun install --frozen-lockfile
-          bun run index.ts
+          bun run index.ts --pr-id ${GITHUB_PR_NUMBER} \
+             --pr-branch ${GITHUB_BRANCH_SLUG} \
+             --caddy-config-path ${{ secrets.CADDY_CONFIG_DIR }} \
+             --reload-caddy --reload-docker
           "
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
