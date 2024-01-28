@@ -66,7 +66,7 @@ jobs:
              --caddy-config-path ${{ secrets.CADDY_CONFIG_DIR }} \
              --reload-caddy --reload-docker
           "
-          echo "url=gh-${GITHUB_PR_NUMBER}.gh.fredkiss.dev,gh-${GITHUB_BRANCH_SLUG}.gh.fredkiss.dev" >> $GITHUB_OUTPUT
+          echo "url='https://gh-${GITHUB_PR_NUMBER}.gh.fredkiss.dev, https://gh-${GITHUB_BRANCH_SLUG}.gh.fredkiss.dev'" >> $GITHUB_OUTPUT
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
@@ -79,6 +79,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: 'Application deployed:  ${{ steps.deploy.outputs.url }}'
+          msg: 'Application deployed @: ${{ steps.deploy.outputs.url }}'
           check_for_duplicate_msg: true
       
