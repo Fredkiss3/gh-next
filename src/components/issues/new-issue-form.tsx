@@ -1,9 +1,9 @@
-"use client";
+// "use client";
 import * as React from "react";
 // components
 import { GearIcon, InfoIcon } from "@primer/octicons-react";
 import { Input } from "~/components/input";
-import { MarkdownEditor } from "~/components/markdown-editor/markdown-editor";
+import { MarkdownEditorClient } from "~/components/markdown-editor/markdown-editor.client";
 import { SubmitButton } from "~/components/submit-button";
 import { Avatar } from "~/components/avatar";
 
@@ -67,7 +67,7 @@ export function NewIssueForm({
               autoFocus
             />
 
-            <MarkdownEditor
+            <MarkdownEditorClient
               name="body"
               label="Add a description"
               placeholder="Add your description here..."

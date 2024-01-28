@@ -12,7 +12,7 @@ import { MarkdownEditorToolbar } from "~/components/markdown-editor/markdown-edi
 import { clsx, isValidURL } from "~/lib/shared/utils.shared";
 import { z } from "zod";
 import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
-import { prerenderMarkdownPreview } from "~/components/markdown-editor/markdown-editor-preview";
+// import { prerenderMarkdownPreview } from "~/components/markdown-editor/markdown-editor-preview";
 import { setFieldText } from "text-field-edit";
 import { enableTabToIndent } from "indent-textarea";
 
@@ -32,14 +32,14 @@ const paramsSchema = z.object({
   repository: z.string()
 });
 
-export function MarkdownEditor({
+export function MarkdownEditorClient({
   label,
   defaultValue,
   ...props
 }: MarkdownEditorProps) {
   const params = useTypedParams(
     paramsSchema,
-    "This component should be used within a repository path"
+    "This component should be used within a user/repository path"
   );
 
   const [lastSavedTextContent, setLastSavedTextContent] = React.useState(
@@ -144,10 +144,10 @@ export function MarkdownEditor({
                     textAreaRef.current &&
                     textAreaRef.current.value.trim().length > 0
                   ) {
-                    prerenderMarkdownPreview(
-                      textAreaRef.current.value.trim(),
-                      `${params.user}/${params.repository}`
-                    );
+                    // prerenderMarkdownPreview(
+                    //   textAreaRef.current.value.trim(),
+                    //   `${params.user}/${params.repository}`
+                    // );
                   }
                 }}
                 className={clsx(

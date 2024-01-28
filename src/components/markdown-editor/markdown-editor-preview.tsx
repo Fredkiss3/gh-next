@@ -3,10 +3,7 @@ import * as React from "react";
 // components
 import { ErrorBoundary } from "react-error-boundary";
 import { Skeleton } from "~/components/skeleton";
-import {
-  RscClientRenderer,
-  renderPayloadOrPromiseToJSX
-} from "~/components/custom-rsc-renderer/rsc-client-renderer";
+import { RscClientRenderer } from "~/components/custom-rsc-renderer/rsc-client-renderer";
 
 // utils
 import { getIssueHoverCard } from "~/actions/issue.action";
@@ -48,26 +45,26 @@ export function MarkdownEditorPreview(props: MarkdownEditorPreviewProps) {
             </div>
           }
         >
-          <RscClientRenderer
+          {/* <RscClientRenderer
             promise={loadMarkdownJSX(
               loadMarkdownPreview(props.content, props.repositoryPath),
               false
             )}
-          />
+          /> */}
         </React.Suspense>
       </ErrorBoundary>
     </>
   );
 }
 
-const loadMarkdownPreview = lifetimeCache(getMarkdownPreview);
-const loadMarkdownJSX = lifetimeCache(renderPayloadOrPromiseToJSX);
+// const loadMarkdownPreview = lifetimeCache(getMarkdownPreview);
+// // const loadMarkdownJSX = lifetimeCache(renderPayloadOrPromiseToJSX);
 
-export async function prerenderMarkdownPreview(
-  content: string,
-  repositoryPath: `${string}/${string}`
-) {
-  React.startTransition(() => {
-    loadMarkdownJSX(loadMarkdownPreview(content, repositoryPath), false);
-  });
-}
+// export async function prerenderMarkdownPreview(
+//   content: string,
+//   repositoryPath: `${string}/${string}`
+// ) {
+//   React.startTransition(() => {
+//     loadMarkdownJSX(loadMarkdownPreview(content, repositoryPath), false);
+//   });
+// }
