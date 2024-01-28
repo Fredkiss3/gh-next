@@ -9,16 +9,9 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "editor.defaultFormatter": "biomejs.biome",
-  "json.schemas": [
-    {
-      "fileMatch": ["*caddy*.json"],
-      "url": ".vscode/caddy_schema.json"
-    }
-  ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.tsdk": "node_modules/typescript/lib",
   "yaml.schemas": {
-    ".vscode/caddy_schema.json": ["*caddy*.yaml", "*caddy*.yml"],
     "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": [
       "file:///Users/fredkiss3/Developer/gh-next/docker/docker-stack.dev.yaml",
       "file:///Users/fredkiss3/Developer/gh-next/docker/templates/docker-stack.pr-app.templ.yaml"
