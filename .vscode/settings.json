@@ -11,12 +11,6 @@
   "editor.defaultFormatter": "biomejs.biome",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "yaml.schemas": {
-    "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": [
-      "file:///Users/fredkiss3/Developer/gh-next/docker/docker-stack.dev.yaml",
-      "file:///Users/fredkiss3/Developer/gh-next/docker/templates/docker-stack.pr-app.templ.yaml"
-    ]
-  },
   "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
   }
