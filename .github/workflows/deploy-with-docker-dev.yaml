@@ -15,6 +15,7 @@ jobs:
     permissions: 
       deployments: write
     runs-on: ubuntu-latest
+    environment: dev
 
     steps:
       - uses: actions/checkout@v2
