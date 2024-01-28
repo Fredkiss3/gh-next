@@ -79,7 +79,7 @@ export class Session {
       );
 
       if (sessionObject) {
-        return this.#fromPayload(sessionSchema.parse(sessionObject));
+        return this.deserialize(sessionSchema.parse(sessionObject));
       } else {
         return null;
       }
@@ -90,11 +90,15 @@ export class Session {
   }
 
   private constructor(serializedPayload: SerializedSession) {
-    this.#_session = serializedPayload;
+    this.#_session = sessionSchema.parse(serializedPayload);
   }
 
-  static #fromPayload(serializedPayload: SerializedSession) {
+  static deserialize(serializedPayload: SerializedSession) {
     return new Session(serializedPayload);
+  }
+
+  public serialize() {
+    return this.#_session;
   }
 
   public static async create({
@@ -110,7 +114,7 @@ export class Session {
     ip: string;
     lastAccess: Date;
   }) {
-    return Session.#fromPayload(
+    return Session.deserialize(
       await Session.#create({
         isBot,
         userAgent,

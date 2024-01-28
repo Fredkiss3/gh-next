@@ -1,11 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import {
+  cache,
+  experimental_taintObjectReference as taintObjectReference
+} from "react";
 import { withAuth, type AuthState } from "~/actions/middlewares";
 import { nextCache } from "~/lib/server/rsc-utils.server";
 import { Session } from "~/lib/server/session.server";
 import { CacheKeys } from "~/lib/shared/cache-keys.shared";
+import { SESSION_COOKIE_KEY } from "~/lib/shared/constants";
 import { jsonFetch } from "~/lib/shared/utils.shared";
 
 export type SuccessfulLocationData = {
@@ -72,4 +78,25 @@ export const revokeSession = withAuth(async function revokeSession(
 
   revalidatePath("/");
   redirect("/settings/sessions");
+});
+
+export const getSession = cache(async function getSession(): Promise<Session> {
+  const sessionId = cookies().get(SESSION_COOKIE_KEY)?.value;
+
+  if (!sessionId) {
+    // Normally this code is never reached
+    throw new Error("Session ID must be set in middleware");
+  }
+
+  const session = await Session.get(sessionId);
+
+  if (!session) {
+    // Neither this
+    throw new Error(
+      "Session must have been created in middleware to be accessed."
+    );
+  }
+
+  taintObjectReference("Do not pass the session object to the client", session);
+  return session;
 });
