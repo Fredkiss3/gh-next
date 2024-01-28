@@ -6,7 +6,8 @@ import {
   DeviceMobileIcon,
   QuestionIcon
 } from "@primer/octicons-react";
-import { getSession, getUserOrRedirect } from "~/actions/auth.action";
+import { getUserOrRedirect } from "~/actions/auth.action";
+import { getSession } from "~/actions/session.action";
 import { Button } from "~/components/button";
 
 // utils

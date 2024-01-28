@@ -3,8 +3,7 @@ import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "~/env";
-import { SESSION_COOKIE_KEY, SHARED_KEY_PREFIX } from "~/lib/shared/constants";
-import { Session } from "~/lib/server/session.server";
+import { SHARED_KEY_PREFIX } from "~/lib/shared/constants";
 import {
   getUserById,
   getOrInsertUserFromGithubProfile,
@@ -15,11 +14,17 @@ import { revalidatePath } from "next/cache";
 import { withAuth, type AuthState } from "./middlewares";
 import { nanoid } from "nanoid";
 import { kv } from "~/lib/server/kv/index.server";
+import { getSession } from "./session.action";
 
 export async function authenticateWithGithub(nextUrl: string | undefined) {
   const searchParams = new URLSearchParams();
 
   const origin = headers().get("Origin");
+
+  console.log({
+    origin,
+    host: headers().get("Host")
+  });
 
   if (!origin) {
     const session = await getSession();
@@ -27,7 +32,7 @@ export async function authenticateWithGithub(nextUrl: string | undefined) {
       message: "Please login from the proper website",
       type: "warning"
     });
-    return revalidatePath("/login");
+    return redirect("/");
   }
 
   const stateParam = nanoid(24);
@@ -96,27 +101,6 @@ export async function loginUser(user: any) {
   });
   cookies().set(session.getCookie());
 }
-
-export const getSession = cache(async function getSession(): Promise<Session> {
-  const sessionId = cookies().get(SESSION_COOKIE_KEY)?.value;
-
-  if (!sessionId) {
-    // Normally this code is never reached
-    throw new Error("Session ID must be set in middleware");
-  }
-
-  const session = await Session.get(sessionId);
-
-  if (!session) {
-    // Neither this
-    throw new Error(
-      "Session must have been created in middleware to be accessed."
-    );
-  }
-
-  taintObjectReference("Do not pass the session object to the client", session);
-  return session;
-});
 
 export const getUserOrRedirect = cache(async function getUserOrRedirect(
   redirectToPath?: string

@@ -22,7 +22,7 @@ import { Skeleton } from "~/components/skeleton";
 import { Markdown } from "~/components/markdown/markdown";
 
 // utils
-import { getSession } from "~/actions/auth.action";
+import { getSession } from "~/actions/session.action";
 import { getGithubRepoData } from "~/actions/github.action";
 import { getRepositoryByOwnerAndName } from "~/models/repository";
 import {

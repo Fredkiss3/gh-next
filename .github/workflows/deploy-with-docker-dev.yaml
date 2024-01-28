@@ -12,6 +12,8 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-push-docker:
+    permissions: 
+      pull-requests: write
     runs-on: ubuntu-latest
     environment: dev
 
@@ -26,8 +28,12 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Deploy to Server
+        id: deploy
         run: |
-          BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh-dev.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh-dev.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_dev_"
+          BUILD_ARGS="--build-arg NEXT_PUBLIC_VERCEL_URL=gh-${GITHUB_PR_NUMBER}.fredkiss.dev --build-arg GITHUB_REDIRECT_URI=https://gh.fredkiss.dev/api/auth/callback --build-arg SESSION_SECRET=${{ secrets.SESSION_SECRET }} --build-arg DATABASE_URL=${{ secrets.DEV_LOCAL_POSTGRES_DB_URL }} --build-arg REMOTE_DATABASE_URL=${{ secrets.DEV_REMOTE_POSTGRES_DB_URL }} --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} --build-arg GITHUB_SECRET=${{ secrets.GH_SECRET }} --build-arg GITHUB_PERSONAL_ACCESS_TOKEN=${{ secrets.GH_PERSONAL_ACCESS_TOKEN }} --build-arg REDIS_HTTP_USERNAME=${{ secrets.REDIS_HTTP_USERNAME }} --build-arg REDIS_HTTP_PASSWORD=${{ secrets.REDIS_HTTP_PASSWORD }} --build-arg KV_PREFIX=__gh_next__cache_dev_"
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          GITHUB_BRANCH_SLUG="${GIT_BRANCH//[^a-zA-Z0-9]/-}"
+          echo branch-slug=$GITHUB_BRANCH_SLUG
           ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_DOMAIN "
           source ~/.zshrc
           set -e -o errexit
@@ -41,27 +47,38 @@ jobs:
           nvm use 20
 
           echo Pulling latest version...
-          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-          echo git branch=\$GIT_BRANCH
-          git fetch origin \$GIT_BRANCH
-          git checkout \$GIT_BRANCH
-          git pull origin \$GIT_BRANCH
+          echo git branch=$GIT_BRANCH
+          git fetch origin $GIT_BRANCH
+          git checkout $GIT_BRANCH
+          git pull origin $GIT_BRANCH
 
           echo 'Build with docker (and cache)...🔄' 
           export DOCKER_BUILDKIT=1
 
-          # Use cache from remote repository, tag as latest, keep cache metadata
-          docker buildx build --push $BUILD_ARGS -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:dev .
+          # Build & push docker image
+          docker buildx build --push ${BUILD_ARGS} -f ./docker/Dockerfile.dev -t dcr.fredkiss.dev/gh-next:pr-${GITHUB_PR_NUMBER} .
 
-          echo 'build successful ✅'
-
-          # Start docker instances
-          echo 'updating docker services...🔄'
-          docker stack deploy --with-registry-auth --compose-file ./docker/docker-stack.dev.yaml gh-stack-dev
-          echo 'services updated succesfully ✅'
+          echo 'Docker build successful ✅'
+          cd pr-preview-workflow
+          bun install --frozen-lockfile
+          bun run index.ts --pr-id ${GITHUB_PR_NUMBER} \
+             --pr-branch ${GITHUB_BRANCH_SLUG} \
+             --caddy-config-path ${{ secrets.CADDY_CONFIG_DIR }} \
+             --reload-caddy --reload-docker
           "
+          echo "url=https://gh-${GITHUB_PR_NUMBER}.gh.fredkiss.dev, https://gh-${GITHUB_BRANCH_SLUG}.gh.fredkiss.dev" >> $GITHUB_OUTPUT
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
           DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+      
+      - name: Comment PR with Deployed URL
+        uses: unsplash/comment-on-pr@v1.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: 'Application deployed @: ${{ steps.deploy.outputs.url }}'
+          check_for_duplicate_msg: true
+      

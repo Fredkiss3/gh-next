@@ -8,9 +8,9 @@ import { SHARED_KEY_PREFIX } from "~/lib/shared/constants";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
-export async function GET(req: NextRequest) {
-  const code = req.nextUrl.searchParams.get("code");
-  const state = req.nextUrl.searchParams.get("state");
+export async function GET(request: NextRequest) {
+  const code = request.nextUrl.searchParams.get("code");
+  const state = request.nextUrl.searchParams.get("state");
 
   if (!state || !code) {
     redirect("/");
@@ -25,6 +25,53 @@ export async function GET(req: NextRequest) {
   if (!stateData) {
     redirect("/");
   }
+
+  let theirOriginURL: URL | null = null;
+  try {
+    theirOriginURL = new URL(stateData.origin);
+  } catch (error) {
+    console.error(error);
+    // we failed to validate that the `origin` of the request is a valid URL
+    // so we refuse this auth request
+    await kv.delete(state, SHARED_KEY_PREFIX);
+    redirect("/");
+  }
+
+  // In the case were the request doesn't originate from the same host as this one (ex: from preview environments)
+  const ourOriginHost = request.headers.get("Host");
+  console.log({
+    ourOriginHost,
+    theirOriginHost: theirOriginURL.host
+  });
+  if (ourOriginHost !== theirOriginURL.host) {
+    let redirectUrl: URL | null = null;
+    try {
+      redirectUrl = new URL("/api/auth/callback", theirOriginURL);
+
+      if (
+        process.env.NODE_ENV === "production" &&
+        !redirectUrl.hostname.endsWith("gh.fredkiss.dev")
+      ) {
+        throw new Error("Invalid Hostname provided");
+      }
+
+      redirectUrl.searchParams.set("code", code);
+      redirectUrl.searchParams.set("state", state);
+    } catch (error) {
+      console.error(error);
+      // delete state data to prevent this state from being reused again
+      await kv.delete(state, SHARED_KEY_PREFIX);
+    }
+
+    if (!redirectUrl) {
+      // we failed to validate that the `origin` of the request is a valid URL
+      // so we refuse this auth request
+      redirect("/");
+    }
+
+    return redirect(redirectUrl.toString());
+  }
+
   // delete state data to prevent this state from being reused again
   await kv.delete(state, SHARED_KEY_PREFIX);
 
