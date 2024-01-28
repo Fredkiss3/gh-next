@@ -83,7 +83,12 @@ export async function addCaddyfile(
   if (shouldReloadCaddy) {
     // reload caddy service in docker
     await $`echo '[🔄 Caddy] reloading caddy server...'`;
-    await $`docker exec $(docker ps -q -f name=caddy-stack_proxy) caddy reload -c /etc/caddy/Caddyfile`;
+    const { exitCode, stderr } =
+      await $`docker exec $(docker ps -q -f name=caddy-stack_proxy) caddy reload -c /etc/caddy/Caddyfile`;
+    if (exitCode !== 0) {
+      await $`echo '[❌ Caddy] caddy service encountered an unexpected error : ${stderr.toString()}'`;
+      process.exit(1);
+    }
     await $`echo '[✅ Caddy] caddy server reloaded succesfully'`;
   }
 }

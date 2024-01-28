@@ -15,7 +15,13 @@ export async function addDockerApp(
     await $`echo '[ℹ️ Docker] docker stack config for pull request #${PR_ID} already exists, skipping work.'`;
     if (shouldReloadDockerStack) {
       await $`echo '[🔄 Docker] updating docker services...'`;
-      await $`docker stack deploy --with-registry-auth --compose-file ${COMPOSE_FILE_PATH} gh-stack-pr-${PR_ID}`;
+      const { exitCode, stderr } =
+        await $`docker stack deploy --with-registry-auth --compose-file ${COMPOSE_FILE_PATH} gh-stack-pr-${PR_ID}`;
+
+      if (exitCode !== 0) {
+        await $`echo '[❌ Docker] docker services encountered an unexpected error : ${stderr.toString()}'`;
+        process.exit(1);
+      }
       await $`echo '[✅ Docker] docker services updated succesfully'`;
     }
     return;
@@ -105,7 +111,13 @@ networks:
   await $`echo '[✅ Docker] Added docker stack config file for pull request #${PR_ID}.'`;
   if (shouldReloadDockerStack) {
     await $`echo '[🔄 Docker] updating docker services...'`;
-    await $`docker stack deploy --with-registry-auth --compose-file ${COMPOSE_FILE_PATH} gh-stack-pr-${PR_ID}`;
+    const { exitCode, stderr } =
+      await $`docker stack deploy --with-registry-auth --compose-file ${COMPOSE_FILE_PATH} gh-stack-pr-${PR_ID}`;
+
+    if (exitCode !== 0) {
+      await $`echo '[❌ Docker] docker services encountered an unexpected error : ${stderr.toString()}'`;
+      process.exit(1);
+    }
     await $`echo '[✅ Docker] docker services updated succesfully'`;
   }
 }
