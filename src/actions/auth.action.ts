@@ -27,7 +27,7 @@ export async function authenticateWithGithub(nextUrl: string | undefined) {
       message: "Please login from the proper website",
       type: "warning"
     });
-    return revalidatePath("/login");
+    return redirect("/");
   }
 
   const stateParam = nanoid(24);
