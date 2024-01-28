@@ -89,4 +89,4 @@ jobs:
           status: ${{ job.status }}
           env: ${{ steps.deployment.outputs.env }}
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-          env_url: gh-${{ github.event.pull_request.number }}.gh.fredkiss.dev
+          env_url: https://gh-${{ github.event.pull_request.number }}.gh.fredkiss.dev
