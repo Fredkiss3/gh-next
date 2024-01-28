@@ -11,7 +11,7 @@ const argSchema = z.object({
   "reload-docker": z.boolean()
 });
 
-const { values, positionals } = parseArgs({
+const { values } = parseArgs({
   args: Bun.argv,
   options: {
     "pr-id": {

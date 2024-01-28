@@ -60,12 +60,12 @@ export async function addCaddyfile(
   const portNumber = STARTING_PORT_RANGE + caddyPRFiles.length;
   const CADDY_TEMPLATE_CONTENT = `gh-${PR_ID}.gh.fredkiss.dev, gh-${PR_BRANCH}.gh.fredkiss.dev {
     route {
-       sablier localhost:10000 {
+       sablier http://localhost:10000 {
          group gh-next-${PR_ID}
          session_duration 30m
          dynamic {
             theme ghost
-            display_name gh-next-${PR_ID}
+            display_name preview environment ${PR_BRANCH} (pull request: ${PR_ID})
             refresh_frequency 5s
          }
        }
