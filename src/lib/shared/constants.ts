@@ -38,4 +38,3 @@ export const DEFAULT_ISSUE_SEARCH_QUERY = "is:open";
 export const MAX_ITEMS_PER_PAGE = 25;
 export const UN_MATCHABLE_USERNAME = "<>";
 export const SHARED_KEY_PREFIX = "__gh_next__cache__shared_";
-export const TEMP_SESSION_HEADER_NAME = "__sid";
