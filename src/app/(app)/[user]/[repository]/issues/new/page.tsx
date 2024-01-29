@@ -1,5 +1,6 @@
 // components
 import { NewIssueForm } from "~/components/issues/new-issue-form";
+import { Markdown } from "~/components/markdown/markdown";
 
 // utils
 import { notFound } from "next/navigation";
@@ -36,6 +37,13 @@ export default async function NewIssuePage(props: NewIssuePageProps) {
     <NewIssueForm
       currentUserAvatarUrl={currentUser.avatar_url}
       currentUserUsername={currentUser.username}
+      renderMarkdownAction={async (
+        content: string,
+        repositoryPath: `${string}/${string}`
+      ) => {
+        "use server";
+        return <Markdown content={content} repository={repositoryPath} />;
+      }}
     />
   );
 }

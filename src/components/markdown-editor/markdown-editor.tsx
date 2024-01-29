@@ -12,14 +12,18 @@ import { MarkdownEditorToolbar } from "~/components/markdown-editor/markdown-edi
 import { clsx, isValidURL } from "~/lib/shared/utils.shared";
 import { z } from "zod";
 import { useTypedParams } from "~/lib/client/hooks/use-typed-params";
-// import { prerenderMarkdownPreview } from "~/components/markdown-editor/markdown-editor-preview";
 import { setFieldText } from "text-field-edit";
 import { enableTabToIndent } from "indent-textarea";
 
 // types
 import type { TextareaProps } from "~/components/textarea";
 
-export type MarkdownEditorProps = Omit<TextareaProps, "value">;
+export type MarkdownEditorProps = Omit<TextareaProps, "value"> & {
+  renderMarkdownAction: (
+    content: string,
+    repositoryPath: `${string}/${string}`
+  ) => Promise<React.JSX.Element>;
+};
 
 const TABS = {
   PREVIEW: "PREVIEW",
@@ -27,18 +31,19 @@ const TABS = {
 } as const;
 type TabValue = (typeof TABS)[keyof typeof TABS];
 
-const paramsSchema = z.object({
+const repoParamsSchema = z.object({
   user: z.string(),
   repository: z.string()
 });
 
-export function MarkdownEditorClient({
+export function MarkdownEditor({
   label,
   defaultValue,
+  renderMarkdownAction,
   ...props
 }: MarkdownEditorProps) {
   const params = useTypedParams(
-    paramsSchema,
+    repoParamsSchema,
     "This component should be used within a user/repository path"
   );
 
@@ -49,6 +54,16 @@ export function MarkdownEditorClient({
   const [textAreaHeight, setTextAreaHeight] = React.useState(0);
   const textAreaRef = React.useRef<React.ElementRef<"textarea"> | null>(null);
   const lastTextareaSelectionRange = React.useRef({ start: -1, end: -1 });
+
+  const renderMarkdown = React.useCallback(
+    (content: string) =>
+      renderMarkdownAction(content, `${params.user}/${params.repository}`),
+    [params.repository, params.user, renderMarkdownAction]
+  );
+  const [lastRenderPromise, addPromise] = usePromiseRenderMap(
+    lastSavedTextContent,
+    renderMarkdown
+  );
 
   React.useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
@@ -112,7 +127,10 @@ export function MarkdownEditorClient({
             onValueChange={(tab) => {
               setSelectedTab(tab as TabValue);
               if (textAreaRef.current) {
-                setLastSavedTextContent(textAreaRef.current.value);
+                const lastTextContent = textAreaRef.current.value.trim();
+                setLastSavedTextContent(lastTextContent);
+                addPromise(lastTextContent);
+
                 lastTextareaSelectionRange.current = {
                   start: textAreaRef.current.selectionStart,
                   end: textAreaRef.current.selectionEnd
@@ -140,14 +158,9 @@ export function MarkdownEditorClient({
               <Tabs.Trigger
                 value={TABS.PREVIEW}
                 onMouseEnter={() => {
-                  if (
-                    textAreaRef.current &&
-                    textAreaRef.current.value.trim().length > 0
-                  ) {
-                    // prerenderMarkdownPreview(
-                    //   textAreaRef.current.value.trim(),
-                    //   `${params.user}/${params.repository}`
-                    // );
+                  const textContent = textAreaRef.current?.value.trim();
+                  if (textContent) {
+                    addPromise(textContent);
                   }
                 }}
                 className={clsx(
@@ -218,11 +231,8 @@ export function MarkdownEditorClient({
                   name={props.name}
                 />
 
-                {lastSavedTextContent.trim().length > 0 ? (
-                  <MarkdownEditorPreview
-                    content={lastSavedTextContent.trim()}
-                    repositoryPath={`${params.user}/${params.repository}`}
-                  />
+                {lastSavedTextContent.trim().length > 0 && lastRenderPromise ? (
+                  <MarkdownEditorPreview renderedMarkdown={lastRenderPromise} />
                 ) : (
                   <span>Nothing to preview</span>
                 )}
@@ -253,4 +263,30 @@ export function MarkdownEditorClient({
       </div>
     </>
   );
+}
+
+function usePromiseRenderMap(
+  content: string,
+  renderPromise: (content: string) => Promise<React.JSX.Element>
+) {
+  const [promiseRenderMap, setPromiseRenderMap] = React.useState<
+    Map<string, Promise<React.JSX.Element>>
+  >(new Map());
+  const [, startTransition] = React.useTransition();
+  const lastRenderPromise = promiseRenderMap.get(content) ?? null;
+
+  const addPromise = React.useCallback(
+    (newContent: string) => {
+      startTransition(() => {
+        if (!promiseRenderMap.has(newContent)) {
+          const newMap = new Map(promiseRenderMap);
+          newMap.set(newContent, renderPromise(newContent));
+          setPromiseRenderMap(newMap);
+        }
+      });
+    },
+    [promiseRenderMap, renderPromise]
+  );
+
+  return [lastRenderPromise, addPromise] as const;
 }

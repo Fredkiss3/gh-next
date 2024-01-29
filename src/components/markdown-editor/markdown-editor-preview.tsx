@@ -3,22 +3,12 @@ import * as React from "react";
 // components
 import { ErrorBoundary } from "react-error-boundary";
 import { Skeleton } from "~/components/skeleton";
-import { RscClientRenderer } from "~/components/custom-rsc-renderer/rsc-client-renderer";
-
-// utils
-import { getIssueHoverCard } from "~/actions/issue.action";
-import { getMarkdownPreview } from "~/actions/markdown.action";
-import { lifetimeCache } from "~/lib/shared/lifetime-cache";
 
 export type MarkdownEditorPreviewProps = {
-  repositoryPath: `${string}/${string}`;
-  content: string;
+  renderedMarkdown: Promise<React.JSX.Element>;
 };
 
 export function MarkdownEditorPreview(props: MarkdownEditorPreviewProps) {
-  // this is so that the action is included in the client manifest of this page and the hovercard
-  // in the preview works
-  const _ = getIssueHoverCard;
   return (
     <>
       <ErrorBoundary
@@ -45,26 +35,9 @@ export function MarkdownEditorPreview(props: MarkdownEditorPreviewProps) {
             </div>
           }
         >
-          {/* <RscClientRenderer
-            promise={loadMarkdownJSX(
-              loadMarkdownPreview(props.content, props.repositoryPath),
-              false
-            )}
-          /> */}
+          {React.use(props.renderedMarkdown)}
         </React.Suspense>
       </ErrorBoundary>
     </>
   );
 }
-
-// const loadMarkdownPreview = lifetimeCache(getMarkdownPreview);
-// // const loadMarkdownJSX = lifetimeCache(renderPayloadOrPromiseToJSX);
-
-// export async function prerenderMarkdownPreview(
-//   content: string,
-//   repositoryPath: `${string}/${string}`
-// ) {
-//   React.startTransition(() => {
-//     loadMarkdownJSX(loadMarkdownPreview(content, repositoryPath), false);
-//   });
-// }

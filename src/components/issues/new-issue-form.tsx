@@ -1,9 +1,9 @@
-// "use client";
+"use client";
 import * as React from "react";
 // components
 import { GearIcon, InfoIcon } from "@primer/octicons-react";
 import { Input } from "~/components/input";
-import { MarkdownEditorClient } from "~/components/markdown-editor/markdown-editor.client";
+import { MarkdownEditor } from "~/components/markdown-editor/markdown-editor";
 import { SubmitButton } from "~/components/submit-button";
 import { Avatar } from "~/components/avatar";
 
@@ -11,14 +11,17 @@ import { Avatar } from "~/components/avatar";
 import { clsx } from "~/lib/shared/utils.shared";
 
 // types
+import type { MarkdownEditorProps } from "~/components/markdown-editor/markdown-editor";
 export type NewIssueFormProps = {
   currentUserUsername: string;
   currentUserAvatarUrl: string;
+  renderMarkdownAction: MarkdownEditorProps["renderMarkdownAction"];
 };
 
 export function NewIssueForm({
   currentUserAvatarUrl,
-  currentUserUsername
+  currentUserUsername,
+  renderMarkdownAction
 }: NewIssueFormProps) {
   return (
     <section className="grid px-5">
@@ -67,11 +70,12 @@ export function NewIssueForm({
               autoFocus
             />
 
-            <MarkdownEditorClient
+            <MarkdownEditor
               name="body"
               label="Add a description"
               placeholder="Add your description here..."
               required
+              renderMarkdownAction={renderMarkdownAction}
             />
           </div>
         </div>
@@ -136,6 +140,7 @@ function AssigneeFormInput() {
     </div>
   );
 }
+
 function LabelFormInput() {
   return (
     <div className="border-b border-neutral flex flex-col gap-2 text-sm pb-4">
