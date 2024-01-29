@@ -89,41 +89,69 @@ export const MarkdownEditorToolbar = React.forwardRef<
       const selectionStart = textArea.selectionStart;
       const selectionEnd = textArea.selectionEnd;
 
+      const isSelectingMultipleChars = selectionEnd - selectionStart > 0;
+
       const untilSelectionStart = textContent.slice(0, selectionStart);
-      const fromSelectionStart = textContent.slice(selectionStart);
+      const fromSelectionEnd = textContent.slice(selectionEnd);
 
       const allPreviousLines = untilSelectionStart.split("\n");
-      const currentLine = allPreviousLines.pop();
 
       const quoteRegex = /^(> ?)/;
-      const match = (currentLine ?? "").match(quoteRegex);
-      const currentLineIsQuote = !!match;
 
-      if (currentLineIsQuote) {
-        const totalMatchedChars = match[0].length;
-        const newLineWithoutQuote = (currentLine ?? "")
-          .replace(quoteRegex, "")
-          .trimStart();
+      if (isSelectingMultipleChars) {
+        const selectectedLines = textContent
+          .slice(selectionStart, selectionEnd)
+          .split("\n");
 
-        const result =
-          [...allPreviousLines, newLineWithoutQuote].join("\n") +
-          fromSelectionStart;
+        const newLines = selectectedLines.map((line, index) => {
+          const linePrefix = "> ";
+          if (!line.match(quoteRegex)) {
+            return linePrefix + line;
+          } else {
+            return line.replace(quoteRegex, "");
+          }
+        });
 
+        const replacedString = newLines.join("\n");
+        const result = untilSelectionStart + replacedString + fromSelectionEnd;
         onTextContentChange(result);
+
         textArea.setSelectionRange(
-          selectionStart - totalMatchedChars,
-          selectionEnd - totalMatchedChars
+          selectionStart,
+          selectionStart + replacedString.length
         );
       } else {
-        const newLineWithQuote = "> " + (currentLine ?? "");
+        const fromSelectionStart = textContent.slice(selectionStart);
+        const currentLine = allPreviousLines.pop();
+        const match = (currentLine ?? "").match(quoteRegex);
+        const currentLineIsQuote = !!match;
+        if (currentLineIsQuote) {
+          const totalMatchedChars = match[0].length;
+          const newLineWithoutQuote = (currentLine ?? "")
+            .replace(quoteRegex, "")
+            .trimStart();
 
-        const result =
-          [...allPreviousLines, newLineWithQuote].join("\n") +
-          fromSelectionStart;
+          const result =
+            [...allPreviousLines, newLineWithoutQuote].join("\n") +
+            fromSelectionStart;
 
-        onTextContentChange(result);
-        textArea.setSelectionRange(selectionStart + 2, selectionEnd + 2);
+          onTextContentChange(result);
+          textArea.setSelectionRange(
+            selectionStart - totalMatchedChars,
+            selectionEnd - totalMatchedChars
+          );
+        } else {
+          const newLineWithQuote = "> " + (currentLine ?? "");
+
+          const result =
+            [...allPreviousLines, newLineWithQuote].join("\n") +
+            fromSelectionStart;
+
+          onTextContentChange(result);
+          textArea.setSelectionRange(selectionStart + 2, selectionEnd + 2);
+        }
       }
+
       textArea.focus();
     }
   }
@@ -280,7 +308,6 @@ export const MarkdownEditorToolbar = React.forwardRef<
       const checkboxListRegex = "(\\- \\[ \\] ?)";
 
       if (isSelectingMultipleChars) {
-        const textContent = textArea.value;
         const untilSelectionStart = textContent.slice(0, selectionStart);
         const fromSelectionEnd = textContent.slice(selectionEnd);
 
