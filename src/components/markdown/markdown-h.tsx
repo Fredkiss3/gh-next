@@ -12,6 +12,7 @@ export function MarkdownH({ as, showLink, ...props }: MarkdownHProps) {
   return (
     <Tag
       className={clsx(
+        "inline-flex items-baseline w-full flex-wrap",
         "group relative mb-4 border-b border-neutral pb-2.5",
         "mt-8 scroll-mt-20 first:mt-0",
         "sm:scroll-mt-24",
