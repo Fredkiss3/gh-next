@@ -21,18 +21,17 @@ export const metadata: Metadata = {
 };
 
 export default async function NewIssuePage(props: NewIssuePageProps) {
-  const repository = await getRepositoryByOwnerAndName(
-    props.params.user,
-    props.params.repository
-  );
+  const [repository, currentUser] = await Promise.all([
+    getRepositoryByOwnerAndName(props.params.user, props.params.repository),
+    getUserOrRedirect(
+      `/${props.params.user}/${props.params.repository}/issues/new`
+    )
+  ]);
 
   if (!repository) {
     notFound();
   }
 
-  const currentUser = await getUserOrRedirect(
-    `/${props.params.user}/${props.params.repository}/issues/new`
-  );
   return (
     <NewIssueForm
       currentUserAvatarUrl={currentUser.avatar_url}
