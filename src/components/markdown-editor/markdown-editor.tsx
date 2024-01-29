@@ -272,18 +272,15 @@ function usePromiseRenderMap(
   const [promiseRenderMap, setPromiseRenderMap] = React.useState<
     Map<string, Promise<React.JSX.Element>>
   >(new Map());
-  const [, startTransition] = React.useTransition();
   const lastRenderPromise = promiseRenderMap.get(content) ?? null;
 
   const addPromise = React.useCallback(
     (newContent: string) => {
-      startTransition(() => {
-        if (!promiseRenderMap.has(newContent)) {
-          const newMap = new Map(promiseRenderMap);
-          newMap.set(newContent, renderPromise(newContent));
-          setPromiseRenderMap(newMap);
-        }
-      });
+      if (!promiseRenderMap.has(newContent)) {
+        const newMap = new Map(promiseRenderMap);
+        newMap.set(newContent, renderPromise(newContent));
+        setPromiseRenderMap(newMap);
+      }
     },
     [promiseRenderMap, renderPromise]
   );
