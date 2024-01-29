@@ -274,7 +274,7 @@ function usePromiseRenderMap(
   const addPromise = React.useCallback(
     (newContent: string) => {
       const map = promiseRenderMapRef.current;
-      if (!map.get(newContent)) {
+      if (!map.has(newContent)) {
         const promise = renderPromise(newContent);
         map.set(newContent, promise);
         setLastRenderPromise(promise);
