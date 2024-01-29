@@ -60,10 +60,7 @@ export function MarkdownEditor({
       renderMarkdownAction(content, `${params.user}/${params.repository}`),
     [params.repository, params.user, renderMarkdownAction]
   );
-  const [lastRenderPromise, addPromise] = usePromiseRenderMap(
-    lastSavedTextContent,
-    renderMarkdown
-  );
+  const [lastRenderPromise, addPromise] = usePromiseRenderMap(renderMarkdown);
 
   React.useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
@@ -266,23 +263,26 @@ export function MarkdownEditor({
 }
 
 function usePromiseRenderMap(
-  content: string,
   renderPromise: (content: string) => Promise<React.JSX.Element>
 ) {
-  const [promiseRenderMap, setPromiseRenderMap] = React.useState<
-    Map<string, Promise<React.JSX.Element>>
-  >(new Map());
-  const lastRenderPromise = promiseRenderMap.get(content) ?? null;
+  const [lastRenderPromise, setLastRenderPromise] =
+    React.useState<Promise<React.JSX.Element> | null>(null);
+  const promiseRenderMapRef = React.useRef(
+    new Map<string, Promise<React.JSX.Element>>()
+  );
 
   const addPromise = React.useCallback(
     (newContent: string) => {
-      if (!promiseRenderMap.has(newContent)) {
-        const newMap = new Map(promiseRenderMap);
-        newMap.set(newContent, renderPromise(newContent));
-        setPromiseRenderMap(newMap);
+      const map = promiseRenderMapRef.current;
+      if (!map.get(newContent)) {
+        const promise = renderPromise(newContent);
+        map.set(newContent, promise);
+        setLastRenderPromise(promise);
+      } else {
+        setLastRenderPromise(map.get(newContent) ?? null);
       }
     },
-    [promiseRenderMap, renderPromise]
+    [renderPromise]
   );
 
   return [lastRenderPromise, addPromise] as const;
