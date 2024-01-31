@@ -47,3 +47,4 @@ pr.caddyfile
 *.bak
 *.log
 notes.md
+certificates

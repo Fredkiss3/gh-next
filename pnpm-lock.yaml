@@ -52,6 +52,9 @@ dependencies:
   bright:
     specifier: ^0.8.4
     version: 0.8.4(react@18.2.0)
+  client-only:
+    specifier: ^0.0.1
+    version: 0.0.1
   cmdk:
     specifier: ^0.2.0
     version: 0.2.0(@types/react@18.2.46)(react-dom@18.2.0)(react@18.2.0)
@@ -73,6 +76,9 @@ dependencies:
   geist:
     specifier: ^1.0.0
     version: 1.2.0(next@14.1.0)
+  indent-textarea:
+    specifier: ^4.0.0
+    version: 4.0.0
   nanoid:
     specifier: ^4.0.2
     version: 4.0.2
@@ -112,6 +118,9 @@ dependencies:
   remark:
     specifier: ^15.0.1
     version: 15.0.1
+  remark-breaks:
+    specifier: ^4.0.0
+    version: 4.0.0
   remark-gemoji:
     specifier: ^8.0.0
     version: 8.0.0
@@ -130,6 +139,9 @@ dependencies:
   tailwind-merge:
     specifier: ^1.14.0
     version: 1.14.0
+  text-field-edit:
+    specifier: ^4.0.0
+    version: 4.0.0
   vfile:
     specifier: ^6.0.1
     version: 6.0.1
@@ -3615,6 +3627,13 @@ packages:
     engines: {node: '>=0.8.19'}
     dev: false
 
+  /indent-textarea@4.0.0:
+    resolution: {integrity: sha512-klZ+UIsxLAkctG8nci8N+FOnAfoL7VzXdoJvsUwx0trgP9mH291lC0N7QzNGCjX/Rid5C+NCeRobCrhWDDdfKQ==}
+    engines: {node: '>=18'}
+    dependencies:
+      text-field-edit: 4.0.0
+    dev: false
+
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     dependencies:
@@ -4178,6 +4197,13 @@ packages:
       mdast-util-to-markdown: 2.1.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /mdast-util-newline-to-break@2.0.0:
+    resolution: {integrity: sha512-MbgeFca0hLYIEx/2zGsszCSEJJ1JSCdiY5xQxRcLDDGa8EPvlLPupJ4DSajbMPAnC0je8jfb9TiUATnxxrHUog==}
+    dependencies:
+      '@types/mdast': 4.0.3
+      mdast-util-find-and-replace: 3.0.1
     dev: false
 
   /mdast-util-phrasing@4.0.0:
@@ -5460,6 +5486,14 @@ packages:
       unist-util-visit: 4.1.2
     dev: false
 
+  /remark-breaks@4.0.0:
+    resolution: {integrity: sha512-IjEjJOkH4FuJvHZVIW0QCDWxcG96kCq7An/KVH2NfJe6rKZU2AsHeB3OEjPNRxi4QC34Xdx7I2KGYn6IpT7gxQ==}
+    dependencies:
+      '@types/mdast': 4.0.3
+      mdast-util-newline-to-break: 2.0.0
+      unified: 11.0.4
+    dev: false
+
   /remark-gemoji@8.0.0:
     resolution: {integrity: sha512-/fL9rc72FYwFGtOKcT+QeQdx9Q9t5v4N6KLXSDOTEgaedzK85I9judBqB2eqz+g4b0ERMejlwSOuPK+wket6aA==}
     dependencies:
@@ -5980,6 +6014,11 @@ packages:
       b4a: 1.6.4
       fast-fifo: 1.3.2
       streamx: 2.15.6
+    dev: false
+
+  /text-field-edit@4.0.0:
+    resolution: {integrity: sha512-m6TZTY9UkPP2wcXOtvqFebGakfVNbrJIzk7bCC3p2YJfyb6gKy2jN3NIpDD6FN/On9yiqSGfOy7fvxDx1+U3/Q==}
+    engines: {node: '>=18'}
     dev: false
 
   /text-table@0.2.0:

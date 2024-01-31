@@ -14,7 +14,7 @@ import Link from "next/link";
 
 // utils
 import { env } from "~/env";
-import { clsx } from "~/lib/shared/utils.shared";
+import { clsx, getExcerpt, isValidURL } from "~/lib/shared/utils.shared";
 import { z } from "zod";
 
 // types
@@ -69,13 +69,17 @@ export async function MarkdownA({
   }
 
   if (isExternal || !referenceFound) {
+    const children =
+      typeof props.children === "string" && isValidURL(props.children)
+        ? getExcerpt(props.children, 150)
+        : props.children;
     return (
       <a
         {...props}
         target="_blank"
         className="underline inline-flex gap-1 items-baseline text-accent break-all"
       >
-        {props.children}
+        {children}
       </a>
     );
   }

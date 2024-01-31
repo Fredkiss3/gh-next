@@ -4,6 +4,21 @@
 
 @layer base {
   :root {
+    /*
+    * fluid font sizes, 
+    * taken from : https://www.fluid-type-scale.com/calculate?minFontSize=16&minWidth=400&minRatio=1.25&maxFontSize=19&maxWidth=1280&maxRatio=1.333&steps=sm%2Cbase%2Clg%2Cxl%2C2xl%2C3xl%2C4xl%2C5xl%2C6xl&baseStep=base&prefix=font-size&decimals=2&useRems=on&remValue=16&previewFont=JetBrains+Mono&previewText=Almost+before+we+knew+it%2C+we+had+left+the+ground&previewWidth=0 
+    */
+    --font-size-sm: clamp(0.8rem, 0.17vw + 0.76rem, 0.89rem);
+    --font-size-base: clamp(1rem, 0.34vw + 0.91rem, 1.19rem);
+    --font-size-lg: clamp(1.25rem, 0.61vw + 1.1rem, 1.58rem);
+    --font-size-xl: clamp(1.56rem, 1vw + 1.31rem, 2.11rem);
+    --font-size-2xl: clamp(1.95rem, 1.56vw + 1.56rem, 2.81rem);
+    --font-size-3xl: clamp(2.44rem, 2.38vw + 1.85rem, 3.75rem);
+    --font-size-4xl: clamp(3.05rem, 3.54vw + 2.17rem, 5rem);
+    --font-size-5xl: clamp(3.81rem, 5.18vw + 2.52rem, 6.66rem);
+    --font-size-6xl: clamp(4.77rem, 7.48vw + 2.9rem, 8.88rem);
+
+
     --accent-color: 10, 105, 218;
     --success-color: 31, 136, 61;
     --attention-color: 191, 135, 0;

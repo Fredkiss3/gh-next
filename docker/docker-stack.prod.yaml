@@ -1,10 +1,8 @@
 version: "3.4"
 
 services:
-  app:
+  gh-next-prod:
     image: dcr.fredkiss.dev/gh-next:latest
-    ports:
-      - "8988:3000"
     deploy:
       replicas: 2
       update_config:

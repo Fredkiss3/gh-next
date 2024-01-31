@@ -574,3 +574,14 @@ export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
 
   return chunkedArray;
 }
+
+export function isValidURL(url: string) {
+  const urlSchema = preprocess((arg) => {
+    if (!arg || typeof arg !== "string") return arg;
+    if (!arg.includes(".")) return arg; // we only accept urls with a domain
+    const protocol = arg.startsWith("localhost") ? "http" : "https";
+    return `${protocol}://${arg}`;
+  }, z.string().url());
+
+  return urlSchema.safeParse(url).success;
+}

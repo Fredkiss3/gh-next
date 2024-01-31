@@ -45,20 +45,10 @@ const {
   "reload-docker": shouldReloadDockerStack
 } = argSchema.parse(values);
 
-const MAX_OPEN_PORTS = 100,
-  STARTING_PORT_RANGE = 9100;
-
-await addDockerApp(
-  PR_ID,
-  shouldReloadDockerStack,
-  MAX_OPEN_PORTS,
-  STARTING_PORT_RANGE
-);
+await addDockerApp(PR_ID, shouldReloadDockerStack);
 await addCaddyfile(
   PR_ID,
   PR_BRANCH,
   CADDY_CONFIG_FOLDER_PATH,
-  shouldReloadCaddy,
-  MAX_OPEN_PORTS,
-  STARTING_PORT_RANGE
+  shouldReloadCaddy
 );
