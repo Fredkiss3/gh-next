@@ -66,7 +66,9 @@ export const Button = React.forwardRef<
   // we check disabled here because we want to apply a different styling
   const isDisabled =
     ("disabled" in restProps && restProps["disabled"] === true) ||
-    ("aria-disabled" in restProps && restProps["aria-disabled"] === true);
+    ("aria-disabled" in restProps &&
+      (restProps["aria-disabled"] === true ||
+        restProps["aria-disabled"] === "true"));
 
   const commonClasses = clsx(
     "items-center justify-center gap-2 text-sm",
