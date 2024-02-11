@@ -7,6 +7,7 @@ import { MarkdownIcon } from "@primer/octicons-react";
 import { Button } from "~/components/button";
 import { MarkdownEditorPreview } from "~/components/markdown-editor/markdown-editor-preview";
 import { MarkdownEditorToolbar } from "~/components/markdown-editor/markdown-editor-toolbar";
+import * as Ariakit from "@ariakit/react";
 
 // utils
 import { clsx, isValidURL } from "~/lib/shared/utils.shared";
@@ -17,6 +18,7 @@ import { enableTabToIndent } from "indent-textarea";
 
 // types
 import type { TextareaProps } from "~/components/textarea";
+import type { EventFor } from "~/lib/types";
 
 export type MarkdownEditorProps = Omit<TextareaProps, "value"> & {
   renderMarkdownAction: (
@@ -82,7 +84,7 @@ export function MarkdownEditor({
     }
   }, [selectedTab]);
 
-  function pasteLinkToTextarea(text: string) {
+  const pasteLinkToTextarea = React.useCallback((text: string) => {
     const textArea = textAreaRef.current;
     if (textArea && isValidURL(text)) {
       const textContent = textArea.value;
@@ -109,7 +111,28 @@ export function MarkdownEditor({
       }
     }
     return false;
-  }
+  }, []);
+
+  const [textAreaValue, setTextAreaValue] =
+    React.useState(lastSavedTextContent);
+  const [trigger, setTrigger] = React.useState<string | null>(null);
+  const [caretOffset, setCaretOffset] = React.useState<number | null>(null);
+
+  const combobox = Ariakit.useComboboxStore();
+
+  const searchValue = combobox.useState("value");
+  const deferredSearchValue = React.useDeferredValue(searchValue);
+
+  // Re-calculates the position of the combobox popover in case the changes on
+  // the textarea value have shifted the trigger character.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(combobox.render, [combobox, textAreaValue]);
+
+  const onKeyDown = (event: EventFor<"textarea", "onKeyDown">) => {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      combobox.hide();
+    }
+  };
 
   return (
     <>
@@ -182,31 +205,57 @@ export function MarkdownEditor({
             </Tabs.List>
 
             <div className="p-2 bg-backdrop rounded-b-md">
-              <Tabs.Content value={TABS.EDITOR} asChild>
-                <Textarea
-                  rows={12}
-                  {...props}
-                  defaultValue={lastSavedTextContent}
-                  label={label}
-                  onPaste={(ev) => {
-                    const isEventHandled = pasteLinkToTextarea(
-                      ev.clipboardData.getData("text/plain")
-                    );
+              <Tabs.Content value={TABS.EDITOR}>
+                <Ariakit.Combobox
+                  store={combobox}
+                  autoSelect
+                  value={textAreaValue}
+                  // We'll overwrite how the combobox popover is shown, so we disable
+                  // the default behaviors.
+                  showOnClick={false}
+                  showOnChange={false}
+                  showOnKeyPress={false}
+                  // To the combobox state, we'll only set the value after the trigger
+                  // character (the search value), so we disable the default behavior.
+                  setValueOnChange={false}
+                  className="combobox"
+                  render={
+                    <Textarea
+                      rows={12}
+                      {...props}
+                      defaultValue={lastSavedTextContent}
+                      value={textAreaValue}
+                      onChange={(e) => setTextAreaValue(e.currentTarget.value)}
+                      // onChange={onChange}
+                      onKeyDown={onKeyDown}
+                      label={label}
+                      // We need to re-calculate the position of the combobox popover
+                      // when the textarea contents are scrolled.
+                      onScroll={combobox.render}
+                      // Hide the combobox popover whenever the selection changes.
+                      onPointerDown={combobox.hide}
+                      onPaste={(ev) => {
+                        const isEventHandled = pasteLinkToTextarea(
+                          ev.clipboardData.getData("text/plain")
+                        );
 
-                    if (isEventHandled) ev.preventDefault();
-                  }}
-                  className="text-sm"
-                  name={selectedTab === "EDITOR" ? props.name : ""}
-                  hideLabel
-                  ref={(ref) => {
-                    textAreaRef.current = ref;
-                    if (ref) {
-                      enableTabToIndent(ref);
-                    }
-                  }}
-                  style={{
-                    height: textAreaHeight > 0 ? `${textAreaHeight}px` : "auto"
-                  }}
+                        if (isEventHandled) ev.preventDefault();
+                      }}
+                      className="text-sm"
+                      name={selectedTab === "EDITOR" ? props.name : ""}
+                      hideLabel
+                      ref={(ref) => {
+                        textAreaRef.current = ref;
+                        if (ref) {
+                          enableTabToIndent(ref);
+                        }
+                      }}
+                      style={{
+                        height:
+                          textAreaHeight > 0 ? `${textAreaHeight}px` : "auto"
+                      }}
+                    />
+                  }
                 />
               </Tabs.Content>
               <Tabs.Content

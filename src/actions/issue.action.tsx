@@ -13,7 +13,6 @@ import { issueSearchListOutputValidator } from "~/models/dto/issue-search-output
 import { searchIssues } from "~/models/issues/search";
 
 import { getAuthedUser } from "./auth.action";
-import { cache } from "react";
 
 import type { IssueSearchFilters } from "~/lib/shared/utils.shared";
 import { IssueHoverCardContents } from "~/components/hovercard/issue-hovercard-contents";

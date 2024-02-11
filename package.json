@@ -19,6 +19,7 @@
     "db:fetch-issues": "set -a; . ./.env.local; set +a && tsx --tsconfig ./tsconfig.script.json ./scripts/fetchIssues.ts"
   },
   "dependencies": {
+    "@ariakit/react": "^0.4.1",
     "@headlessui/react": "^1.7.17",
     "@mdx-js/mdx": "^3.0.0",
     "@neshca/cache-handler": "^0.6.2",
@@ -32,6 +33,7 @@
     "@rsc-cache/next": "^1.1.1",
     "@t3-oss/env-nextjs": "^0.6.1",
     "@tanstack/react-query": "^5.0.0",
+    "@types/textarea-caret": "^3.0.3",
     "bright": "^0.8.4",
     "client-only": "^0.0.1",
     "cmdk": "^0.2.0",
@@ -63,6 +65,7 @@
     "sharp": "^0.32.5",
     "tailwind-merge": "^1.14.0",
     "text-field-edit": "^4.0.0",
+    "textarea-caret": "^3.1.0",
     "vfile": "^6.0.1",
     "zod": "^3.22.2",
     "zod-form-data": "^2.0.1",
