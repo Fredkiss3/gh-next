@@ -5,7 +5,7 @@ name: CI/CD For docker deploy
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  pull_request:
+  # pull_request:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 

@@ -1,0 +1,53 @@
+name: Build and Push gh-next Images
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches:
+      - develop
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-push:
+    name: Build and Push main image 
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: pnpm/action-setup@646cdf48217256a3d0b80361c5a50727664284f2
+        with:
+          version: 8.15.9
+      - name: Use Node.js version 20.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+      - name: Build app with node
+        run: |
+          FORCE_COLOR=true pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
+          FORCE_COLOR=true SKIP_ENV_VALIDATION=1 pnpm run build
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: docker/Dockerfile.prod
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/fredkiss3/gh-next:latest,ghcr.io/fredkiss3/gh-next:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/fredkiss3/gh-next:latest
+          cache-to: type=inline

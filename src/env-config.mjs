@@ -46,5 +46,6 @@ export const _envObject = createEnv({
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI,
     GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN
-  }
+  },
+  skipValidation: process.env.SKIP_ENV_VALIDATION?.toString() === "1"
 });
