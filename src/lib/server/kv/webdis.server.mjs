@@ -1,6 +1,6 @@
 // @ts-check
 import { _envObject as env } from "../../../env-config.mjs";
-import { request } from "undici";
+
 /**
  * @typedef {import("./index.server").KVStore} KVStore
  */
@@ -58,20 +58,22 @@ export class WebdisKV {
 
     const rand = Math.ceil(Math.random() * 10e15);
     console.time(`[${rand} webdis] ${fullURL}`);
-    return await request(fullURL, {
+    return await fetch(fullURL, {
       method: "PUT",
+      cache: "no-store",
       headers: {
         Authorization: `Basic ${btoa(authString)}`
       },
       body: body ?? undefined
-    }).then(({ body, statusCode }) =>
-      body.text().then((text) => {
-        if (statusCode !== 200) {
+    }).then((r) =>
+      r.text().then((text) => {
+        if (!r.ok) {
           console.log(
             "Couldn't fetch from webdis KV, received this response from server : ",
             {
               text,
-              status: statusCode
+              status: r.status,
+              statusText: r.statusText
             }
           );
         }
