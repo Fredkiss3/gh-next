@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-push:
-    name: Build and Push main image 
+  build-push-web:
+    name: Build and Push web app 
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -57,4 +57,36 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/fredkiss3/gh-next:latest,ghcr.io/fredkiss3/gh-next:${{ github.sha }}
           cache-from: type=registry,ref=ghcr.io/fredkiss3/gh-next:latest
+          cache-to: type=inline
+  
+  build-push-redis:
+    name: Build and Push Redis container 
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: docker/Dockerfile.redis
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/fredkiss3/webdis:latest,ghcr.io/fredkiss3/webdis:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/fredkiss3/webdis:latest
           cache-to: type=inline

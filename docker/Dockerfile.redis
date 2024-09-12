@@ -1,0 +1,3 @@
+FROM nicolas/webdis:0.1.22
+
+COPY webdis.json /etc/webdis.prod.json
