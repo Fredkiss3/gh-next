@@ -17,31 +17,28 @@ RUN \
  else echo "Lockfile not found." && exit 1; \
  fi
 
+ ##### BUILDER
+FROM node:20-alpine3.19 AS builder
+
+
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN \
+ if [ -f yarn.lock ]; then yarn build; \
+ elif [ -f package-lock.json ]; then npm run build; \
+ elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm@8 && SKIP_ENV_VALIDATION=1 pnpm run build; \
+ else echo "Lockfile not found." && exit 1; \
+ fi
+
 ##### RUNNER
 
 FROM node:20-alpine3.19 AS runner
 WORKDIR /app
 
-# ARG SESSION_SECRET
-# ARG DATABASE_URL
-# ARG GITHUB_CLIENT_ID
-# ARG GITHUB_SECRET
-# ARG GITHUB_PERSONAL_ACCESS_TOKEN
-# ARG KV_PREFIX
-# ARG NEXT_PUBLIC_VERCEL_URL="localhost:3000"
-# ARG REDIS_HTTP_URL="http://webdis:7379"
-# ARG REDIS_HTTP_USERNAME
-# ARG REDIS_HTTP_PASSWORD
-# ARG GITHUB_REDIRECT_URI="http://localhost:3000/api/auth/callback"
-
-# ENV NEXT_PUBLIC_VERCEL_URL=$NEXT_PUBLIC_VERCEL_URL
-# ENV SESSION_SECRET=$SESSION_SECRET
-# ENV DATABASE_URL=$DATABASE_URL
-# ENV GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
-# ENV GITHUB_REDIRECT_URI=$GITHUB_REDIRECT_URI
-# ENV GITHUB_SECRET=$GITHUB_SECRET
-# ENV GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PERSONAL_ACCESS_TOKEN
-# ENV REDIS_HTTP_URL=$REDIS_HTTP_URL
 ENV REDIS_HTTP_USERNAME=user
 ENV REDIS_HTTP_PASSWORD=password
 
@@ -56,7 +53,9 @@ RUN adduser --system --uid 1001 nextjs
 # Don't forget to put the build cache in the artifact
 COPY --from=deps /app/node_modules ./node_modules
 
-COPY --chown=nextjs:nodejs .next/ .next/
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/standalone/static
+
 COPY . .
 
 USER nextjs
@@ -65,4 +64,4 @@ ENV PORT=80
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 
-CMD ["sh", "-c", "npm run db:migrate-docker && node .next/standalone/server.js"]
+CMD ["sh", "-c", "npm run db:migrate-docker && npm run start"]
