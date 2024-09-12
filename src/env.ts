@@ -5,7 +5,7 @@ import { _envObject } from "./env-config.mjs";
  * taintUniqueValue is undefined outside of server components :
  * - in the client & in other call sites
  */
-if (taintUniqueValue) {
+if (process.env.SKIP_ENV_VALIDATION?.toString() !== "1" && taintUniqueValue) {
   taintUniqueValue(
     "Do not pass the DB URL to the client.",
     _envObject,
