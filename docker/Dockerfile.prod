@@ -46,9 +46,9 @@ WORKDIR /app
 # ENV REDIS_HTTP_PASSWORD=$REDIS_HTTP_PASSWORD
 # ENV KV_PREFIX=$KV_PREFIX
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -61,8 +61,8 @@ COPY . .
 
 USER nextjs
 EXPOSE 80
-ENV PORT 80
+ENV PORT=80
 ENV NODE_ENV=production
-ENV HOSTNAME 0.0.0.0
+ENV HOSTNAME=0.0.0.0
 
 CMD ["sh", "-c", "npm run db:migrate-docker && node .next/standalone/server.js"]
