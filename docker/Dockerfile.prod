@@ -50,13 +50,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Don't forget to put the build cache in the artifact
+COPY . .
+
 COPY --from=deps /app/node_modules ./node_modules
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/standalone/static
 
-COPY . .
 
 USER nextjs
 EXPOSE 80
