@@ -7,32 +7,10 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml\* ./
+COPY package.json pnpm-lock.yaml ./
 COPY ./patches ./patches
 
-RUN \
- if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
- elif [ -f package-lock.json ]; then npm ci; \
- elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile; \
- else echo "Lockfile not found." && exit 1; \
- fi
-
- ##### BUILDER
-FROM node:20-alpine3.19 AS builder
-
-
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN \
- if [ -f yarn.lock ]; then yarn build; \
- elif [ -f package-lock.json ]; then npm run build; \
- elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm@8 && SKIP_ENV_VALIDATION=1 pnpm run build; \
- else echo "Lockfile not found." && exit 1; \
- fi
+RUN yarn global add pnpm@8 && pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
 
 ##### RUNNER
 
@@ -50,13 +28,18 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY . .
-
 COPY --from=deps /app/node_modules ./node_modules
 
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/standalone/static
-COPY ./custom-incremental-cache-handler.mjs ./.next/custom-incremental-cache-handler.mjs
+COPY ./public/ ./public/
+COPY ./drizzle/ ./drizzle/
+
+COPY ./migrate.mjs .
+COPY ./next.config.mjs .
+COPY ./package.json .
+COPY ./custom-incremental-cache-handler.mjs .
+
+COPY --chown=nextjs:nodejs .next/standalone ./
+COPY --chown=nextjs:nodejs .next/static ./.next/static
 
 
 USER nextjs
@@ -65,4 +48,4 @@ ENV PORT=80
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 
-CMD ["sh", "-c", "npm run db:migrate-docker && npm run start"]
+CMD ["sh", "-c", "node migrate.mjs && node server.js"]
