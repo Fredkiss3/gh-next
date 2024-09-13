@@ -508,14 +508,19 @@ async function insertSingleIssue(issue: GithubIssue) {
   if (!user) return null;
 
   const [repository] = await db
-    .select()
-    .from(repositories)
-    .where(
-      and(
-        eq(repositories.name, GITHUB_REPOSITORY_NAME),
-        eq(repositories.creator_id, user.id)
-      )
-    );
+    .insert(repositories)
+    .values({
+      name: GITHUB_REPOSITORY_NAME,
+      creator_id: user.id
+    })
+    .onConflictDoUpdate({
+      target: [repositories.name],
+      set: {
+        name: GITHUB_REPOSITORY_NAME,
+        creator_id: user.id
+      }
+    })
+    .returning();
 
   if (!repository) return null;
   /**
@@ -1146,11 +1151,15 @@ async function main() {
       repoName: GITHUB_REPO_SOURCE.name,
       cursor: nextCursor
     });
-  
+
     nextCursor = pageInfo.endCursor;
     hasNextPage = pageInfo.hasNextPage;
     totalIssuesFetched += nodes.length;
-  
+
+    console.log({
+      issueFounds: nodes.length,
+      first: nodes[0]
+    });
     for (const issue of nodes) {
       await insertSingleIssue(issue);
     }
