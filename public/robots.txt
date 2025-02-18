@@ -1,0 +1,5 @@
+User-agent: Bytespider
+Disallow: /
+
+User-agent: *
+Disallow:
