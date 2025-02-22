@@ -95,6 +95,7 @@ type GetEventHandlers<T extends keyof JSX.IntrinsicElements> = Extract<
  * @example
  *
  * type MyEvent = EventFor<"input", "onChange">;
+ * // ?^ React.ChangeEvent<HTMLInputElement>
  */
 export type EventFor<
   TElement extends keyof JSX.IntrinsicElements,

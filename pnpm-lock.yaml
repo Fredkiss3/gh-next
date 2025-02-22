@@ -10,6 +10,9 @@ patchedDependencies:
     path: patches/remark-github@12.0.0.patch
 
 dependencies:
+  '@ariakit/react':
+    specifier: ^0.4.1
+    version: 0.4.1(react-dom@18.2.0)(react@18.2.0)
   '@headlessui/react':
     specifier: ^1.7.17
     version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
@@ -49,6 +52,9 @@ dependencies:
   '@tanstack/react-query':
     specifier: ^5.0.0
     version: 5.15.3(react@18.2.0)
+  '@types/textarea-caret':
+    specifier: ^3.0.3
+    version: 3.0.3
   bright:
     specifier: ^0.8.4
     version: 0.8.4(react@18.2.0)
@@ -142,6 +148,9 @@ dependencies:
   text-field-edit:
     specifier: ^4.0.0
     version: 4.0.0
+  textarea-caret:
+    specifier: ^3.1.0
+    version: 3.1.0
   vfile:
     specifier: ^6.0.1
     version: 6.0.1
@@ -216,6 +225,34 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
     dev: true
+
+  /@ariakit/core@0.4.1:
+    resolution: {integrity: sha512-Rdhw0/K0x+50gFvzuMW9wp+WJxpkrgiMgegRTOZSU92bv1K+6XfQWnlieIkLt2FC7pZGrDpGlS4C7ztEVF+JRg==}
+    dev: false
+
+  /@ariakit/react-core@0.4.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-cwDczl9XWBloXNg0CuHmJtBfEe7qF265JE0Pwlcp8wMSY9PsJeb0mKBlTygUPKn/FsKpKGaYSI7DlDntbcZciw==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+      react-dom: ^17.0.0 || ^18.0.0
+    dependencies:
+      '@ariakit/core': 0.4.1
+      '@floating-ui/dom': 1.5.3
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /@ariakit/react@0.4.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-hKfCYjc3MFW20kn2dcvejB5zbYt/uU33Teq82c414/utf5sEoeRF+bxjNku8x1baJby9/SDP6zj2IgWPuedFNA==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+      react-dom: ^17.0.0 || ^18.0.0
+    dependencies:
+      '@ariakit/react-core': 0.4.1(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /@babel/runtime@7.23.6:
     resolution: {integrity: sha512-zHd0eUrf5GZoOWVCXp6koAKQTfZV07eit6bGPmJgnZdnSAvvZee6zniW2XMF7Cmc4ISOOnPy3QaSiIJGJkVEDQ==}
@@ -1822,6 +1859,10 @@ packages:
 
   /@types/scheduler@0.16.8:
     resolution: {integrity: sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==}
+
+  /@types/textarea-caret@3.0.3:
+    resolution: {integrity: sha512-bsA9GdXV1wQsXyDjS5+A+czz8IAR3haH5DU+KctIoXbzobRL2NOiwF/+EbB7pofAyudMytLj4ihPtbmbJT8FWw==}
+    dev: false
 
   /@types/unist@2.0.10:
     resolution: {integrity: sha512-IfYcSBWE3hLpBg8+X2SEa8LVkJdJEkT2Ese2aaLs3ptGdVtABxndrMaxuFlQ1qdFf9Q5rDvDpxI3WwgvKFAsQA==}
@@ -6023,6 +6064,10 @@ packages:
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
+    dev: false
+
+  /textarea-caret@3.1.0:
+    resolution: {integrity: sha512-cXAvzO9pP5CGa6NKx0WYHl+8CHKZs8byMkt3PCJBCmq2a34YA9pO1NrQET5pzeqnBjBdToF5No4rrmkDUgQC2Q==}
     dev: false
 
   /thenify-all@1.6.0:
