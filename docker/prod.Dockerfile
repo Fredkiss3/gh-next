@@ -8,7 +8,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 COPY ./patches ./patches
 
-RUN yarn global add pnpm@8 && pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
+RUN corepack enable && corepack install
+RUN pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lockfile
 
 ##### BUILD
 
