@@ -21,7 +21,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN yarn build
+RUN FORCE_COLOR=true pnpm build
 
 ##### RUNNER
 
