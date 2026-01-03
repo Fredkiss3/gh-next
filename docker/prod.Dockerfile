@@ -13,7 +13,7 @@ RUN pnpm install --shamefully-hoist --strict-peer-dependencies=false --frozen-lo
 
 ##### BUILD
 
-FROM node:22.21-alpine3.22 AS builder
+FROM deps AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -25,7 +25,7 @@ RUN FORCE_COLOR=true pnpm build
 
 ##### RUNNER
 
-FROM node:22.21-alpine3.22 AS runner
+FROM deps AS runner
 WORKDIR /app
 
 ENV REDIS_HTTP_USERNAME=user
